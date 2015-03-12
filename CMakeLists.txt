@@ -9,6 +9,8 @@ message(STATUS "GLEW")
 message(STATUS "  lib ${GLEW_LIBRARY}")
 message(STATUS "  inc ${GLEW_INCLUDE_DIR}")
 
+add_definitions(-std=c++11)
+
 include_directories(${CMAKE_SOURCE_DIR}/src ${GLEW_INCLUDE_DIR})
 
 add_subdirectory(src)
