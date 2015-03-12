@@ -123,8 +123,11 @@ public:
 };
 
 Vec4<float> operator+( const float value,const Vec4<float>& a ) throw(){ return _mm_add_ps(_mm_set1_ps(value),a); }
+
 Vec4<float> operator-( const float value,const Vec4<float>& a ) throw(){ return _mm_sub_ps(_mm_set1_ps(value),a); }
+
 Vec4<float> operator*( const float value,const Vec4<float>& a ) throw(){ return _mm_mul_ps(_mm_set1_ps(value),a); }
+
 Vec4<float> operator/( const float value,const Vec4<float>& a ) throw(){ return _mm_div_ps(_mm_set1_ps(value),a); }
 
 }
