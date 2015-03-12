@@ -6,7 +6,7 @@ message(STATUS "  lib ${SDL2_LIBRARY}")
 include_directories(${SDL2_INCLUDE_DIR})
 
 add_executable(interact interact.cpp)
-target_link_libraries(interact ${SDL2_LIBRARY} ${GLEW_LIBRARIES} GL)
+target_link_libraries(interact ${SDL2_LIBRARY} ${GLEW_LIBRARY} GL)
 set_target_properties(interact PROPERTIES
     COMPILE_FLAGS -std=c++11
 )

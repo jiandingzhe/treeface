@@ -28,6 +28,9 @@
 include(FindPackageMessage)
 include(FindPackageHandleStandardArgs)
 
+set(SDL2_FIND_PREFIX "" CACHE PATH "additional path to search for SDL2")
+set(SDL2_FIND_STATIC NO CACHE BOOL "search for static SDL2 library")
+
 # find header directory
 find_path(SDL2_INCLUDE_DIR SDL.h
     HINTS ${SDL2_FIND_PREFIX}
