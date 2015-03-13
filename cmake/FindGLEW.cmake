@@ -23,12 +23,14 @@
 include(FindPackageMessage)
 include(FindPackageHandleStandardArgs)
 
-set(GLEW_FIND_PREFIX "" CACHE PATH "additional path to search for GLEW")
-set(GLEW_FIND_STATIC NO CACHE BOOL "search for static GLEW library")
+set(GLEW_SEARCH_PREFIX     "" CACHE PATH "additional path to search for GLEW")
+set(GLEW_SEARCH_PREFIX_INC "" CACHE PATH "additional path to search for GLEW header GL/glew.h")
+set(GLEW_SEARCH_PREFIX_LIB "" CACHE PATH "additional path to search for GLEW libraries")
+set(GLEW_SEARCH_STATIC     NO CACHE BOOL "search for static GLEW library")
 
 # find header directory
 find_path(GLEW_INCLUDE_DIR GL/glew.h
-    HINTS ${GLEW_FIND_PREFIX}
+    HINTS ${GLEW_SEARCH_PREFIX_INC} ${GLEW_SEARCH_PREFIX}
     PATH_SUFFIXES GLEW
 )
 
@@ -38,7 +40,7 @@ if(GLEW_FIND_STATIC)
 endif()
 
 find_library(GLEW_LIBRARY GLEW
-    HINTS ${GLEW_FIND_PREFIX}
+    HINTS ${GLEW_SEARCH_PREFIX_LIB} ${GLEW_SEARCH_PREFIX}
 )
 
 # finalize
