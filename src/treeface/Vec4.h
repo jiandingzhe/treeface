@@ -11,13 +11,7 @@ struct Vec4
 {
     Vec4() {}
 
-    Vec4(const Vec4& other)
-    {
-        data[0] = other.data[0];
-        data[1] = other.data[1];
-        data[2] = other.data[2];
-        data[3] = other.data[3];
-    }
+    Vec4(const Vec4& other) = default;
 
     Vec4(T x, T y, T z, T w)
     {
@@ -35,14 +29,7 @@ struct Vec4
         data[3] = values[3];
     }
 
-    Vec4& operator = (const Vec4& other)
-    {
-        data[0] = other.data[0];
-        data[1] = other.data[1];
-        data[2] = other.data[2];
-        data[3] = other.data[3];
-        return *this;
-    }
+    Vec4& operator = (const Vec4& other) = default;
 
     void set(T x, T y, T z, T w)
     {
