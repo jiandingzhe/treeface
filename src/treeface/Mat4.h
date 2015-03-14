@@ -1,4 +1,0 @@
-#ifndef TREEFACE_MAT4_H
-#define TREEFACE_MAT4_H
-
-#endif // TREEFACE_MAT4_H
