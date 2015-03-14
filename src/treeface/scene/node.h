@@ -1,0 +1,4 @@
+#ifndef TREEFACE_NODE_H
+#define TREEFACE_NODE_H
+
+#endif // TREEFACE_NODE_H
