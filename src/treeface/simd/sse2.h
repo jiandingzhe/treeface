@@ -1,7 +1,7 @@
 #ifndef TREEFACE_SIMD_FUNC_SSE2_H
 #define TREEFACE_SIMD_FUNC_SSE2_H
 
-#include "treeface/SIMDFunc_temp.h"
+#include "treeface/simd/template.h"
 
 #include <cstdint>
 #include <emmintrin.h>

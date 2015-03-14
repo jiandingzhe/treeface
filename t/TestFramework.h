@@ -1,7 +1,7 @@
 #ifndef TREEFACE_TEST_FRAMEWORK
 #define TREEFACE_TEST_FRAMEWORK
 
-#include "treeface/Common.h"
+#include "treeface/common.h"
 
 #include <cstdint>
 #include <cstdlib>

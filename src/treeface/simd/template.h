@@ -1,7 +1,7 @@
 #ifndef TREEFACE_SIMD_FUNC_TEMP_H
 #define TREEFACE_SIMD_FUNC_TEMP_H
 
-#include "treeface/Common.h"
+#include "treeface/common.h"
 
 TREEFACE_NAMESPACE_BEGIN
 
