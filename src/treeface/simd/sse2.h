@@ -27,11 +27,61 @@ SIMDType128 simd_set<float, SIMDType128>(float a, float b, float c, float d)
 }
 
 template<>
+SIMDType128 simd_set<float, SIMDType128>(float a)
+{
+    SIMDType128 re;
+    re.simd_by_float = _mm_set1_ps(a);
+    return re;
+}
+
+template<>
 SIMDType128 simd_add<float, SIMDType128>(SIMDType128 a, SIMDType128 b)
 {
     SIMDType128 re;
     re.simd_by_float = _mm_add_ps(a.simd_by_float, b.simd_by_float);
     return re;
+}
+
+template<>
+SIMDType128 simd_sub<float, SIMDType128>(SIMDType128 a, SIMDType128 b)
+{
+    SIMDType128 re;
+    re.simd_by_float = _mm_sub_ps(a.simd_by_float, b.simd_by_float);
+    return re;
+}
+
+template<>
+SIMDType128 simd_mul<float, SIMDType128>(SIMDType128 a, SIMDType128 b)
+{
+    SIMDType128 re;
+    re.simd_by_float = _mm_mul_ps(a.simd_by_float, b.simd_by_float);
+    return re;
+}
+
+template<>
+SIMDType128 simd_div<float, SIMDType128>(SIMDType128 a, SIMDType128 b)
+{
+    SIMDType128 re;
+    re.simd_by_float = _mm_div_ps(a.simd_by_float, b.simd_by_float);
+    return re;
+}
+
+template<>
+float simd_sum<float, SIMDType128>(const SIMDType128& a)
+{
+    float temp;
+    SIMDType128 b=a;
+    SIMDType128 c;
+    SIMDType128 d;
+    SIMDType128 e;
+    c=_mm_srli_epi32(a,32);
+    d=_mm_srli_epi32(a,64);
+    b=_mm_add_ss(b,c);
+    b=_mm_add_ss(b,d);
+    e=_mm_srli_epi32(a,96);
+    b=_mm_add_ss(b,e);
+    _mm_store_ss(&temp,b);
+    return temp;
 }
 
 TREEFACE_NAMESPACE_END

@@ -11,6 +11,9 @@ template<typename T, typename DATA_T>
 inline DATA_T simd_set(T a, T b, T c, T d);
 
 template<typename T, typename DATA_T>
+inline DATA_T simd_set(T a);
+
+template<typename T, typename DATA_T>
 inline DATA_T simd_add(const DATA_T a, const DATA_T b);
 
 template<typename T, typename DATA_T>
@@ -21,6 +24,9 @@ inline DATA_T simd_mul(const DATA_T a, const DATA_T b);
 
 template<typename T, typename DATA_T>
 inline DATA_T simd_div(const DATA_T a, const DATA_T b);
+
+template<typename T, typename DATA_T>
+inline T simd_sum(const DATA_T& a);
 
 TREEFACE_NAMESPACE_END
 
