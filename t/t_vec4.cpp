@@ -25,6 +25,25 @@ void TestFramework::content()
     float expect[4] = {1, 2, 3, 4};
     IS(memcmp(&b, expect, sizeof(float)*4), 0);
 
+    OK("copy constructor");
+    {
+        Vec4f cpy(b);
+        IS(cpy.get_x(), 1);
+        IS(cpy.get_y(), 2);
+        IS(cpy.get_z(), 3);
+        IS(cpy.get_w(), 4);
+    }
+
+    OK("operator =");
+    {
+        Vec4f assign(2, 3, 4, 5);
+        assign = b;
+        IS(assign.get_x(), 1);
+        IS(assign.get_y(), 2);
+        IS(assign.get_z(), 3);
+        IS(assign.get_w(), 4);
+    }
+
     float data[4] = {5, 6, 7, 8};
     Vec4f c(data);
     OK("init with array");
