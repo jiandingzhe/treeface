@@ -139,10 +139,7 @@ SIMDType<16> simd_cmp<float, 16> (SIMDType<16> a, SIMDType<16>  b)
 template<>
 float simd_sum<float, 16> (SIMDType<16> value)
 {
-    return value.simd_by_float[0] +
-            value.simd_by_float[1] +
-            value.simd_by_float[2] +
-            value.simd_by_float[3];
+    abort();
 }
 
 TREEFACE_NAMESPACE_END
