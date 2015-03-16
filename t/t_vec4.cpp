@@ -1,6 +1,8 @@
 #include "treeface/math/vec4.h"
 #include "TestFramework.h"
 
+#include <string.h>
+
 using namespace treeface;
 
 void TestFramework::content()
@@ -18,6 +20,10 @@ void TestFramework::content()
     IS(b.get_y(), 2);
     IS(b.get_z(), 3);
     IS(b.get_w(), 4);
+
+    OK("validate binary layout");
+    float expect[4] = {1, 2, 3, 4};
+    IS(memcmp(&b, expect, sizeof(float)*4), 0);
 
     float data[4] = {5, 6, 7, 8};
     Vec4f c(data);
