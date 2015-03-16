@@ -4,23 +4,41 @@
 #include "treeface/common.h"
 
 TREEFACE_NAMESPACE_BEGIN
+template<int SZ>
+union SIMDType;
 
-union SIMDType128;
+template<int IDX, typename T, int SZ>
+inline T simd_get_one(SIMDType<SZ> data);
 
-template<typename T, typename DATA_T>
-inline DATA_T simd_set(T a, T b, T c, T d);
+template<int IDX, typename T, int SZ>
+inline SIMDType<SZ> simd_set_one(SIMDType<SZ> data, T value);
 
-template<typename T, typename DATA_T>
-inline DATA_T simd_add(const DATA_T a, const DATA_T b);
+template<typename T, int SZ>
+inline SIMDType<SZ> simd_set(T a, T b, T c, T d);
 
-template<typename T, typename DATA_T>
-inline DATA_T simd_sub(const DATA_T a, const DATA_T b);
+template<typename T, int SZ>
+inline SIMDType<SZ> simd_set(T value);
 
-template<typename T, typename DATA_T>
-inline DATA_T simd_mul(const DATA_T a, const DATA_T b);
+template<typename T, int SZ>
+inline SIMDType<SZ> simd_set(const T* values);
 
-template<typename T, typename DATA_T>
-inline DATA_T simd_div(const DATA_T a, const DATA_T b);
+template<typename T, int SZ>
+inline SIMDType<SZ> simd_add(SIMDType<SZ> a, SIMDType<SZ> b);
+
+template<typename T, int SZ>
+inline SIMDType<SZ> simd_sub(SIMDType<SZ> a, SIMDType<SZ> b);
+
+template<typename T, int SZ>
+inline SIMDType<SZ> simd_mul(SIMDType<SZ> a, SIMDType<SZ> b);
+
+template<typename T, int SZ>
+inline SIMDType<SZ> simd_div(SIMDType<SZ> a, SIMDType<SZ> b);
+
+template<typename T, int SZ>
+inline SIMDType<SZ> simd_cmp(SIMDType<SZ> a, SIMDType<SZ> b);
+
+template<typename T, int SZ>
+T simd_sum(SIMDType<SZ> value);
 
 TREEFACE_NAMESPACE_END
 

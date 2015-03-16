@@ -7,67 +7,67 @@ void TestFramework::content()
 {
     Vec4f a;
     OK("init");
-    IS(a.data[0], 0);
-    IS(a.data[1], 0);
-    IS(a.data[2], 0);
-    IS(a.data[3], 1);
+    IS(a.get_x(), 0);
+    IS(a.get_y(), 0);
+    IS(a.get_z(), 0);
+    IS(a.get_w(), 1);
 
     Vec4f b(1, 2, 3, 4);
     OK("init with values");
-    IS(b.data[0], 1);
-    IS(b.data[1], 2);
-    IS(b.data[2], 3);
-    IS(b.data[3], 4);
+    IS(b.get_x(), 1);
+    IS(b.get_y(), 2);
+    IS(b.get_z(), 3);
+    IS(b.get_w(), 4);
 
     float data[4] = {5, 6, 7, 8};
     Vec4f c(data);
     OK("init with array");
-    IS(c.data[0], 5);
-    IS(c.data[1], 6);
-    IS(c.data[2], 7);
-    IS(c.data[3], 8);
+    IS(c.get_x(), 5);
+    IS(c.get_y(), 6);
+    IS(c.get_z(), 7);
+    IS(c.get_w(), 8);
 
     b += c;
     OK("operator +=");
-    IS(b.data[0], 6);
-    IS(b.data[1], 8);
-    IS(b.data[2], 10);
-    IS(b.data[3], 12);
+    IS(b.get_x(), 6);
+    IS(b.get_y(), 8);
+    IS(b.get_z(), 10);
+    IS(b.get_w(), 12);
 
     Vec4f d = b + c;
     OK("operator +");
-    IS(d.data[0], 11);
-    IS(d.data[1], 14);
-    IS(d.data[2], 17);
-    IS(d.data[3], 20);
+    IS(d.get_x(), 11);
+    IS(d.get_y(), 14);
+    IS(d.get_z(), 17);
+    IS(d.get_w(), 20);
 
     a -= c;
     OK("operator -=");
-    IS(a.data[0], -5);
-    IS(a.data[1], -6);
-    IS(a.data[2], -7);
-    IS(a.data[3], -7);
+    IS(a.get_x(), -5);
+    IS(a.get_y(), -6);
+    IS(a.get_z(), -7);
+    IS(a.get_w(), -7);
 
     d = b - c;
     OK("operator -");
-    IS(d.data[0], 1);
-    IS(d.data[1], 2);
-    IS(d.data[2], 3);
-    IS(d.data[3], 4);
+    IS(d.get_x(), 1);
+    IS(d.get_y(), 2);
+    IS(d.get_z(), 3);
+    IS(d.get_w(), 4);
 
     b *= 3;
     OK("operator *=");
-    IS(b.data[0], 18);
-    IS(b.data[1], 24);
-    IS(b.data[2], 30);
-    IS(b.data[3], 36);
+    IS(b.get_x(), 18);
+    IS(b.get_y(), 24);
+    IS(b.get_z(), 30);
+    IS(b.get_w(), 36);
 
     b /= 2;
     OK("operator /=");
-    IS(b.data[0], 9);
-    IS(b.data[1], 12);
-    IS(b.data[2], 15);
-    IS(b.data[3], 18);
+    IS(b.get_x(), 9);
+    IS(b.get_y(), 12);
+    IS(b.get_z(), 15);
+    IS(b.get_w(), 18);
 
     OK("dot");
     IS(a * b, -348);
@@ -76,16 +76,16 @@ void TestFramework::content()
     Vec4f v1(1, 0, 0, 0);
     Vec4f v2(0, 1, 0, 0);
     Vec4f v3 = v1 ^ v2;
-    IS(v3.data[0], 0);
-    IS(v3.data[1], 0);
-    IS(v3.data[2], 1);
-    IS(v3.data[3], 0);
+    IS(v3.get_x(), 0);
+    IS(v3.get_y(), 0);
+    IS(v3.get_z(), 1);
+    IS(v3.get_w(), 0);
 
     Vec4f v4 = v2 ^ v3;
-    IS(v4.data[0], 1);
-    IS(v4.data[1], 0);
-    IS(v4.data[2], 0);
-    IS(v4.data[3], 0);
+    IS(v4.get_x(), 1);
+    IS(v4.get_y(), 0);
+    IS(v4.get_z(), 0);
+    IS(v4.get_w(), 0);
 
     OK("operator ==");
     OK(v4 == v1);

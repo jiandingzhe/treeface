@@ -3,7 +3,7 @@
 
 #include "treeface/config.h"
 
-#if TREEFACE_CPU_x86_64
+#ifdef TREEFACE_CPU_x86_64
 #  include "treeface/simd/sse2.h"
 #else
 #  warn "SIMD function wrapper for CPU is not implemented. Using non-simd fallback implementation."
