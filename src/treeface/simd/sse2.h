@@ -137,9 +137,21 @@ SIMDType<16> simd_cmp<float, 16> (SIMDType<16> a, SIMDType<16>  b)
 }
 
 template<>
-float simd_sum<float, 16> (SIMDType<16> value)
+float simd_sum<float, 16>(SIMDType<16> a)
 {
-    abort();
+    float temp;
+    SIMDType<16> b = a;
+    SIMDType<16> c;
+    SIMDType<16> d;
+    SIMDType<16> e;
+    c.simd_by_int = _mm_srli_epi32(a.simd_by_int, 32);
+    d.simd_by_int = _mm_srli_epi32(a.simd_by_int, 64);
+    b.simd_by_float = _mm_add_ss(b.simd_by_float, c.simd_by_float);
+    b.simd_by_float = _mm_add_ss(b.simd_by_float, d.simd_by_float);
+    e.simd_by_int = _mm_srli_epi32(a.simd_by_int, 96);
+    b.simd_by_float = _mm_add_ss(b.simd_by_float, e.simd_by_float);
+    _mm_store_ss(&temp, b.simd_by_float);
+    return temp;
 }
 
 TREEFACE_NAMESPACE_END
