@@ -44,58 +44,74 @@ void TestFramework::content()
         IS(assign.get_w(), 4);
     }
 
+    OK("init with array");
     float data[4] = {5, 6, 7, 8};
     Vec4f c(data);
-    OK("init with array");
     IS(c.get_x(), 5);
     IS(c.get_y(), 6);
     IS(c.get_z(), 7);
     IS(c.get_w(), 8);
 
-    b += c;
-    OK("operator +=");
-    IS(b.get_x(), 6);
-    IS(b.get_y(), 8);
-    IS(b.get_z(), 10);
-    IS(b.get_w(), 12);
+    {
+        OK("operator +=");
+        Vec4f re = b;
+        re += c;
+        IS(re.get_x(), 6);
+        IS(re.get_y(), 8);
+        IS(re.get_z(), 10);
+        IS(re.get_w(), 12);
+    }
 
-    Vec4f d = b + c;
-    OK("operator +");
-    IS(d.get_x(), 11);
-    IS(d.get_y(), 14);
-    IS(d.get_z(), 17);
-    IS(d.get_w(), 20);
+    {
+        OK("operator +");
+        Vec4f re = b + c;
+        IS(re.get_x(), 11);
+        IS(re.get_y(), 14);
+        IS(re.get_z(), 17);
+        IS(re.get_w(), 20);
+    }
 
-    a -= c;
-    OK("operator -=");
-    IS(a.get_x(), -5);
-    IS(a.get_y(), -6);
-    IS(a.get_z(), -7);
-    IS(a.get_w(), -7);
+    {
+        OK("operator -=");
+        Vec4f re = b;
+        re -= c;
+        IS(re.get_x(), -4);
+        IS(re.get_y(), -4);
+        IS(re.get_z(), -4);
+        IS(re.get_w(), -4);
+    }
 
-    d = b - c;
-    OK("operator -");
-    IS(d.get_x(), 1);
-    IS(d.get_y(), 2);
-    IS(d.get_z(), 3);
-    IS(d.get_w(), 4);
+    {
+        OK("operator -");
+        Vec4f re = b - c;
+        IS(re.get_x(), -4);
+        IS(re.get_y(), -4);
+        IS(re.get_z(), -4);
+        IS(re.get_w(), -4);
+    }
 
-    b *= 3;
-    OK("operator *=");
-    IS(b.get_x(), 18);
-    IS(b.get_y(), 24);
-    IS(b.get_z(), 30);
-    IS(b.get_w(), 36);
+    {
+        OK("operator *=");
+        Vec4f re(9, 8, 7, 6);
+        re *= 5;
+        IS(re.get_x(), 45);
+        IS(re.get_y(), 40);
+        IS(re.get_z(), 35);
+        IS(re.get_w(), 30);
+    }
 
-    b /= 2;
-    OK("operator /=");
-    IS(b.get_x(), 9);
-    IS(b.get_y(), 12);
-    IS(b.get_z(), 15);
-    IS(b.get_w(), 18);
+    {
+        OK("operator /=");
+        Vec4f re(45, 50, 55, 60);
+        re /= 5;
+        IS(re.get_x(), 9);
+        IS(re.get_y(), 10);
+        IS(re.get_z(), 11);
+        IS(re.get_w(), 12);
+    }
 
     OK("dot");
-    IS(a * b, -348);
+    IS(b * c, 70);
 
     OK("unit vector cross");
     Vec4f v1(1, 0, 0, 0);
