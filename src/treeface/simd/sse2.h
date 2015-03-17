@@ -139,19 +139,17 @@ SIMDType<16> simd_cmp<float, 16> (SIMDType<16> a, SIMDType<16>  b)
 template<>
 float simd_sum<float, 16>(SIMDType<16> a)
 {
-    float temp;
     SIMDType<16> b = a;
     SIMDType<16> c;
     SIMDType<16> d;
     SIMDType<16> e;
-    c.simd_by_int = _mm_srli_epi32(a.simd_by_int, 32);
-    d.simd_by_int = _mm_srli_epi32(a.simd_by_int, 64);
-    b.simd_by_float = _mm_add_ss(b.simd_by_float, c.simd_by_float);
-    b.simd_by_float = _mm_add_ss(b.simd_by_float, d.simd_by_float);
-    e.simd_by_int = _mm_srli_epi32(a.simd_by_int, 96);
-    b.simd_by_float = _mm_add_ss(b.simd_by_float, e.simd_by_float);
-    _mm_store_ss(&temp, b.simd_by_float);
-    return temp;
+	c.simd_by_float = _mm_castsi128_ps(_mm_srli_si128(_mm_castps_si128(a),4));
+	d.simd_by_float = _mm_castsi128_ps(_mm_srli_si128(_mm_castps_si128(a),8));
+	b.simd_by_float = _mm_add_ss(b.simd_by_float,c.simd_by_float);
+	b.simd_by_float = _mm_add_ss(b.simd_by_float,d.simd_by_float);
+	e.simd_by_float = _mm_castsi128_ps(_mm_srli_si128(_mm_castps_si128(a),12));
+	b.simd_by_float = _mm_add_ss(b.simd_by_float,e.simd_by_float);
+	return _mm_cvtss_f32(b.simd_by_float);
 }
 
 TREEFACE_NAMESPACE_END
