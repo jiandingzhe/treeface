@@ -214,8 +214,9 @@ struct Vec4
      */
     T normalize()
     {
-        SIMDType<SZ> tmp = simd_set<T, SZ>(length());
-        data = simd_div<T>(data, tmp);
+        T len = length();
+        data = simd_div<T>(data, simd_set<T, SZ>(len, len, len, len));
+        return len;
     }
 
     /**
@@ -322,7 +323,11 @@ T operator * (const Vec4<T>& a, const Vec4<T>& b)
 template<typename T, int SZ = sizeof(T)*4>
 Vec4<T> operator ^ (const Vec4<T>& a, const Vec4<T>& b)
 {
-    abort();
+// Res.ele[0] = A.ele[1] * B.ele[2] - A.ele[2] * B.ele[1];
+// Res.ele[1] = A.ele[2] * B.ele[0] - A.ele[0] * B.ele[2];
+// Res.ele[2] = A.ele[0] * B.ele[1] - A.ele[1] * B.ele[0];
+// Res.ele[3] = 0.0f;
+
 }
 
 /**

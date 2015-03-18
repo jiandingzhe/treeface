@@ -139,6 +139,7 @@ SIMDType<16> simd_cmp<float, 16> (SIMDType<16> a, SIMDType<16>  b)
 template<int IDX1, int IDX2, int IDX3, int IDX4, int SZ>
 struct _simd_shuffle_impl_;
 
+// inspired by KEMeng's implementation
 template<int IDX1, int IDX2, int IDX3, int IDX4>
 struct _simd_shuffle_impl_<IDX1, IDX2, IDX3, IDX4, 16>
 {

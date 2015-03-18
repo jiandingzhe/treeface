@@ -3,6 +3,12 @@ add_library(TestFramework TestFramework.cpp)
 add_executable(t_vec4 t_vec4.cpp)
 target_link_libraries(t_vec4 treeface TestFramework)
 
+add_executable(t_quat t_quat.cpp)
+target_link_libraries(t_quat treeface TestFramework)
+
+add_executable(t_mat4 t_mat4.cpp)
+target_link_libraries(t_mat4 treeface TestFramework)
+
 add_executable(t_simd t_simd.cpp)
 target_link_libraries(t_simd treeface TestFramework)
 
