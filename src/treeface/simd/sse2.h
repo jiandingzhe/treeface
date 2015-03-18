@@ -136,6 +136,27 @@ SIMDType<16> simd_cmp<float, 16> (SIMDType<16> a, SIMDType<16>  b)
     return re;
 }
 
+template<int IDX1, int IDX2, int IDX3, int IDX4, int SZ>
+struct _simd_shuffle_impl_;
+
+template<int IDX1, int IDX2, int IDX3, int IDX4>
+struct _simd_shuffle_impl_<IDX1, IDX2, IDX3, IDX4, 16>
+{
+    static SIMDType<16> shuffle(SIMDType<16> input)
+    {
+        constexpr int control = IDX1 + (IDX2 << 2) + (IDX3 << 4) + (IDX4 << 6);
+        SIMDType<16> re;
+        re.simd_by_int = _mm_shuffle_epi32(input.simd_by_int, control);
+        return re;
+    }
+};
+
+template<int IDX1, int IDX2, int IDX3, int IDX4, int SZ>
+inline SIMDType<SZ> simd_shuffle(SIMDType<SZ> input)
+{
+    return _simd_shuffle_impl_<IDX1, IDX2, IDX3, IDX4, SZ>::shuffle(input);
+}
+
 template<>
 float simd_sum<float, 16>(SIMDType<16> a)
 {

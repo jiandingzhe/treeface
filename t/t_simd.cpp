@@ -59,4 +59,18 @@ void TestFramework::content()
     IS(c.values_by_float[1], float(2)/6);
     IS(c.values_by_float[2], float(3)/7);
     IS(c.values_by_float[3], float(4)/8);
+
+    OK("shuffle 3 2 1 0");
+    c = simd_shuffle<3, 2, 1, 0>(a);
+    IS(c.values_by_float[0], 4);
+    IS(c.values_by_float[1], 3);
+    IS(c.values_by_float[2], 2);
+    IS(c.values_by_float[3], 1);
+
+    OK("shuffle 1 0 3 2");
+    c = simd_shuffle<1, 0, 3, 2>(a);
+    IS(c.values_by_float[0], 2);
+    IS(c.values_by_float[1], 1);
+    IS(c.values_by_float[2], 4);
+    IS(c.values_by_float[3], 3);
 }

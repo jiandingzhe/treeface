@@ -37,6 +37,9 @@ inline SIMDType<SZ> simd_div(SIMDType<SZ> a, SIMDType<SZ> b);
 template<typename T, int SZ>
 inline SIMDType<SZ> simd_cmp(SIMDType<SZ> a, SIMDType<SZ> b);
 
+template<int IDX1, int IDX2, int IDX3, int IDX4, int SZ>
+inline SIMDType<SZ> simd_shuffle(SIMDType<SZ> input);
+
 template<typename T, int SZ>
 T simd_sum(SIMDType<SZ> value);
 
