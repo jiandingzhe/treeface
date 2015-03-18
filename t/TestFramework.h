@@ -29,8 +29,8 @@ public:
     template<typename T1, typename T2>
     void is(T1 value, T2 expect, const char* desc);
 
-    template<typename T>
-    void is_epsilon(T value, T expect, const char* desc, T rate = 10000);
+    template<typename T1, typename T2>
+    void is_epsilon(T1 value, T2 expect, const char* desc, T2 rate = 10000);
 
     template<typename T1, typename T2>
     void gt(T1 a, T2 b, const char* desc);
@@ -69,8 +69,8 @@ void TestFramework::is(T1 value, T2 expect, const char* desc)
     }
 }
 
-template<typename T>
-void TestFramework::is_epsilon(T value, T expect, const char* desc, T rate)
+template<typename T1, typename T2>
+void TestFramework::is_epsilon(T1 value, T2 expect, const char* desc, T2 rate)
 {
     n_got++;
     if (std::abs(value-expect) <= std::abs(expect/rate))
