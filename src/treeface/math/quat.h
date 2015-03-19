@@ -23,7 +23,7 @@ struct Quat
      * @brief get the value of 1st (x) axis component
      * @return x
      */
-    T get_x() const
+    T get_x() const noexcept
     {
         return simd_get_one<0, float>(data);
     }
@@ -32,7 +32,7 @@ struct Quat
      * @brief get the value of 2nd (y) axis component
      * @return y
      */
-    T get_y() const
+    T get_y() const noexcept
     {
         return simd_get_one<1, float>(data);
     }
@@ -41,7 +41,7 @@ struct Quat
      * @brief get the value of 3rd (z) axis component
      * @return z
      */
-    T get_z() const
+    T get_z() const noexcept
     {
         return simd_get_one<2, float>(data);
     }
@@ -50,12 +50,12 @@ struct Quat
      * @brief get the value of 4th (w) component
      * @return w
      */
-    T get_w() const
+    T get_w() const noexcept
     {
         return simd_get_one<3, float>(data);
     }
 
-    void get_angle_axis(T& angle, Vec4<T>& axis)
+    void get_angle_axis(T& angle, Vec4<T>& axis) const noexcept
     {
         T cos_value = simd_get_one<3, float>(data);
         angle = std::acos(cos_value) * 2;
@@ -70,7 +70,7 @@ struct Quat
      * @brief set the value of 1st (x) axis component
      * @param value: the value to be set to x component
      */
-    void set_x(T value)
+    void set_x(T value) noexcept
     {
         data = simd_set_one<0>(data, value);
     }
@@ -79,7 +79,7 @@ struct Quat
      * @brief set the value of 2nd (y) axis component
      * @param value: the value to be set to y component
      */
-    void set_y(T value)
+    void set_y(T value) noexcept
     {
         data = simd_set_one<1>(data, value);
     }
@@ -88,7 +88,7 @@ struct Quat
      * @brief set the value of 3rd (z) axis component
      * @param value: the value to be set to z component
      */
-    void set_z(T value)
+    void set_z(T value) noexcept
     {
         data = simd_set_one<2>(data, value);
     }
@@ -97,12 +97,12 @@ struct Quat
      * @brief set the value of 4th (w) component
      * @param value: the value to be set to w component
      */
-    void set_w(T value)
+    void set_w(T value) noexcept
     {
         data = simd_set_one<3>(data, value);
     }
 
-    void set_angle_axis(T angle, Vec4<T> axis)
+    void set_angle_axis(T angle, Vec4<T> axis) noexcept
     {
         axis.set_w(0);
         axis.normalize();
@@ -113,26 +113,26 @@ struct Quat
         data = simd_set_one<3, T, SZ>(data, std::cos(angle / 2));
     }
 
-    Quat<T> inverse();
+    Quat<T> inverse() const noexcept;
 
-    T normalize()
+    T normalize() noexcept
     {
         T len = length();
         data = simd_div<T>(data, simd_set<T, SZ>(len, len, len, len));
         return len;
     }
 
-    T length()
+    T length() const noexcept
     {
         return std::sqrt(length2());
     }
 
-    T length2()
+    T length2() const noexcept
     {
         return simd_sum<T>(simd_mul<T>(data, data));
     }
 
-    Vec4<T> rotate(Vec4<T> input)
+    Vec4<T> rotate(Vec4<T> input) const noexcept
     {
         Quat<T> re =  *this * Quat<T>(input.data) * inverse();
         return Vec4<T>(re.data);
@@ -142,7 +142,7 @@ struct Quat
 };
 
 template<>
-Quat<float> Quat<float>::inverse()
+Quat<float> Quat<float>::inverse() const noexcept
 {
     // directly operate on float's sign bit
     return Quat<float>(simd_xor<float>(data, simd_set<std::int32_t, 16>(0x80000000, 0x80000000, 0x80000000, 0x00000000)));
@@ -150,7 +150,7 @@ Quat<float> Quat<float>::inverse()
 
 
 template<typename T, int SZ = sizeof(T) * 4>
-Quat<T> operator * (Quat<T> a, Quat<T> b)
+Quat<T> operator * (Quat<T> a, Quat<T> b) noexcept
 {
     //res.x = + a.x*b.w + a.y*b.z - a.z*b.y + a.w*b.x;
     //res.y = - a.x*b.z + a.y*b.w + a.z*b.x + a.w*b.y;
