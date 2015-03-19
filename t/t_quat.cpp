@@ -22,14 +22,21 @@ void TestFramework::content()
         IS(b.get_z(), 3);
         IS(b.get_w(), 4);
 
+        OK("inverse");
+        Quatf b_inv = b.inverse();
+        IS(b_inv.get_x(), -1);
+        IS(b_inv.get_y(), -2);
+        IS(b_inv.get_z(), -3);
+        IS(b_inv.get_w(), 4);
+
         OK("normalize");
         float len_before = b.normalize();
         IS_EPSILON(len_before, std::sqrt(30));
         IS_EPSILON(b.length(), 1.0);
-        IS(b.get_x(), 1.0 / len_before);
-        IS(b.get_y(), 2.0 / len_before);
-        IS(b.get_z(), 3.0 / len_before);
-        IS(b.get_w(), 4.0 / len_before);
+        IS(b.get_x(), 1.0f / len_before);
+        IS(b.get_y(), 2.0f / len_before);
+        IS(b.get_z(), 3.0f / len_before);
+        IS(b.get_w(), 4.0f / len_before);
     }
 
     {

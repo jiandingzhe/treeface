@@ -113,6 +113,8 @@ struct Quat
         data = simd_set_one<3, T, SZ>(data, std::cos(angle / 2));
     }
 
+    Quat<T> inverse();
+
     T normalize()
     {
         T len = length();
@@ -132,13 +134,20 @@ struct Quat
 
     Vec4<T> rotate(Vec4<T> input)
     {
-        SIMDType<SZ> tmp = simd_mul<T>(data, simd_set<T, SZ>(-1, -1, -1, 1));
-        Quat<T> re =  *this * Quat<T>(input.data) * Quat<T>(tmp);
+        Quat<T> re =  *this * Quat<T>(input.data) * inverse();
         return Vec4<T>(re.data);
     }
 
     DataType data;
 };
+
+template<>
+Quat<float> Quat<float>::inverse()
+{
+    // directly operate on float's sign bit
+    return Quat<float>(simd_xor<float>(data, simd_set<std::int32_t, 16>(0x80000000, 0x80000000, 0x80000000, 0x00000000)));
+}
+
 
 template<typename T, int SZ = sizeof(T) * 4>
 Quat<T> operator * (Quat<T> a, Quat<T> b)
