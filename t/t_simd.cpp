@@ -5,12 +5,30 @@ using namespace treeface;
 
 void TestFramework::content()
 {
-    OK("set");
+    OK("set by values");
     SIMDType<16> a = simd_set<float, 16>(1, 2, 3, 4);
     IS(a.values_by_float[0], 1);
     IS(a.values_by_float[1], 2);
     IS(a.values_by_float[2], 3);
     IS(a.values_by_float[3], 4);
+
+    {
+        OK("set all to same int");
+        SIMDType<16> value = simd_set<std::int32_t, 16>(42);
+        IS(value.values_by_int[0], 42);
+        IS(value.values_by_int[1], 42);
+        IS(value.values_by_int[2], 42);
+        IS(value.values_by_int[3], 42);
+    }
+
+    {
+        OK("set all to same float");
+        SIMDType<16> value = simd_set<float, 16>(4.2);
+        IS(value.values_by_float[0], 4.2f);
+        IS(value.values_by_float[1], 4.2f);
+        IS(value.values_by_float[2], 4.2f);
+        IS(value.values_by_float[3], 4.2f);
+    }
 
     OK("binary layout");
     float v0 = simd_get_one<0, float>(a);
@@ -73,4 +91,14 @@ void TestFramework::content()
     IS(c.values_by_float[1], 1);
     IS(c.values_by_float[2], 4);
     IS(c.values_by_float[3], 3);
+
+    {
+        OK("XOR float");
+        SIMDType<16> value = simd_xor<float>(simd_set<float, 16>(1.2, 3.4, 5.6, 7.8),
+                                             simd_set<int32_t, 16>(0x80000000, 0, 0x80000000, 0));
+        IS(value.values_by_float[0], -1.2f);
+        IS(value.values_by_float[1], 3.4f);
+        IS(value.values_by_float[2], -5.6f);
+        IS(value.values_by_float[3], 7.8f);
+    }
 }
