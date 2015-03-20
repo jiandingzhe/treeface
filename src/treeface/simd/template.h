@@ -38,6 +38,12 @@ template<typename T, int SZ>
 inline SIMDType<SZ> simd_div(SIMDType<SZ> a, SIMDType<SZ> b);
 
 template<typename T, int SZ>
+inline SIMDType<SZ> simd_and(SIMDType<SZ> a, SIMDType<SZ> b);
+
+template<typename T, int SZ>
+inline SIMDType<SZ> simd_or(SIMDType<SZ> a, SIMDType<SZ> b);
+
+template<typename T, int SZ>
 inline SIMDType<SZ> simd_xor(SIMDType<SZ> a, SIMDType<SZ> b);
 
 template<typename T, int SZ>
