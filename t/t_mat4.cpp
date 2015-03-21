@@ -84,7 +84,8 @@ void TestFramework::content()
 
     // transpose
     {
-        Mat4f tr = mat.transpose();
+        Mat4f tr = mat;
+        tr.transpose();
         is(tr.get<0,0>(), 1,  "get 0,0");
         is(tr.get<0,1>(), 2,  "get 0,1");
         is(tr.get<0,2>(), 3,  "get 0,2");
@@ -190,5 +191,32 @@ void TestFramework::content()
         IS_EPSILON(out_discrete.get_y(), out_combine.get_y());
         IS_EPSILON(out_discrete.get_z(), out_combine.get_z());
         IS_EPSILON(out_discrete.get_w(), out_combine.get_w());
+    }
+
+    {
+        OK("matrix inverse");
+        Mat4f fwd(data_rand);
+        Mat4f inv(data_rand);
+        float det = inv.inverse();
+
+        Mat4f mul = fwd * inv;
+
+        is_epsilon(simd_get_one<0, float>(mul.data[0]), 1.0f, "0,0 is 1");
+        is_epsilon(simd_get_one<1, float>(mul.data[0]), 0.0f, "1,0 is 0");
+        is_epsilon(simd_get_one<2, float>(mul.data[0]), 0.0f, "2,0 is 0");
+        is_epsilon(simd_get_one<3, float>(mul.data[0]), 0.0f, "3,0 is 0");
+        is_epsilon(simd_get_one<0, float>(mul.data[1]), 0.0f, "0,1 is 0");
+        is_epsilon(simd_get_one<1, float>(mul.data[1]), 1.0f, "1,1 is 1");
+        is_epsilon(simd_get_one<2, float>(mul.data[1]), 0.0f, "2,1 is 0");
+        is_epsilon(simd_get_one<3, float>(mul.data[1]), 0.0f, "3,1 is 0");
+        is_epsilon(simd_get_one<0, float>(mul.data[2]), 0.0f, "0,2 is 0");
+        is_epsilon(simd_get_one<1, float>(mul.data[2]), 0.0f, "1,2 is 0");
+        is_epsilon(simd_get_one<2, float>(mul.data[2]), 1.0f, "2,2 is 1");
+        is_epsilon(simd_get_one<3, float>(mul.data[2]), 0.0f, "3,2 is 0");
+        is_epsilon(simd_get_one<0, float>(mul.data[3]), 0.0f, "0,3 is 0");
+        is_epsilon(simd_get_one<1, float>(mul.data[3]), 0.0f, "1,3 is 0");
+        is_epsilon(simd_get_one<2, float>(mul.data[3]), 0.0f, "2,3 is 0");
+        is_epsilon(simd_get_one<3, float>(mul.data[3]), 1.0f, "3,3 is 1");
+
     }
 }

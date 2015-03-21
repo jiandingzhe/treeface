@@ -55,6 +55,20 @@ struct Mat4
     Mat4(const Mat4& other) = default;
 
     /**
+     * @brief create matrix specifying values in column-major
+     */
+    Mat4(T col0_0, T col0_1, T col0_2, T col0_3,
+         T col1_0, T col1_1, T col1_2, T col1_3,
+         T col2_0, T col2_1, T col2_2, T col2_3,
+         T col3_0, T col3_1, T col3_2, T col3_3)
+    {
+        data[0] = simd_set<T, SZ>(col0_0, col0_1, col0_2, col0_3);
+        data[1] = simd_set<T, SZ>(col1_0, col1_1, col1_2, col1_3);
+        data[2] = simd_set<T, SZ>(col2_0, col2_1, col2_2, col2_3);
+        data[3] = simd_set<T, SZ>(col3_0, col3_1, col3_2, col3_3);
+    }
+
+    /**
      * @brief create matrix from array of data
      * @param values: an array containin 16 elements in column-major (elements 1 to 4 will be used as column 1)
      */
@@ -119,10 +133,9 @@ struct Mat4
     }
 
     /**
-     * @brief store invert lines and columns in a new matrix
-     * @return transposed matrix
+     * @brief switch lines and columns
      */
-    Mat4 transpose() const noexcept
+    void transpose() noexcept
     {
         SIMDType<SZ> tmp0 = simd_set<T, SZ>(
                 simd_get_one<0, T>(data[0]),
@@ -148,7 +161,10 @@ struct Mat4
                 simd_get_one<3, T>(data[2]),
                 simd_get_one<3, T>(data[3]));
 
-        return Mat4(tmp0, tmp1, tmp2, tmp3);
+        data[0] = tmp0;
+        data[1] = tmp1;
+        data[2] = tmp2;
+        data[3] = tmp3;
     }
 
     /**
@@ -191,9 +207,41 @@ struct Mat4
         data[3] = value.data;
     }
 
-    void inverse() noexcept
+    /**
+     * @brief inverse this matrix
+     * @return the determinant before inverse
+     */
+    T inverse() noexcept
     {
+        // 00 01 02 03
+        // 10 11 12 13
+        // 20 21 22 23
+        // 30 31 32 33
+        T det4 = determinant();
 
+        T v00 = + det3x3<T, SZ>(simd_shuffle<1, 2, 3, 0>(data[1]), simd_shuffle<1, 2, 3, 0>(data[2]), simd_shuffle<1, 2, 3, 0>(data[3])) / det4;
+        T v10 = - det3x3<T, SZ>(simd_shuffle<1, 2, 3, 0>(data[0]), simd_shuffle<1, 2, 3, 0>(data[2]), simd_shuffle<1, 2, 3, 0>(data[3])) / det4;
+        T v20 = + det3x3<T, SZ>(simd_shuffle<1, 2, 3, 0>(data[0]), simd_shuffle<1, 2, 3, 0>(data[1]), simd_shuffle<1, 2, 3, 0>(data[3])) / det4;
+        T v30 = - det3x3<T, SZ>(simd_shuffle<1, 2, 3, 0>(data[0]), simd_shuffle<1, 2, 3, 0>(data[1]), simd_shuffle<1, 2, 3, 0>(data[2])) / det4;
+        T v01 = - det3x3<T, SZ>(simd_shuffle<0, 2, 3, 0>(data[1]), simd_shuffle<0, 2, 3, 0>(data[2]), simd_shuffle<0, 2, 3, 0>(data[3])) / det4;
+        T v11 = + det3x3<T, SZ>(simd_shuffle<0, 2, 3, 0>(data[0]), simd_shuffle<0, 2, 3, 0>(data[2]), simd_shuffle<0, 2, 3, 0>(data[3])) / det4;
+        T v21 = - det3x3<T, SZ>(simd_shuffle<0, 2, 3, 0>(data[0]), simd_shuffle<0, 2, 3, 0>(data[1]), simd_shuffle<0, 2, 3, 0>(data[3])) / det4;
+        T v31 = + det3x3<T, SZ>(simd_shuffle<0, 2, 3, 0>(data[0]), simd_shuffle<0, 2, 3, 0>(data[1]), simd_shuffle<0, 2, 3, 0>(data[2])) / det4;
+        T v02 = + det3x3<T, SZ>(simd_shuffle<0, 1, 3, 0>(data[1]), simd_shuffle<0, 1, 3, 0>(data[2]), simd_shuffle<0, 1, 3, 0>(data[3])) / det4;
+        T v12 = - det3x3<T, SZ>(simd_shuffle<0, 1, 3, 0>(data[0]), simd_shuffle<0, 1, 3, 0>(data[2]), simd_shuffle<0, 1, 3, 0>(data[3])) / det4;
+        T v22 = + det3x3<T, SZ>(simd_shuffle<0, 1, 3, 0>(data[0]), simd_shuffle<0, 1, 3, 0>(data[1]), simd_shuffle<0, 1, 3, 0>(data[3])) / det4;
+        T v32 = - det3x3<T, SZ>(simd_shuffle<0, 1, 3, 0>(data[0]), simd_shuffle<0, 1, 3, 0>(data[1]), simd_shuffle<0, 1, 3, 0>(data[2])) / det4;
+        T v03 = - det3x3<T, SZ>(simd_shuffle<0, 1, 2, 0>(data[1]), simd_shuffle<0, 1, 2, 0>(data[2]), simd_shuffle<0, 1, 2, 0>(data[3])) / det4;
+        T v13 = + det3x3<T, SZ>(simd_shuffle<0, 1, 2, 0>(data[0]), simd_shuffle<0, 1, 2, 0>(data[2]), simd_shuffle<0, 1, 2, 0>(data[3])) / det4;
+        T v23 = - det3x3<T, SZ>(simd_shuffle<0, 1, 2, 0>(data[0]), simd_shuffle<0, 1, 2, 0>(data[1]), simd_shuffle<0, 1, 2, 0>(data[3])) / det4;
+        T v33 = + det3x3<T, SZ>(simd_shuffle<0, 1, 2, 0>(data[0]), simd_shuffle<0, 1, 2, 0>(data[1]), simd_shuffle<0, 1, 2, 0>(data[2])) / det4;
+
+        data[0] = simd_set<T, SZ>(v00, v10, v20, v30);
+        data[1] = simd_set<T, SZ>(v01, v11, v21, v31);
+        data[2] = simd_set<T, SZ>(v02, v12, v22, v32);
+        data[3] = simd_set<T, SZ>(v03, v13, v23, v33);
+
+        return det4;
     }
 
     /**
