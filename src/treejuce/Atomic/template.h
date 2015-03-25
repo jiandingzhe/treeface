@@ -1,13 +1,17 @@
-#ifndef TREEFACE_ATOMIC_TEMPLATE_H
-#define TREEFACE_ATOMIC_TEMPLATE_H
+#ifndef TREEJUCE_ATOMIC_TEMPLATE_H
+#define TREEJUCE_ATOMIC_TEMPLATE_H
 
-#include "treeface/common.h"
+#include "treejuce/Common.h"
 
-TREEFACE_NAMESPACE_BEGIN
+TREEFACE_JUCE_NAMESPACE_BEGIN
 
 // get and set
 template<typename T>
-T atomic_fetch(T* store) noexcept;
+T atomic_load(T* store) noexcept;
+
+template<typename T>
+void atomic_store(T* store, T value) noexcept;
+
 template<typename T>
 T atomic_fetch_set(T* store, T value) noexcept;
 
@@ -41,11 +45,9 @@ T atomic_nand_fetch(T* store, T value) noexcept;
 
 // cas
 template<typename T>
-bool atomic_cas_bool(T* store, T expect, T value) noexcept;
-template<typename T>
-T atomic_cas_value(T* store, T expect, T value) noexcept;
+bool atomic_cas(T* store, T expect, T value) noexcept;
 
 
-TREEFACE_NAMESPACE_END
+TREEFACE_JUCE_NAMESPACE_END
 
-#endif // TREEFACE_ATOMIC_TEMPLATE_H
+#endif // TREEJUCE_ATOMIC_TEMPLATE_H

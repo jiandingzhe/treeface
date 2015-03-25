@@ -1,12 +1,12 @@
-#ifndef TREEFACE_SIMD_FUNC_SSE2_H
-#define TREEFACE_SIMD_FUNC_SSE2_H
+#ifndef TREEJUCE_SIMD_FUNC_SSE2_H
+#define TREEJUCE_SIMD_FUNC_SSE2_H
 
-#include "treeface/simd/template.h"
+#include "treejuce/SIMD/template.h"
 
 #include <cstdint>
 #include <emmintrin.h>
 
-TREEFACE_NAMESPACE_BEGIN
+TREEFACE_JUCE_NAMESPACE_BEGIN
 
 template<>
 union SIMDType<16>
@@ -269,6 +269,6 @@ inline float simd_sum<float, 16>(SIMDType<16> a)
     return _mm_cvtss_f32(b.simd_by_float);
 }
 
-TREEFACE_NAMESPACE_END
+TREEFACE_JUCE_NAMESPACE_END
 
-#endif // TREEFACE_SIMD_FUNC_SSE2_H
+#endif // TREEJUCE_SIMD_FUNC_SSE2_H

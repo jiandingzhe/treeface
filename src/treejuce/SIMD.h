@@ -1,13 +1,13 @@
-#ifndef TREEFACE_SIMD_FUNC_H
-#define TREEFACE_SIMD_FUNC_H
+#ifndef TREEJUCE_SIMD_FUNC_H
+#define TREEJUCE_SIMD_FUNC_H
 
 #include "treeface/config.h"
 
 #ifdef TREEFACE_CPU_x86_64
-#  include "treeface/simd/sse2.h"
+#  include "treejuce/SIMD/sse2.h"
 #else
 #  warn "SIMD function wrapper for CPU is not implemented. Using non-simd fallback implementation."
-#  include "treeface/fallback.h"
+#  include "treejuce/SIMD/fallback.h"
 #endif
 
-#endif // TREEFACE_SIMD_FUNC_H
+#endif // TREEJUCE_SIMD_FUNC_H

@@ -4,7 +4,7 @@
 #include <cmath>
 
 #include "treeface/common.h"
-#include "treeface/simd.h"
+#include "treejuce/SIMD.h"
 
 TREEFACE_NAMESPACE_BEGIN
 
@@ -18,20 +18,20 @@ TREEFACE_NAMESPACE_BEGIN
 template<typename T, int SZ = sizeof(T)*4>
 struct Vec4
 {
-    typedef SIMDType<SZ> DataType;
+    typedef treejuce::SIMDType<SZ> DataType;
 
     /**
      * @brief default constructor
      *
      * values are initialized as zero point
      */
-    Vec4(): data(simd_set<T, SZ>(0, 0, 0, 1)) {}
+    Vec4(): data(treejuce::simd_set<T, SZ>(0, 0, 0, 1)) {}
 
     /**
      * @brief constructor with values specified
      * @param value: a SIMDType containing x, y, z and w
      */
-    Vec4(SIMDType<SZ> value): data(value) {}
+    Vec4(treejuce::SIMDType<SZ> value): data(value) {}
 
     /**
      * @brief copy constructor
@@ -46,13 +46,13 @@ struct Vec4
      * @param z
      * @param w
      */
-    Vec4(T x, T y, T z, T w): data(simd_set<T, SZ> (x, y, z, w)) {}
+    Vec4(T x, T y, T z, T w): data(treejuce::simd_set<T, SZ> (x, y, z, w)) {}
 
     /**
      * @brief constructor with values specified
      * @param values: an array storing x, y, z and w
      */
-    Vec4(const T* values): data(simd_set<T, SZ>(values)) {}
+    Vec4(const T* values): data(treejuce::simd_set<T, SZ>(values)) {}
 
     /**
      * @brief assignment operator
@@ -73,7 +73,7 @@ struct Vec4
      */
     void set(float x, float y, float z, float w)
     {
-        data = simd_set<T, SZ> (x, y, z, w);
+        data = treejuce::simd_set<T, SZ> (x, y, z, w);
     }
 
     /**
@@ -82,7 +82,7 @@ struct Vec4
      */
     void set(const float* values)
     {
-        data = simd_set<T, SZ> (values);
+        data = treejuce::simd_set<T, SZ> (values);
     }
 
     /**
@@ -100,7 +100,7 @@ struct Vec4
      */
     T get_x() const
     {
-        return simd_get_one<0, float>(data);
+        return treejuce::simd_get_one<0, float>(data);
     }
 
     /**
@@ -109,7 +109,7 @@ struct Vec4
      */
     T get_y() const
     {
-        return simd_get_one<1, float>(data);
+        return treejuce::simd_get_one<1, float>(data);
     }
 
     /**
@@ -118,7 +118,7 @@ struct Vec4
      */
     T get_z() const
     {
-        return simd_get_one<2, float>(data);
+        return treejuce::simd_get_one<2, float>(data);
     }
 
     /**
@@ -127,7 +127,7 @@ struct Vec4
      */
     T get_w() const
     {
-        return simd_get_one<3, float>(data);
+        return treejuce::simd_get_one<3, float>(data);
     }
 
     /**
@@ -136,7 +136,7 @@ struct Vec4
      */
     void set_x(T value)
     {
-        data = simd_set_one<0>(data, value);
+        data = treejuce::simd_set_one<0>(data, value);
     }
 
     /**
@@ -145,7 +145,7 @@ struct Vec4
      */
     void set_y(T value)
     {
-        data = simd_set_one<1>(data, value);
+        data = treejuce::simd_set_one<1>(data, value);
     }
 
     /**
@@ -154,7 +154,7 @@ struct Vec4
      */
     void set_z(T value)
     {
-        data = simd_set_one<2>(data, value);
+        data = treejuce::simd_set_one<2>(data, value);
     }
 
     /**
@@ -163,7 +163,7 @@ struct Vec4
      */
     void set_w(T value)
     {
-        data = simd_set_one<3>(data, value);
+        data = treejuce::simd_set_one<3>(data, value);
     }
 
     /**
@@ -173,7 +173,7 @@ struct Vec4
      */
     Vec4& operator += (const Vec4& other)
     {
-        data = simd_add<T>(data, other.data);
+        data = treejuce::simd_add<T>(data, other.data);
     }
 
     /**
@@ -183,7 +183,7 @@ struct Vec4
      */
     Vec4& operator -= (const Vec4& other)
     {
-        data = simd_sub<T>(data, other.data);
+        data = treejuce::simd_sub<T>(data, other.data);
     }
 
     /**
@@ -193,8 +193,8 @@ struct Vec4
      */
     Vec4& operator *= (T value)
     {
-        SIMDType<SZ> tmp = simd_set<T, SZ> (value);
-        data = simd_mul<T>(data, tmp);
+        treejuce::SIMDType<SZ> tmp = treejuce::simd_set<T, SZ> (value);
+        data = treejuce::simd_mul<T>(data, tmp);
     }
 
     /**
@@ -204,8 +204,8 @@ struct Vec4
      */
     Vec4& operator /= (float value)
     {
-        SIMDType<SZ> tmp = simd_set<T, SZ>(value);
-        data = simd_div<T>(data, tmp);
+        treejuce::SIMDType<SZ> tmp = treejuce::simd_set<T, SZ>(value);
+        data = treejuce::simd_div<T>(data, tmp);
     }
 
     /**
@@ -215,7 +215,7 @@ struct Vec4
     T normalize()
     {
         T len = length();
-        data = simd_div<T>(data, simd_set<T, SZ>(len, len, len, len));
+        data = treejuce::simd_div<T>(data, treejuce::simd_set<T, SZ>(len, len, len, len));
         return len;
     }
 
@@ -234,7 +234,7 @@ struct Vec4
      */
     T length2() const
     {
-        return simd_sum<T, SZ>(simd_mul<T, SZ>(data, data));
+        return treejuce::simd_sum<T, SZ>(treejuce::simd_mul<T, SZ>(data, data));
     }
 
     /**
@@ -256,7 +256,7 @@ struct Vec4
 template<typename T, int SZ = sizeof(T)*4>
 Vec4<T> operator + (const Vec4<T>& a, const Vec4<T>& b)
 {
-    return Vec4<T>( simd_add<T, SZ>(a.data, b.data) );
+    return Vec4<T>( treejuce::simd_add<T, SZ>(a.data, b.data) );
 }
 
 /**
@@ -269,7 +269,7 @@ Vec4<T> operator + (const Vec4<T>& a, const Vec4<T>& b)
 template<typename T, int SZ = sizeof(T)*4>
 Vec4<T> operator - (const Vec4<T>& a, const Vec4<T>& b)
 {
-    return Vec4<T>( simd_sub<T, SZ>(a.data, b.data) );
+    return Vec4<T>( treejuce::simd_sub<T, SZ>(a.data, b.data) );
 }
 
 /**
@@ -282,8 +282,8 @@ Vec4<T> operator - (const Vec4<T>& a, const Vec4<T>& b)
 template<typename T, int SZ = sizeof(T)*4>
 Vec4<T> operator * (const Vec4<T>& a, T b)
 {
-    SIMDType<SZ> tmp = simd_set<T, SZ> (b);
-    return Vec4<T>(simd_mul<T, SZ>(a.data, tmp));
+    treejuce::SIMDType<SZ> tmp = treejuce::simd_set<T, SZ> (b);
+    return Vec4<T>(treejuce::simd_mul<T, SZ>(a.data, tmp));
 }
 
 /**
@@ -296,8 +296,8 @@ Vec4<T> operator * (const Vec4<T>& a, T b)
 template<typename T, int SZ = sizeof(T)*4>
 Vec4<T> operator / (const Vec4<T>& a, T b)
 {
-    SIMDType<16> tmp = simd_set<T, 16> (b);
-    return Vec4<T>(simd_div<T, SZ>(a.data, tmp));
+    treejuce::SIMDType<16> tmp = treejuce::simd_set<T, 16> (b);
+    return Vec4<T>(treejuce::simd_div<T, SZ>(a.data, tmp));
 }
 
 /**
@@ -310,8 +310,8 @@ Vec4<T> operator / (const Vec4<T>& a, T b)
 template<typename T, int SZ = sizeof(T)*4>
 T operator * (const Vec4<T>& a, const Vec4<T>& b)
 {
-    SIMDType<16> tmp = simd_mul<T>(a.data, b.data);
-    return simd_sum<T, SZ>(tmp);
+    treejuce::SIMDType<16> tmp = treejuce::simd_mul<T>(a.data, b.data);
+    return treejuce::simd_sum<T, SZ>(tmp);
 }
 
 /**

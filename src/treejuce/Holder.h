@@ -1,11 +1,11 @@
 #ifndef TREEFACE_OJBECT_HOLDER_H
 #define TREEFACE_OJBECT_HOLDER_H
 
-#include "treeface/common.h"
+#include "treejuce/Common.h"
 
 class TestFramework;
 
-TREEFACE_NAMESPACE_BEGIN
+TREEFACE_JUCE_NAMESPACE_BEGIN
 
 template<typename T>
 class Holder
@@ -14,6 +14,21 @@ class Holder
 
     template<typename T1, typename T2>
     friend bool operator == (const Holder<T1>& a, const Holder<T2>& b);
+
+    template<typename T1, typename T2>
+    friend bool operator == (const Holder<T1>& a, const T2 b);
+
+    template<typename T1, typename T2>
+    friend bool operator == (const T1 a, const Holder<T2>& b);
+
+    template<typename T1, typename T2>
+    friend bool operator != (const Holder<T1>& a, const Holder<T2>& b);
+
+    template<typename T1, typename T2>
+    friend bool operator != (const Holder<T1>& a, const T2 b);
+
+    template<typename T1, typename T2>
+    friend bool operator != (const T1 a, const Holder<T2>& b);
 
     template<typename T1, typename T2>
     friend bool operator < (const Holder<T1>& a, const Holder<T2>& b);
@@ -57,7 +72,16 @@ public:
         return *this;
     }
 
-    Holder& operator = (const T* other)
+    Holder& operator = (Holder&& other)
+    {
+        T* tmp = ms_ptr;
+        ms_ptr = other.ms_ptr;
+        other.ms_ptr = tmp;
+
+        return *this;
+    }
+
+    Holder& operator = (T* other)
     {
         if (ms_ptr)
             smart_unref(ms_ptr);
@@ -70,22 +94,27 @@ public:
         return *this;
     }
 
-    operator bool () const
-    {
-        return ms_ptr != nullptr;
-    }
-
-    T* get() const
+    operator T*() const noexcept
     {
         return ms_ptr;
     }
 
-    T& operator * () const
+    operator bool () const noexcept
+    {
+        return ms_ptr != nullptr;
+    }
+
+    T* get() const noexcept
+    {
+        return ms_ptr;
+    }
+
+    T& operator * () const noexcept
     {
         return *ms_ptr;
     }
 
-    T* operator -> () const
+    T* operator -> () const noexcept
     {
         return ms_ptr;
     }
@@ -101,11 +130,42 @@ bool operator == (const Holder<T1>& a, const Holder<T2>& b)
 }
 
 template<typename T1, typename T2>
+bool operator == (const Holder<T1>& a, const T2 b)
+{
+    return a.ms_ptr == b;
+}
+
+template<typename T1, typename T2>
+bool operator == (const T1 a, const Holder<T2>& b)
+{
+    return a == b.ms_ptr;
+}
+
+template<typename T1, typename T2>
+bool operator != (const Holder<T1>& a, const Holder<T2>& b)
+{
+    return a.ms_ptr != b.ms_ptr;
+}
+
+template<typename T1, typename T2>
+bool operator != (const Holder<T1>& a, const T2 b)
+{
+    return a.ms_ptr != b;
+}
+
+template<typename T1, typename T2>
+bool operator != (const T1 a, const Holder<T2>& b)
+{
+    return a != b.ms_ptr;
+}
+
+
+template<typename T1, typename T2>
 bool operator < (const Holder<T1>& a, const Holder<T2>& b)
 {
     return a.ms_ptr < b.ms_ptr;
 }
 
-TREEFACE_NAMESPACE_END
+TREEFACE_JUCE_NAMESPACE_END
 
 #endif // TREEFACE_OJBECT_HOLDER_H

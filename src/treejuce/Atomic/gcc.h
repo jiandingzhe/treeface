@@ -1,21 +1,28 @@
-#ifndef TREEFACE_ATOMIC_GCC_H
-#define TREEFACE_ATOMIC_GCC_H
+#ifndef TREEJUCE_ATOMIC_GCC_H
+#define TREEJUCE_ATOMIC_GCC_H
 
-#include "treeface/atomic/template.h"
+#include "treejuce/Atomic/template.h"
+#include "treejuce/Common.h"
 
-TREEFACE_NAMESPACE_BEGIN
+TREEFACE_JUCE_NAMESPACE_BEGIN
 
 // get and set
 template<typename T>
-inline T atomic_fetch(T* store) noexcept
+inline T atomic_load(T* store) noexcept
 {
-    return __sync_fetch_and_add(store, 0);
+    return __atomic_load_n(store, __ATOMIC_SEQ_CST);
+}
+
+template<typename T>
+inline void atomic_store(T* store, T value) noexcept
+{
+    __atomic_store_n(store, value, __ATOMIC_SEQ_CST);
 }
 
 template<typename T>
 inline T atomic_fetch_set(T* store, T value) noexcept
 {
-    return __sync_lock_test_and_set(store, value);
+    return __atomic_exchange_n(store, value, __ATOMIC_SEQ_CST);
 }
 
 
@@ -23,89 +30,83 @@ inline T atomic_fetch_set(T* store, T value) noexcept
 template<typename T>
 inline T atomic_fetch_add(T* store, T value) noexcept
 {
-    return __sync_fetch_and_add(store, value);
+    return __atomic_fetch_add(store, value, __ATOMIC_SEQ_CST);
 }
 
 template<typename T>
 inline T atomic_fetch_sub(T* store, T value) noexcept
 {
-    return __sync_fetch_and_sub(store, value);
+    return __atomic_fetch_sub(store, value, __ATOMIC_SEQ_CST);
 }
 
 template<typename T>
 inline T atomic_fetch_or(T* store, T value) noexcept
 {
-    return __sync_fetch_and_or(store, value);
+    return __atomic_fetch_or(store, value, __ATOMIC_SEQ_CST);
 }
 
 template<typename T>
 inline T atomic_fetch_and(T* store, T value) noexcept
 {
-    return __sync_fetch_and_and(store, value);
+    return __atomic_fetch_and(store, value, __ATOMIC_SEQ_CST);
 }
 
 template<typename T>
 inline T atomic_fetch_xor(T* store, T value) noexcept
 {
-    return __sync_fetch_and_xor(store, value);
+    return __atomic_fetch_xor(store, value, __ATOMIC_SEQ_CST);
 }
 
 template<typename T>
 inline T atomic_fetch_nand(T* store, T value) noexcept
 {
-    return __sync_fetch_and_nand(store, value);
+    return __atomic_fetch_nand(store, value, __ATOMIC_SEQ_CST);
 }
 
 // get modified value
 template<typename T>
 inline T atomic_add_fetch(T* store, T value) noexcept
 {
-    return __sync_add_and_fetch(store, value);
+    return __atomic_add_fetch(store, value, __ATOMIC_SEQ_CST);
 }
 
 template<typename T>
 inline T atomic_sub_fetch(T* store, T value) noexcept
 {
-    return __sync_sub_and_fetch(store, value);
+    return __atomic_sub_fetch(store, value, __ATOMIC_SEQ_CST);
 }
 
 template<typename T>
 inline T atomic_or_fetch(T* store, T value) noexcept
 {
-    return __sync_or_and_fetch(store, value);
+    return __atomic_or_fetch(store, value, __ATOMIC_SEQ_CST);
 }
 
 template<typename T>
 inline T atomic_and_fetch(T* store, T value) noexcept
 {
-    return __sync_and_and_fetch(store, value);
+    return __atomic_and_fetch(store, value, __ATOMIC_SEQ_CST);
 }
 
 template<typename T>
 inline T atomic_xor_fetch(T* store, T value) noexcept
 {
-    return __sync_xor_and_fetch(store, value);
+    return __atomic_xor_fetch(store, value, __ATOMIC_SEQ_CST);
 }
 
 template<typename T>
 inline T atomic_nand_fetch(T* store, T value) noexcept
 {
-    return __sync_nand_and_fetch(store, value);
+    return __atomic_nand_fetch(store, value, __ATOMIC_SEQ_CST);
 }
 
 // cas
 template<typename T>
-inline bool atomic_cas_bool(T* store, T expect, T value) noexcept
+inline bool atomic_cas(T* store, T expect, T value) noexcept
 {
-    return __sync_bool_compare_and_swap(store, expect, value);
+    return __atomic_compare_exchange_n(store, &expect, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-template<typename T>
-inline T atomic_cas_value(T* store, T expect, T value) noexcept
-{
-    return __sync_val_compare_and_swap(store, expect, value);
-}
+TREEFACE_JUCE_NAMESPACE_END
 
-TREEFACE_NAMESPACE_END
-
-#endif // TREEFACE_ATOMIC_GCC_H
+#endif // TREEJUCE_ATOMIC_GCC_H

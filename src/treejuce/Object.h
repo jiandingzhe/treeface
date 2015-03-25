@@ -1,14 +1,14 @@
-#ifndef TREEFACE_OBJECT_H
-#define TREEFACE_OBJECT_H
+#ifndef TREEJUCE_OBJECT_H
+#define TREEJUCE_OBJECT_H
 
-#include "treeface/common.h"
-#include "treeface/atomic.h"
+#include "treejuce/Common.h"
+#include "treejuce/Atomic.h"
 
 #include <cstdint>
 
 class TestFramework;
 
-TREEFACE_NAMESPACE_BEGIN
+TREEFACE_JUCE_NAMESPACE_BEGIN
 
 class Object
 {
@@ -34,7 +34,7 @@ public:
 
     std::uint32_t get_ref_count() const noexcept
     {
-        return atomic_fetch(&ms_count);
+        return atomic_load(&ms_count);
     }
 
 private:
@@ -47,6 +47,6 @@ inline void smart_ref(const Object* obj)
 inline void smart_unref(const Object* obj)
 { obj->unref(); }
 
-TREEFACE_NAMESPACE_END
+TREEFACE_JUCE_NAMESPACE_END
 
 #endif // TREEFACE_OBJECT_H

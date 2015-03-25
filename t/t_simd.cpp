@@ -1,7 +1,7 @@
 #include "TestFramework.h"
-#include "treeface/simd.h"
+#include "treejuce/SIMD.h"
 
-using namespace treeface;
+using namespace treejuce;
 
 void TestFramework::content()
 {

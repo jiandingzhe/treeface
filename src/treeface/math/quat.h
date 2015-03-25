@@ -11,18 +11,18 @@ TREEFACE_NAMESPACE_BEGIN
 template<typename T, int SZ = sizeof(T) * 4>
 struct Quat
 {
-    typedef SIMDType<SZ> DataType;
+    typedef treejuce::SIMDType<SZ> DataType;
 
     /**
      * @brief create quaternion representing zero rotation
      */
-    Quat(): data(simd_set<T, SZ>(0, 0, 0, 1)) {}
+    Quat(): data(treejuce::simd_set<T, SZ>(0, 0, 0, 1)) {}
 
     /**
      * @brief crete quaternion with value specified
      * @param value
      */
-    Quat(SIMDType<SZ> value): data(value) {}
+    Quat(treejuce::SIMDType<SZ> value): data(value) {}
 
     /**
      * @brief create quaternion by specifying all four components
@@ -31,7 +31,7 @@ struct Quat
      * @param z: component 3
      * @param w: component 4, represents cos(a/2)
      */
-    Quat(T x, T y, T z, T w): data(simd_set<T, SZ>(x, y, z, w)) {}
+    Quat(T x, T y, T z, T w): data(treejuce::simd_set<T, SZ>(x, y, z, w)) {}
 
     /**
      * @brief create quaternion with rotation specified by right-hand angle and axis
@@ -49,7 +49,7 @@ struct Quat
      */
     T get_x() const noexcept
     {
-        return simd_get_one<0, float>(data);
+        return treejuce::simd_get_one<0, float>(data);
     }
 
     /**
@@ -58,7 +58,7 @@ struct Quat
      */
     T get_y() const noexcept
     {
-        return simd_get_one<1, float>(data);
+        return treejuce::simd_get_one<1, float>(data);
     }
 
     /**
@@ -67,7 +67,7 @@ struct Quat
      */
     T get_z() const noexcept
     {
-        return simd_get_one<2, float>(data);
+        return treejuce::simd_get_one<2, float>(data);
     }
 
     /**
@@ -76,7 +76,7 @@ struct Quat
      */
     T get_w() const noexcept
     {
-        return simd_get_one<3, float>(data);
+        return treejuce::simd_get_one<3, float>(data);
     }
 
     /**
@@ -86,12 +86,12 @@ struct Quat
      */
     void get_angle_axis(T& angle, Vec4<T>& axis) const noexcept
     {
-        T cos_value = simd_get_one<3, float>(data);
+        T cos_value = treejuce::simd_get_one<3, float>(data);
         angle = std::acos(cos_value) * 2;
 
         T sin_value = std::sqrt(1 - cos_value * cos_value);
         axis.data = data;
-        axis.data = simd_div<T>(axis.data, simd_set<T, SZ>(sin_value, sin_value, sin_value, sin_value));
+        axis.data = treejuce::simd_div<T>(axis.data, treejuce::simd_set<T, SZ>(sin_value, sin_value, sin_value, sin_value));
         axis.set_w(0);
     }
 
@@ -101,7 +101,7 @@ struct Quat
      */
     void set_x(T value) noexcept
     {
-        data = simd_set_one<0>(data, value);
+        data = treejuce::simd_set_one<0>(data, value);
     }
 
     /**
@@ -110,7 +110,7 @@ struct Quat
      */
     void set_y(T value) noexcept
     {
-        data = simd_set_one<1>(data, value);
+        data = treejuce::simd_set_one<1>(data, value);
     }
 
     /**
@@ -119,7 +119,7 @@ struct Quat
      */
     void set_z(T value) noexcept
     {
-        data = simd_set_one<2>(data, value);
+        data = treejuce::simd_set_one<2>(data, value);
     }
 
     /**
@@ -128,7 +128,7 @@ struct Quat
      */
     void set_w(T value) noexcept
     {
-        data = simd_set_one<3>(data, value);
+        data = treejuce::simd_set_one<3>(data, value);
     }
 
     /**
@@ -144,7 +144,7 @@ struct Quat
         axis *= std::sin(angle / 2);
         data = axis.data;
 
-        data = simd_set_one<3, T, SZ>(data, std::cos(angle / 2));
+        data = treejuce::simd_set_one<3, T, SZ>(data, std::cos(angle / 2));
     }
 
     /**
@@ -160,7 +160,7 @@ struct Quat
     T normalize() noexcept
     {
         T len = length();
-        data = simd_div<T>(data, simd_set<T, SZ>(len, len, len, len));
+        data = treejuce::simd_div<T>(data, treejuce::simd_set<T, SZ>(len, len, len, len));
         return len;
     }
 
@@ -179,7 +179,7 @@ struct Quat
      */
     T length2() const noexcept
     {
-        return simd_sum<T>(simd_mul<T>(data, data));
+        return treejuce::simd_sum<T>(treejuce::simd_mul<T>(data, data));
     }
 
     /**
@@ -201,7 +201,7 @@ template<>
 Quat<float> Quat<float>::inverse() const noexcept
 {
     // directly operate on float's sign bit
-    return Quat<float>(simd_xor<float>(data, simd_set<std::int32_t, 16>(0x80000000, 0x80000000, 0x80000000, 0x00000000)));
+    return Quat<float>(treejuce::simd_xor<float>(data, treejuce::simd_set<std::int32_t, 16>(0x80000000, 0x80000000, 0x80000000, 0x00000000)));
 }
 
 /**
@@ -218,24 +218,24 @@ Quat<T> operator * (Quat<T> a, Quat<T> b) noexcept
     Quat<T> result;
 
     T av = a.get_x();
-    SIMDType<SZ> tmp1 = simd_set<T, SZ>(av, -av, av, -av);
-    SIMDType<SZ> tmp2 = simd_shuffle<3, 2, 1, 0>(b.data);
-    result.data = simd_mul<T>(tmp1, tmp2);
+    treejuce::SIMDType<SZ> tmp1 = treejuce::simd_set<T, SZ>(av, -av, av, -av);
+    treejuce::SIMDType<SZ> tmp2 = treejuce::simd_shuffle<3, 2, 1, 0>(b.data);
+    result.data = treejuce::simd_mul<T>(tmp1, tmp2);
 
     av = a.get_y();
-    tmp1 = simd_set<T, SZ>(av, av, -av, -av);
-    tmp2 = simd_shuffle<2, 3, 0, 1>(b.data);
-    result.data = simd_add<T>(result.data, simd_mul<T>(tmp1, tmp2));
+    tmp1 = treejuce::simd_set<T, SZ>(av, av, -av, -av);
+    tmp2 = treejuce::simd_shuffle<2, 3, 0, 1>(b.data);
+    result.data = treejuce::simd_add<T>(result.data, treejuce::simd_mul<T>(tmp1, tmp2));
 
     av = a.get_z();
-    tmp1 = simd_set<T, SZ>(-av, av, av, -av);
-    tmp2 = simd_shuffle<1, 0, 3, 2>(b.data);
-    result.data = simd_add<T>(result.data, simd_mul<T>(tmp1, tmp2));
+    tmp1 = treejuce::simd_set<T, SZ>(-av, av, av, -av);
+    tmp2 = treejuce::simd_shuffle<1, 0, 3, 2>(b.data);
+    result.data = treejuce::simd_add<T>(result.data, treejuce::simd_mul<T>(tmp1, tmp2));
 
     av = a.get_w();
-    tmp1 = simd_set<T, SZ>(av, av, av, av);
+    tmp1 = treejuce::simd_set<T, SZ>(av, av, av, av);
     // no shuffle needed, use b data directly
-    result.data = simd_add<T>(result.data, simd_mul<T>(tmp1, b.data));
+    result.data = treejuce::simd_add<T>(result.data, treejuce::simd_mul<T>(tmp1, b.data));
 
     return result;
 }

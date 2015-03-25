@@ -1,9 +1,9 @@
-#ifndef TREEFACE_SIMD_FUNC_TEMP_H
-#define TREEFACE_SIMD_FUNC_TEMP_H
+#ifndef TREEJUCE_SIMD_FUNC_TEMP_H
+#define TREEJUCE_SIMD_FUNC_TEMP_H
 
-#include "treeface/common.h"
+#include "treejuce/Common.h"
 
-TREEFACE_NAMESPACE_BEGIN
+TREEFACE_JUCE_NAMESPACE_BEGIN
 template<int SZ>
 union SIMDType;
 
@@ -55,6 +55,6 @@ inline SIMDType<SZ> simd_shuffle(SIMDType<SZ> input);
 template<typename T, int SZ>
 T simd_sum(SIMDType<SZ> value);
 
-TREEFACE_NAMESPACE_END
+TREEFACE_JUCE_NAMESPACE_END
 
-#endif // TREEFACE_SIMD_FUNC_TEMP_H
+#endif // TREEJUCE_SIMD_FUNC_TEMP_H

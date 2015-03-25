@@ -1,4 +1,4 @@
-#include "treeface/atomic.h"
+#include "treejuce/Atomic.h"
 
 #include "TestFramework.h"
 

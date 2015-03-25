@@ -13,7 +13,10 @@ struct _msvc_atomic_impl_ {};
 template<typename T>
 struct _msvc_atomic_impl_<T, 4>
 {
-    T fetch(T* store) noexcept {}
+    T load(T* store) noexcept {}
+
+    void store(T* store, T value) noexcept {}
+
     T fetch_set(T* store, T value) noexcept {}
 
     // get value before modify
@@ -44,15 +47,16 @@ struct _msvc_atomic_impl_<T, 4>
     T nand_fetch(T* store, T value) noexcept {}
 
     // cas
-    bool cas_bool(T* store, T expect, T value) noexcept {}
-
-    T cas_value(T* store, T expect, T value) noexcept {}
+    bool cas(T* store, T expect, T value) noexcept {}
 };
 
 template<typename T>
 struct _msvc_atomic_impl_<T, 8>
 {
-    T fetch(T* store) noexcept {}
+    T load(T* store) noexcept {}
+
+    void store(T* store, T value) noexcept {}
+
     T fetch_set(T* store, T value) noexcept {}
 
     // get value before modify
@@ -83,18 +87,23 @@ struct _msvc_atomic_impl_<T, 8>
     T nand_fetch(T* store, T value) noexcept {}
 
     // cas
-    bool cas_bool(T* store, T expect, T value) noexcept {}
-
-    T cas_value(T* store, T expect, T value) noexcept {}
+    bool cas(T* store, T expect, T value) noexcept {}
 };
 
 
 // get and set
 template<typename T>
-inline T atomic_fetch(T* store) noexcept
+inline T atomic_load(T* store) noexcept
 {
-    return _msvc_atomic_impl_<T, sizeof(T)>::fetch(store);
+    return _msvc_atomic_impl_<T, sizeof(T)>::load(store);
 }
+
+template<typename T>
+void atomic_store(T* store, T value) noexcept
+{
+    _msvc_atomic_impl_<T, sizeof(T)>::store(store, value);
+}
+
 
 template<typename T>
 inline T atomic_fetch_set(T* store, T value) noexcept
@@ -178,17 +187,10 @@ inline T atomic_nand_fetch(T* store, T value) noexcept
 
 // cas
 template<typename T>
-inline bool atomic_cas_bool(T* store, T expect, T value) noexcept
+inline bool atomic_cas(T* store, T expect, T value) noexcept
 {
-    return _msvc_atomic_impl_<T, sizeof(T)>::cas_bool(store, except, value);
+    return _msvc_atomic_impl_<T, sizeof(T)>::cas(store, except, value);
 }
-
-template<typename T>
-inline T atomic_cas_value(T* store, T expect, T value) noexcept
-{
-    return _msvc_atomic_impl_<T, sizeof(T)>::cas_value(store, expect, value);
-}
-
 
 TREEFACE_NAMESPACE_END
 
