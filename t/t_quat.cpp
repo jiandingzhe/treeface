@@ -41,11 +41,11 @@ void TestFramework::content()
 
     {
         OK("constructor with angle and axis");
-        Quatf c(M_PI/3, Vec4f(1, 2, 3, 4)); // the last component should be ommited
-        IS_EPSILON(c.get_x(), 0.267261242 * sin(M_PI/6));
-        IS_EPSILON(c.get_y(), 0.534522484 * sin(M_PI/6));
-        IS_EPSILON(c.get_z(), 0.801783726 * sin(M_PI/6));
-        IS_EPSILON(c.get_w(), cos(M_PI/6));
+        Quatf c(3.14159265358979323846/3, Vec4f(1, 2, 3, 4)); // the last component should be ommited
+        IS_EPSILON(c.get_x(), 0.267261242 * sin(3.14159265358979323846/6));
+        IS_EPSILON(c.get_y(), 0.534522484 * sin(3.14159265358979323846/6));
+        IS_EPSILON(c.get_z(), 0.801783726 * sin(3.14159265358979323846/6));
+        IS_EPSILON(c.get_w(), cos(3.14159265358979323846/6));
 
         IS_EPSILON(c.length(), 1);
 
@@ -53,7 +53,7 @@ void TestFramework::content()
         float angle;
         Vec4f axis;
         c.get_angle_axis(angle, axis);
-        IS_EPSILON(angle, M_PI/3);
+        IS_EPSILON(angle, 3.14159265358979323846/3);
         IS_EPSILON(axis.get_x(), 0.267261242);
         IS_EPSILON(axis.get_y(), 0.534522484);
         IS_EPSILON(axis.get_z(), 0.801783726);
@@ -62,7 +62,7 @@ void TestFramework::content()
 
     {
         OK("rotate vector from x to y");
-        Quatf rot(M_PI_2, Vec4f(0, 0, 1, 0));
+        Quatf rot(1.57079632679489661923, Vec4f(0, 0, 1, 0));
         Vec4f vec(2, 0, 0, 0);
         Vec4f re = rot.rotate(vec);
         IS_EPSILON(re.get_x(), 0.0);
@@ -73,7 +73,7 @@ void TestFramework::content()
 
     {
         OK("rotate vector from y to z");
-        Quatf rot(M_PI_2, Vec4f(1, 0, 0, 0));
+        Quatf rot(1.57079632679489661923, Vec4f(1, 0, 0, 0));
         Vec4f vec(0, 2, 0, 0);
         Vec4f re = rot.rotate(vec);
         IS_EPSILON(re.get_x(), 0.0);
@@ -84,7 +84,7 @@ void TestFramework::content()
 
     {
         OK("rotate vector from z to x");
-        Quatf rot(M_PI_2, Vec4f(0, 1, 0, 0));
+        Quatf rot(1.57079632679489661923, Vec4f(0, 1, 0, 0));
         Vec4f vec(0, 0, 2, 0);
         Vec4f re = rot.rotate(vec);
         IS_EPSILON(re.get_x(), 2.0);
@@ -95,8 +95,8 @@ void TestFramework::content()
 
     {
         OK("quaternion multiply");
-        Quatf rot_x(M_PI_2, Vec4f(1, 0, 0, 0));
-        Quatf rot_z(M_PI_2, Vec4f(0, 0, 1, 0));
+        Quatf rot_x(1.57079632679489661923, Vec4f(1, 0, 0, 0));
+        Quatf rot_z(1.57079632679489661923, Vec4f(0, 0, 1, 0));
 
         Quatf rot_combine = rot_x * rot_z;
 

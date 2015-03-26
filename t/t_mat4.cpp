@@ -1,6 +1,8 @@
 #include "TestFramework.h"
 #include "treeface/math/mat4.h"
 
+#include <math.h>
+
 using namespace treeface;
 using namespace treejuce;
 
@@ -144,7 +146,7 @@ void TestFramework::content()
     }
 
     {
-        Mat4f trans(Vec4f(2, 2, 0, 0), Quatf(M_PI_2, Vec4f(0, 0, 1, 0)));
+        Mat4f trans(Vec4f(2, 2, 0, 0), Quatf(1.57079632679489661923, Vec4f(0, 0, 1, 0)));
         OK("transform a zero point");
         Vec4f re = trans * Vec4f(0, 0, 0, 1);
         IS_EPSILON(re.get_x(), 2);
