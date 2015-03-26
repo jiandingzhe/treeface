@@ -374,6 +374,8 @@ TREEFACE_JUCE_NAMESPACE_END
  #if defined (_MSC_VER) && _MSC_VER > 1600
   #define _ALLOW_KEYWORD_MACROS 1 // (to stop VC2012 complaining)
  #endif
+#else
+#  define NOEXCEPT noexcept
 #endif
 
 #if ! (DOXYGEN || JUCE_COMPILER_SUPPORTS_NULLPTR)

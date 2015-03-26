@@ -2,6 +2,7 @@
 #define TREEJUCE_SYSTEM_STATS_PRIVATE_H
 
 #include "treejuce/Common.h"
+#include "treejuce/PlatformDefs.h"
 
 TREEFACE_JUCE_NAMESPACE_BEGIN
 

@@ -3,7 +3,6 @@
 
 #include "treejuce/Common.h"
 #include "treejuce/PlatformDefs.h"
-#include "treeface/config.h"
 
 TREEFACE_JUCE_NAMESPACE_BEGIN
 
