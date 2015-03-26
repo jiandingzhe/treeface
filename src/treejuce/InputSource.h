@@ -51,7 +51,7 @@ class JUCE_API  InputSource
 {
 public:
     //==============================================================================
-    InputSource() noexcept      {}
+    InputSource() NOEXCEPT      {}
 
     /** Destructor. */
     virtual ~InputSource()      {}

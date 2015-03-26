@@ -7,10 +7,14 @@
 TREEFACE_NAMESPACE_BEGIN
 
 template<typename T, int SZ = sizeof(T) * 4>
-T det3x3(treejuce::SIMDType<SZ> v0, treejuce::SIMDType<SZ> v1, treejuce::SIMDType<SZ> v2);
+T det3x3(const treejuce::SIMDType<SZ>& v0,
+         const treejuce::SIMDType<SZ>& v1,
+         const treejuce::SIMDType<SZ>& v2);
 
 template<>
-float det3x3<float, 16>(treejuce::SIMDType<16> v0, treejuce::SIMDType<16> v1, treejuce::SIMDType<16> v2)
+inline float det3x3<float, 16>(const treejuce::SIMDType<16>& v0,
+                    const treejuce::SIMDType<16>& v1,
+                    const treejuce::SIMDType<16>& v2)
 {
 //        + v00 * v11 * v22
 //        + v02 * v10 * v21
@@ -101,7 +105,7 @@ struct Mat4
      * @param col3: data for column 3
      * @param col4: data for column 4
      */
-    Mat4(DataType col1, DataType col2, DataType col3, DataType col4)
+    Mat4(const DataType& col1, const DataType& col2, const DataType& col3, const DataType& col4)
     {
         data[0] = col1;
         data[1] = col2;
@@ -114,11 +118,11 @@ struct Mat4
      * @param translate
      * @param rotate
      */
-    Mat4(Vec4<T> translate, Quat<T> rotate)
+    Mat4(const Vec4<T>& translate, const Quat<T>& rotate)
     {
         set_rotate(rotate);
         data[3] = translate.data;
-        data[3] = treejuce::simd_set_one<3, T>(data[3], 1);
+        treejuce::simd_set_one<3, T>(data[3], 1);
     }
 
     /**
@@ -134,7 +138,7 @@ struct Mat4
     /**
      * @brief switch lines and columns
      */
-    void transpose() noexcept
+    void transpose() NOEXCEPT
     {
         treejuce::SIMDType<SZ> tmp0 = treejuce::simd_set<T, SZ>(
                 treejuce::simd_get_one<0, T>(data[0]),
@@ -170,7 +174,7 @@ struct Mat4
      * @brief calculate matrix determinant
      * @return determinant value
      */
-    T determinant() const noexcept;
+    T determinant() const NOEXCEPT;
 
     /**
      * @brief set the first 3x3 dimension to scale matrix. The 4th translation column is untouched.
@@ -178,7 +182,7 @@ struct Mat4
      * @param y: scale rate along Y axis
      * @param z: scale rate along Z axis
      */
-    void set_scale(T x, T y, T z) noexcept
+    void set_scale(T x, T y, T z) NOEXCEPT
     {
         data[0] = treejuce::simd_set<T, SZ>(x, 0, 0, 0);
         data[1] = treejuce::simd_set<T, SZ>(0, y, 0, 0);
@@ -191,7 +195,7 @@ struct Mat4
      * @param y: offset on Y axis
      * @param z: offset on Z axis
      */
-    void set_translate(T x, T y, T z) noexcept
+    void set_translate(T x, T y, T z) NOEXCEPT
     {
         data[3] = treejuce::simd_set<T, SZ>(x, y, z, 1);
     }
@@ -200,7 +204,7 @@ struct Mat4
      * @brief set 4rd column to translation, keep other columns untouched
      * @param value: offsets in one vector. The 4rd component will be set to 1 by force.
      */
-    void set_translate(Vec4<T> value) noexcept
+    void set_translate(Vec4<T> value) NOEXCEPT
     {
         value.set_w(1);
         data[3] = value.data;
@@ -210,7 +214,7 @@ struct Mat4
      * @brief inverse this matrix
      * @return the determinant before inverse
      */
-    T inverse() noexcept
+    T inverse() NOEXCEPT
     {
         // 00 01 02 03
         // 10 11 12 13
@@ -247,7 +251,7 @@ struct Mat4
      * @brief set first 3x3 dimention to rotate matrix using specified quaternion. The 4th translation column is untouched.
      * @param value: quaternion representing the rotation
      */
-    void set_rotate(Quat<T> value) noexcept;
+    void set_rotate(const Quat<T>& value) NOEXCEPT;
 
     DataType data[4];
 };
@@ -255,14 +259,14 @@ struct Mat4
 typedef Mat4<float> Mat4f;
 
 template<>
-float Mat4<float>::determinant() const noexcept;
+float Mat4<float>::determinant() const NOEXCEPT;
 
 template<>
-void Mat4<float>::set_rotate(Quat<float> value) noexcept;
+void Mat4<float>::set_rotate(const Quat<float>& value) NOEXCEPT;
 
-Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) noexcept;
+Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) NOEXCEPT;
 
-Vec4<float> operator * (const Mat4<float>& mat, Vec4<float> vec) noexcept;
+Vec4<float> operator * (const Mat4<float>& mat, const Vec4<float>& vec) NOEXCEPT;
 
 TREEFACE_NAMESPACE_END
 

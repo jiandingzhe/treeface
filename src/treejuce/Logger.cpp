@@ -26,6 +26,7 @@
   ==============================================================================
 */
 
+#include "treejuce/File.h"
 #include "treejuce/Logger.h"
 #include "treejuce/String.h"
 
@@ -42,8 +43,8 @@ Logger::~Logger()
 
 Logger* Logger::currentLogger = nullptr;
 
-void Logger::setCurrentLogger (Logger* const newLogger) noexcept    { currentLogger = newLogger; }
-Logger* Logger::getCurrentLogger()  noexcept                        { return currentLogger; }
+void Logger::setCurrentLogger (Logger* const newLogger) NOEXCEPT    { currentLogger = newLogger; }
+Logger* Logger::getCurrentLogger()  NOEXCEPT                        { return currentLogger; }
 
 void Logger::writeToLog (const String& message)
 {
@@ -54,7 +55,7 @@ void Logger::writeToLog (const String& message)
 }
 
 #if JUCE_LOG_ASSERTIONS || JUCE_DEBUG
-void JUCE_API JUCE_CALLTYPE logAssertion (const char* const filename, const int lineNum) noexcept
+void JUCE_API JUCE_CALLTYPE logAssertion (const char* const filename, const int lineNum) NOEXCEPT
 {
     String m ("JUCE Assertion failure in ");
     m << File::createFileWithoutCheckingPath (filename).getFileName() << ':' << lineNum;

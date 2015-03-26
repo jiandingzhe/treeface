@@ -30,6 +30,7 @@
 #define JUCE_PLATFORMDEFS_H_INCLUDED
 
 #include "treejuce/Common.h"
+#include "treejuce/TargetPlatform.h"
 
 //==============================================================================
 /*  This file defines miscellaneous macros for debugging, assertions, etc.
@@ -57,7 +58,7 @@
 // Debugging and assertion macros
 
 #if JUCE_LOG_ASSERTIONS || JUCE_DEBUG
- #define juce_LogCurrentAssertion    juce::logAssertion (__FILE__, __LINE__);
+ #define juce_LogCurrentAssertion    treejuce::logAssertion (__FILE__, __LINE__);
 #else
  #define juce_LogCurrentAssertion
 #endif
@@ -102,14 +103,14 @@
       This is only compiled in a debug build.
       @see Logger::outputDebugString
   */
-  #define DBG(dbgtext)              { juce::String tempDbgBuf; tempDbgBuf << dbgtext; juce::Logger::outputDebugString (tempDbgBuf); }
+  #define DBG(dbgtext)              { treejuce::String tempDbgBuf; tempDbgBuf << dbgtext; treejuce::Logger::outputDebugString (tempDbgBuf); }
 
   //==============================================================================
   /** This will always cause an assertion failure.
       It is only compiled in a debug build, (unless JUCE_LOG_ASSERTIONS is enabled for your build).
       @see jassert
   */
-  #define jassertfalse              { juce_LogCurrentAssertion; if (juce::juce_isRunningUnderDebugger()) juce_breakDebugger; JUCE_ANALYZER_NORETURN }
+  #define jassertfalse              { juce_LogCurrentAssertion; if (treejuce::juce_isRunningUnderDebugger()) juce_breakDebugger; JUCE_ANALYZER_NORETURN }
 
   //==============================================================================
   /** Platform-independent assertion macro.
@@ -233,11 +234,11 @@ TREEFACE_JUCE_NAMESPACE_END
     #define JUCE_CATCH_EXCEPTION \
       catch (const std::exception& e)  \
       { \
-          juce::JUCEApplicationBase::sendUnhandledException (&e, __FILE__, __LINE__); \
+          treejuce::JUCEApplicationBase::sendUnhandledException (&e, __FILE__, __LINE__); \
       } \
       catch (...) \
       { \
-          juce::JUCEApplicationBase::sendUnhandledException (nullptr, __FILE__, __LINE__); \
+          treejuce::JUCEApplicationBase::sendUnhandledException (nullptr, __FILE__, __LINE__); \
       }
   #endif
 
@@ -329,7 +330,7 @@ TREEFACE_JUCE_NAMESPACE_END
   #define JUCE_COMPILER_SUPPORTS_NULLPTR 1
  #endif
 
- #if __has_feature (cxx_noexcept)
+ #if __has_feature (cxx_NOEXCEPT)
   #define JUCE_COMPILER_SUPPORTS_NOEXCEPT 1
  #endif
 
@@ -364,12 +365,12 @@ TREEFACE_JUCE_NAMESPACE_END
 #endif
 
 //==============================================================================
-// Declare some fake versions of nullptr and noexcept, for older compilers:
+// Declare some fake versions of nullptr and NOEXCEPT, for older compilers:
 #if ! (DOXYGEN || JUCE_COMPILER_SUPPORTS_NOEXCEPT)
- #ifdef noexcept
-  #undef noexcept
+ #ifdef NOEXCEPT
+  #undef NOEXCEPT
  #endif
- #define noexcept  throw()
+ #define NOEXCEPT  throw()
  #if defined (_MSC_VER) && _MSC_VER > 1600
   #define _ALLOW_KEYWORD_MACROS 1 // (to stop VC2012 complaining)
  #endif

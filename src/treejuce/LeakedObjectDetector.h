@@ -52,12 +52,12 @@ class LeakedObjectDetector
 {
 public:
     //==============================================================================
-    LeakedObjectDetector() noexcept
+    LeakedObjectDetector() NOEXCEPT
     {
         treejuce::atomic_fetch_add(&getCounter().numObjects);
     }
 
-    LeakedObjectDetector (const LeakedObjectDetector&) noexcept
+    LeakedObjectDetector (const LeakedObjectDetector&) NOEXCEPT
     {
         treejuce::atomic_fetch_add(&getCounter().numObjects);
     }
@@ -88,7 +88,7 @@ private:
     class LeakCounter
     {
     public:
-        LeakCounter() noexcept {}
+        LeakCounter() NOEXCEPT {}
 
         ~LeakCounter()
         {
@@ -116,7 +116,7 @@ private:
         return OwnerClass::getLeakedObjectClassName();
     }
 
-    static LeakCounter& getCounter() noexcept
+    static LeakCounter& getCounter() NOEXCEPT
     {
         static LeakCounter counter;
         return counter;
@@ -147,7 +147,7 @@ private:
   */
   #define JUCE_LEAK_DETECTOR(OwnerClass) \
         friend class juce::LeakedObjectDetector<OwnerClass>; \
-        static const char* getLeakedObjectClassName() noexcept { return #OwnerClass; } \
+        static const char* getLeakedObjectClassName() NOEXCEPT { return #OwnerClass; } \
         juce::LeakedObjectDetector<OwnerClass> JUCE_JOIN_MACRO (leakDetector, __LINE__);
  #else
   #define JUCE_LEAK_DETECTOR(OwnerClass)

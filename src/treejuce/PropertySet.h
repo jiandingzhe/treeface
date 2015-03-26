@@ -75,7 +75,7 @@ public:
         @param keyName              the name of the property to retrieve
         @param defaultReturnValue   a value to return if the named property doesn't actually exist
     */
-    String getValue (StringRef keyName, const String& defaultReturnValue = String()) const noexcept;
+    String getValue (StringRef keyName, const String& defaultReturnValue = String()) const NOEXCEPT;
 
     /** Returns one of the properties as an integer.
 
@@ -86,7 +86,7 @@ public:
         @param keyName              the name of the property to retrieve
         @param defaultReturnValue   a value to return if the named property doesn't actually exist
     */
-    int getIntValue (StringRef keyName, int defaultReturnValue = 0) const noexcept;
+    int getIntValue (StringRef keyName, int defaultReturnValue = 0) const NOEXCEPT;
 
     /** Returns one of the properties as an double.
 
@@ -97,7 +97,7 @@ public:
         @param keyName              the name of the property to retrieve
         @param defaultReturnValue   a value to return if the named property doesn't actually exist
     */
-    double getDoubleValue (StringRef keyName, double defaultReturnValue = 0.0) const noexcept;
+    double getDoubleValue (StringRef keyName, double defaultReturnValue = 0.0) const NOEXCEPT;
 
     /** Returns one of the properties as an boolean.
 
@@ -111,7 +111,7 @@ public:
         @param keyName              the name of the property to retrieve
         @param defaultReturnValue   a value to return if the named property doesn't actually exist
     */
-    bool getBoolValue (StringRef keyName, bool defaultReturnValue = false) const noexcept;
+    bool getBoolValue (StringRef keyName, bool defaultReturnValue = false) const NOEXCEPT;
 
     /** Returns one of the properties as an XML element.
 
@@ -155,17 +155,17 @@ public:
     void removeValue (StringRef keyName);
 
     /** Returns true if the properies include the given key. */
-    bool containsKey (StringRef keyName) const noexcept;
+    bool containsKey (StringRef keyName) const NOEXCEPT;
 
     /** Removes all values. */
     void clear();
 
     //==============================================================================
     /** Returns the keys/value pair array containing all the properties. */
-    StringPairArray& getAllProperties() noexcept                        { return properties; }
+    StringPairArray& getAllProperties() NOEXCEPT                        { return properties; }
 
     /** Returns the lock used when reading or writing to this set */
-    const CriticalSection& getLock() const noexcept                     { return lock; }
+    const CriticalSection& getLock() const NOEXCEPT                     { return lock; }
 
     //==============================================================================
     /** Returns an XML element which encapsulates all the items in this property set.
@@ -193,12 +193,12 @@ public:
 
         @see getFallbackPropertySet
     */
-    void setFallbackPropertySet (PropertySet* fallbackProperties) noexcept;
+    void setFallbackPropertySet (PropertySet* fallbackProperties) NOEXCEPT;
 
     /** Returns the fallback property set.
         @see setFallbackPropertySet
     */
-    PropertySet* getFallbackPropertySet() const noexcept                { return fallbackProperties; }
+    PropertySet* getFallbackPropertySet() const NOEXCEPT                { return fallbackProperties; }
 
 protected:
     /** Subclasses can override this to be told when one of the properies has been changed. */

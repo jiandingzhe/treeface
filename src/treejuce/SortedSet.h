@@ -66,7 +66,7 @@ class SortedSet
 public:
     //==============================================================================
     /** Creates an empty set. */
-    SortedSet() noexcept
+    SortedSet() NOEXCEPT
     {
     }
 
@@ -79,14 +79,14 @@ public:
     }
 
     /** Destructor. */
-    ~SortedSet() noexcept
+    ~SortedSet() NOEXCEPT
     {
     }
 
     /** Copies another set over this one.
         @param other    the set to copy
     */
-    SortedSet& operator= (const SortedSet& other) noexcept
+    SortedSet& operator= (const SortedSet& other) NOEXCEPT
     {
         data = other.data;
         return *this;
@@ -97,7 +97,7 @@ public:
         Two sets are considered equal if they both contain the same set of elements.
         @param other    the other set to compare with
     */
-    bool operator== (const SortedSet<ElementType>& other) const noexcept
+    bool operator== (const SortedSet<ElementType>& other) const NOEXCEPT
     {
         return data == other.data;
     }
@@ -106,7 +106,7 @@ public:
         Two sets are considered equal if they both contain the same set of elements.
         @param other    the other set to compare with
     */
-    bool operator!= (const SortedSet<ElementType>& other) const noexcept
+    bool operator!= (const SortedSet<ElementType>& other) const NOEXCEPT
     {
         return ! operator== (other);
     }
@@ -120,7 +120,7 @@ public:
 
         @see clearQuick
     */
-    void clear() noexcept
+    void clear() NOEXCEPT
     {
         data.clear();
     }
@@ -128,14 +128,14 @@ public:
     /** Removes all elements from the set without freeing the array's allocated storage.
         @see clear
     */
-    void clearQuick() noexcept
+    void clearQuick() NOEXCEPT
     {
         data.clearQuick();
     }
 
     //==============================================================================
     /** Returns the current number of elements in the set. */
-    inline int size() const noexcept
+    inline int size() const NOEXCEPT
     {
         return data.size();
     }
@@ -151,7 +151,7 @@ public:
         @param index    the index of the element being requested (0 is the first element in the set)
         @see getUnchecked, getFirst, getLast
     */
-    inline ElementType operator[] (const int index) const noexcept
+    inline ElementType operator[] (const int index) const NOEXCEPT
     {
         return data [index];
     }
@@ -164,7 +164,7 @@ public:
         @param index    the index of the element being requested (0 is the first element in the set)
         @see operator[], getFirst, getLast
     */
-    inline ElementType getUnchecked (const int index) const noexcept
+    inline ElementType getUnchecked (const int index) const NOEXCEPT
     {
         return data.getUnchecked (index);
     }
@@ -177,7 +177,7 @@ public:
 
         @param index    the index of the element being requested (0 is the first element in the array)
     */
-    inline ElementType& getReference (const int index) const noexcept
+    inline ElementType& getReference (const int index) const NOEXCEPT
     {
         return data.getReference (index);
     }
@@ -185,7 +185,7 @@ public:
     /** Returns the first element in the set, or 0 if the set is empty.
         @see operator[], getUnchecked, getLast
     */
-    inline ElementType getFirst() const noexcept
+    inline ElementType getFirst() const NOEXCEPT
     {
         return data.getFirst();
     }
@@ -193,7 +193,7 @@ public:
     /** Returns the last element in the set, or 0 if the set is empty.
         @see operator[], getUnchecked, getFirst
     */
-    inline ElementType getLast() const noexcept
+    inline ElementType getLast() const NOEXCEPT
     {
         return data.getLast();
     }
@@ -202,7 +202,7 @@ public:
     /** Returns a pointer to the first element in the set.
         This method is provided for compatibility with standard C++ iteration mechanisms.
     */
-    inline ElementType* begin() const noexcept
+    inline ElementType* begin() const NOEXCEPT
     {
         return data.begin();
     }
@@ -210,7 +210,7 @@ public:
     /** Returns a pointer to the element which follows the last element in the set.
         This method is provided for compatibility with standard C++ iteration mechanisms.
     */
-    inline ElementType* end() const noexcept
+    inline ElementType* end() const NOEXCEPT
     {
         return data.end();
     }
@@ -224,7 +224,7 @@ public:
         @param elementToLookFor   the value or object to look for
         @returns                  the index of the object, or -1 if it's not found
     */
-    int indexOf (const ElementType& elementToLookFor) const noexcept
+    int indexOf (const ElementType& elementToLookFor) const NOEXCEPT
     {
         const ScopedLockType lock (data.getLock());
 
@@ -256,7 +256,7 @@ public:
         @param elementToLookFor     the value or object to look for
         @returns                    true if the item is found
     */
-    bool contains (const ElementType& elementToLookFor) const noexcept
+    bool contains (const ElementType& elementToLookFor) const NOEXCEPT
     {
         return indexOf (elementToLookFor) >= 0;
     }
@@ -273,7 +273,7 @@ public:
         @returns            true if the value was added, or false if it already existed
         @see set, insert, addIfNotAlreadyThere, addSorted, addSet, addArray
     */
-    bool add (const ElementType& newElement) noexcept
+    bool add (const ElementType& newElement) NOEXCEPT
     {
         const ScopedLockType lock (getLock());
 
@@ -317,7 +317,7 @@ public:
         @see add
     */
     void addArray (const ElementType* elementsToAdd,
-                   int numElementsToAdd) noexcept
+                   int numElementsToAdd) NOEXCEPT
     {
         const ScopedLockType lock (getLock());
 
@@ -337,7 +337,7 @@ public:
     template <class OtherSetType>
     void addSet (const OtherSetType& setToAddFrom,
                  int startIndex = 0,
-                 int numElementsToAdd = -1) noexcept
+                 int numElementsToAdd = -1) NOEXCEPT
     {
         const typename OtherSetType::ScopedLockType lock1 (setToAddFrom.getLock());
 
@@ -372,7 +372,7 @@ public:
         @returns                the element that has been removed
         @see removeValue, removeRange
     */
-    ElementType remove (const int indexToRemove) noexcept
+    ElementType remove (const int indexToRemove) NOEXCEPT
     {
         return data.remove (indexToRemove);
     }
@@ -384,7 +384,7 @@ public:
         @param valueToRemove   the object to try to remove
         @see remove, removeRange
     */
-    void removeValue (const ElementType valueToRemove) noexcept
+    void removeValue (const ElementType valueToRemove) NOEXCEPT
     {
         const ScopedLockType lock (getLock());
         data.remove (indexOf (valueToRemove));
@@ -396,7 +396,7 @@ public:
         @see removeValuesNotIn, remove, removeValue, removeRange
     */
     template <class OtherSetType>
-    void removeValuesIn (const OtherSetType& otherSet) noexcept
+    void removeValuesIn (const OtherSetType& otherSet) NOEXCEPT
     {
         const typename OtherSetType::ScopedLockType lock1 (otherSet.getLock());
         const ScopedLockType lock2 (getLock());
@@ -421,7 +421,7 @@ public:
         @see removeValuesIn, remove, removeValue, removeRange
     */
     template <class OtherSetType>
-    void removeValuesNotIn (const OtherSetType& otherSet) noexcept
+    void removeValuesNotIn (const OtherSetType& otherSet) NOEXCEPT
     {
         const typename OtherSetType::ScopedLockType lock1 (otherSet.getLock());
         const ScopedLockType lock2 (getLock());
@@ -447,7 +447,7 @@ public:
         because it just swaps their internal pointers.
     */
     template <class OtherSetType>
-    void swapWith (OtherSetType& otherSet) noexcept
+    void swapWith (OtherSetType& otherSet) NOEXCEPT
     {
         data.swapWith (otherSet.data);
     }
@@ -459,7 +459,7 @@ public:
         removing elements, they may have quite a lot of unused space allocated.
         This method will reduce the amount of allocated storage to a minimum.
     */
-    void minimiseStorageOverheads() noexcept
+    void minimiseStorageOverheads() NOEXCEPT
     {
         data.minimiseStorageOverheads();
     }
@@ -480,7 +480,7 @@ public:
         To lock, you can call getLock().enter() and getLock().exit(), or preferably use
         an object of ScopedLockType as an RAII lock for it.
     */
-    inline const TypeOfCriticalSectionToUse& getLock() const noexcept      { return data.getLock(); }
+    inline const TypeOfCriticalSectionToUse& getLock() const NOEXCEPT      { return data.getLock(); }
 
     /** Returns the type of scoped lock to use for locking this array */
     typedef typename TypeOfCriticalSectionToUse::ScopedLockType ScopedLockType;

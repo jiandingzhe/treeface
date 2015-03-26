@@ -46,13 +46,13 @@ class JUCE_API  StringArray
 public:
     //==============================================================================
     /** Creates an empty string array */
-    StringArray() noexcept;
+    StringArray() NOEXCEPT;
 
     /** Creates a copy of another string array */
     StringArray (const StringArray&);
 
    #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-    StringArray (StringArray&&) noexcept;
+    StringArray (StringArray&&) NOEXCEPT;
    #endif
 
     /** Creates an array containing a single string. */
@@ -98,28 +98,28 @@ public:
     StringArray& operator= (const StringArray&);
 
    #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-    StringArray& operator= (StringArray&&) noexcept;
+    StringArray& operator= (StringArray&&) NOEXCEPT;
    #endif
 
     /** Swaps the contents of this and another StringArray. */
-    void swapWith (StringArray&) noexcept;
+    void swapWith (StringArray&) NOEXCEPT;
 
     //==============================================================================
     /** Compares two arrays.
         Comparisons are case-sensitive.
         @returns    true only if the other array contains exactly the same strings in the same order
     */
-    bool operator== (const StringArray&) const noexcept;
+    bool operator== (const StringArray&) const NOEXCEPT;
 
     /** Compares two arrays.
         Comparisons are case-sensitive.
         @returns    false if the other array contains exactly the same strings in the same order
     */
-    bool operator!= (const StringArray&) const noexcept;
+    bool operator!= (const StringArray&) const NOEXCEPT;
 
     //==============================================================================
     /** Returns the number of strings in the array */
-    inline int size() const noexcept                                    { return strings.size(); };
+    inline int size() const NOEXCEPT                                    { return strings.size(); };
 
     /** Returns one of the strings from the array.
 
@@ -128,23 +128,23 @@ public:
         Obviously the reference returned shouldn't be stored for later use, as the
         string it refers to may disappear when the array changes.
     */
-    const String& operator[] (int index) const noexcept;
+    const String& operator[] (int index) const NOEXCEPT;
 
     /** Returns a reference to one of the strings in the array.
         This lets you modify a string in-place in the array, but you must be sure that
         the index is in-range.
     */
-    String& getReference (int index) noexcept;
+    String& getReference (int index) NOEXCEPT;
 
     /** Returns a pointer to the first String in the array.
         This method is provided for compatibility with standard C++ iteration mechanisms.
     */
-    inline String* begin() const noexcept       { return strings.begin(); }
+    inline String* begin() const NOEXCEPT       { return strings.begin(); }
 
     /** Returns a pointer to the String which follows the last element in the array.
         This method is provided for compatibility with standard C++ iteration mechanisms.
     */
-    inline String* end() const noexcept         { return strings.end(); }
+    inline String* end() const NOEXCEPT         { return strings.end(); }
 
     /** Searches for a string in the array.
 
@@ -342,7 +342,7 @@ public:
                                 is less than zero, the value will be moved to the end
                                 of the array
     */
-    void move (int currentIndex, int newIndex) noexcept;
+    void move (int currentIndex, int newIndex) NOEXCEPT;
 
     /** Deletes any whitespace characters from the starts and ends of all the strings. */
     void trim();

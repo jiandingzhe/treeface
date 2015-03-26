@@ -76,7 +76,7 @@ void MemoryOutputStream::preallocate (const size_t bytesToPreallocate)
         blockToUse->ensureSize (bytesToPreallocate + 1);
 }
 
-void MemoryOutputStream::reset() noexcept
+void MemoryOutputStream::reset() NOEXCEPT
 {
     position = 0;
     size = 0;
@@ -156,7 +156,7 @@ MemoryBlock MemoryOutputStream::getMemoryBlock() const
     return MemoryBlock (getData(), getDataSize());
 }
 
-const void* MemoryOutputStream::getData() const noexcept
+const void* MemoryOutputStream::getData() const NOEXCEPT
 {
     if (blockToUse == nullptr)
         return externalData;

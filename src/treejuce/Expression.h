@@ -75,8 +75,8 @@ public:
     Expression& operator= (const Expression&);
 
    #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-    Expression (Expression&&) noexcept;
-    Expression& operator= (Expression&&) noexcept;
+    Expression (Expression&&) NOEXCEPT;
+    Expression& operator= (Expression&&) NOEXCEPT;
    #endif
 
     /** Creates an expression by parsing a string.
@@ -200,8 +200,8 @@ public:
     struct Symbol
     {
         Symbol (const String& scopeUID, const String& symbolName);
-        bool operator== (const Symbol&) const noexcept;
-        bool operator!= (const Symbol&) const noexcept;
+        bool operator== (const Symbol&) const NOEXCEPT;
+        bool operator!= (const Symbol&) const NOEXCEPT;
 
         String scopeUID;    /**< The unique ID of the Scope that contains this symbol. */
         String symbolName;  /**< The name of the symbol. */
@@ -249,7 +249,7 @@ public:
     };
 
     /** Returns the type of this expression. */
-    Type getType() const noexcept;
+    Type getType() const NOEXCEPT;
 
     /** If this expression is a symbol, function or operator, this returns its identifier. */
     String getSymbolOrFunction() const;

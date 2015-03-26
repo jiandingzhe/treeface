@@ -7,6 +7,9 @@ include_directories(${SDL2_INCLUDE_DIR})
 
 add_executable(interact interact.cpp)
 target_link_libraries(interact ${SDL2_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_gl_LIBRARY})
-set_target_properties(interact PROPERTIES
-    COMPILE_FLAGS -std=c++11
-)
+
+if(TREEFACE_OS STREQUAL "WINDOWS")
+    set_target_properties(interact PROPERTIES
+        WIN32_EXECUTABLE 1
+    )
+endif()

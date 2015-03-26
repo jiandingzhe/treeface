@@ -139,7 +139,7 @@ public:
     // CPU and memory information..
 
     /** Returns the number of CPU cores. */
-    static int getNumCpus() noexcept;
+    static int getNumCpus() NOEXCEPT;
 
     /** Returns the approximate CPU speed.
         @returns    the speed in megahertz, e.g. 1500, 2500, 32000 (depending on
@@ -152,11 +152,11 @@ public:
     */
     static String getCpuVendor();
 
-    static bool hasMMX() noexcept;   /**< Returns true if Intel MMX instructions are available. */
-    static bool hasSSE() noexcept;   /**< Returns true if Intel SSE instructions are available. */
-    static bool hasSSE2() noexcept;  /**< Returns true if Intel SSE2 instructions are available. */
-    static bool hasSSE3() noexcept;  /**< Returns true if Intel SSE2 instructions are available. */
-    static bool has3DNow() noexcept; /**< Returns true if AMD 3DNOW instructions are available. */
+    static bool hasMMX() NOEXCEPT;   /**< Returns true if Intel MMX instructions are available. */
+    static bool hasSSE() NOEXCEPT;   /**< Returns true if Intel SSE instructions are available. */
+    static bool hasSSE2() NOEXCEPT;  /**< Returns true if Intel SSE2 instructions are available. */
+    static bool hasSSE3() NOEXCEPT;  /**< Returns true if Intel SSE2 instructions are available. */
+    static bool has3DNow() NOEXCEPT; /**< Returns true if AMD 3DNOW instructions are available. */
 
     //==============================================================================
     /** Finds out how much RAM is in the machine.

@@ -91,16 +91,16 @@ public:
     String getValue (StringRef, const String& defaultReturnValue) const;
 
     /** Returns true if the given key exists. */
-    bool containsKey (StringRef key) const noexcept;
+    bool containsKey (StringRef key) const NOEXCEPT;
 
     /** Returns a list of all keys in the array. */
-    const StringArray& getAllKeys() const noexcept          { return keys; }
+    const StringArray& getAllKeys() const NOEXCEPT          { return keys; }
 
     /** Returns a list of all values in the array. */
-    const StringArray& getAllValues() const noexcept        { return values; }
+    const StringArray& getAllValues() const NOEXCEPT        { return values; }
 
     /** Returns the number of strings in the array */
-    inline int size() const noexcept                        { return keys.size(); };
+    inline int size() const NOEXCEPT                        { return keys.size(); };
 
 
     //==============================================================================

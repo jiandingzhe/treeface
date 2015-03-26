@@ -30,9 +30,9 @@
 
 TREEFACE_JUCE_NAMESPACE_BEGIN
 
-Result::Result() noexcept {}
+Result::Result() NOEXCEPT {}
 
-Result::Result (const String& message) noexcept
+Result::Result (const String& message) NOEXCEPT
     : errorMessage (message)
 {
 }
@@ -49,41 +49,41 @@ Result& Result::operator= (const Result& other)
 }
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-Result::Result (Result&& other) noexcept
+Result::Result (Result&& other) NOEXCEPT
     : errorMessage (static_cast <String&&> (other.errorMessage))
 {
 }
 
-Result& Result::operator= (Result&& other) noexcept
+Result& Result::operator= (Result&& other) NOEXCEPT
 {
     errorMessage = static_cast <String&&> (other.errorMessage);
     return *this;
 }
 #endif
 
-bool Result::operator== (const Result& other) const noexcept
+bool Result::operator== (const Result& other) const NOEXCEPT
 {
     return errorMessage == other.errorMessage;
 }
 
-bool Result::operator!= (const Result& other) const noexcept
+bool Result::operator!= (const Result& other) const NOEXCEPT
 {
     return errorMessage != other.errorMessage;
 }
 
-Result Result::fail (const String& errorMessage) noexcept
+Result Result::fail (const String& errorMessage) NOEXCEPT
 {
     return Result (errorMessage.isEmpty() ? "Unknown Error" : errorMessage);
 }
 
-const String& Result::getErrorMessage() const noexcept
+const String& Result::getErrorMessage() const NOEXCEPT
 {
     return errorMessage;
 }
 
-bool Result::wasOk() const noexcept         { return errorMessage.isEmpty(); }
-Result::operator bool() const noexcept      { return errorMessage.isEmpty(); }
-bool Result::failed() const noexcept        { return errorMessage.isNotEmpty(); }
-bool Result::operator!() const noexcept     { return errorMessage.isNotEmpty(); }
+bool Result::wasOk() const NOEXCEPT         { return errorMessage.isEmpty(); }
+Result::operator bool() const NOEXCEPT      { return errorMessage.isEmpty(); }
+bool Result::failed() const NOEXCEPT        { return errorMessage.isNotEmpty(); }
+bool Result::operator!() const NOEXCEPT     { return errorMessage.isNotEmpty(); }
 
 TREEFACE_JUCE_NAMESPACE_END

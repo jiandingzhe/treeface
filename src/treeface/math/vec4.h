@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "treeface/common.h"
+#include "treejuce/PlatformDefs.h"
 #include "treejuce/SIMD.h"
 
 TREEFACE_NAMESPACE_BEGIN
@@ -31,7 +32,7 @@ struct Vec4
      * @brief constructor with values specified
      * @param value: a SIMDType containing x, y, z and w
      */
-    Vec4(treejuce::SIMDType<SZ> value): data(value) {}
+    Vec4(const treejuce::SIMDType<SZ>& value): data(value) {}
 
     /**
      * @brief copy constructor
@@ -62,6 +63,7 @@ struct Vec4
     Vec4& operator = (const Vec4& other)
     {
         data = other.data;
+        return *this;
     }
 
     /**
@@ -136,7 +138,7 @@ struct Vec4
      */
     void set_x(T value)
     {
-        data = treejuce::simd_set_one<0>(data, value);
+        treejuce::simd_set_one<0>(data, value);
     }
 
     /**
@@ -145,7 +147,7 @@ struct Vec4
      */
     void set_y(T value)
     {
-        data = treejuce::simd_set_one<1>(data, value);
+        treejuce::simd_set_one<1>(data, value);
     }
 
     /**
@@ -154,7 +156,7 @@ struct Vec4
      */
     void set_z(T value)
     {
-        data = treejuce::simd_set_one<2>(data, value);
+        treejuce::simd_set_one<2>(data, value);
     }
 
     /**
@@ -163,7 +165,7 @@ struct Vec4
      */
     void set_w(T value)
     {
-        data = treejuce::simd_set_one<3>(data, value);
+        treejuce::simd_set_one<3>(data, value);
     }
 
     /**
@@ -174,6 +176,7 @@ struct Vec4
     Vec4& operator += (const Vec4& other)
     {
         data = treejuce::simd_add<T>(data, other.data);
+        return *this;
     }
 
     /**
@@ -184,6 +187,7 @@ struct Vec4
     Vec4& operator -= (const Vec4& other)
     {
         data = treejuce::simd_sub<T>(data, other.data);
+        return *this;
     }
 
     /**
@@ -195,6 +199,7 @@ struct Vec4
     {
         treejuce::SIMDType<SZ> tmp = treejuce::simd_set<T, SZ> (value);
         data = treejuce::simd_mul<T>(data, tmp);
+        return *this;
     }
 
     /**
@@ -206,6 +211,7 @@ struct Vec4
     {
         treejuce::SIMDType<SZ> tmp = treejuce::simd_set<T, SZ>(value);
         data = treejuce::simd_div<T>(data, tmp);
+        return *this;
     }
 
     /**
@@ -327,7 +333,16 @@ Vec4<T> operator ^ (const Vec4<T>& a, const Vec4<T>& b)
 // Res.ele[1] = A.ele[2] * B.ele[0] - A.ele[0] * B.ele[2];
 // Res.ele[2] = A.ele[0] * B.ele[1] - A.ele[1] * B.ele[0];
 // Res.ele[3] = 0.0f;
+    treejuce::SIMDType<SZ> v1 = treejuce::simd_shuffle<1, 2, 0, 0>(a.data);
+    treejuce::SIMDType<SZ> v2 = treejuce::simd_shuffle<2, 0, 1, 0>(b.data);
 
+    treejuce::SIMDType<SZ> v3 = treejuce::simd_shuffle<2, 0, 1, 0>(a.data);
+    treejuce::SIMDType<SZ> v4 = treejuce::simd_shuffle<1, 2, 0, 0>(b.data);
+
+    treejuce::SIMDType<SZ> re = treejuce::simd_sub<T>(treejuce::simd_mul<T>(v1, v2),
+                                               treejuce::simd_mul<T>(v3, v4));
+    treejuce::simd_set_one<3, T>(re, 0);
+    return Vec4<T>(re);
 }
 
 /**

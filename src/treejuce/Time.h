@@ -55,7 +55,7 @@ public:
 
         @see getCurrentTime
     */
-    Time() noexcept;
+    Time() NOEXCEPT;
 
     /** Creates a time based on a number of milliseconds.
 
@@ -66,7 +66,7 @@ public:
                                         'epoch' (midnight Jan 1st 1970).
         @see getCurrentTime, currentTimeMillis
     */
-    explicit Time (int64 millisecondsSinceEpoch) noexcept;
+    explicit Time (int64 millisecondsSinceEpoch) NOEXCEPT;
 
     /** Creates a time from a set of date components.
 
@@ -89,23 +89,23 @@ public:
           int minutes,
           int seconds = 0,
           int milliseconds = 0,
-          bool useLocalTime = true) noexcept;
+          bool useLocalTime = true) NOEXCEPT;
 
     /** Creates a copy of another Time object. */
-    Time (const Time& other) noexcept;
+    Time (const Time& other) NOEXCEPT;
 
     /** Destructor. */
-    ~Time() noexcept;
+    ~Time() NOEXCEPT;
 
     /** Copies this time from another one. */
-    Time& operator= (const Time& other) noexcept;
+    Time& operator= (const Time& other) NOEXCEPT;
 
     //==============================================================================
     /** Returns a Time object that is set to the current system time.
 
         @see currentTimeMillis
     */
-    static Time JUCE_CALLTYPE getCurrentTime() noexcept;
+    static Time JUCE_CALLTYPE getCurrentTime() NOEXCEPT;
 
     /** Returns the time as a number of milliseconds.
 
@@ -113,20 +113,20 @@ public:
                     midnight jan 1st 1970.
         @see getMilliseconds
     */
-    int64 toMilliseconds() const noexcept                           { return millisSinceEpoch; }
+    int64 toMilliseconds() const NOEXCEPT                           { return millisSinceEpoch; }
 
     /** Returns the year.
 
         A 4-digit format is used, e.g. 2004.
     */
-    int getYear() const noexcept;
+    int getYear() const NOEXCEPT;
 
     /** Returns the number of the month.
 
         The value returned is in the range 0 to 11.
         @see getMonthName
     */
-    int getMonth() const noexcept;
+    int getMonth() const NOEXCEPT;
 
     /** Returns the name of the month.
 
@@ -139,17 +139,17 @@ public:
     /** Returns the day of the month.
         The value returned is in the range 1 to 31.
     */
-    int getDayOfMonth() const noexcept;
+    int getDayOfMonth() const NOEXCEPT;
 
     /** Returns the number of the day of the week.
         The value returned is in the range 0 to 6 (0 = sunday, 1 = monday, etc).
     */
-    int getDayOfWeek() const noexcept;
+    int getDayOfWeek() const NOEXCEPT;
 
     /** Returns the number of the day of the year.
         The value returned is in the range 0 to 365.
     */
-    int getDayOfYear() const noexcept;
+    int getDayOfYear() const NOEXCEPT;
 
     /** Returns the name of the weekday.
 
@@ -164,7 +164,7 @@ public:
 
         @see getHoursInAmPmFormat, isAfternoon
     */
-    int getHours() const noexcept;
+    int getHours() const NOEXCEPT;
 
     /** Returns true if the time is in the afternoon.
 
@@ -172,7 +172,7 @@ public:
 
         @see getHoursInAmPmFormat, getHours
     */
-    bool isAfternoon() const noexcept;
+    bool isAfternoon() const NOEXCEPT;
 
     /** Returns the hours in 12-hour clock format.
 
@@ -181,13 +181,13 @@ public:
 
         @see getHours, isAfternoon
     */
-    int getHoursInAmPmFormat() const noexcept;
+    int getHoursInAmPmFormat() const NOEXCEPT;
 
     /** Returns the number of minutes, 0 to 59. */
-    int getMinutes() const noexcept;
+    int getMinutes() const NOEXCEPT;
 
     /** Returns the number of seconds, 0 to 59. */
-    int getSeconds() const noexcept;
+    int getSeconds() const NOEXCEPT;
 
     /** Returns the number of milliseconds, 0 to 999.
 
@@ -196,13 +196,13 @@ public:
 
         @see toMilliseconds
     */
-    int getMilliseconds() const noexcept;
+    int getMilliseconds() const NOEXCEPT;
 
     /** Returns true if the local timezone uses a daylight saving correction. */
-    bool isDaylightSavingTime() const noexcept;
+    bool isDaylightSavingTime() const NOEXCEPT;
 
     /** Returns a 3-character string to indicate the local timezone. */
-    String getTimeZone() const noexcept;
+    String getTimeZone() const NOEXCEPT;
 
     //==============================================================================
     /** Quick way of getting a string version of a date and time.
@@ -220,7 +220,7 @@ public:
     String toString (bool includeDate,
                      bool includeTime,
                      bool includeSeconds = true,
-                     bool use24HourClock = false) const noexcept;
+                     bool use24HourClock = false) const NOEXCEPT;
 
     /** Converts this date/time to a string with a user-defined format.
 
@@ -257,9 +257,9 @@ public:
 
     //==============================================================================
     /** Adds a RelativeTime to this time. */
-    Time& operator+= (RelativeTime delta) noexcept;
+    Time& operator+= (RelativeTime delta) NOEXCEPT;
     /** Subtracts a RelativeTime from this time. */
-    Time& operator-= (RelativeTime delta) noexcept;
+    Time& operator-= (RelativeTime delta) NOEXCEPT;
 
     //==============================================================================
     /** Tries to set the computer's clock.
@@ -296,7 +296,7 @@ public:
         Should be accurate to within a few millisecs, depending on platform,
         hardware, etc.
     */
-    static int64 currentTimeMillis() noexcept;
+    static int64 currentTimeMillis() NOEXCEPT;
 
     /** Returns the number of millisecs since a fixed event (usually system startup).
 
@@ -310,7 +310,7 @@ public:
 
         @see getApproximateMillisecondCounter
     */
-    static uint32 getMillisecondCounter() noexcept;
+    static uint32 getMillisecondCounter() NOEXCEPT;
 
     /** Returns the number of millisecs since a fixed event (usually system startup).
 
@@ -319,13 +319,13 @@ public:
 
         @see getMillisecondCounter
     */
-    static double getMillisecondCounterHiRes() noexcept;
+    static double getMillisecondCounterHiRes() NOEXCEPT;
 
     /** Waits until the getMillisecondCounter() reaches a given value.
 
         This will make the thread sleep as efficiently as it can while it's waiting.
     */
-    static void waitForMillisecondCounter (uint32 targetTime) noexcept;
+    static void waitForMillisecondCounter (uint32 targetTime) NOEXCEPT;
 
     /** Less-accurate but faster version of getMillisecondCounter().
 
@@ -336,7 +336,7 @@ public:
 
         @see getMillisecondCounter
     */
-    static uint32 getApproximateMillisecondCounter() noexcept;
+    static uint32 getApproximateMillisecondCounter() NOEXCEPT;
 
     //==============================================================================
     // High-resolution timers..
@@ -349,28 +349,28 @@ public:
         @see getHighResolutionTicksPerSecond, highResolutionTicksToSeconds,
              secondsToHighResolutionTicks
     */
-    static int64 getHighResolutionTicks() noexcept;
+    static int64 getHighResolutionTicks() NOEXCEPT;
 
     /** Returns the resolution of the high-resolution counter in ticks per second.
 
         @see getHighResolutionTicks, highResolutionTicksToSeconds,
              secondsToHighResolutionTicks
     */
-    static int64 getHighResolutionTicksPerSecond() noexcept;
+    static int64 getHighResolutionTicksPerSecond() NOEXCEPT;
 
     /** Converts a number of high-resolution ticks into seconds.
 
         @see getHighResolutionTicks, getHighResolutionTicksPerSecond,
              secondsToHighResolutionTicks
     */
-    static double highResolutionTicksToSeconds (int64 ticks) noexcept;
+    static double highResolutionTicksToSeconds (int64 ticks) NOEXCEPT;
 
     /** Converts a number seconds into high-resolution ticks.
 
         @see getHighResolutionTicks, getHighResolutionTicksPerSecond,
              highResolutionTicksToSeconds
     */
-    static int64 secondsToHighResolutionTicks (double seconds) noexcept;
+    static int64 secondsToHighResolutionTicks (double seconds) NOEXCEPT;
 
     /** Returns a Time based on the value of the __DATE__ macro when this module was compiled */
     static Time getCompilationDate();
@@ -382,27 +382,27 @@ private:
 
 //==============================================================================
 /** Adds a RelativeTime to a Time. */
-JUCE_API Time operator+ (Time time, RelativeTime delta) noexcept;
+JUCE_API Time operator+ (Time time, RelativeTime delta) NOEXCEPT;
 /** Adds a RelativeTime to a Time. */
-JUCE_API Time operator+ (RelativeTime delta, Time time) noexcept;
+JUCE_API Time operator+ (RelativeTime delta, Time time) NOEXCEPT;
 
 /** Subtracts a RelativeTime from a Time. */
-JUCE_API Time operator- (Time time, RelativeTime delta) noexcept;
+JUCE_API Time operator- (Time time, RelativeTime delta) NOEXCEPT;
 /** Returns the relative time difference between two times. */
-JUCE_API const RelativeTime operator- (Time time1, Time time2) noexcept;
+JUCE_API const RelativeTime operator- (Time time1, Time time2) NOEXCEPT;
 
 /** Compares two Time objects. */
-JUCE_API bool operator== (Time time1, Time time2) noexcept;
+JUCE_API bool operator== (Time time1, Time time2) NOEXCEPT;
 /** Compares two Time objects. */
-JUCE_API bool operator!= (Time time1, Time time2) noexcept;
+JUCE_API bool operator!= (Time time1, Time time2) NOEXCEPT;
 /** Compares two Time objects. */
-JUCE_API bool operator<  (Time time1, Time time2) noexcept;
+JUCE_API bool operator<  (Time time1, Time time2) NOEXCEPT;
 /** Compares two Time objects. */
-JUCE_API bool operator<= (Time time1, Time time2) noexcept;
+JUCE_API bool operator<= (Time time1, Time time2) NOEXCEPT;
 /** Compares two Time objects. */
-JUCE_API bool operator>  (Time time1, Time time2) noexcept;
+JUCE_API bool operator>  (Time time1, Time time2) NOEXCEPT;
 /** Compares two Time objects. */
-JUCE_API bool operator>= (Time time1, Time time2) noexcept;
+JUCE_API bool operator>= (Time time1, Time time2) NOEXCEPT;
 
 TREEFACE_JUCE_NAMESPACE_END
 

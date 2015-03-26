@@ -23,7 +23,8 @@ void TestFramework::content()
         IS(b.get_w(), 4);
 
         OK("inverse");
-        Quatf b_inv = b.inverse();
+        Quatf b_inv = b;
+        b.inverse();
         IS(b_inv.get_x(), -1);
         IS(b_inv.get_y(), -2);
         IS(b_inv.get_z(), -3);

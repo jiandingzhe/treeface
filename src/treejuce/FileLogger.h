@@ -70,7 +70,7 @@ public:
 
     //==============================================================================
     /** Returns the file that this logger is writing to. */
-    const File& getLogFile() const noexcept               { return logFile; }
+    const File& getLogFile() const NOEXCEPT               { return logFile; }
 
     //==============================================================================
     /** Helper function to create a log file in the correct place for this platform.

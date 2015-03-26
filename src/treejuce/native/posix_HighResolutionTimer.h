@@ -98,7 +98,7 @@ private:
     struct Clock
     {
        #if JUCE_MAC || JUCE_IOS
-        Clock (double millis) noexcept
+        Clock (double millis) NOEXCEPT
         {
             mach_timebase_info_data_t timebase;
             (void) mach_timebase_info (&timebase);
@@ -106,7 +106,7 @@ private:
             time = mach_absolute_time();
         }
 
-        void wait() noexcept
+        void wait() NOEXCEPT
         {
             time += delta;
             mach_wait_until (time);
@@ -115,11 +115,11 @@ private:
         uint64_t time, delta;
 
        #elif JUCE_ANDROID
-        Clock (double millis) noexcept  : delta ((uint64) (millis * 1000000))
+        Clock (double millis) NOEXCEPT  : delta ((uint64) (millis * 1000000))
         {
         }
 
-        void wait() noexcept
+        void wait() NOEXCEPT
         {
             struct timespec t;
             t.tv_sec  = (time_t) (delta / 1000000000);
@@ -129,14 +129,14 @@ private:
 
         uint64 delta;
        #else
-        Clock (double millis) noexcept  : delta ((uint64) (millis * 1000000))
+        Clock (double millis) NOEXCEPT  : delta ((uint64) (millis * 1000000))
         {
             struct timespec t;
             clock_gettime (CLOCK_MONOTONIC, &t);
             time = 1000000000 * (int64) t.tv_sec + t.tv_nsec;
         }
 
-        void wait() noexcept
+        void wait() NOEXCEPT
         {
             time += delta;
 

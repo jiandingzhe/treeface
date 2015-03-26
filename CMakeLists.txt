@@ -41,7 +41,7 @@ message(STATUS "  inc ${GLEW_INCLUDE_DIR}")
 # set compiler options
 #
 if(MSVC)
-	# TODO
+        add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 else()
 	add_definitions(-std=c++11)
 	if(TREEFACE_CPU STREQUAL "X86_64")

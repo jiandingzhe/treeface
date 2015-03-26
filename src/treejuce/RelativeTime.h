@@ -52,83 +52,83 @@ public:
         @param seconds  the number of seconds, which may be +ve or -ve.
         @see milliseconds, minutes, hours, days, weeks
     */
-    explicit RelativeTime (double seconds = 0.0) noexcept;
+    explicit RelativeTime (double seconds = 0.0) NOEXCEPT;
 
     /** Copies another relative time. */
-    RelativeTime (const RelativeTime& other) noexcept;
+    RelativeTime (const RelativeTime& other) NOEXCEPT;
 
     /** Copies another relative time. */
-    RelativeTime& operator= (const RelativeTime& other) noexcept;
+    RelativeTime& operator= (const RelativeTime& other) NOEXCEPT;
 
     /** Destructor. */
-    ~RelativeTime() noexcept;
+    ~RelativeTime() NOEXCEPT;
 
     //==============================================================================
     /** Creates a new RelativeTime object representing a number of milliseconds.
         @see seconds, minutes, hours, days, weeks
     */
-    static RelativeTime milliseconds (int milliseconds) noexcept;
+    static RelativeTime milliseconds (int milliseconds) NOEXCEPT;
 
     /** Creates a new RelativeTime object representing a number of milliseconds.
         @see seconds, minutes, hours, days, weeks
     */
-    static RelativeTime milliseconds (int64 milliseconds) noexcept;
+    static RelativeTime milliseconds (int64 milliseconds) NOEXCEPT;
 
     /** Creates a new RelativeTime object representing a number of seconds.
         @see milliseconds, minutes, hours, days, weeks
     */
-    static RelativeTime seconds (double seconds) noexcept;
+    static RelativeTime seconds (double seconds) NOEXCEPT;
 
     /** Creates a new RelativeTime object representing a number of minutes.
         @see milliseconds, hours, days, weeks
     */
-    static RelativeTime minutes (double numberOfMinutes) noexcept;
+    static RelativeTime minutes (double numberOfMinutes) NOEXCEPT;
 
     /** Creates a new RelativeTime object representing a number of hours.
         @see milliseconds, minutes, days, weeks
     */
-    static RelativeTime hours (double numberOfHours) noexcept;
+    static RelativeTime hours (double numberOfHours) NOEXCEPT;
 
     /** Creates a new RelativeTime object representing a number of days.
         @see milliseconds, minutes, hours, weeks
     */
-    static RelativeTime days (double numberOfDays) noexcept;
+    static RelativeTime days (double numberOfDays) NOEXCEPT;
 
     /** Creates a new RelativeTime object representing a number of weeks.
         @see milliseconds, minutes, hours, days
     */
-    static RelativeTime weeks (double numberOfWeeks) noexcept;
+    static RelativeTime weeks (double numberOfWeeks) NOEXCEPT;
 
     //==============================================================================
     /** Returns the number of milliseconds this time represents.
         @see milliseconds, inSeconds, inMinutes, inHours, inDays, inWeeks
     */
-    int64 inMilliseconds() const noexcept;
+    int64 inMilliseconds() const NOEXCEPT;
 
     /** Returns the number of seconds this time represents.
         @see inMilliseconds, inMinutes, inHours, inDays, inWeeks
     */
-    double inSeconds() const noexcept       { return numSeconds; }
+    double inSeconds() const NOEXCEPT       { return numSeconds; }
 
     /** Returns the number of minutes this time represents.
         @see inMilliseconds, inSeconds, inHours, inDays, inWeeks
     */
-    double inMinutes() const noexcept;
+    double inMinutes() const NOEXCEPT;
 
     /** Returns the number of hours this time represents.
         @see inMilliseconds, inSeconds, inMinutes, inDays, inWeeks
     */
-    double inHours() const noexcept;
+    double inHours() const NOEXCEPT;
 
     /** Returns the number of days this time represents.
         @see inMilliseconds, inSeconds, inMinutes, inHours, inWeeks
     */
-    double inDays() const noexcept;
+    double inDays() const NOEXCEPT;
 
     /** Returns the number of weeks this time represents.
         @see inMilliseconds, inSeconds, inMinutes, inHours, inDays
     */
-    double inWeeks() const noexcept;
+    double inWeeks() const NOEXCEPT;
 
     /** Returns a readable textual description of the time.
 
@@ -150,14 +150,14 @@ public:
 
     //==============================================================================
     /** Adds another RelativeTime to this one. */
-    RelativeTime operator+= (RelativeTime timeToAdd) noexcept;
+    RelativeTime operator+= (RelativeTime timeToAdd) NOEXCEPT;
     /** Subtracts another RelativeTime from this one. */
-    RelativeTime operator-= (RelativeTime timeToSubtract) noexcept;
+    RelativeTime operator-= (RelativeTime timeToSubtract) NOEXCEPT;
 
     /** Adds a number of seconds to this time. */
-    RelativeTime operator+= (double secondsToAdd) noexcept;
+    RelativeTime operator+= (double secondsToAdd) NOEXCEPT;
     /** Subtracts a number of seconds from this time. */
-    RelativeTime operator-= (double secondsToSubtract) noexcept;
+    RelativeTime operator-= (double secondsToSubtract) NOEXCEPT;
 
 private:
     //==============================================================================
@@ -166,23 +166,23 @@ private:
 
 //==============================================================================
 /** Compares two RelativeTimes. */
-bool operator== (RelativeTime t1, RelativeTime t2) noexcept;
+bool operator== (RelativeTime t1, RelativeTime t2) NOEXCEPT;
 /** Compares two RelativeTimes. */
-bool operator!= (RelativeTime t1, RelativeTime t2) noexcept;
+bool operator!= (RelativeTime t1, RelativeTime t2) NOEXCEPT;
 /** Compares two RelativeTimes. */
-bool operator>  (RelativeTime t1, RelativeTime t2) noexcept;
+bool operator>  (RelativeTime t1, RelativeTime t2) NOEXCEPT;
 /** Compares two RelativeTimes. */
-bool operator<  (RelativeTime t1, RelativeTime t2) noexcept;
+bool operator<  (RelativeTime t1, RelativeTime t2) NOEXCEPT;
 /** Compares two RelativeTimes. */
-bool operator>= (RelativeTime t1, RelativeTime t2) noexcept;
+bool operator>= (RelativeTime t1, RelativeTime t2) NOEXCEPT;
 /** Compares two RelativeTimes. */
-bool operator<= (RelativeTime t1, RelativeTime t2) noexcept;
+bool operator<= (RelativeTime t1, RelativeTime t2) NOEXCEPT;
 
 //==============================================================================
 /** Adds two RelativeTimes together. */
-RelativeTime  operator+  (RelativeTime t1, RelativeTime t2) noexcept;
+RelativeTime  operator+  (RelativeTime t1, RelativeTime t2) NOEXCEPT;
 /** Subtracts two RelativeTimes. */
-RelativeTime  operator-  (RelativeTime t1, RelativeTime t2) noexcept;
+RelativeTime  operator-  (RelativeTime t1, RelativeTime t2) NOEXCEPT;
 
 TREEFACE_JUCE_NAMESPACE_END
 

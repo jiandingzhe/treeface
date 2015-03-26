@@ -69,12 +69,12 @@ else()
     message(SEND_ERROR "unsupported target system: ${CMAKE_SYSTEM_NAME}")
 endif()
 
-add_library(treeface SHARED ${treeface_src_files} ${treeface_platform_src_files})
+add_library(treeface STATIC ${treeface_src_files} ${treeface_platform_src_files})
 
 if(TREEFACE_OS STREQUAL "LINUX")
     target_link_libraries(treeface pthread dl)
 elseif(TREEFACE_OS STREQUAL "WINDOWS")
-	target_link_libraries(treeface version winmm Shlwapi)
+    target_link_libraries(treeface version winmm Shlwapi Dbghelp)
 endif()
 
 target_link_libraries(treeface

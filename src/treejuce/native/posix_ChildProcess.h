@@ -74,7 +74,7 @@ public:
             close (pipeHandle);
     }
 
-    bool isRunning() const noexcept
+    bool isRunning() const NOEXCEPT
     {
         if (childPID != 0)
         {
@@ -86,7 +86,7 @@ public:
         return false;
     }
 
-    int read (void* const dest, const int numBytes) noexcept
+    int read (void* const dest, const int numBytes) NOEXCEPT
     {
         jassert (dest != nullptr);
 
@@ -103,12 +103,12 @@ public:
         return 0;
     }
 
-    bool killProcess() const noexcept
+    bool killProcess() const NOEXCEPT
     {
         return ::kill (childPID, SIGKILL) == 0;
     }
 
-    uint32 getExitCode() const noexcept
+    uint32 getExitCode() const NOEXCEPT
     {
         if (childPID != 0)
         {

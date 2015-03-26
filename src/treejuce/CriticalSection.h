@@ -29,6 +29,7 @@
 #ifndef JUCE_CRITICALSECTION_H_INCLUDED
 #define JUCE_CRITICALSECTION_H_INCLUDED
 
+#include "treejuce/TargetPlatform.h"
 #include "treejuce/MathsFunctions.h"
 #include "treejuce/StandardHeader.h"
 #include "treejuce/ScopedLock.h"
@@ -54,13 +55,13 @@ class JUCE_API  CriticalSection
 public:
     //==============================================================================
     /** Creates a CriticalSection object. */
-    CriticalSection() noexcept;
+    CriticalSection() NOEXCEPT;
 
     /** Destructor.
         If the critical section is deleted whilst locked, any subsequent behaviour
         is unpredictable.
     */
-    ~CriticalSection() noexcept;
+    ~CriticalSection() NOEXCEPT;
 
     //==============================================================================
     /** Acquires the lock.
@@ -73,7 +74,7 @@ public:
 
         @see exit, tryEnter, ScopedLock
     */
-    void enter() const noexcept;
+    void enter() const NOEXCEPT;
 
     /** Attempts to lock this critical section without blocking.
 
@@ -83,7 +84,7 @@ public:
         @returns false if the lock is currently held by another thread, true otherwise.
         @see enter
     */
-    bool tryEnter() const noexcept;
+    bool tryEnter() const NOEXCEPT;
 
     /** Releases the lock.
 
@@ -95,7 +96,7 @@ public:
 
         @see enter, ScopedLock
     */
-    void exit() const noexcept;
+    void exit() const NOEXCEPT;
 
 
     //==============================================================================
@@ -141,18 +142,18 @@ private:
 class JUCE_API  DummyCriticalSection
 {
 public:
-    inline DummyCriticalSection() noexcept      {}
-    inline ~DummyCriticalSection() noexcept     {}
+    inline DummyCriticalSection() NOEXCEPT      {}
+    inline ~DummyCriticalSection() NOEXCEPT     {}
 
-    inline void enter() const noexcept          {}
-    inline bool tryEnter() const noexcept       { return true; }
-    inline void exit() const noexcept           {}
+    inline void enter() const NOEXCEPT          {}
+    inline bool tryEnter() const NOEXCEPT       { return true; }
+    inline void exit() const NOEXCEPT           {}
 
     //==============================================================================
     /** A dummy scoped-lock type to use with a dummy critical section. */
     struct ScopedLockType
     {
-        ScopedLockType (const DummyCriticalSection&) noexcept {}
+        ScopedLockType (const DummyCriticalSection&) NOEXCEPT {}
     };
 
     /** A dummy scoped-unlocker type to use with a dummy critical section. */

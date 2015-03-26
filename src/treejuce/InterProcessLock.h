@@ -106,7 +106,7 @@ public:
         inline ~ScopedLockType()                             { ipLock.exit(); }
 
         /** Returns true if the InterProcessLock was successfully locked. */
-        bool isLocked() const noexcept                       { return lockWasSuccessful; }
+        bool isLocked() const NOEXCEPT                       { return lockWasSuccessful; }
 
     private:
         //==============================================================================

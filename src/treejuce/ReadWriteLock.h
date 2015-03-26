@@ -62,12 +62,12 @@ public:
     /**
         Creates a ReadWriteLock object.
     */
-    ReadWriteLock() noexcept;
+    ReadWriteLock() NOEXCEPT;
 
     /** Destructor.
         If the object is deleted whilst locked, any subsequent behaviour is undefined.
     */
-    ~ReadWriteLock() noexcept;
+    ~ReadWriteLock() NOEXCEPT;
 
     //==============================================================================
     /** Locks this object for reading.
@@ -77,7 +77,7 @@ public:
 
         @see exitRead, ScopedReadLock
     */
-    void enterRead() const noexcept;
+    void enterRead() const NOEXCEPT;
 
     /** Tries to lock this object for reading.
 
@@ -87,7 +87,7 @@ public:
         @returns true if the lock is successfully gained.
         @see exitRead, ScopedReadLock
     */
-    bool tryEnterRead() const noexcept;
+    bool tryEnterRead() const NOEXCEPT;
 
     /** Releases the read-lock.
 
@@ -99,7 +99,7 @@ public:
 
         @see enterRead, ScopedReadLock
     */
-    void exitRead() const noexcept;
+    void exitRead() const NOEXCEPT;
 
     //==============================================================================
     /** Locks this object for writing.
@@ -109,7 +109,7 @@ public:
 
         @see exitWrite, ScopedWriteLock
     */
-    void enterWrite() const noexcept;
+    void enterWrite() const NOEXCEPT;
 
     /** Tries to lock this object for writing.
 
@@ -119,7 +119,7 @@ public:
         @returns true if the lock is successfully gained.
         @see enterWrite
     */
-    bool tryEnterWrite() const noexcept;
+    bool tryEnterWrite() const NOEXCEPT;
 
     /** Releases the write-lock.
 
@@ -131,7 +131,7 @@ public:
 
         @see enterWrite, ScopedWriteLock
     */
-    void exitWrite() const noexcept;
+    void exitWrite() const NOEXCEPT;
 
 
 private:
@@ -149,7 +149,7 @@ private:
 
     mutable Array <ThreadRecursionCount> readerThreads;
 
-    bool tryEnterWriteInternal (Thread::ThreadID) const noexcept;
+    bool tryEnterWriteInternal (Thread::ThreadID) const NOEXCEPT;
 
     JUCE_DECLARE_NON_COPYABLE (ReadWriteLock)
 };

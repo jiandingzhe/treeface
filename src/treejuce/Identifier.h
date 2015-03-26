@@ -48,7 +48,7 @@ class JUCE_API  Identifier
 {
 public:
     /** Creates a null identifier. */
-    Identifier() noexcept;
+    Identifier() NOEXCEPT;
 
     /** Creates an identifier with a specified name.
         Because this name may need to be used in contexts such as script variables or XML
@@ -69,43 +69,43 @@ public:
     Identifier (String::CharPointerType nameStart, String::CharPointerType nameEnd);
 
     /** Creates a copy of another identifier. */
-    Identifier (const Identifier& other) noexcept;
+    Identifier (const Identifier& other) NOEXCEPT;
 
     /** Creates a copy of another identifier. */
-    Identifier& operator= (const Identifier other) noexcept;
+    Identifier& operator= (const Identifier other) NOEXCEPT;
 
     /** Destructor */
-    ~Identifier() noexcept;
+    ~Identifier() NOEXCEPT;
 
     /** Compares two identifiers. This is a very fast operation. */
-    inline bool operator== (Identifier other) const noexcept            { return name.getCharPointer() == other.name.getCharPointer(); }
+    inline bool operator== (Identifier other) const NOEXCEPT            { return name.getCharPointer() == other.name.getCharPointer(); }
 
     /** Compares two identifiers. This is a very fast operation. */
-    inline bool operator!= (Identifier other) const noexcept            { return name.getCharPointer() != other.name.getCharPointer(); }
+    inline bool operator!= (Identifier other) const NOEXCEPT            { return name.getCharPointer() != other.name.getCharPointer(); }
 
     /** Compares the identifier with a string. */
-    inline bool operator== (StringRef other) const noexcept             { return name == other; }
+    inline bool operator== (StringRef other) const NOEXCEPT             { return name == other; }
 
     /** Compares the identifier with a string. */
-    inline bool operator!= (StringRef other) const noexcept             { return name != other; }
+    inline bool operator!= (StringRef other) const NOEXCEPT             { return name != other; }
 
     /** Returns this identifier as a string. */
-    const String& toString() const noexcept                             { return name; }
+    const String& toString() const NOEXCEPT                             { return name; }
 
     /** Returns this identifier's raw string pointer. */
-    operator String::CharPointerType() const noexcept                   { return name.getCharPointer(); }
+    operator String::CharPointerType() const NOEXCEPT                   { return name.getCharPointer(); }
 
     /** Returns this identifier's raw string pointer. */
-    String::CharPointerType getCharPointer() const noexcept             { return name.getCharPointer(); }
+    String::CharPointerType getCharPointer() const NOEXCEPT             { return name.getCharPointer(); }
 
     /** Returns this identifier as a StringRef. */
-    operator StringRef() const noexcept                                 { return name; }
+    operator StringRef() const NOEXCEPT                                 { return name; }
 
     /** Returns true if this Identifier is not null */
-    bool isValid() const noexcept                                       { return name.isNotEmpty(); }
+    bool isValid() const NOEXCEPT                                       { return name.isNotEmpty(); }
 
     /** Returns true if this Identifier is null */
-    bool isNull() const noexcept                                        { return name.isEmpty(); }
+    bool isNull() const NOEXCEPT                                        { return name.isEmpty(); }
 
     /** A null identifier. */
     static Identifier null;
@@ -114,7 +114,7 @@ public:
         Since Identifiers are used as a script variables and XML attributes, they should only contain
         alphanumeric characters, underscores, or the '-' and ':' characters.
     */
-    static bool isValidIdentifier (const String& possibleIdentifier) noexcept;
+    static bool isValidIdentifier (const String& possibleIdentifier) NOEXCEPT;
 
 private:
     String name;

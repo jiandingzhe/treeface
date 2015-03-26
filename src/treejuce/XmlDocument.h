@@ -119,7 +119,7 @@ public:
 
         @returns the error, or an empty string if there was no error.
     */
-    const String& getLastParseError() const noexcept;
+    const String& getLastParseError() const NOEXCEPT;
 
     /** Sets an input source object to use for parsing documents that reference external entities.
 
@@ -132,7 +132,7 @@ public:
 
         @see InputSource
     */
-    void setInputSource (InputSource* newSource) noexcept;
+    void setInputSource (InputSource* newSource) NOEXCEPT;
 
     /** Sets a flag to change the treatment of empty text elements.
 
@@ -141,7 +141,7 @@ public:
         whitespace-only text, then you should set this to false before calling the
         getDocumentElement() method.
     */
-    void setEmptyTextElementsIgnored (bool shouldBeIgnored) noexcept;
+    void setEmptyTextElementsIgnored (bool shouldBeIgnored) NOEXCEPT;
 
     //==============================================================================
     /** A handy static method that parses a file.
@@ -173,7 +173,7 @@ private:
     bool parseHeader();
     bool parseDTD();
     void skipNextWhiteSpace();
-    juce_wchar readNextChar() noexcept;
+    juce_wchar readNextChar() NOEXCEPT;
     XmlElement* readNextElement (bool alsoParseSubElements);
     void readChildElements (XmlElement&);
     void readQuotedString (String&);

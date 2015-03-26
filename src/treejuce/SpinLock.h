@@ -51,8 +51,8 @@ TREEFACE_JUCE_NAMESPACE_BEGIN
 class JUCE_API  SpinLock
 {
 public:
-    inline SpinLock() noexcept {}
-    inline ~SpinLock() noexcept {}
+    inline SpinLock() NOEXCEPT {}
+    inline ~SpinLock() NOEXCEPT {}
 
     /** Acquires the lock.
         This will block until the lock has been successfully acquired by this thread.
@@ -63,18 +63,18 @@ public:
         It's strongly recommended that you never call this method directly - instead use the
         ScopedLockType class to manage the locking using an RAII pattern instead.
     */
-    void enter() const noexcept;
+    void enter() const NOEXCEPT;
 
     /** Attempts to acquire the lock, returning true if this was successful. */
-    inline bool tryEnter() const noexcept
+    inline bool tryEnter() const NOEXCEPT
     {
         return atomic_cas(&lock, 0, 1);
     }
 
     /** Releases the lock. */
-    inline void exit() const noexcept
+    inline void exit() const NOEXCEPT
     {
-        jassert (lock.value == 1); // Agh! Releasing a lock that isn't currently held!
+        jassert (treejuce::atomic_load(&lock) == 1); // Agh! Releasing a lock that isn't currently held!
         lock = 0;
     }
 

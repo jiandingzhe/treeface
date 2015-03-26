@@ -20,55 +20,51 @@ union SIMDType<16>
 };
 
 template<>
-inline float simd_get_one<0, float, 16>(SIMDType<16> data)
+inline float simd_get_one<0, float, 16>(const SIMDType<16>&data)
 {
-    return data.simd_by_float[0];
+    return data.values_by_float[0];
 }
 
 template<>
-inline float simd_get_one<1, float, 16>(SIMDType<16> data)
+inline float simd_get_one<1, float, 16>(const SIMDType<16>&data)
 {
-    return data.simd_by_float[1];
+    return data.values_by_float[1];
 }
 
 template<>
-inline float simd_get_one<2, float, 16>(SIMDType<16> data)
+inline float simd_get_one<2, float, 16>(const SIMDType<16>&data)
 {
-    return data.simd_by_float[2];
+    return data.values_by_float[2];
 }
 
 template<>
-inline float simd_get_one<3, float, 16>(SIMDType<16> data)
+inline float simd_get_one<3, float, 16>(const SIMDType<16>&data)
 {
-    return data.simd_by_float[3];
+    return data.values_by_float[3];
 }
 
 template<>
-inline SIMDType<16> simd_set_one<0, float, 16>(SIMDType<16> data, float value)
+inline void simd_set_one<0, float, 16>(SIMDType<16>&data, float value)
 {
-    data.simd_by_float[0] = value;
-    return data;
+    data.values_by_float[0] = value;
 }
 
 template<>
-inline SIMDType<16> simd_set_one<1, float, 16>(SIMDType<16> data, float value)
+inline void simd_set_one<1, float, 16>(SIMDType<16>&data, float value)
 {
-    data.simd_by_float[1] = value;
-    return data;
+    data.values_by_float[1] = value;
 }
 
 template<>
-inline SIMDType<16> simd_set_one<2, float, 16>(SIMDType<16> data, float value)
+inline void simd_set_one<2, float, 16>(SIMDType<16>&data, float value)
 {
-    data.simd_by_float[2] = value;
-    return data;
+    data.values_by_float[2] = value;
 }
 
 template<>
-inline SIMDType<16> simd_set_one<3, float, 16>(SIMDType<16> data, float value)
+inline void simd_set_one<3, float, 16>(SIMDType<16>&data, float value)
 {
-    data.simd_by_float[3] = value;
-    return data;
+    data.values_by_float[3] = value;
 }
 
 template<>
@@ -120,7 +116,7 @@ inline SIMDType<16> simd_set<std::int32_t, 16> (const std::int32_t* values)
 }
 
 template<>
-inline SIMDType<16> simd_add<float, 16> (SIMDType<16> a, SIMDType<16>  b)
+inline SIMDType<16> simd_add<float, 16> (const SIMDType<16>& a, const SIMDType<16>& b)
 {
     SIMDType<16> re;
     re.simd_by_float = _mm_add_ps(a.simd_by_float, b.simd_by_float);
@@ -128,7 +124,7 @@ inline SIMDType<16> simd_add<float, 16> (SIMDType<16> a, SIMDType<16>  b)
 }
 
 template<>
-inline SIMDType<16> simd_sub<float, 16> (SIMDType<16> a, SIMDType<16>  b)
+inline SIMDType<16> simd_sub<float, 16> (const SIMDType<16>& a, const SIMDType<16>&  b)
 {
     SIMDType<16> re;
     re.simd_by_float = _mm_sub_ps(a.simd_by_float, b.simd_by_float);
@@ -136,7 +132,7 @@ inline SIMDType<16> simd_sub<float, 16> (SIMDType<16> a, SIMDType<16>  b)
 }
 
 template<>
-inline SIMDType<16> simd_mul<float, 16> (SIMDType<16> a, SIMDType<16>  b)
+inline SIMDType<16> simd_mul<float, 16> (const SIMDType<16>& a, const SIMDType<16>&  b)
 {
     SIMDType<16> re;
     re.simd_by_float = _mm_mul_ps(a.simd_by_float, b.simd_by_float);
@@ -144,7 +140,7 @@ inline SIMDType<16> simd_mul<float, 16> (SIMDType<16> a, SIMDType<16>  b)
 }
 
 template<>
-inline SIMDType<16> simd_div<float, 16> (SIMDType<16> a, SIMDType<16>  b)
+inline SIMDType<16> simd_div<float, 16> (const SIMDType<16>& a, const SIMDType<16>&  b)
 {
     SIMDType<16> re;
     re.simd_by_float = _mm_div_ps(a.simd_by_float, b.simd_by_float);
@@ -152,7 +148,7 @@ inline SIMDType<16> simd_div<float, 16> (SIMDType<16> a, SIMDType<16>  b)
 }
 
 template<>
-inline SIMDType<16> simd_and<float, 16>(SIMDType<16> a, SIMDType<16> b)
+inline SIMDType<16> simd_and<float, 16>(const SIMDType<16>& a, const SIMDType<16>& b)
 {
     SIMDType<16> re;
     re.simd_by_float = _mm_and_ps(a.simd_by_float, b.simd_by_float);
@@ -160,7 +156,7 @@ inline SIMDType<16> simd_and<float, 16>(SIMDType<16> a, SIMDType<16> b)
 }
 
 template<>
-inline SIMDType<16> simd_and<double, 16>(SIMDType<16> a, SIMDType<16> b)
+inline SIMDType<16> simd_and<double, 16>(const SIMDType<16>& a, const SIMDType<16>& b)
 {
     SIMDType<16> re;
     re.simd_by_double = _mm_and_pd(a.simd_by_double, b.simd_by_double);
@@ -168,7 +164,7 @@ inline SIMDType<16> simd_and<double, 16>(SIMDType<16> a, SIMDType<16> b)
 }
 
 template<>
-inline SIMDType<16> simd_and<std::int32_t, 16>(SIMDType<16> a, SIMDType<16> b)
+inline SIMDType<16> simd_and<std::int32_t, 16>(const SIMDType<16>& a, const SIMDType<16>& b)
 {
     SIMDType<16> re;
     re.simd_by_int = _mm_and_si128(a.simd_by_int, b.simd_by_int);
@@ -176,7 +172,7 @@ inline SIMDType<16> simd_and<std::int32_t, 16>(SIMDType<16> a, SIMDType<16> b)
 }
 
 template<>
-inline SIMDType<16> simd_or<float, 16>(SIMDType<16> a, SIMDType<16> b)
+inline SIMDType<16> simd_or<float, 16>(const SIMDType<16>& a, const SIMDType<16>& b)
 {
     SIMDType<16> re;
     re.simd_by_float = _mm_or_ps(a.simd_by_float, b.simd_by_float);
@@ -184,7 +180,7 @@ inline SIMDType<16> simd_or<float, 16>(SIMDType<16> a, SIMDType<16> b)
 }
 
 template<>
-inline SIMDType<16> simd_or<double, 16>(SIMDType<16> a, SIMDType<16> b)
+inline SIMDType<16> simd_or<double, 16>(const SIMDType<16>& a, const SIMDType<16>& b)
 {
     SIMDType<16> re;
     re.simd_by_double = _mm_or_pd(a.simd_by_double, b.simd_by_double);
@@ -192,7 +188,7 @@ inline SIMDType<16> simd_or<double, 16>(SIMDType<16> a, SIMDType<16> b)
 }
 
 template<>
-inline SIMDType<16> simd_or<std::int32_t, 16>(SIMDType<16> a, SIMDType<16> b)
+inline SIMDType<16> simd_or<std::int32_t, 16>(const SIMDType<16>& a, const SIMDType<16>& b)
 {
     SIMDType<16> re;
     re.simd_by_int = _mm_or_si128(a.simd_by_int, b.simd_by_int);
@@ -200,7 +196,7 @@ inline SIMDType<16> simd_or<std::int32_t, 16>(SIMDType<16> a, SIMDType<16> b)
 }
 
 template<>
-inline SIMDType<16> simd_xor<float, 16>(SIMDType<16> a, SIMDType<16> b)
+inline SIMDType<16> simd_xor<float, 16>(const SIMDType<16>& a, const SIMDType<16>& b)
 {
     SIMDType<16> re;
     re.simd_by_float = _mm_xor_ps(a.simd_by_float, b.simd_by_float);
@@ -208,7 +204,7 @@ inline SIMDType<16> simd_xor<float, 16>(SIMDType<16> a, SIMDType<16> b)
 }
 
 template<>
-inline SIMDType<16> simd_xor<double, 16>(SIMDType<16> a, SIMDType<16> b)
+inline SIMDType<16> simd_xor<double, 16>(const SIMDType<16>& a, const SIMDType<16>& b)
 {
     SIMDType<16> re;
     re.simd_by_double = _mm_xor_pd(a.simd_by_double, b.simd_by_double);
@@ -216,7 +212,7 @@ inline SIMDType<16> simd_xor<double, 16>(SIMDType<16> a, SIMDType<16> b)
 }
 
 template<>
-inline SIMDType<16> simd_xor<std::int32_t, 16>(SIMDType<16> a, SIMDType<16> b)
+inline SIMDType<16> simd_xor<std::int32_t, 16>(const SIMDType<16>& a, const SIMDType<16>& b)
 {
     SIMDType<16> re;
     re.simd_by_int = _mm_xor_si128(a.simd_by_int, b.simd_by_int);
@@ -224,7 +220,7 @@ inline SIMDType<16> simd_xor<std::int32_t, 16>(SIMDType<16> a, SIMDType<16> b)
 }
 
 template<>
-inline SIMDType<16> simd_cmp<float, 16> (SIMDType<16> a, SIMDType<16>  b)
+inline SIMDType<16> simd_cmp<float, 16> (const SIMDType<16>& a, const SIMDType<16>&  b)
 {
     SIMDType<16> re;
     re.simd_by_float = _mm_cmpeq_ps(a.simd_by_float, b.simd_by_float);
@@ -238,9 +234,13 @@ struct _simd_shuffle_impl_;
 template<int IDX1, int IDX2, int IDX3, int IDX4>
 struct _simd_shuffle_impl_<IDX1, IDX2, IDX3, IDX4, 16>
 {
-    static SIMDType<16> shuffle(SIMDType<16> input)
+    static SIMDType<16> shuffle(const SIMDType<16>& input)
     {
+#ifdef _MSC_VER
+        const int control = IDX1 + (IDX2 << 2) + (IDX3 << 4) + (IDX4 << 6);
+#else
         constexpr int control = IDX1 + (IDX2 << 2) + (IDX3 << 4) + (IDX4 << 6);
+#endif
         SIMDType<16> re;
         re.simd_by_int = _mm_shuffle_epi32(input.simd_by_int, control);
         return re;
@@ -248,13 +248,13 @@ struct _simd_shuffle_impl_<IDX1, IDX2, IDX3, IDX4, 16>
 };
 
 template<int IDX1, int IDX2, int IDX3, int IDX4, int SZ>
-inline SIMDType<SZ> simd_shuffle(SIMDType<SZ> input)
+inline SIMDType<SZ> simd_shuffle(const SIMDType<SZ>&input)
 {
     return _simd_shuffle_impl_<IDX1, IDX2, IDX3, IDX4, SZ>::shuffle(input);
 }
 
 template<>
-inline float simd_sum<float, 16>(SIMDType<16> a)
+inline float simd_sum<float, 16>(const SIMDType<16>& a)
 {
     SIMDType<16> b = a;
     SIMDType<16> c;

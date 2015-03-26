@@ -71,7 +71,7 @@ public:
 
         This is much quicker than using (size() == 0).
     */
-    bool isEmpty() const noexcept
+    bool isEmpty() const NOEXCEPT
     {
         return values.size() == 0;
     }
@@ -127,7 +127,7 @@ public:
     /** Returns the number of contiguous blocks of values.
         @see getRange
     */
-    int getNumRanges() const noexcept
+    int getNumRanges() const NOEXCEPT
     {
         return values.size() >> 1;
     }
@@ -271,12 +271,12 @@ public:
     }
 
     //==============================================================================
-    bool operator== (const SparseSet<Type>& other) noexcept
+    bool operator== (const SparseSet<Type>& other) NOEXCEPT
     {
         return values == other.values;
     }
 
-    bool operator!= (const SparseSet<Type>& other) noexcept
+    bool operator!= (const SparseSet<Type>& other) NOEXCEPT
     {
         return values != other.values;
     }

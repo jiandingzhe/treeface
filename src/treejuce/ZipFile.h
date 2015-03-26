@@ -98,7 +98,7 @@ public:
 
     //==============================================================================
     /** Returns the number of items in the zip file. */
-    int getNumEntries() const noexcept;
+    int getNumEntries() const NOEXCEPT;
 
     /** Returns a structure that describes one of the entries in the zip file.
 
@@ -106,7 +106,7 @@ public:
 
         @see ZipFile::ZipEntry
     */
-    const ZipEntry* getEntry (int index) const noexcept;
+    const ZipEntry* getEntry (int index) const NOEXCEPT;
 
     /** Returns the index of the first entry with a given filename.
 
@@ -115,7 +115,7 @@ public:
 
         @see ZipFile::ZipEntry
     */
-    int getIndexOfFileName (const String& fileName) const noexcept;
+    int getIndexOfFileName (const String& fileName) const NOEXCEPT;
 
     /** Returns a structure that describes one of the entries in the zip file.
 
@@ -124,7 +124,7 @@ public:
 
         @see ZipFile::ZipEntry
     */
-    const ZipEntry* getEntry (const String& fileName) const noexcept;
+    const ZipEntry* getEntry (const String& fileName) const NOEXCEPT;
 
     /** Sorts the list of entries, based on the filename.
     */

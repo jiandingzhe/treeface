@@ -26,10 +26,17 @@
   ==============================================================================
 */
 
+#include "treejuce/BasicNativeHeaders.h"
+#include "treejuce/HeapBlock.h"
+#include "treejuce/Logger.h"
+#include "treejuce/NewLine.h"
+#include "treejuce/StandardHeader.h"
 #include "treejuce/SystemStats.h"
 #include "treejuce/SystemStats_private.h"
-#include "treejuce/BasicNativeHeaders.h"
-#include "treejuce/NewLine.h"
+
+#ifdef _MSC_VER
+#  include <DbgHelp.h>
+#endif
 
 TREEFACE_JUCE_NAMESPACE_BEGIN
 
@@ -72,18 +79,18 @@ String SystemStats::getJUCEVersion()
 //==============================================================================
 
 
-static const CPUInformation& getCPUInformation() noexcept
+static const CPUInformation& getCPUInformation() NOEXCEPT
 {
     static CPUInformation info;
     return info;
 }
 
-int SystemStats::getNumCpus() noexcept        { return getCPUInformation().numCpus; }
-bool SystemStats::hasMMX() noexcept           { return getCPUInformation().hasMMX; }
-bool SystemStats::hasSSE() noexcept           { return getCPUInformation().hasSSE; }
-bool SystemStats::hasSSE2() noexcept          { return getCPUInformation().hasSSE2; }
-bool SystemStats::hasSSE3() noexcept          { return getCPUInformation().hasSSE3; }
-bool SystemStats::has3DNow() noexcept         { return getCPUInformation().has3DNow; }
+int SystemStats::getNumCpus() NOEXCEPT        { return getCPUInformation().numCpus; }
+bool SystemStats::hasMMX() NOEXCEPT           { return getCPUInformation().hasMMX; }
+bool SystemStats::hasSSE() NOEXCEPT           { return getCPUInformation().hasSSE; }
+bool SystemStats::hasSSE2() NOEXCEPT          { return getCPUInformation().hasSSE2; }
+bool SystemStats::hasSSE3() NOEXCEPT          { return getCPUInformation().hasSSE3; }
+bool SystemStats::has3DNow() NOEXCEPT         { return getCPUInformation().has3DNow; }
 
 
 //==============================================================================

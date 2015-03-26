@@ -61,9 +61,9 @@ public:
             inflateEnd (&stream);
     }
 
-    bool needsInput() const noexcept        { return dataSize <= 0; }
+    bool needsInput() const NOEXCEPT        { return dataSize <= 0; }
 
-    void setInput (uint8* const data_, const size_t size) noexcept
+    void setInput (uint8* const data_, const size_t size) NOEXCEPT
     {
         data = data_;
         dataSize = size;

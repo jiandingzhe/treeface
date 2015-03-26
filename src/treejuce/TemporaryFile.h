@@ -133,10 +133,10 @@ public:
 
     //==============================================================================
     /** Returns the temporary file. */
-    const File& getFile() const noexcept                { return temporaryFile; }
+    const File& getFile() const NOEXCEPT                { return temporaryFile; }
 
     /** Returns the target file that was specified in the constructor. */
-    const File& getTargetFile() const noexcept          { return targetFile; }
+    const File& getTargetFile() const NOEXCEPT          { return targetFile; }
 
     /** Tries to move the temporary file to overwrite the target file that was
         specified in the constructor.

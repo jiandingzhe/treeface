@@ -9,7 +9,7 @@ TREEFACE_JUCE_NAMESPACE_BEGIN
 
 struct HighResolutionTimer::Pimpl
 {
-    Pimpl (HighResolutionTimer& t) noexcept;
+    Pimpl (HighResolutionTimer& t) NOEXCEPT;
 
     ~Pimpl();
 

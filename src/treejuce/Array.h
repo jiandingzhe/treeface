@@ -72,7 +72,7 @@ private:
 public:
     //==============================================================================
     /** Creates an empty array. */
-    Array() noexcept
+    Array() NOEXCEPT
        : numUsed (0)
     {
     }
@@ -91,7 +91,7 @@ public:
     }
 
    #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-    Array (Array<ElementType, TypeOfCriticalSectionToUse>&& other) noexcept
+    Array (Array<ElementType, TypeOfCriticalSectionToUse>&& other) NOEXCEPT
         : data (static_cast<ArrayAllocationBase<ElementType, TypeOfCriticalSectionToUse>&&> (other.data)),
           numUsed (other.numUsed)
     {
@@ -147,7 +147,7 @@ public:
     }
 
    #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-    Array& operator= (Array&& other) noexcept
+    Array& operator= (Array&& other) NOEXCEPT
     {
         const ScopedLockType lock (getLock());
         deleteAllElements();
@@ -220,7 +220,7 @@ public:
     //==============================================================================
     /** Returns the current number of elements in the array.
     */
-    inline int size() const noexcept
+    inline int size() const NOEXCEPT
     {
         return numUsed;
     }
@@ -273,7 +273,7 @@ public:
         @param index    the index of the element being requested (0 is the first element in the array)
         @see operator[], getFirst, getLast
     */
-    inline ElementType& getReference (const int index) const noexcept
+    inline ElementType& getReference (const int index) const NOEXCEPT
     {
         const ScopedLockType lock (getLock());
         jassert (isPositiveAndBelow (index, numUsed) && data.elements != nullptr);
@@ -318,7 +318,7 @@ public:
         This pointer will only be valid until the next time a non-const method
         is called on the array.
     */
-    inline ElementType* getRawDataPointer() noexcept
+    inline ElementType* getRawDataPointer() NOEXCEPT
     {
         return data.elements;
     }
@@ -327,7 +327,7 @@ public:
     /** Returns a pointer to the first element in the array.
         This method is provided for compatibility with standard C++ iteration mechanisms.
     */
-    inline ElementType* begin() const noexcept
+    inline ElementType* begin() const NOEXCEPT
     {
         return data.elements;
     }
@@ -335,7 +335,7 @@ public:
     /** Returns a pointer to the element which follows the last element in the array.
         This method is provided for compatibility with standard C++ iteration mechanisms.
     */
-    inline ElementType* end() const noexcept
+    inline ElementType* end() const NOEXCEPT
     {
        #if JUCE_DEBUG
         if (data.elements == nullptr || numUsed <= 0) // (to keep static analysers happy)
@@ -630,7 +630,7 @@ public:
         because it just swaps their internal pointers.
     */
     template <class OtherArrayType>
-    void swapWith (OtherArrayType& otherArray) noexcept
+    void swapWith (OtherArrayType& otherArray) NOEXCEPT
     {
         const ScopedLockType lock1 (getLock());
         const typename OtherArrayType::ScopedLockType lock2 (otherArray.getLock());
@@ -973,7 +973,7 @@ public:
                                 is less than zero, the value will be moved to the end
                                 of the array
     */
-    void move (const int currentIndex, int newIndex) noexcept
+    void move (const int currentIndex, int newIndex) NOEXCEPT
     {
         if (currentIndex != newIndex)
         {
@@ -1072,7 +1072,7 @@ public:
         To lock, you can call getLock().enter() and getLock().exit(), or preferably use
         an object of ScopedLockType as an RAII lock for it.
     */
-    inline const TypeOfCriticalSectionToUse& getLock() const noexcept      { return data; }
+    inline const TypeOfCriticalSectionToUse& getLock() const NOEXCEPT      { return data; }
 
     /** Returns the type of scoped lock to use for locking this array */
     typedef typename TypeOfCriticalSectionToUse::ScopedLockType ScopedLockType;
@@ -1082,7 +1082,7 @@ public:
    #ifndef DOXYGEN
     // Note that the swapWithArray method has been replaced by a more flexible templated version,
     // and renamed "swapWith" to be more consistent with the names used in other classes.
-    JUCE_DEPRECATED_WITH_BODY (void swapWithArray (Array& other) noexcept, { swapWith (other); })
+    JUCE_DEPRECATED_WITH_BODY (void swapWithArray (Array& other) NOEXCEPT, { swapWith (other); })
    #endif
 
 private:
@@ -1103,7 +1103,7 @@ private:
         minimiseStorageAfterRemoval();
     }
 
-    inline void deleteAllElements() noexcept
+    inline void deleteAllElements() NOEXCEPT
     {
         for (int i = 0; i < numUsed; ++i)
             data.elements[i].~ElementType();

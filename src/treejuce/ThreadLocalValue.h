@@ -66,7 +66,7 @@ class ThreadLocalValue
 {
 public:
     /** */
-    ThreadLocalValue() noexcept
+    ThreadLocalValue() NOEXCEPT
     {
     }
 
@@ -90,21 +90,21 @@ public:
         value object will be created - so if your value's class has a non-trivial
         constructor, be aware that this method could invoke it.
     */
-    Type& operator*() const noexcept                        { return get(); }
+    Type& operator*() const NOEXCEPT                        { return get(); }
 
     /** Returns a pointer to this thread's instance of the value.
         Note that the first time a thread tries to access the value, an instance of the
         value object will be created - so if your value's class has a non-trivial
         constructor, be aware that this method could invoke it.
     */
-    operator Type*() const noexcept                         { return &get(); }
+    operator Type*() const NOEXCEPT                         { return &get(); }
 
     /** Accesses a method or field of the value object.
         Note that the first time a thread tries to access the value, an instance of the
         value object will be created - so if your value's class has a non-trivial
         constructor, be aware that this method could invoke it.
     */
-    Type* operator->() const noexcept                       { return &get(); }
+    Type* operator->() const NOEXCEPT                       { return &get(); }
 
     /** Assigns a new value to the thread-local object. */
     ThreadLocalValue& operator= (const Type& newValue)      { get() = newValue; return *this; }
@@ -114,7 +114,7 @@ public:
         value object will be created - so if your value's class has a non-trivial
         constructor, be aware that this method could invoke it.
     */
-    Type& get() const noexcept
+    Type& get() const NOEXCEPT
     {
        #if JUCE_NO_COMPILER_THREAD_LOCAL
         const Thread::ThreadID threadId = Thread::getCurrentThreadId();

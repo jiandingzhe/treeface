@@ -35,21 +35,21 @@ static const int minNumberOfStringsForGarbageCollection = 300;
 static const uint32 garbageCollectionInterval = 30000;
 
 
-StringPool::StringPool() noexcept  : lastGarbageCollectionTime (0) {}
+StringPool::StringPool() NOEXCEPT  : lastGarbageCollectionTime (0) {}
 StringPool::~StringPool() {}
 
 struct StartEndString
 {
-    StartEndString (String::CharPointerType s, String::CharPointerType e) noexcept : start (s), end (e) {}
+    StartEndString (String::CharPointerType s, String::CharPointerType e) NOEXCEPT : start (s), end (e) {}
     operator String() const   { return String (start, end); }
 
     String::CharPointerType start, end;
 };
 
-static int compareStrings (const String& s1, const String& s2) noexcept     { return s1.compare (s2); }
-static int compareStrings (CharPointer_UTF8 s1, const String& s2) noexcept  { return s1.compare (s2.getCharPointer()); }
+static int compareStrings (const String& s1, const String& s2) NOEXCEPT     { return s1.compare (s2); }
+static int compareStrings (CharPointer_UTF8 s1, const String& s2) NOEXCEPT  { return s1.compare (s2.getCharPointer()); }
 
-static int compareStrings (const StartEndString& string1, const String& string2) noexcept
+static int compareStrings (const StartEndString& string1, const String& string2) NOEXCEPT
 {
     String::CharPointerType s1 (string1.start), s2 (string2.getCharPointer());
 
@@ -164,7 +164,7 @@ void StringPool::garbageCollect()
     lastGarbageCollectionTime = Time::getApproximateMillisecondCounter();
 }
 
-StringPool& StringPool::getGlobalPool() noexcept
+StringPool& StringPool::getGlobalPool() NOEXCEPT
 {
     static StringPool pool;
     return pool;

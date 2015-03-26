@@ -9,10 +9,4 @@
 #define TREEFACE_OS_@TREEFACE_OS@
 #define TREEFACE_PTR_SIZE @TREEFACE_PTR_SIZE@
 
-#ifdef _MSC_VER
-#  define NOEXCEPT throw()
-#else
-#  define NOEXCEPT noexcept
-#endif
-
 #endif // TREEFACE_CONFIG_H

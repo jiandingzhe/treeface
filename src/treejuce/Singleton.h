@@ -125,7 +125,7 @@ TREEFACE_JUCE_NAMESPACE_BEGIN
         return _singletonInstance; \
     } \
 \
-    static inline classname* JUCE_CALLTYPE getInstanceWithoutCreating() noexcept\
+    static inline classname* JUCE_CALLTYPE getInstanceWithoutCreating() NOEXCEPT\
     { \
         return _singletonInstance; \
     } \
@@ -141,7 +141,7 @@ TREEFACE_JUCE_NAMESPACE_BEGIN
         } \
     } \
 \
-    void clearSingletonInstance() noexcept\
+    void clearSingletonInstance() NOEXCEPT\
     { \
         if (_singletonInstance == this) \
             _singletonInstance = nullptr; \
@@ -207,7 +207,7 @@ TREEFACE_JUCE_NAMESPACE_BEGIN
         return _singletonInstance; \
     } \
 \
-    static inline classname* getInstanceWithoutCreating() noexcept\
+    static inline classname* getInstanceWithoutCreating() NOEXCEPT\
     { \
         return _singletonInstance; \
     } \
@@ -222,7 +222,7 @@ TREEFACE_JUCE_NAMESPACE_BEGIN
         } \
     } \
 \
-    void clearSingletonInstance() noexcept\
+    void clearSingletonInstance() NOEXCEPT\
     { \
         if (_singletonInstance == this) \
             _singletonInstance = nullptr; \
@@ -258,7 +258,7 @@ TREEFACE_JUCE_NAMESPACE_BEGIN
         return _singletonInstance; \
     } \
 \
-    static inline classname* getInstanceWithoutCreating() noexcept\
+    static inline classname* getInstanceWithoutCreating() NOEXCEPT\
     { \
         return _singletonInstance; \
     } \
@@ -273,7 +273,7 @@ TREEFACE_JUCE_NAMESPACE_BEGIN
         } \
     } \
 \
-    void clearSingletonInstance() noexcept\
+    void clearSingletonInstance() NOEXCEPT\
     { \
         if (_singletonInstance == this) \
             _singletonInstance = nullptr; \

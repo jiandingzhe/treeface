@@ -106,7 +106,7 @@ String SystemStats::getCpuVendor()
 }
 
 //==============================================================================
-void CPUInformation::initialise() noexcept
+void CPUInformation::initialise() NOEXCEPT
 {
     int info[4] = { 0 };
     callCPUID (info, 1);
@@ -252,7 +252,7 @@ String SystemStats::getEnvironmentVariable (const String& name, const String& de
 }
 
 //==============================================================================
-uint32 juce_millisecondsSinceStartup() noexcept
+uint32 juce_millisecondsSinceStartup() NOEXCEPT
 {
     return (uint32) timeGetTime();
 }
@@ -288,7 +288,7 @@ public:
         hiResTicksScaleFactor = 1000.0 / hiResTicksPerSecond;
     }
 
-    inline int64 getHighResolutionTicks() noexcept
+    inline int64 getHighResolutionTicks() NOEXCEPT
     {
         LARGE_INTEGER ticks;
         QueryPerformanceCounter (&ticks);
@@ -306,7 +306,7 @@ public:
         return ticks.QuadPart + hiResTicksOffset;
     }
 
-    inline double getMillisecondCounterHiRes() noexcept
+    inline double getMillisecondCounterHiRes() NOEXCEPT
     {
         return getHighResolutionTicks() * hiResTicksScaleFactor;
     }
@@ -317,12 +317,12 @@ public:
 
 static HiResCounterHandler hiResCounterHandler;
 
-int64  Time::getHighResolutionTicksPerSecond() noexcept  { return hiResCounterHandler.hiResTicksPerSecond; }
-int64  Time::getHighResolutionTicks() noexcept           { return hiResCounterHandler.getHighResolutionTicks(); }
-double Time::getMillisecondCounterHiRes() noexcept       { return hiResCounterHandler.getMillisecondCounterHiRes(); }
+int64  Time::getHighResolutionTicksPerSecond() NOEXCEPT  { return hiResCounterHandler.hiResTicksPerSecond; }
+int64  Time::getHighResolutionTicks() NOEXCEPT           { return hiResCounterHandler.getHighResolutionTicks(); }
+double Time::getMillisecondCounterHiRes() NOEXCEPT       { return hiResCounterHandler.getMillisecondCounterHiRes(); }
 
 //==============================================================================
-static int64 juce_getClockCycleCounter() noexcept
+static int64 juce_getClockCycleCounter() NOEXCEPT
 {
    #if JUCE_USE_INTRINSICS
     // MS intrinsics version...

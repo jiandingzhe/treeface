@@ -109,22 +109,22 @@ public:
 
     //==============================================================================
     /** Returns the object that this pointer is managing. */
-    inline operator ObjectType*() const noexcept                    { return object; }
+    inline operator ObjectType*() const NOEXCEPT                    { return object; }
 
     /** Returns the object that this pointer is managing. */
-    inline ObjectType* get() const noexcept                         { return object; }
+    inline ObjectType* get() const NOEXCEPT                         { return object; }
 
     /** Returns the object that this pointer is managing. */
-    inline ObjectType& operator*() const noexcept                   { return *object; }
+    inline ObjectType& operator*() const NOEXCEPT                   { return *object; }
 
     /** Lets you access methods and properties of the object that this pointer is holding. */
-    inline ObjectType* operator->() const noexcept                  { return object; }
+    inline ObjectType* operator->() const NOEXCEPT                  { return object; }
 
     //==============================================================================
     /** Removes the current object from this OptionalScopedPointer without deleting it.
         This will return the current object, and set this OptionalScopedPointer to a null pointer.
     */
-    ObjectType* release() noexcept                                  { return object.release(); }
+    ObjectType* release() NOEXCEPT                                  { return object.release(); }
 
     /** Resets this pointer to null, possibly deleting the object that it holds, if it has
         ownership of it.
@@ -168,13 +168,13 @@ public:
     /** Returns true if the target object will be deleted when this pointer
         object is deleted.
     */
-    bool willDeleteObject() const noexcept                          { return shouldDelete; }
+    bool willDeleteObject() const NOEXCEPT                          { return shouldDelete; }
 
     //==============================================================================
     /** Swaps this object with another OptionalScopedPointer.
         The two objects simply exchange their states.
     */
-    void swapWith (OptionalScopedPointer<ObjectType>& other) noexcept
+    void swapWith (OptionalScopedPointer<ObjectType>& other) NOEXCEPT
     {
         object.swapWith (other.object);
         std::swap (shouldDelete, other.shouldDelete);

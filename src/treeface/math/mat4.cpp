@@ -5,7 +5,7 @@
 TREEFACE_NAMESPACE_BEGIN
 
 template<>
-float Mat4<float>::determinant() const noexcept
+float Mat4<float>::determinant() const NOEXCEPT
 {
     // + 00*11*22*33 + 00*21*32*13 + 00*31*12*23 - 00*31*22*13 - 00*21*12*33 - 00*11*32*23
     // + 10*31*22*03 + 10*21*02*33 + 10*01*32*23 - 10*01*22*33 - 10*21*32*03 - 10*31*02*23
@@ -52,7 +52,7 @@ float Mat4<float>::determinant() const noexcept
 }
 
 template<>
-void Mat4<float>::set_rotate(Quat<float> value) noexcept
+void Mat4<float>::set_rotate(const Quat<float>& value) NOEXCEPT
 {
 #define _MAT4_FLOAT_ROTATE_OP_ treejuce::simd_add<float>(tmp_unit, treejuce::simd_mul<float>(tmp_mul, treejuce::simd_add<float>(treejuce::simd_mul<float>(tmp_a, tmp_b),treejuce::simd_xor<float>(treejuce::simd_mul<float>(tmp_c, tmp_d), tmp_sign_mask))))
 //        m[0]  = 1 - 2 * (y*y + z*z);
@@ -97,7 +97,7 @@ void Mat4<float>::set_rotate(Quat<float> value) noexcept
     // translation is kept untouched
 }
 
-Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) noexcept
+Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) NOEXCEPT
 {
     // column to row
     treejuce::SIMDType<16> row0 = treejuce::simd_set<float, 16>(
@@ -152,7 +152,7 @@ Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) noexcept
     return Mat4<float>(re0, re1, re2, re3);
 }
 
-Vec4<float> operator * (const Mat4<float>& mat, Vec4<float> vec) noexcept
+Vec4<float> operator * (const Mat4<float>& mat, const Vec4<float>& vec) NOEXCEPT
 {
     treejuce::SIMDType<16> tmp;
     tmp = treejuce::simd_set<float, 16>(

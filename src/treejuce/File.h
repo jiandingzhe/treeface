@@ -67,7 +67,7 @@ public:
 
         You can use its operator= method to point it at a proper file.
     */
-    File() noexcept  {}
+    File() NOEXCEPT  {}
 
     /** Creates a file from an absolute path.
 
@@ -85,7 +85,7 @@ public:
     File (const File&);
 
     /** Destructor. */
-    ~File() noexcept  {}
+    ~File() NOEXCEPT  {}
 
     /** Sets the file based on an absolute pathname.
 
@@ -103,8 +103,8 @@ public:
     File& operator= (const File& otherFile);
 
    #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-    File (File&&) noexcept;
-    File& operator= (File&&) noexcept;
+    File (File&&) NOEXCEPT;
+    File& operator= (File&&) NOEXCEPT;
    #endif
 
     //==============================================================================
@@ -160,7 +160,7 @@ public:
 
         @see getFileName, getRelativePathFrom
     */
-    const String& getFullPathName() const noexcept          { return fullPath; }
+    const String& getFullPathName() const NOEXCEPT          { return fullPath; }
 
     /** Returns the last section of the pathname.
 
@@ -944,7 +944,7 @@ public:
 
         Best to avoid this unless you really know what you're doing.
     */
-    static File createFileWithoutCheckingPath (const String& absolutePath) noexcept;
+    static File createFileWithoutCheckingPath (const String& absolutePath) NOEXCEPT;
 
     /** Adds a separator character to the end of a path if it doesn't already have one. */
     static String addTrailingSeparator (const String& path);

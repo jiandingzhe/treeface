@@ -83,7 +83,7 @@ String StringPairArray::getValue (StringRef key, const String& defaultReturnValu
     return defaultReturnValue;
 }
 
-bool StringPairArray::containsKey (StringRef key) const noexcept
+bool StringPairArray::containsKey (StringRef key) const NOEXCEPT
 {
     return keys.contains (key);
 }

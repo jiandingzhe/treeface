@@ -47,7 +47,7 @@ class JUCE_API  MemoryBlock
 public:
     //==============================================================================
     /** Create an uninitialised block with 0 size. */
-    MemoryBlock() noexcept;
+    MemoryBlock() NOEXCEPT;
 
     /** Creates a memory block with a given initial size.
 
@@ -68,7 +68,7 @@ public:
     MemoryBlock (const void* dataToInitialiseFrom, size_t sizeInBytes);
 
     /** Destructor. */
-    ~MemoryBlock() noexcept;
+    ~MemoryBlock() NOEXCEPT;
 
     /** Copies another memory block onto this one.
         This block will be resized and copied to exactly match the other one.
@@ -76,23 +76,23 @@ public:
     MemoryBlock& operator= (const MemoryBlock&);
 
    #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-    MemoryBlock (MemoryBlock&&) noexcept;
-    MemoryBlock& operator= (MemoryBlock&&) noexcept;
+    MemoryBlock (MemoryBlock&&) NOEXCEPT;
+    MemoryBlock& operator= (MemoryBlock&&) NOEXCEPT;
    #endif
 
     //==============================================================================
     /** Compares two memory blocks.
         @returns true only if the two blocks are the same size and have identical contents.
     */
-    bool operator== (const MemoryBlock& other) const noexcept;
+    bool operator== (const MemoryBlock& other) const NOEXCEPT;
 
     /** Compares two memory blocks.
         @returns true if the two blocks are different sizes or have different contents.
     */
-    bool operator!= (const MemoryBlock& other) const noexcept;
+    bool operator!= (const MemoryBlock& other) const NOEXCEPT;
 
     /** Returns true if the data in this MemoryBlock matches the raw bytes passed-in. */
-    bool matches (const void* data, size_t dataSize) const noexcept;
+    bool matches (const void* data, size_t dataSize) const NOEXCEPT;
 
     //==============================================================================
     /** Returns a void pointer to the data.
@@ -100,18 +100,18 @@ public:
         Note that the pointer returned will probably become invalid when the
         block is resized.
     */
-    void* getData() const noexcept                                  { return data; }
+    void* getData() const NOEXCEPT                                  { return data; }
 
     /** Returns a byte from the memory block.
         This returns a reference, so you can also use it to set a byte.
     */
     template <typename Type>
-    char& operator[] (const Type offset) const noexcept             { return data [offset]; }
+    char& operator[] (const Type offset) const NOEXCEPT             { return data [offset]; }
 
 
     //==============================================================================
     /** Returns the block's current allocated size, in bytes. */
-    size_t getSize() const noexcept                                 { return size; }
+    size_t getSize() const NOEXCEPT                                 { return size; }
 
     /** Resizes the memory block.
 
@@ -147,7 +147,7 @@ public:
     /** Fills the entire memory block with a repeated byte value.
         This is handy for clearing a block of memory to zero.
     */
-    void fillWith (uint8 valueToUse) noexcept;
+    void fillWith (uint8 valueToUse) NOEXCEPT;
 
     /** Adds another block of data to the end of this one.
         The data pointer must not be null. This block's size will be increased accordingly.
@@ -185,7 +185,7 @@ public:
     */
     void copyFrom (const void* srcData,
                    int destinationOffset,
-                   size_t numBytes) noexcept;
+                   size_t numBytes) NOEXCEPT;
 
     /** Copies data from this MemoryBlock to a memory address.
 
@@ -196,13 +196,13 @@ public:
     */
     void copyTo (void* destData,
                  int sourceOffset,
-                 size_t numBytes) const noexcept;
+                 size_t numBytes) const NOEXCEPT;
 
     //==============================================================================
     /** Exchanges the contents of this and another memory block.
         No actual copying is required for this, so it's very fast.
     */
-    void swapWith (MemoryBlock& other) noexcept;
+    void swapWith (MemoryBlock& other) NOEXCEPT;
 
     //==============================================================================
     /** Attempts to parse the contents of the block as a zero-terminated UTF8 string. */
@@ -222,11 +222,11 @@ public:
     /** Sets a number of bits in the memory block, treating it as a long binary sequence. */
     void setBitRange (size_t bitRangeStart,
                       size_t numBits,
-                      int binaryNumberToApply) noexcept;
+                      int binaryNumberToApply) NOEXCEPT;
 
     /** Reads a number of bits from the memory block, treating it as one long binary sequence */
     int getBitRange (size_t bitRangeStart,
-                     size_t numBitsToRead) const noexcept;
+                     size_t numBitsToRead) const NOEXCEPT;
 
     //==============================================================================
     /** Returns a string of characters that represent the binary contents of this block.

@@ -133,7 +133,7 @@ public:
         to provide the correct module handle in your DllMain() function, because
         the system relies on the correct instance handle when opening windows.
     */
-    static void* JUCE_CALLTYPE getCurrentModuleInstanceHandle() noexcept;
+    static void* JUCE_CALLTYPE getCurrentModuleInstanceHandle() NOEXCEPT;
 
     /** WINDOWS ONLY - Sets a new module handle to be used by the library.
 
@@ -142,7 +142,7 @@ public:
 
         @see getCurrentModuleInstanceHandle()
     */
-    static void JUCE_CALLTYPE setCurrentModuleInstanceHandle (void* newHandle) noexcept;
+    static void JUCE_CALLTYPE setCurrentModuleInstanceHandle (void* newHandle) NOEXCEPT;
    #endif
 
    #if JUCE_MAC || DOXYGEN

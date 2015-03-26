@@ -32,7 +32,7 @@ TREEFACE_JUCE_NAMESPACE_BEGIN
 
 namespace
 {
-    int calcBufferStreamBufferSize (int requestedSize, InputStream* const source) noexcept
+    int calcBufferStreamBufferSize (int requestedSize, InputStream* const source) NOEXCEPT
     {
         // You need to supply a real stream when creating a BufferedInputStream
         jassert (source != nullptr);

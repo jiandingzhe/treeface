@@ -30,6 +30,7 @@
 #define JUCE_MATHSFUNCTIONS_H_INCLUDED
 
 #include "treejuce/StandardHeader.h"
+#include "treejuce/TargetPlatform.h"
 
 TREEFACE_JUCE_NAMESPACE_BEGIN
 
@@ -210,7 +211,7 @@ void findMinAndMax (const Type* values, int numValues, Type& lowest, Type& highe
 template <typename Type>
 inline Type jlimit (const Type lowerLimit,
                     const Type upperLimit,
-                    const Type valueToConstrain) noexcept
+                    const Type valueToConstrain) NOEXCEPT
 {
     jassert (lowerLimit <= upperLimit); // if these are in the wrong order, results are unpredictable..
 
@@ -225,14 +226,14 @@ inline Type jlimit (const Type lowerLimit,
     @endcode
 */
 template <typename Type>
-inline bool isPositiveAndBelow (Type valueToTest, Type upperLimit) noexcept
+inline bool isPositiveAndBelow (Type valueToTest, Type upperLimit) NOEXCEPT
 {
     jassert (Type() <= upperLimit); // makes no sense to call this if the upper limit is itself below zero..
     return Type() <= valueToTest && valueToTest < upperLimit;
 }
 
 template <>
-inline bool isPositiveAndBelow (const int valueToTest, const int upperLimit) noexcept
+inline bool isPositiveAndBelow (const int valueToTest, const int upperLimit) NOEXCEPT
 {
     jassert (upperLimit >= 0); // makes no sense to call this if the upper limit is itself below zero..
     return static_cast <unsigned int> (valueToTest) < static_cast <unsigned int> (upperLimit);
@@ -244,14 +245,14 @@ inline bool isPositiveAndBelow (const int valueToTest, const int upperLimit) noe
     @endcode
 */
 template <typename Type>
-inline bool isPositiveAndNotGreaterThan (Type valueToTest, Type upperLimit) noexcept
+inline bool isPositiveAndNotGreaterThan (Type valueToTest, Type upperLimit) NOEXCEPT
 {
     jassert (Type() <= upperLimit); // makes no sense to call this if the upper limit is itself below zero..
     return Type() <= valueToTest && valueToTest <= upperLimit;
 }
 
 template <>
-inline bool isPositiveAndNotGreaterThan (const int valueToTest, const int upperLimit) noexcept
+inline bool isPositiveAndNotGreaterThan (const int valueToTest, const int upperLimit) NOEXCEPT
 {
     jassert (upperLimit >= 0); // makes no sense to call this if the upper limit is itself below zero..
     return static_cast <unsigned int> (valueToTest) <= static_cast <unsigned int> (upperLimit);
@@ -287,7 +288,7 @@ inline int numElementsInArray (Type (&array)[N])
 /** Using juce_hypot is easier than dealing with the different types of hypot function
     that are provided by the various platforms and compilers. */
 template <typename Type>
-inline Type juce_hypot (Type a, Type b) noexcept
+inline Type juce_hypot (Type a, Type b) NOEXCEPT
 {
    #if JUCE_MSVC
     return static_cast <Type> (_hypot (a, b));
@@ -297,15 +298,15 @@ inline Type juce_hypot (Type a, Type b) noexcept
 }
 
 /** 64-bit abs function. */
-inline int64 abs64 (const int64 n) noexcept
+inline int64 abs64 (const int64 n) NOEXCEPT
 {
     return (n >= 0) ? n : -n;
 }
 
 #if JUCE_MSVC && ! defined (DOXYGEN)  // The MSVC libraries omit these functions for some reason...
- template<typename Type> Type asinh (Type x) noexcept  { return std::log (x + std::sqrt (x * x + (Type) 1)); }
- template<typename Type> Type acosh (Type x) noexcept  { return std::log (x + std::sqrt (x * x - (Type) 1)); }
- template<typename Type> Type atanh (Type x) noexcept  { return (std::log (x + (Type) 1) - std::log (((Type) 1) - x)) / (Type) 2; }
+ template<typename Type> Type asinh (Type x) NOEXCEPT  { return std::log (x + std::sqrt (x * x + (Type) 1)); }
+ template<typename Type> Type acosh (Type x) NOEXCEPT  { return std::log (x + std::sqrt (x * x - (Type) 1)); }
+ template<typename Type> Type atanh (Type x) NOEXCEPT  { return (std::log (x + (Type) 1) - std::log (((Type) 1) - x)) / (Type) 2; }
 #endif
 
 //==============================================================================
@@ -355,7 +356,7 @@ inline bool juce_isfinite (FloatingPointType value)
     even numbers will be rounded up or down differently.
 */
 template <typename FloatType>
-inline int roundToInt (const FloatType value) noexcept
+inline int roundToInt (const FloatType value) NOEXCEPT
 {
   #ifdef __INTEL_COMPILER
    #pragma float_control (precise, on, push)
@@ -371,7 +372,7 @@ inline int roundToInt (const FloatType value) noexcept
    #endif
 }
 
-inline int roundToInt (int value) noexcept
+inline int roundToInt (int value) NOEXCEPT
 {
     return value;
 }
@@ -388,7 +389,7 @@ inline int roundToInt (int value) noexcept
     This is a slightly slower and slightly more accurate version of roundDoubleToInt(). It works
     fine for values above zero, but negative numbers are rounded the wrong way.
 */
-inline int roundToIntAccurate (const double value) noexcept
+inline int roundToIntAccurate (const double value) NOEXCEPT
 {
    #ifdef __INTEL_COMPILER
     #pragma float_control (pop)
@@ -408,7 +409,7 @@ inline int roundToIntAccurate (const double value) noexcept
     even numbers will be rounded up or down differently. For a more accurate conversion,
     see roundDoubleToIntAccurate().
 */
-inline int roundDoubleToInt (const double value) noexcept
+inline int roundDoubleToInt (const double value) NOEXCEPT
 {
     return roundToInt (value);
 }
@@ -423,7 +424,7 @@ inline int roundDoubleToInt (const double value) noexcept
     rounding values whose floating point component is exactly 0.5, odd numbers and
     even numbers will be rounded up or down differently.
 */
-inline int roundFloatToInt (const float value) noexcept
+inline int roundFloatToInt (const float value) NOEXCEPT
 {
     return roundToInt (value);
 }
@@ -439,7 +440,7 @@ bool isPowerOfTwo (IntegerType value)
 
 /** Returns the smallest power-of-two which is equal to or greater than the given integer.
 */
-inline int nextPowerOfTwo (int n) noexcept
+inline int nextPowerOfTwo (int n) NOEXCEPT
 {
     --n;
     n |= (n >> 1);
@@ -451,7 +452,7 @@ inline int nextPowerOfTwo (int n) noexcept
 }
 
 /** Returns the number of bits in a 32-bit integer. */
-inline int countNumberOfBits (uint32 n) noexcept
+inline int countNumberOfBits (uint32 n) NOEXCEPT
 {
     n -= ((n >> 1) & 0x55555555);
     n =  (((n >> 2) & 0x33333333) + (n & 0x33333333));
@@ -462,7 +463,7 @@ inline int countNumberOfBits (uint32 n) noexcept
 }
 
 /** Returns the number of bits in a 64-bit integer. */
-inline int countNumberOfBits (uint64 n) noexcept
+inline int countNumberOfBits (uint64 n) NOEXCEPT
 {
     return countNumberOfBits ((uint32) n) + countNumberOfBits ((uint32) (n >> 32));
 }
@@ -471,7 +472,7 @@ inline int countNumberOfBits (uint64 n) noexcept
     The divisor must be greater than zero.
 */
 template <typename IntegerType>
-IntegerType negativeAwareModulo (IntegerType dividend, const IntegerType divisor) noexcept
+IntegerType negativeAwareModulo (IntegerType dividend, const IntegerType divisor) NOEXCEPT
 {
     jassert (divisor > 0);
     dividend %= divisor;
@@ -480,7 +481,7 @@ IntegerType negativeAwareModulo (IntegerType dividend, const IntegerType divisor
 
 /** Returns the square of its argument. */
 template <typename NumericType>
-NumericType square (NumericType n) noexcept
+NumericType square (NumericType n) NOEXCEPT
 {
     return n * n;
 }

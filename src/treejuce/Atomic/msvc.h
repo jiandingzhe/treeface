@@ -14,186 +14,205 @@ struct _msvc_atomic_impl_ {};
 template<typename T>
 struct _msvc_atomic_impl_<T, 4>
 {
+    typedef volatile long* store_type;
+    typedef long value_type;
+
     static T load(T* store) NOEXCEPT
-	{
-		return _InterlockedExchangeAdd(store, 0);
-	}
+    {
+        return _InterlockedExchangeAdd(store_type(store), 0);
+    }
 
-	static void store(T* store, T value) NOEXCEPT
-	{
-		_InterlockedExchange(store, value);
-	}
+    static void store(T* store, T value) NOEXCEPT
+    {
+        _InterlockedExchange(store_type(store), *((value_type*)&value));
+    }
 
-	static T fetch_set(T* store, T value) NOEXCEPT
-	{
-		return _InterlockedExchange(store, value);
-	}
+    static T fetch_set(T* store, T value) NOEXCEPT
+    {
+        value_type re = _InterlockedExchange( store_type(store), *((value_type*) &value) );
+        return *((T*) &re);
+    }
 
     // get value before modify
 
-	static T fetch_add(T* store, T value) NOEXCEPT
-	{
-		return _InterlockedExchangeAdd(store, value);
-	}
+    static T fetch_add(T* store, T value) NOEXCEPT
+    {
+        value_type re = _InterlockedExchangeAdd( store_type(store), *((value_type*) &value) );
+        return *((T*) &re);
+    }
 
-	static T fetch_sub(T* store, T value) NOEXCEPT
-	{
-		return _InterlockedExchangeAdd(store, -value);
-	}
+    static T fetch_sub(T* store, T value) NOEXCEPT
+    {
+        value_type re = _InterlockedExchangeAdd( store_type(store), -*((value_type*) &value) );
+        return *((T*) &re);
+    }
 
-	static T fetch_or(T* store, T value) NOEXCEPT
-	{
-		return _InterlockedOr(store, value);
-	}
+    static T fetch_or(T* store, T value) NOEXCEPT
+    {
+        value_type re = _InterlockedOr(store_type(store), *((value_type*) &value));
+        return *((T*) &re);
+    }
 
-	static T fetch_and(T* store, T value) NOEXCEPT
-	{
-		return _InterlockedAnd(store, value);
-	}
+    static T fetch_and(T* store, T value) NOEXCEPT
+    {
+        value_type re = _InterlockedAnd(store_type(store), *((value_type*) &value));
+        return *((T*) &re);
+    }
 
-	static T fetch_xor(T* store, T value) NOEXCEPT
-	{
-		return _InterlockedXor(store, value);
-	}
+    static T fetch_xor(T* store, T value) NOEXCEPT
+    {
+        value_type re = _InterlockedXor(store_type(store), *((value_type*) &value));
+        return *((T*) &re);
+    }
 
-	static T fetch_nand(T* store, T value) NOEXCEPT
-	{
-		abort();
-	}
+    static T fetch_nand(T* store, T value) NOEXCEPT
+    {
+        abort();
+    }
 
     // get modified value
-	static T add_fetch(T* store, T value) NOEXCEPT
-	{
-		T old = fetch_add(store, value);
-		return old + value;
-	}
+    static T add_fetch(T* store, T value) NOEXCEPT
+    {
+        T old = fetch_add(store, value);
+        return old + value;
+    }
 
-	static T sub_fetch(T* store, T value) NOEXCEPT
-	{
-		T old = fetch_sub(store, value);
-		return old - value;
-	}
+    static T sub_fetch(T* store, T value) NOEXCEPT
+    {
+        T old = fetch_sub(store, value);
+        return old - value;
+    }
 
-	static T or_fetch(T* store, T value) NOEXCEPT
-	{
-		T old = fetch_or(store, value);
-		return old | value;
-	}
+    static T or_fetch(T* store, T value) NOEXCEPT
+    {
+        T old = fetch_or(store, value);
+        return old | value;
+    }
 
-	static T and_fetch(T* store, T value) NOEXCEPT
-	{
-		T old = fetch_and(store, value);
-		return old & value;
-	}
+    static T and_fetch(T* store, T value) NOEXCEPT
+    {
+        T old = fetch_and(store, value);
+        return old & value;
+    }
 
-	static T xor_fetch(T* store, T value) NOEXCEPT
-	{
-		T old = fetch_xor(store, value);
-		return old ^ value;
-	}
+    static T xor_fetch(T* store, T value) NOEXCEPT
+    {
+        T old = fetch_xor(store, value);
+        return old ^ value;
+    }
 
-	static T nand_fetch(T* store, T value) NOEXCEPT
-	{
-		abort();
-	}
+    static T nand_fetch(T* store, T value) NOEXCEPT
+    {
+        abort();
+    }
 
     // cas
-	static bool cas(T* store, T expect, T value) NOEXCEPT
-	{
-		return (_InterlockedCompareExchange(store, value, expect) == expect);
-	}
+    static bool cas(T* store, T expect, T value) NOEXCEPT
+    {
+        return (_InterlockedCompareExchange(store_type(store), *((value_type*)&value), *((value_type*)&expect)) == *((value_type*)&expect));
+    }
 };
 
 template<typename T>
 struct _msvc_atomic_impl_<T, 8>
 {
-	static T load(T* store) NOEXCEPT
-	{
-		return _InterlockedExchangeAdd64(T, 0);
-	}
+    typedef volatile long long* store_type;
+    typedef long long value_type;
 
-	static void store(T* store, T value) NOEXCEPT
-	{
-		_InterlockedExchange64(T, value);
-	}
+    static T load(T* store) NOEXCEPT
+    {
+        value_type re = _InterlockedExchangeAdd64(store_type(store), 0);
+        return *((T*)&re);
+    }
 
-	static T fetch_set(T* store, T value) NOEXCEPT
-	{
-		return _InterlockedExchange64(T, value);
-	}
+    static void store(T* store, T value) NOEXCEPT
+    {
+        _InterlockedExchange64(store_type(store), *((value_type*)&value));
+    }
+
+    static T fetch_set(T* store, T value) NOEXCEPT
+    {
+        value_type re = _InterlockedExchange64(store_type(store), *((value_type*)&value));
+        return *((T*)&re);
+    }
 
     // get value before modify
-	static T fetch_add(T* store, T value) NOEXCEPT
-	{
-		return _InterlockedExchangeAdd64(T, value);
-	}
+    static T fetch_add(T* store, T value) NOEXCEPT
+    {
+        value_type re = _InterlockedExchangeAdd64(store_type(store), *((value_type*)&value));
+        return *((T*)&re);
+    }
 
-	static T fetch_sub(T* store, T value) NOEXCEPT
-	{
-		return _InterlockedExchangeAdd64(T, -value);
-	}
+    static T fetch_sub(T* store, T value) NOEXCEPT
+    {
+        value_type re = _InterlockedExchangeAdd64(store_type(store), -*((value_type*)&value));
+        return *((T*)&re);
+    }
 
-	static T fetch_or(T* store, T value) NOEXCEPT
-	{
-		return _InterlockedOr64(store, value);
-	}
+    static T fetch_or(T* store, T value) NOEXCEPT
+    {
+        value_type re = _InterlockedOr64(store_type(store), *((value_type*)&value));
+        return *((T*)&re);
+    }
 
-	static T fetch_and(T* store, T value) NOEXCEPT
-	{
-		return _InterlockedAnd64(store, value);
-	}
+    static T fetch_and(T* store, T value) NOEXCEPT
+    {
+        value_type re = _InterlockedAnd64(store_type(store), *((value_type*)&value));
+        return *((T*)&re);
+    }
 
-	static T fetch_xor(T* store, T value) NOEXCEPT
-	{
-		return _InterlockedXor64(store, value);
-	}
+    static T fetch_xor(T* store, T value) NOEXCEPT
+    {
+        value_type re = _InterlockedXor64(store_type(store), *((value_type*)&value));
+        return *((T*)&re);
+    }
 
-	static T fetch_nand(T* store, T value) NOEXCEPT
-	{
-		abort();
-	}
+    static T fetch_nand(T* store, T value) NOEXCEPT
+    {
+        abort();
+    }
 
     // get modified value
-	static T add_fetch(T* store, T value) NOEXCEPT
-	{
-		T old = fetch_add(store, value);
-		return old + value;
-	}
+    static T add_fetch(T* store, T value) NOEXCEPT
+    {
+        T old = fetch_add(store, value);
+        return old + value;
+    }
 
-	static T sub_fetch(T* store, T value) NOEXCEPT
-	{
-		T old = fetch_sub(store, value);
-		return old - value;
-	}
+    static T sub_fetch(T* store, T value) NOEXCEPT
+    {
+        T old = fetch_sub(store, value);
+        return old - value;
+    }
 
-	static T or_fetch(T* store, T value) NOEXCEPT
-	{
-		T old = fetch_or(store, value);
-		return old | value;
-	}
+    static T or_fetch(T* store, T value) NOEXCEPT
+    {
+        T old = fetch_or(store, value);
+        return old | value;
+    }
 
-	static T and_fetch(T* store, T value) NOEXCEPT
-	{
-		T old = fetch_and(store, value);
-		return old & value;
-	}
+    static T and_fetch(T* store, T value) NOEXCEPT
+    {
+        T old = fetch_and(store, value);
+        return old & value;
+    }
 
-	static T xor_fetch(T* store, T value) NOEXCEPT
-	{
-		T old = fetch_xor(store, value);
-		return old ^ value;
-	}
+    static T xor_fetch(T* store, T value) NOEXCEPT
+    {
+        T old = fetch_xor(store, value);
+        return old ^ value;
+    }
 
-	static T nand_fetch(T* store, T value) NOEXCEPT
-	{
-		abort();
-	}
+    static T nand_fetch(T* store, T value) NOEXCEPT
+    {
+        abort();
+    }
 
     // cas
-	static bool cas(T* store, T expect, T value) NOEXCEPT
-	{
-		return (_InterlockedCompareExchange64(store, value, expect) == expect);
-	}
+    static bool cas(T* store, T expect, T value) NOEXCEPT
+    {
+        return (_InterlockedCompareExchange64(store_type(store), *((value_type*)&value), *((value_type*)&expect)) == *((value_type*)&expect));
+    }
 };
 
 
@@ -295,7 +314,7 @@ inline T atomic_nand_fetch(T* store, T value) NOEXCEPT
 template<typename T>
 inline bool atomic_cas(T* store, T expect, T value) NOEXCEPT
 {
-    return _msvc_atomic_impl_<T, sizeof(T)>::cas(store, except, value);
+    return _msvc_atomic_impl_<T, sizeof(T)>::cas(store, expect, value);
 }
 
 TREEFACE_JUCE_NAMESPACE_END

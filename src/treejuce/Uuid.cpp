@@ -46,28 +46,28 @@ Uuid::Uuid()
     uuid[8] = (uuid[8] & 0x3f) | 0x80;
 }
 
-Uuid::~Uuid() noexcept {}
+Uuid::~Uuid() NOEXCEPT {}
 
-Uuid::Uuid (const Uuid& other) noexcept
+Uuid::Uuid (const Uuid& other) NOEXCEPT
 {
     memcpy (uuid, other.uuid, sizeof (uuid));
 }
 
-Uuid& Uuid::operator= (const Uuid& other) noexcept
+Uuid& Uuid::operator= (const Uuid& other) NOEXCEPT
 {
     memcpy (uuid, other.uuid, sizeof (uuid));
     return *this;
 }
 
-bool Uuid::operator== (const Uuid& other) const noexcept    { return memcmp (uuid, other.uuid, sizeof (uuid)) == 0; }
-bool Uuid::operator!= (const Uuid& other) const noexcept    { return ! operator== (other); }
+bool Uuid::operator== (const Uuid& other) const NOEXCEPT    { return memcmp (uuid, other.uuid, sizeof (uuid)) == 0; }
+bool Uuid::operator!= (const Uuid& other) const NOEXCEPT    { return ! operator== (other); }
 
-Uuid Uuid::null() noexcept
+Uuid Uuid::null() NOEXCEPT
 {
     return Uuid ((const uint8*) nullptr);
 }
 
-bool Uuid::isNull() const noexcept
+bool Uuid::isNull() const NOEXCEPT
 {
     for (size_t i = 0; i < sizeof (uuid); ++i)
         if (uuid[i] != 0)
@@ -109,12 +109,12 @@ Uuid& Uuid::operator= (const String& uuidString)
     return *this;
 }
 
-Uuid::Uuid (const uint8* const rawData) noexcept
+Uuid::Uuid (const uint8* const rawData) NOEXCEPT
 {
     operator= (rawData);
 }
 
-Uuid& Uuid::operator= (const uint8* const rawData) noexcept
+Uuid& Uuid::operator= (const uint8* const rawData) NOEXCEPT
 {
     if (rawData != nullptr)
         memcpy (uuid, rawData, sizeof (uuid));

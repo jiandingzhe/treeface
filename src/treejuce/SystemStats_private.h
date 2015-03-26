@@ -7,14 +7,14 @@ TREEFACE_JUCE_NAMESPACE_BEGIN
 
 struct CPUInformation
 {
-    CPUInformation() noexcept
+    CPUInformation() NOEXCEPT
         : numCpus (0), hasMMX (false), hasSSE (false),
           hasSSE2 (false), hasSSE3 (false), has3DNow (false)
     {
         initialise();
     }
 
-    void initialise() noexcept;
+    void initialise() NOEXCEPT;
 
     int numCpus;
     bool hasMMX, hasSSE, hasSSE2, hasSSE3, has3DNow;

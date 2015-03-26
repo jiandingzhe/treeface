@@ -90,21 +90,21 @@ public:
     static CharPointerType createFromFixedLength (const char* const src, const size_t numChars);
 
     //==============================================================================
-    static void retain (const CharPointerType text) noexcept;
+    static void retain (const CharPointerType text) NOEXCEPT;
 
-    static inline void release (StringHolder* const b) noexcept
+    static inline void release (StringHolder* const b) NOEXCEPT
     {
         if (b != (StringHolder*) &emptyString)
             if (--(b->refCount) == -1)
                 delete[] reinterpret_cast<char*> (b);
     }
 
-    static void release (const CharPointerType text) noexcept
+    static void release (const CharPointerType text) NOEXCEPT
     {
         release(bufferFromText (text));
     }
 
-    static inline int getReferenceCount (const CharPointerType text) noexcept
+    static inline int getReferenceCount (const CharPointerType text) NOEXCEPT
     {
         return atomic_load(&bufferFromText(text)->refCount) + 1;
     }
@@ -112,7 +112,7 @@ public:
     //==============================================================================
     static CharPointerType makeUniqueWithByteSize (const CharPointerType text, size_t numBytes);
 
-    static size_t getAllocatedNumBytes (const CharPointerType text) noexcept;
+    static size_t getAllocatedNumBytes (const CharPointerType text) NOEXCEPT;
 
     //==============================================================================
     int refCount;
@@ -120,7 +120,7 @@ public:
     CharType text[1];
 
 private:
-    static inline StringHolder* bufferFromText (const CharPointerType text) noexcept
+    static inline StringHolder* bufferFromText (const CharPointerType text) NOEXCEPT
     {
         // (Can't use offsetof() here because of warnings about this not being a POD)
         return reinterpret_cast<StringHolder*> (reinterpret_cast<char*> (text.getAddress())
@@ -153,7 +153,7 @@ namespace NumberToStringConverters
     };
 
     template <typename Type>
-    static char* printDigits (char* t, Type v) noexcept
+    static char* printDigits (char* t, Type v) NOEXCEPT
     {
         *--t = 0;
 
@@ -168,13 +168,13 @@ namespace NumberToStringConverters
     }
 
     // pass in a pointer to the END of a buffer..
-    char* numberToString (char* t, const int64 n) noexcept;
+    char* numberToString (char* t, const int64 n) NOEXCEPT;
 
-    char* numberToString (char* t, uint64 v) noexcept;
+    char* numberToString (char* t, uint64 v) NOEXCEPT;
 
-    char* numberToString (char* t, const int n) noexcept;
+    char* numberToString (char* t, const int n) NOEXCEPT;
 
-    char* numberToString (char* t, unsigned int v) noexcept;
+    char* numberToString (char* t, unsigned int v) NOEXCEPT;
 
     struct StackArrayStream  : public std::basic_streambuf<char, std::char_traits<char> >
     {
@@ -182,7 +182,7 @@ namespace NumberToStringConverters
         size_t writeDouble (double n, int numDecPlaces);
     };
 
-    char* doubleToString (char* buffer, const int numChars, double n, int numDecPlaces, size_t& len) noexcept;
+    char* doubleToString (char* buffer, const int numChars, double n, int numDecPlaces, size_t& len) NOEXCEPT;
 
     template <typename IntegerType>
     String::CharPointerType createFromInteger (const IntegerType number)

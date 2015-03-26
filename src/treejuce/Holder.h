@@ -2,6 +2,7 @@
 #define TREEFACE_OJBECT_HOLDER_H
 
 #include "treejuce/Common.h"
+#include "treejuce/PlatformDefs.h"
 
 class TestFramework;
 
@@ -94,27 +95,27 @@ public:
         return *this;
     }
 
-    operator T*() const noexcept
+    operator T*() const NOEXCEPT
     {
         return ms_ptr;
     }
 
-    operator bool () const noexcept
+    operator bool () const NOEXCEPT
     {
         return ms_ptr != nullptr;
     }
 
-    T* get() const noexcept
+    T* get() const NOEXCEPT
     {
         return ms_ptr;
     }
 
-    T& operator * () const noexcept
+    T& operator * () const NOEXCEPT
     {
         return *ms_ptr;
     }
 
-    T* operator -> () const noexcept
+    T* operator -> () const NOEXCEPT
     {
         return ms_ptr;
     }

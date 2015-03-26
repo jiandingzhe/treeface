@@ -51,7 +51,7 @@ public:
     /** Returns the default new-line sequence that the library uses.
         @see OutputStream::setNewLineString()
     */
-    static const char* getDefault() noexcept        { return "\r\n"; }
+    static const char* getDefault() NOEXCEPT        { return "\r\n"; }
 
     /** Returns the default new-line sequence that the library uses.
         @see getDefault()
@@ -61,7 +61,7 @@ public:
     /** Returns the default new-line sequence that the library uses.
         @see OutputStream::setNewLineString()
     */
-    operator StringRef() const noexcept             { return getDefault(); }
+    operator StringRef() const NOEXCEPT             { return getDefault(); }
 };
 
 //==============================================================================

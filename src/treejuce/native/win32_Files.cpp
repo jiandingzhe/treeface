@@ -66,7 +66,7 @@ namespace WindowsFileHelpers
         return (int64) ((reinterpret_cast<const ULARGE_INTEGER*> (ft)->QuadPart - 116444736000000000LL) / 10000);
     }
 
-    FILETIME* timeToFileTime (const int64 time, FILETIME* const ft) noexcept
+    FILETIME* timeToFileTime (const int64 time, FILETIME* const ft) NOEXCEPT
     {
         if (time <= 0)
             return nullptr;

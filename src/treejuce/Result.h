@@ -67,58 +67,58 @@ class JUCE_API  Result
 public:
     //==============================================================================
     /** Creates and returns a 'successful' result. */
-    static Result ok() noexcept                         { return Result(); }
+    static Result ok() NOEXCEPT                         { return Result(); }
 
     /** Creates a 'failure' result.
         If you pass a blank error message in here, a default "Unknown Error" message
         will be used instead.
     */
-    static Result fail (const String& errorMessage) noexcept;
+    static Result fail (const String& errorMessage) NOEXCEPT;
 
     //==============================================================================
     /** Returns true if this result indicates a success. */
-    bool wasOk() const noexcept;
+    bool wasOk() const NOEXCEPT;
 
     /** Returns true if this result indicates a failure.
         You can use getErrorMessage() to retrieve the error message associated
         with the failure.
     */
-    bool failed() const noexcept;
+    bool failed() const NOEXCEPT;
 
     /** Returns true if this result indicates a success.
         This is equivalent to calling wasOk().
     */
-    operator bool() const noexcept;
+    operator bool() const NOEXCEPT;
 
     /** Returns true if this result indicates a failure.
         This is equivalent to calling failed().
     */
-    bool operator!() const noexcept;
+    bool operator!() const NOEXCEPT;
 
     /** Returns the error message that was set when this result was created.
         For a successful result, this will be an empty string;
     */
-    const String& getErrorMessage() const noexcept;
+    const String& getErrorMessage() const NOEXCEPT;
 
     //==============================================================================
     Result (const Result&);
     Result& operator= (const Result&);
 
    #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-    Result (Result&&) noexcept;
-    Result& operator= (Result&&) noexcept;
+    Result (Result&&) NOEXCEPT;
+    Result& operator= (Result&&) NOEXCEPT;
    #endif
 
-    bool operator== (const Result& other) const noexcept;
-    bool operator!= (const Result& other) const noexcept;
+    bool operator== (const Result& other) const NOEXCEPT;
+    bool operator!= (const Result& other) const NOEXCEPT;
 
 private:
     String errorMessage;
 
     // The default constructor is not for public use!
     // Instead, use Result::ok() or Result::fail()
-    Result() noexcept;
-    explicit Result (const String&) noexcept;
+    Result() NOEXCEPT;
+    explicit Result (const String&) NOEXCEPT;
 
     // These casts are private to prevent people trying to use the Result object in numeric contexts
     operator int() const;

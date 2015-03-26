@@ -37,8 +37,8 @@ TREEFACE_JUCE_NAMESPACE_BEGIN
 
 namespace
 {
-    inline size_t bitToIndex (const int bit) noexcept   { return (size_t) (bit >> 5); }
-    inline uint32 bitToMask  (const int bit) noexcept   { return (uint32) 1 << (bit & 31); }
+    inline size_t bitToIndex (const int bit) NOEXCEPT   { return (size_t) (bit >> 5); }
+    inline uint32 bitToMask  (const int bit) NOEXCEPT   { return (uint32) 1 << (bit & 31); }
 }
 
 //==============================================================================
@@ -95,7 +95,7 @@ BigInteger::BigInteger (const BigInteger& other)
 }
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-BigInteger::BigInteger (BigInteger&& other) noexcept
+BigInteger::BigInteger (BigInteger&& other) NOEXCEPT
     : values (static_cast <HeapBlock <uint32>&&> (other.values)),
       numValues (other.numValues),
       highestBit (other.highestBit),
@@ -103,7 +103,7 @@ BigInteger::BigInteger (BigInteger&& other) noexcept
 {
 }
 
-BigInteger& BigInteger::operator= (BigInteger&& other) noexcept
+BigInteger& BigInteger::operator= (BigInteger&& other) NOEXCEPT
 {
     values = static_cast <HeapBlock <uint32>&&> (other.values);
     numValues = other.numValues;
@@ -117,7 +117,7 @@ BigInteger::~BigInteger()
 {
 }
 
-void BigInteger::swapWith (BigInteger& other) noexcept
+void BigInteger::swapWith (BigInteger& other) NOEXCEPT
 {
     values.swapWith (other.values);
     std::swap (numValues, other.numValues);
@@ -154,19 +154,19 @@ void BigInteger::ensureSize (const size_t numVals)
 }
 
 //==============================================================================
-bool BigInteger::operator[] (const int bit) const noexcept
+bool BigInteger::operator[] (const int bit) const NOEXCEPT
 {
     return bit <= highestBit && bit >= 0
              && ((values [bitToIndex (bit)] & bitToMask (bit)) != 0);
 }
 
-int BigInteger::toInteger() const noexcept
+int BigInteger::toInteger() const NOEXCEPT
 {
     const int n = (int) (values[0] & 0x7fffffff);
     return negative ? -n : n;
 }
 
-int64 BigInteger::toInt64() const noexcept
+int64 BigInteger::toInt64() const NOEXCEPT
 {
     const int64 n = (((int64) (values[1] & 0x7fffffff)) << 32) | values[0];
     return negative ? -n : n;
@@ -191,7 +191,7 @@ BigInteger BigInteger::getBitRange (int startBit, int numBits) const
     return r;
 }
 
-uint32 BigInteger::getBitRangeAsInt (const int startBit, int numBits) const noexcept
+uint32 BigInteger::getBitRangeAsInt (const int startBit, int numBits) const NOEXCEPT
 {
     if (numBits > 32)
     {
@@ -270,7 +270,7 @@ void BigInteger::setBit (const int bit, const bool shouldBeSet)
         clearBit (bit);
 }
 
-void BigInteger::clearBit (const int bit) noexcept
+void BigInteger::clearBit (const int bit) NOEXCEPT
 {
     if (bit >= 0 && bit <= highestBit)
         values [bitToIndex (bit)] &= ~bitToMask (bit);
@@ -291,27 +291,27 @@ void BigInteger::insertBit (const int bit, const bool shouldBeSet)
 }
 
 //==============================================================================
-bool BigInteger::isZero() const noexcept
+bool BigInteger::isZero() const NOEXCEPT
 {
     return getHighestBit() < 0;
 }
 
-bool BigInteger::isOne() const noexcept
+bool BigInteger::isOne() const NOEXCEPT
 {
     return getHighestBit() == 0 && ! negative;
 }
 
-bool BigInteger::isNegative() const noexcept
+bool BigInteger::isNegative() const NOEXCEPT
 {
     return negative && ! isZero();
 }
 
-void BigInteger::setNegative (const bool neg) noexcept
+void BigInteger::setNegative (const bool neg) NOEXCEPT
 {
     negative = neg;
 }
 
-void BigInteger::negate() noexcept
+void BigInteger::negate() NOEXCEPT
 {
     negative = (! negative) && ! isZero();
 }
@@ -320,7 +320,7 @@ void BigInteger::negate() noexcept
  #pragma intrinsic (_BitScanReverse)
 #endif
 
-inline static int highestBitInInt (uint32 n) noexcept
+inline static int highestBitInInt (uint32 n) NOEXCEPT
 {
     jassert (n != 0); // (the built-in functions may not work for n = 0)
 
@@ -340,7 +340,7 @@ inline static int highestBitInInt (uint32 n) noexcept
   #endif
 }
 
-int BigInteger::countNumberOfSetBits() const noexcept
+int BigInteger::countNumberOfSetBits() const NOEXCEPT
 {
     int total = 0;
 
@@ -350,7 +350,7 @@ int BigInteger::countNumberOfSetBits() const noexcept
     return total;
 }
 
-int BigInteger::getHighestBit() const noexcept
+int BigInteger::getHighestBit() const NOEXCEPT
 {
     for (int i = (int) bitToIndex (highestBit + 1); i >= 0; --i)
     {
@@ -363,7 +363,7 @@ int BigInteger::getHighestBit() const noexcept
     return -1;
 }
 
-int BigInteger::findNextSetBit (int i) const noexcept
+int BigInteger::findNextSetBit (int i) const NOEXCEPT
 {
     for (; i <= highestBit; ++i)
         if ((values [bitToIndex (i)] & bitToMask (i)) != 0)
@@ -372,7 +372,7 @@ int BigInteger::findNextSetBit (int i) const noexcept
     return -1;
 }
 
-int BigInteger::findNextClearBit (int i) const noexcept
+int BigInteger::findNextClearBit (int i) const NOEXCEPT
 {
     for (; i <= highestBit; ++i)
         if ((values [bitToIndex (i)] & bitToMask (i)) == 0)
@@ -651,7 +651,7 @@ BigInteger& BigInteger::operator<<= (const int numBits)              { shiftBits
 BigInteger& BigInteger::operator>>= (const int numBits)              { shiftBits (-numBits, 0); return *this; }
 
 //==============================================================================
-int BigInteger::compare (const BigInteger& other) const noexcept
+int BigInteger::compare (const BigInteger& other) const NOEXCEPT
 {
     if (isNegative() == other.isNegative())
     {
@@ -664,7 +664,7 @@ int BigInteger::compare (const BigInteger& other) const noexcept
     }
 }
 
-int BigInteger::compareAbsolute (const BigInteger& other) const noexcept
+int BigInteger::compareAbsolute (const BigInteger& other) const NOEXCEPT
 {
     const int h1 = getHighestBit();
     const int h2 = other.getHighestBit();
@@ -681,12 +681,12 @@ int BigInteger::compareAbsolute (const BigInteger& other) const noexcept
     return 0;
 }
 
-bool BigInteger::operator== (const BigInteger& other) const noexcept    { return compare (other) == 0; }
-bool BigInteger::operator!= (const BigInteger& other) const noexcept    { return compare (other) != 0; }
-bool BigInteger::operator<  (const BigInteger& other) const noexcept    { return compare (other) < 0; }
-bool BigInteger::operator<= (const BigInteger& other) const noexcept    { return compare (other) <= 0; }
-bool BigInteger::operator>  (const BigInteger& other) const noexcept    { return compare (other) > 0; }
-bool BigInteger::operator>= (const BigInteger& other) const noexcept    { return compare (other) >= 0; }
+bool BigInteger::operator== (const BigInteger& other) const NOEXCEPT    { return compare (other) == 0; }
+bool BigInteger::operator!= (const BigInteger& other) const NOEXCEPT    { return compare (other) != 0; }
+bool BigInteger::operator<  (const BigInteger& other) const NOEXCEPT    { return compare (other) < 0; }
+bool BigInteger::operator<= (const BigInteger& other) const NOEXCEPT    { return compare (other) <= 0; }
+bool BigInteger::operator>  (const BigInteger& other) const NOEXCEPT    { return compare (other) > 0; }
+bool BigInteger::operator>= (const BigInteger& other) const NOEXCEPT    { return compare (other) >= 0; }
 
 //==============================================================================
 void BigInteger::shiftLeft (int bits, const int startBit)

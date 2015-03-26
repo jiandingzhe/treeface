@@ -74,7 +74,7 @@ ChildProcess::ActiveProcess::~ActiveProcess()
 		CloseHandle (writePipe);
 }
 
-int ChildProcess::ActiveProcess::read (void* dest, int numNeeded) const noexcept
+int ChildProcess::ActiveProcess::read (void* dest, int numNeeded) const NOEXCEPT
 {
 	int total = 0;
 
@@ -109,7 +109,7 @@ int ChildProcess::ActiveProcess::read (void* dest, int numNeeded) const noexcept
 	return total;
 }
 
-uint32 ChildProcess::ActiveProcess::getExitCode() const noexcept
+uint32 ChildProcess::ActiveProcess::getExitCode() const NOEXCEPT
 {
 	DWORD exitCode = 0;
 	GetExitCodeProcess (processInfo.hProcess, &exitCode);

@@ -30,7 +30,7 @@
 
 TREEFACE_JUCE_NAMESPACE_BEGIN
 
-ReadWriteLock::ReadWriteLock() noexcept
+ReadWriteLock::ReadWriteLock() NOEXCEPT
     : numWaitingWriters (0),
       numWriters (0),
       writerThreadId (0)
@@ -38,20 +38,20 @@ ReadWriteLock::ReadWriteLock() noexcept
     readerThreads.ensureStorageAllocated (16);
 }
 
-ReadWriteLock::~ReadWriteLock() noexcept
+ReadWriteLock::~ReadWriteLock() NOEXCEPT
 {
     jassert (readerThreads.size() == 0);
     jassert (numWriters == 0);
 }
 
 //==============================================================================
-void ReadWriteLock::enterRead() const noexcept
+void ReadWriteLock::enterRead() const NOEXCEPT
 {
     while (! tryEnterRead())
         waitEvent.wait (100);
 }
 
-bool ReadWriteLock::tryEnterRead() const noexcept
+bool ReadWriteLock::tryEnterRead() const NOEXCEPT
 {
     const Thread::ThreadID threadId = Thread::getCurrentThreadId();
 
@@ -79,7 +79,7 @@ bool ReadWriteLock::tryEnterRead() const noexcept
     return false;
 }
 
-void ReadWriteLock::exitRead() const noexcept
+void ReadWriteLock::exitRead() const NOEXCEPT
 {
     const Thread::ThreadID threadId = Thread::getCurrentThreadId();
     const SpinLock::ScopedLockType sl (accessLock);
@@ -104,7 +104,7 @@ void ReadWriteLock::exitRead() const noexcept
 }
 
 //==============================================================================
-void ReadWriteLock::enterWrite() const noexcept
+void ReadWriteLock::enterWrite() const NOEXCEPT
 {
     const Thread::ThreadID threadId = Thread::getCurrentThreadId();
     const SpinLock::ScopedLockType sl (accessLock);
@@ -119,13 +119,13 @@ void ReadWriteLock::enterWrite() const noexcept
     }
 }
 
-bool ReadWriteLock::tryEnterWrite() const noexcept
+bool ReadWriteLock::tryEnterWrite() const NOEXCEPT
 {
     const SpinLock::ScopedLockType sl (accessLock);
     return tryEnterWriteInternal (Thread::getCurrentThreadId());
 }
 
-bool ReadWriteLock::tryEnterWriteInternal (Thread::ThreadID threadId) const noexcept
+bool ReadWriteLock::tryEnterWriteInternal (Thread::ThreadID threadId) const NOEXCEPT
 {
     if (readerThreads.size() + numWriters == 0
          || threadId == writerThreadId
@@ -139,7 +139,7 @@ bool ReadWriteLock::tryEnterWriteInternal (Thread::ThreadID threadId) const noex
     return false;
 }
 
-void ReadWriteLock::exitWrite() const noexcept
+void ReadWriteLock::exitWrite() const NOEXCEPT
 {
     const SpinLock::ScopedLockType sl (accessLock);
 

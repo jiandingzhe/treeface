@@ -459,7 +459,7 @@ void on_mouse_up(SDL_MouseButtonEvent& e)
 }
 
 #ifdef TREEFACE_OS_WINDOWS
-int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 #else
 int main(int argc, char** argv)
 #endif

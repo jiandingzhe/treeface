@@ -72,7 +72,7 @@ public:
         otherwise there are no guarantees what will happen! Best just to use it
         as a local stack object, rather than creating one with the new() operator.
     */
-    inline explicit ScopedWriteLock (const ReadWriteLock& lock) noexcept : lock_ (lock) { lock.enterWrite(); }
+    inline explicit ScopedWriteLock (const ReadWriteLock& lock) NOEXCEPT : lock_ (lock) { lock.enterWrite(); }
 
     /** Destructor.
 
@@ -81,7 +81,7 @@ public:
         Make sure this object is created and deleted by the same thread,
         otherwise there are no guarantees what will happen!
     */
-    inline ~ScopedWriteLock() noexcept                                   { lock_.exitWrite(); }
+    inline ~ScopedWriteLock() NOEXCEPT                                   { lock_.exitWrite(); }
 
 
 private:

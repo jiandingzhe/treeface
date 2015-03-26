@@ -46,7 +46,7 @@ File::File (const String& fullPathName)
 {
 }
 
-File File::createFileWithoutCheckingPath (const String& path) noexcept
+File File::createFileWithoutCheckingPath (const String& path) NOEXCEPT
 {
     File f;
     f.fullPath = path;
@@ -71,12 +71,12 @@ File& File::operator= (const File& other)
 }
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-File::File (File&& other) noexcept
+File::File (File&& other) NOEXCEPT
     : fullPath (static_cast <String&&> (other.fullPath))
 {
 }
 
-File& File::operator= (File&& other) noexcept
+File& File::operator= (File&& other) NOEXCEPT
 {
     fullPath = static_cast <String&&> (other.fullPath);
     return *this;
@@ -202,7 +202,7 @@ bool File::areFileNamesCaseSensitive()
    #endif
 }
 
-static int compareFilenames (const String& name1, const String& name2) noexcept
+static int compareFilenames (const String& name1, const String& name2) NOEXCEPT
 {
    #if NAMES_ARE_CASE_SENSITIVE
     return name1.compare (name2);

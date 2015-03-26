@@ -48,7 +48,7 @@ NewLine newLine;
  #error "JUCE_STRINGS_ARE_UNICODE is deprecated! All strings are now unicode by default."
 #endif
 
-static inline CharPointer_wchar_t castToCharPointer_wchar_t (const void* t) noexcept
+static inline CharPointer_wchar_t castToCharPointer_wchar_t (const void* t) NOEXCEPT
 {
     return CharPointer_wchar_t (static_cast<const CharPointer_wchar_t::CharType*> (t));
 }
@@ -88,7 +88,7 @@ StringHolder::CharPointerType StringHolder::createFromFixedLength (const char* c
     return dest;
 }
 
-void StringHolder::retain (const CharPointerType text) noexcept
+void StringHolder::retain (const CharPointerType text) NOEXCEPT
 {
     StringHolder* const b = bufferFromText (text);
 
@@ -117,7 +117,7 @@ StringHolder::CharPointerType StringHolder::makeUniqueWithByteSize (const CharPo
     return newText;
 }
 
-size_t StringHolder::getAllocatedNumBytes (const CharPointerType text) noexcept
+size_t StringHolder::getAllocatedNumBytes (const CharPointerType text) NOEXCEPT
 {
     return bufferFromText (text)->allocatedNumBytes;
 }
@@ -125,32 +125,32 @@ size_t StringHolder::getAllocatedNumBytes (const CharPointerType text) noexcept
 const String String::empty;
 
 //==============================================================================
-String::String() noexcept  : text (&(emptyString.text))
+String::String() NOEXCEPT  : text (&(emptyString.text))
 {
 }
 
-String::~String() noexcept
+String::~String() NOEXCEPT
 {
     StringHolder::release (text);
 }
 
-String::String (const String& other) noexcept   : text (other.text)
+String::String (const String& other) NOEXCEPT   : text (other.text)
 {
     StringHolder::retain (text);
 }
 
-void String::swapWith (String& other) noexcept
+void String::swapWith (String& other) NOEXCEPT
 {
     std::swap (text, other.text);
 }
 
-void String::clear() noexcept
+void String::clear() NOEXCEPT
 {
     StringHolder::release (text);
     text = &(emptyString.text);
 }
 
-String& String::operator= (const String& other) noexcept
+String& String::operator= (const String& other) NOEXCEPT
 {
     StringHolder::retain (other.text);
     StringHolder::release (text.atomicSwap (other.text));
@@ -158,19 +158,19 @@ String& String::operator= (const String& other) noexcept
 }
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-String::String (String&& other) noexcept   : text (other.text)
+String::String (String&& other) NOEXCEPT   : text (other.text)
 {
     other.text = &(emptyString.text);
 }
 
-String& String::operator= (String&& other) noexcept
+String& String::operator= (String&& other) NOEXCEPT
 {
     std::swap (text, other.text);
     return *this;
 }
 #endif
 
-inline String::PreallocationBytes::PreallocationBytes (const size_t num) noexcept : numBytes (num) {}
+inline String::PreallocationBytes::PreallocationBytes (const size_t num) NOEXCEPT : numBytes (num) {}
 
 String::String (const PreallocationBytes& preallocationSize)
     : text (StringHolder::createUninitialisedBytes (preallocationSize.numBytes + sizeof (CharPointerType::CharType)))
@@ -182,7 +182,7 @@ void String::preallocateBytes (const size_t numBytesNeeded)
     text = StringHolder::makeUniqueWithByteSize (text, numBytesNeeded + sizeof (CharPointerType::CharType));
 }
 
-int String::getReferenceCount() const noexcept
+int String::getReferenceCount() const NOEXCEPT
 {
     return StringHolder::getReferenceCount (text);
 }
@@ -264,7 +264,7 @@ String String::charToString (const juce_wchar character)
 namespace NumberToStringConverters
 {
 
-char* numberToString (char* t, const int64 n) noexcept
+char* numberToString (char* t, const int64 n) NOEXCEPT
 {
     if (n >= 0)
         return printDigits (t, static_cast<uint64> (n));
@@ -276,12 +276,12 @@ char* numberToString (char* t, const int64 n) noexcept
     return t;
 }
 
-char* numberToString (char* t, uint64 v) noexcept
+char* numberToString (char* t, uint64 v) NOEXCEPT
 {
     return printDigits (t, v);
 }
 
-char* numberToString (char* t, const int n) noexcept
+char* numberToString (char* t, const int n) NOEXCEPT
 {
     if (n >= 0)
         return printDigits (t, static_cast<unsigned int> (n));
@@ -293,7 +293,7 @@ char* numberToString (char* t, const int n) noexcept
     return t;
 }
 
-char* numberToString (char* t, unsigned int v) noexcept
+char* numberToString (char* t, unsigned int v) NOEXCEPT
 {
     return printDigits (t, v);
 }
@@ -319,7 +319,7 @@ size_t StackArrayStream::writeDouble (double n, int numDecPlaces)
     return (size_t) (pptr() - pbase());
 }
 
-char* doubleToString (char* buffer, const int numChars, double n, int numDecPlaces, size_t& len) noexcept
+char* doubleToString (char* buffer, const int numChars, double n, int numDecPlaces, size_t& len) NOEXCEPT
 {
     if (numDecPlaces > 0 && numDecPlaces < 7 && n > -1.0e20 && n < 1.0e20)
     {
@@ -376,22 +376,22 @@ String::String (const float  number, const int numberOfDecimalPlaces)  : text (N
 String::String (const double number, const int numberOfDecimalPlaces)  : text (NumberToStringConverters::createFromDouble (number, numberOfDecimalPlaces)) {}
 
 //==============================================================================
-int String::length() const noexcept
+int String::length() const NOEXCEPT
 {
     return (int) text.length();
 }
 
-static size_t findByteOffsetOfEnd (String::CharPointerType text) noexcept
+static size_t findByteOffsetOfEnd (String::CharPointerType text) NOEXCEPT
 {
     return (size_t) (((char*) text.findTerminatingNull().getAddress()) - (char*) text.getAddress());
 }
 
-size_t String::getByteOffsetOfEnd() const noexcept
+size_t String::getByteOffsetOfEnd() const NOEXCEPT
 {
     return findByteOffsetOfEnd (text);
 }
 
-juce_wchar String::operator[] (int index) const noexcept
+juce_wchar String::operator[] (int index) const NOEXCEPT
 {
     jassert (index == 0 || (index > 0 && index <= (int) text.lengthUpTo ((size_t) index + 1)));
     return text [index];
@@ -401,7 +401,7 @@ template <typename Type>
 struct HashGenerator
 {
     template <typename CharPointer>
-    static Type calculate (CharPointer t) noexcept
+    static Type calculate (CharPointer t) NOEXCEPT
     {
         Type result = Type();
 
@@ -414,59 +414,59 @@ struct HashGenerator
     enum { multiplier = sizeof (Type) > 4 ? 101 : 31 };
 };
 
-int String::hashCode() const noexcept       { return HashGenerator<int>        ::calculate (text); }
-int64 String::hashCode64() const noexcept   { return HashGenerator<int64>      ::calculate (text); }
-std::size_t String::hash() const noexcept   { return HashGenerator<std::size_t>::calculate (text); }
+int String::hashCode() const NOEXCEPT       { return HashGenerator<int>        ::calculate (text); }
+int64 String::hashCode64() const NOEXCEPT   { return HashGenerator<int64>      ::calculate (text); }
+std::size_t String::hash() const NOEXCEPT   { return HashGenerator<std::size_t>::calculate (text); }
 
 //==============================================================================
-JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, const String& s2) noexcept            { return s1.compare (s2) == 0; }
-JUCE_API bool JUCE_CALLTYPE operator!= (const String& s1, const String& s2) noexcept            { return s1.compare (s2) != 0; }
-JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, const char* s2) noexcept              { return s1.compare (s2) == 0; }
-JUCE_API bool JUCE_CALLTYPE operator!= (const String& s1, const char* s2) noexcept              { return s1.compare (s2) != 0; }
-JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, const wchar_t* s2) noexcept           { return s1.compare (s2) == 0; }
-JUCE_API bool JUCE_CALLTYPE operator!= (const String& s1, const wchar_t* s2) noexcept           { return s1.compare (s2) != 0; }
-JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, StringRef s2) noexcept                { return s1.getCharPointer().compare (s2.text) == 0; }
-JUCE_API bool JUCE_CALLTYPE operator!= (const String& s1, StringRef s2) noexcept                { return s1.getCharPointer().compare (s2.text) != 0; }
-JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, const CharPointer_UTF8 s2) noexcept   { return s1.getCharPointer().compare (s2) == 0; }
-JUCE_API bool JUCE_CALLTYPE operator!= (const String& s1, const CharPointer_UTF8 s2) noexcept   { return s1.getCharPointer().compare (s2) != 0; }
-JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, const CharPointer_UTF16 s2) noexcept  { return s1.getCharPointer().compare (s2) == 0; }
-JUCE_API bool JUCE_CALLTYPE operator!= (const String& s1, const CharPointer_UTF16 s2) noexcept  { return s1.getCharPointer().compare (s2) != 0; }
-JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, const CharPointer_UTF32 s2) noexcept  { return s1.getCharPointer().compare (s2) == 0; }
-JUCE_API bool JUCE_CALLTYPE operator!= (const String& s1, const CharPointer_UTF32 s2) noexcept  { return s1.getCharPointer().compare (s2) != 0; }
-JUCE_API bool JUCE_CALLTYPE operator>  (const String& s1, const String& s2) noexcept            { return s1.compare (s2) > 0; }
-JUCE_API bool JUCE_CALLTYPE operator<  (const String& s1, const String& s2) noexcept            { return s1.compare (s2) < 0; }
-JUCE_API bool JUCE_CALLTYPE operator>= (const String& s1, const String& s2) noexcept            { return s1.compare (s2) >= 0; }
-JUCE_API bool JUCE_CALLTYPE operator<= (const String& s1, const String& s2) noexcept            { return s1.compare (s2) <= 0; }
+JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, const String& s2) NOEXCEPT            { return s1.compare (s2) == 0; }
+JUCE_API bool JUCE_CALLTYPE operator!= (const String& s1, const String& s2) NOEXCEPT            { return s1.compare (s2) != 0; }
+JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, const char* s2) NOEXCEPT              { return s1.compare (s2) == 0; }
+JUCE_API bool JUCE_CALLTYPE operator!= (const String& s1, const char* s2) NOEXCEPT              { return s1.compare (s2) != 0; }
+JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, const wchar_t* s2) NOEXCEPT           { return s1.compare (s2) == 0; }
+JUCE_API bool JUCE_CALLTYPE operator!= (const String& s1, const wchar_t* s2) NOEXCEPT           { return s1.compare (s2) != 0; }
+JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, StringRef s2) NOEXCEPT                { return s1.getCharPointer().compare (s2.text) == 0; }
+JUCE_API bool JUCE_CALLTYPE operator!= (const String& s1, StringRef s2) NOEXCEPT                { return s1.getCharPointer().compare (s2.text) != 0; }
+JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, const CharPointer_UTF8 s2) NOEXCEPT   { return s1.getCharPointer().compare (s2) == 0; }
+JUCE_API bool JUCE_CALLTYPE operator!= (const String& s1, const CharPointer_UTF8 s2) NOEXCEPT   { return s1.getCharPointer().compare (s2) != 0; }
+JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, const CharPointer_UTF16 s2) NOEXCEPT  { return s1.getCharPointer().compare (s2) == 0; }
+JUCE_API bool JUCE_CALLTYPE operator!= (const String& s1, const CharPointer_UTF16 s2) NOEXCEPT  { return s1.getCharPointer().compare (s2) != 0; }
+JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, const CharPointer_UTF32 s2) NOEXCEPT  { return s1.getCharPointer().compare (s2) == 0; }
+JUCE_API bool JUCE_CALLTYPE operator!= (const String& s1, const CharPointer_UTF32 s2) NOEXCEPT  { return s1.getCharPointer().compare (s2) != 0; }
+JUCE_API bool JUCE_CALLTYPE operator>  (const String& s1, const String& s2) NOEXCEPT            { return s1.compare (s2) > 0; }
+JUCE_API bool JUCE_CALLTYPE operator<  (const String& s1, const String& s2) NOEXCEPT            { return s1.compare (s2) < 0; }
+JUCE_API bool JUCE_CALLTYPE operator>= (const String& s1, const String& s2) NOEXCEPT            { return s1.compare (s2) >= 0; }
+JUCE_API bool JUCE_CALLTYPE operator<= (const String& s1, const String& s2) NOEXCEPT            { return s1.compare (s2) <= 0; }
 
-bool String::equalsIgnoreCase (const wchar_t* const t) const noexcept
+bool String::equalsIgnoreCase (const wchar_t* const t) const NOEXCEPT
 {
     return t != nullptr ? text.compareIgnoreCase (castToCharPointer_wchar_t (t)) == 0
                         : isEmpty();
 }
 
-bool String::equalsIgnoreCase (const char* const t) const noexcept
+bool String::equalsIgnoreCase (const char* const t) const NOEXCEPT
 {
     return t != nullptr ? text.compareIgnoreCase (CharPointer_UTF8 (t)) == 0
                         : isEmpty();
 }
 
-bool String::equalsIgnoreCase (StringRef t) const noexcept
+bool String::equalsIgnoreCase (StringRef t) const NOEXCEPT
 {
     return text.compareIgnoreCase (t.text) == 0;
 }
 
-bool String::equalsIgnoreCase (const String& other) const noexcept
+bool String::equalsIgnoreCase (const String& other) const NOEXCEPT
 {
     return text == other.text
             || text.compareIgnoreCase (other.text) == 0;
 }
 
-int String::compare (const String& other) const noexcept           { return (text == other.text) ? 0 : text.compare (other.text); }
-int String::compare (const char* const other) const noexcept       { return text.compare (CharPointer_UTF8 (other)); }
-int String::compare (const wchar_t* const other) const noexcept    { return text.compare (castToCharPointer_wchar_t (other)); }
-int String::compareIgnoreCase (const String& other) const noexcept { return (text == other.text) ? 0 : text.compareIgnoreCase (other.text); }
+int String::compare (const String& other) const NOEXCEPT           { return (text == other.text) ? 0 : text.compare (other.text); }
+int String::compare (const char* const other) const NOEXCEPT       { return text.compare (CharPointer_UTF8 (other)); }
+int String::compare (const wchar_t* const other) const NOEXCEPT    { return text.compare (castToCharPointer_wchar_t (other)); }
+int String::compareIgnoreCase (const String& other) const NOEXCEPT { return (text == other.text) ? 0 : text.compareIgnoreCase (other.text); }
 
-static int stringCompareRight (String::CharPointerType s1, String::CharPointerType s2) noexcept
+static int stringCompareRight (String::CharPointerType s1, String::CharPointerType s2) NOEXCEPT
 {
     for (int bias = 0;;)
     {
@@ -487,7 +487,7 @@ static int stringCompareRight (String::CharPointerType s1, String::CharPointerTy
     }
 }
 
-static int stringCompareLeft (String::CharPointerType s1, String::CharPointerType s2) noexcept
+static int stringCompareLeft (String::CharPointerType s1, String::CharPointerType s2) NOEXCEPT
 {
     for (;;)
     {
@@ -505,7 +505,7 @@ static int stringCompareLeft (String::CharPointerType s1, String::CharPointerTyp
     }
 }
 
-static int naturalStringCompare (String::CharPointerType s1, String::CharPointerType s2) noexcept
+static int naturalStringCompare (String::CharPointerType s1, String::CharPointerType s2) NOEXCEPT
 {
     bool firstLoop = true;
 
@@ -560,7 +560,7 @@ static int naturalStringCompare (String::CharPointerType s1, String::CharPointer
     }
 }
 
-int String::compareNatural (StringRef other) const noexcept
+int String::compareNatural (StringRef other) const NOEXCEPT
 {
     return naturalStringCompare (getCharPointer(), other.text);
 }
@@ -729,12 +729,12 @@ JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, const NewLine&)
 }
 
 //==============================================================================
-int String::indexOfChar (const juce_wchar character) const noexcept
+int String::indexOfChar (const juce_wchar character) const NOEXCEPT
 {
     return text.indexOf (character);
 }
 
-int String::indexOfChar (const int startIndex, const juce_wchar character) const noexcept
+int String::indexOfChar (const int startIndex, const juce_wchar character) const NOEXCEPT
 {
     CharPointerType t (text);
 
@@ -754,7 +754,7 @@ int String::indexOfChar (const int startIndex, const juce_wchar character) const
     return -1;
 }
 
-int String::lastIndexOfChar (const juce_wchar character) const noexcept
+int String::lastIndexOfChar (const juce_wchar character) const NOEXCEPT
 {
     CharPointerType t (text);
     int last = -1;
@@ -766,7 +766,7 @@ int String::lastIndexOfChar (const juce_wchar character) const noexcept
     return last;
 }
 
-int String::indexOfAnyOf (StringRef charactersToLookFor, const int startIndex, const bool ignoreCase) const noexcept
+int String::indexOfAnyOf (StringRef charactersToLookFor, const int startIndex, const bool ignoreCase) const NOEXCEPT
 {
     CharPointerType t (text);
 
@@ -786,17 +786,17 @@ int String::indexOfAnyOf (StringRef charactersToLookFor, const int startIndex, c
     return -1;
 }
 
-int String::indexOf (StringRef other) const noexcept
+int String::indexOf (StringRef other) const NOEXCEPT
 {
     return other.isEmpty() ? 0 : text.indexOf (other.text);
 }
 
-int String::indexOfIgnoreCase (StringRef other) const noexcept
+int String::indexOfIgnoreCase (StringRef other) const NOEXCEPT
 {
     return other.isEmpty() ? 0 : CharacterFunctions::indexOfIgnoreCase (text, other.text);
 }
 
-int String::indexOf (const int startIndex, StringRef other) const noexcept
+int String::indexOf (const int startIndex, StringRef other) const NOEXCEPT
 {
     if (other.isEmpty())
         return -1;
@@ -817,7 +817,7 @@ int String::indexOf (const int startIndex, StringRef other) const noexcept
     return found;
 }
 
-int String::indexOfIgnoreCase (const int startIndex, StringRef other) const noexcept
+int String::indexOfIgnoreCase (const int startIndex, StringRef other) const NOEXCEPT
 {
     if (other.isEmpty())
         return -1;
@@ -838,7 +838,7 @@ int String::indexOfIgnoreCase (const int startIndex, StringRef other) const noex
     return found;
 }
 
-int String::lastIndexOf (StringRef other) const noexcept
+int String::lastIndexOf (StringRef other) const NOEXCEPT
 {
     if (other.isNotEmpty())
     {
@@ -860,7 +860,7 @@ int String::lastIndexOf (StringRef other) const noexcept
     return -1;
 }
 
-int String::lastIndexOfIgnoreCase (StringRef other) const noexcept
+int String::lastIndexOfIgnoreCase (StringRef other) const NOEXCEPT
 {
     if (other.isNotEmpty())
     {
@@ -882,7 +882,7 @@ int String::lastIndexOfIgnoreCase (StringRef other) const noexcept
     return -1;
 }
 
-int String::lastIndexOfAnyOf (StringRef charactersToLookFor, const bool ignoreCase) const noexcept
+int String::lastIndexOfAnyOf (StringRef charactersToLookFor, const bool ignoreCase) const NOEXCEPT
 {
     CharPointerType t (text);
     int last = -1;
@@ -894,22 +894,22 @@ int String::lastIndexOfAnyOf (StringRef charactersToLookFor, const bool ignoreCa
     return last;
 }
 
-bool String::contains (StringRef other) const noexcept
+bool String::contains (StringRef other) const NOEXCEPT
 {
     return indexOf (other) >= 0;
 }
 
-bool String::containsChar (const juce_wchar character) const noexcept
+bool String::containsChar (const juce_wchar character) const NOEXCEPT
 {
     return text.indexOf (character) >= 0;
 }
 
-bool String::containsIgnoreCase (StringRef t) const noexcept
+bool String::containsIgnoreCase (StringRef t) const NOEXCEPT
 {
     return indexOfIgnoreCase (t) >= 0;
 }
 
-int String::indexOfWholeWord (StringRef word) const noexcept
+int String::indexOfWholeWord (StringRef word) const NOEXCEPT
 {
     if (word.isNotEmpty())
     {
@@ -931,7 +931,7 @@ int String::indexOfWholeWord (StringRef word) const noexcept
     return -1;
 }
 
-int String::indexOfWholeWordIgnoreCase (StringRef word) const noexcept
+int String::indexOfWholeWordIgnoreCase (StringRef word) const NOEXCEPT
 {
     if (word.isNotEmpty())
     {
@@ -953,12 +953,12 @@ int String::indexOfWholeWordIgnoreCase (StringRef word) const noexcept
     return -1;
 }
 
-bool String::containsWholeWord (StringRef wordToLookFor) const noexcept
+bool String::containsWholeWord (StringRef wordToLookFor) const NOEXCEPT
 {
     return indexOfWholeWord (wordToLookFor) >= 0;
 }
 
-bool String::containsWholeWordIgnoreCase (StringRef wordToLookFor) const noexcept
+bool String::containsWholeWordIgnoreCase (StringRef wordToLookFor) const NOEXCEPT
 {
     return indexOfWholeWordIgnoreCase (wordToLookFor) >= 0;
 }
@@ -967,7 +967,7 @@ bool String::containsWholeWordIgnoreCase (StringRef wordToLookFor) const noexcep
 template <typename CharPointer>
 struct WildCardMatcher
 {
-    static bool matches (CharPointer wildcard, CharPointer test, const bool ignoreCase) noexcept
+    static bool matches (CharPointer wildcard, CharPointer test, const bool ignoreCase) NOEXCEPT
     {
         for (;;)
         {
@@ -984,13 +984,13 @@ struct WildCardMatcher
         }
     }
 
-    static bool characterMatches (const juce_wchar wc, const juce_wchar tc, const bool ignoreCase) noexcept
+    static bool characterMatches (const juce_wchar wc, const juce_wchar tc, const bool ignoreCase) NOEXCEPT
     {
         return (wc == tc) || (wc == '?' && tc != 0)
                 || (ignoreCase && CharacterFunctions::toLowerCase (wc) == CharacterFunctions::toLowerCase (tc));
     }
 
-    static bool matchesAnywhere (const CharPointer wildcard, CharPointer test, const bool ignoreCase) noexcept
+    static bool matchesAnywhere (const CharPointer wildcard, CharPointer test, const bool ignoreCase) NOEXCEPT
     {
         for (; ! test.isEmpty(); ++test)
             if (matches (wildcard, test, ignoreCase))
@@ -1000,7 +1000,7 @@ struct WildCardMatcher
     }
 };
 
-bool String::matchesWildcard (StringRef wildcard, const bool ignoreCase) const noexcept
+bool String::matchesWildcard (StringRef wildcard, const bool ignoreCase) const NOEXCEPT
 {
     return WildCardMatcher<CharPointerType>::matches (wildcard.text, text, ignoreCase);
 }
@@ -1240,24 +1240,24 @@ String String::replaceCharacters (StringRef charactersToReplace, StringRef chara
 }
 
 //==============================================================================
-bool String::startsWith (StringRef other) const noexcept
+bool String::startsWith (StringRef other) const NOEXCEPT
 {
     return text.compareUpTo (other.text, other.length()) == 0;
 }
 
-bool String::startsWithIgnoreCase (StringRef other) const noexcept
+bool String::startsWithIgnoreCase (StringRef other) const NOEXCEPT
 {
     return text.compareIgnoreCaseUpTo (other.text, other.length()) == 0;
 }
 
-bool String::startsWithChar (const juce_wchar character) const noexcept
+bool String::startsWithChar (const juce_wchar character) const NOEXCEPT
 {
     jassert (character != 0); // strings can't contain a null character!
 
     return *text == character;
 }
 
-bool String::endsWithChar (const juce_wchar character) const noexcept
+bool String::endsWithChar (const juce_wchar character) const NOEXCEPT
 {
     jassert (character != 0); // strings can't contain a null character!
 
@@ -1268,7 +1268,7 @@ bool String::endsWithChar (const juce_wchar character) const noexcept
     return *--t == character;
 }
 
-bool String::endsWith (StringRef other) const noexcept
+bool String::endsWith (StringRef other) const NOEXCEPT
 {
     CharPointerType end (text.findTerminatingNull());
     CharPointerType otherEnd (other.text.findTerminatingNull());
@@ -1285,7 +1285,7 @@ bool String::endsWith (StringRef other) const noexcept
     return otherEnd == other.text;
 }
 
-bool String::endsWithIgnoreCase (StringRef other) const noexcept
+bool String::endsWithIgnoreCase (StringRef other) const NOEXCEPT
 {
     CharPointerType end (text.findTerminatingNull());
     CharPointerType otherEnd (other.text.findTerminatingNull());
@@ -1340,7 +1340,7 @@ String String::toLowerCase() const
 }
 
 //==============================================================================
-juce_wchar String::getLastCharacter() const noexcept
+juce_wchar String::getLastCharacter() const NOEXCEPT
 {
     return isEmpty() ? juce_wchar() : text [length() - 1];
 }
@@ -1654,7 +1654,7 @@ String String::initialSectionNotContaining (StringRef charactersToStopAt) const
     return *this;
 }
 
-bool String::containsOnly (StringRef chars) const noexcept
+bool String::containsOnly (StringRef chars) const NOEXCEPT
 {
     for (CharPointerType t (text); ! t.isEmpty();)
         if (chars.text.indexOf (t.getAndAdvance()) < 0)
@@ -1663,7 +1663,7 @@ bool String::containsOnly (StringRef chars) const noexcept
     return true;
 }
 
-bool String::containsAnyOf (StringRef chars) const noexcept
+bool String::containsAnyOf (StringRef chars) const NOEXCEPT
 {
     for (CharPointerType t (text); ! t.isEmpty();)
         if (chars.text.indexOf (t.getAndAdvance()) >= 0)
@@ -1672,7 +1672,7 @@ bool String::containsAnyOf (StringRef chars) const noexcept
     return false;
 }
 
-bool String::containsNonWhitespaceChars() const noexcept
+bool String::containsNonWhitespaceChars() const NOEXCEPT
 {
     for (CharPointerType t (text); ! t.isEmpty(); ++t)
         if (! t.isWhitespace())
@@ -1717,12 +1717,12 @@ String String::formatted (const String pf, ... )
 }
 
 //==============================================================================
-int String::getIntValue() const noexcept            { return text.getIntValue32(); }
-int64 String::getLargeIntValue() const noexcept     { return text.getIntValue64(); }
-float String::getFloatValue() const noexcept        { return (float) getDoubleValue(); }
-double String::getDoubleValue() const noexcept      { return text.getDoubleValue(); }
+int String::getIntValue() const NOEXCEPT            { return text.getIntValue32(); }
+int64 String::getLargeIntValue() const NOEXCEPT     { return text.getIntValue64(); }
+float String::getFloatValue() const NOEXCEPT        { return (float) getDoubleValue(); }
+double String::getDoubleValue() const NOEXCEPT      { return text.getDoubleValue(); }
 
-int String::getTrailingIntValue() const noexcept
+int String::getTrailingIntValue() const NOEXCEPT
 {
     int n = 0;
     int mult = 1;
@@ -1798,8 +1798,8 @@ String String::toHexString (const void* const d, const int size, const int group
     return s;
 }
 
-int   String::getHexValue32() const noexcept    { return CharacterFunctions::HexParser<int>  ::parse (text); }
-int64 String::getHexValue64() const noexcept    { return CharacterFunctions::HexParser<int64>::parse (text); }
+int   String::getHexValue32() const NOEXCEPT    { return CharacterFunctions::HexParser<int>  ::parse (text); }
+int64 String::getHexValue64() const NOEXCEPT    { return CharacterFunctions::HexParser<int64>::parse (text); }
 
 //==============================================================================
 String String::createStringFromData (const void* const unknownData, const int size)
@@ -1883,19 +1883,19 @@ struct StringEncodingConverter
 template <>
 struct StringEncodingConverter<CharPointer_UTF8, CharPointer_UTF8>
 {
-    static CharPointer_UTF8 convert (const String& source) noexcept   { return CharPointer_UTF8 ((CharPointer_UTF8::CharType*) source.getCharPointer().getAddress()); }
+    static CharPointer_UTF8 convert (const String& source) NOEXCEPT   { return CharPointer_UTF8 ((CharPointer_UTF8::CharType*) source.getCharPointer().getAddress()); }
 };
 
 template <>
 struct StringEncodingConverter<CharPointer_UTF16, CharPointer_UTF16>
 {
-    static CharPointer_UTF16 convert (const String& source) noexcept  { return CharPointer_UTF16 ((CharPointer_UTF16::CharType*) source.getCharPointer().getAddress()); }
+    static CharPointer_UTF16 convert (const String& source) NOEXCEPT  { return CharPointer_UTF16 ((CharPointer_UTF16::CharType*) source.getCharPointer().getAddress()); }
 };
 
 template <>
 struct StringEncodingConverter<CharPointer_UTF32, CharPointer_UTF32>
 {
-    static CharPointer_UTF32 convert (const String& source) noexcept  { return CharPointer_UTF32 ((CharPointer_UTF32::CharType*) source.getCharPointer().getAddress()); }
+    static CharPointer_UTF32 convert (const String& source) NOEXCEPT  { return CharPointer_UTF32 ((CharPointer_UTF32::CharType*) source.getCharPointer().getAddress()); }
 };
 
 CharPointer_UTF8  String::toUTF8()  const { return StringEncodingConverter<CharPointerType, CharPointer_UTF8 >::convert (*this); }
@@ -1932,23 +1932,23 @@ struct StringCopier
     }
 };
 
-size_t String::copyToUTF8 (CharPointer_UTF8::CharType* const buffer, size_t maxBufferSizeBytes) const noexcept
+size_t String::copyToUTF8 (CharPointer_UTF8::CharType* const buffer, size_t maxBufferSizeBytes) const NOEXCEPT
 {
     return StringCopier<CharPointerType, CharPointer_UTF8>::copyToBuffer (text, buffer, maxBufferSizeBytes);
 }
 
-size_t String::copyToUTF16 (CharPointer_UTF16::CharType* const buffer, size_t maxBufferSizeBytes) const noexcept
+size_t String::copyToUTF16 (CharPointer_UTF16::CharType* const buffer, size_t maxBufferSizeBytes) const NOEXCEPT
 {
     return StringCopier<CharPointerType, CharPointer_UTF16>::copyToBuffer (text, buffer, maxBufferSizeBytes);
 }
 
-size_t String::copyToUTF32 (CharPointer_UTF32::CharType* const buffer, size_t maxBufferSizeBytes) const noexcept
+size_t String::copyToUTF32 (CharPointer_UTF32::CharType* const buffer, size_t maxBufferSizeBytes) const NOEXCEPT
 {
     return StringCopier<CharPointerType, CharPointer_UTF32>::copyToBuffer (text, buffer, maxBufferSizeBytes);
 }
 
 //==============================================================================
-size_t String::getNumBytesAsUTF8() const noexcept
+size_t String::getNumBytesAsUTF8() const NOEXCEPT
 {
     return CharPointer_UTF8::getBytesRequiredFor (text);
 }
@@ -1975,11 +1975,11 @@ String String::fromUTF8 (const char* const buffer, int bufferSizeBytes)
 #endif
 
 //==============================================================================
-StringRef::StringRef() noexcept  : text ((const String::CharPointerType::CharType*) "\0\0\0")
+StringRef::StringRef() NOEXCEPT  : text ((const String::CharPointerType::CharType*) "\0\0\0")
 {
 }
 
-StringRef::StringRef (const char* stringLiteral) noexcept
+StringRef::StringRef (const char* stringLiteral) NOEXCEPT
    #if JUCE_STRING_UTF_TYPE != 8
     : text (nullptr), stringCopy (stringLiteral)
    #else
@@ -2010,12 +2010,12 @@ StringRef::StringRef (const char* stringLiteral) noexcept
    #endif
 }
 
-StringRef::StringRef (String::CharPointerType stringLiteral) noexcept  : text (stringLiteral)
+StringRef::StringRef (String::CharPointerType stringLiteral) NOEXCEPT  : text (stringLiteral)
 {
     jassert (stringLiteral.getAddress() != nullptr); // This must be a valid string literal, not a null pointer!!
 }
 
-StringRef::StringRef (const String& string) noexcept  : text (string.getCharPointer()) {}
+StringRef::StringRef (const String& string) NOEXCEPT  : text (string.getCharPointer()) {}
 
 
 //==============================================================================

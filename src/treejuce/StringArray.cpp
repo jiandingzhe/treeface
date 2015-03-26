@@ -31,7 +31,7 @@
 
 TREEFACE_JUCE_NAMESPACE_BEGIN
 
-StringArray::StringArray() noexcept
+StringArray::StringArray() NOEXCEPT
 {
 }
 
@@ -41,7 +41,7 @@ StringArray::StringArray (const StringArray& other)
 }
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-StringArray::StringArray (StringArray&& other) noexcept
+StringArray::StringArray (StringArray&& other) NOEXCEPT
     : strings (static_cast <Array <String>&&> (other.strings))
 {
 }
@@ -84,7 +84,7 @@ StringArray& StringArray::operator= (const StringArray& other)
 }
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-StringArray& StringArray::operator= (StringArray&& other) noexcept
+StringArray& StringArray::operator= (StringArray&& other) NOEXCEPT
 {
     strings = static_cast <Array<String>&&> (other.strings);
     return *this;
@@ -95,17 +95,17 @@ StringArray::~StringArray()
 {
 }
 
-bool StringArray::operator== (const StringArray& other) const noexcept
+bool StringArray::operator== (const StringArray& other) const NOEXCEPT
 {
     return strings == other.strings;
 }
 
-bool StringArray::operator!= (const StringArray& other) const noexcept
+bool StringArray::operator!= (const StringArray& other) const NOEXCEPT
 {
     return ! operator== (other);
 }
 
-void StringArray::swapWith (StringArray& other) noexcept
+void StringArray::swapWith (StringArray& other) NOEXCEPT
 {
     strings.swapWith (other.strings);
 }
@@ -120,7 +120,7 @@ void StringArray::clearQuick()
     strings.clearQuick();
 }
 
-const String& StringArray::operator[] (const int index) const noexcept
+const String& StringArray::operator[] (const int index) const NOEXCEPT
 {
     if (isPositiveAndBelow (index, strings.size()))
         return strings.getReference (index);
@@ -128,7 +128,7 @@ const String& StringArray::operator[] (const int index) const noexcept
     return String::empty;
 }
 
-String& StringArray::getReference (const int index) noexcept
+String& StringArray::getReference (const int index) NOEXCEPT
 {
     return strings.getReference (index);
 }
@@ -204,7 +204,7 @@ int StringArray::indexOf (StringRef stringToLookFor, const bool ignoreCase, int 
     return -1;
 }
 
-void StringArray::move (const int currentIndex, const int newIndex) noexcept
+void StringArray::move (const int currentIndex, const int newIndex) NOEXCEPT
 {
     strings.move (currentIndex, newIndex);
 }
@@ -265,17 +265,17 @@ void StringArray::trim()
 //==============================================================================
 struct InternalStringArrayComparator_CaseSensitive
 {
-    static int compareElements (String& s1, String& s2) noexcept    { return s1.compare (s2); }
+    static int compareElements (String& s1, String& s2) NOEXCEPT    { return s1.compare (s2); }
 };
 
 struct InternalStringArrayComparator_CaseInsensitive
 {
-    static int compareElements (String& s1, String& s2) noexcept    { return s1.compareIgnoreCase (s2); }
+    static int compareElements (String& s1, String& s2) NOEXCEPT    { return s1.compareIgnoreCase (s2); }
 };
 
 struct InternalStringArrayComparator_Natural
 {
-    static int compareElements (String& s1, String& s2) noexcept    { return s1.compareNatural (s2); }
+    static int compareElements (String& s1, String& s2) NOEXCEPT    { return s1.compareNatural (s2); }
 };
 
 void StringArray::sort (const bool ignoreCase)

@@ -59,6 +59,11 @@
  #pragma warning (disable: 4514 4245 4100)
 #endif
 
+// to use rand_s under MSVC, this macro must be defined before first inclusion of stdlib.h
+#ifdef _MSC_VER
+#  define _CRT_RAND_S
+#endif
+
 #include <cstdlib>
 #include <cstdint>
 #include <cstdarg>
@@ -154,5 +159,10 @@
 #ifndef DOXYGEN
  #define JUCE_NAMESPACE juce  // This old macro is deprecated: you should just use the juce namespace directly.
 #endif
+
+TREEFACE_JUCE_NAMESPACE_BEGIN
+extern JUCE_API bool JUCE_CALLTYPE juce_isRunningUnderDebugger();
+extern JUCE_API void JUCE_CALLTYPE logAssertion (const char* file, int line) NOEXCEPT;
+TREEFACE_JUCE_NAMESPACE_END
 
 #endif   // JUCE_STANDARDHEADER_H_INCLUDED

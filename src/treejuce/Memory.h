@@ -35,11 +35,11 @@
 TREEFACE_JUCE_NAMESPACE_BEGIN
 
 /** Fills a block of memory with zeros. */
-inline void zeromem (void* memory, size_t numBytes) noexcept        { memset (memory, 0, numBytes); }
+inline void zeromem (void* memory, size_t numBytes) NOEXCEPT        { memset (memory, 0, numBytes); }
 
 /** Overwrites a structure or object with zeros. */
 template <typename Type>
-inline void zerostruct (Type& structure) noexcept                   { memset (&structure, 0, sizeof (structure)); }
+inline void zerostruct (Type& structure) NOEXCEPT                   { memset (&structure, 0, sizeof (structure)); }
 
 /** Delete an object pointer, and sets the pointer to null.
 
@@ -54,13 +54,13 @@ inline void deleteAndZero (Type& pointer)                           { delete poi
     a specific number of bytes,
 */
 template <typename Type, typename IntegerType>
-inline Type* addBytesToPointer (Type* pointer, IntegerType bytes) noexcept  { return (Type*) (((char*) pointer) + bytes); }
+inline Type* addBytesToPointer (Type* pointer, IntegerType bytes) NOEXCEPT  { return (Type*) (((char*) pointer) + bytes); }
 
 /** A handy function which returns the difference between any two pointers, in bytes.
     The address of the second pointer is subtracted from the first, and the difference in bytes is returned.
 */
 template <typename Type1, typename Type2>
-inline int getAddressDifference (Type1* pointer1, Type2* pointer2) noexcept  { return (int) (((const char*) pointer1) - (const char*) pointer2); }
+inline int getAddressDifference (Type1* pointer1, Type2* pointer2) NOEXCEPT  { return (int) (((const char*) pointer1) - (const char*) pointer2); }
 
 /** If a pointer is non-null, this returns a new copy of the object that it points to, or safely returns
     nullptr if the pointer is null.

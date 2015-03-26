@@ -42,13 +42,13 @@ TREEFACE_JUCE_NAMESPACE_BEGIN
 struct DefaultHashFunctions
 {
     /** Generates a simple hash from an integer. */
-    int generateHash (const int key, const int upperLimit) const noexcept        { return std::abs (key) % upperLimit; }
+    int generateHash (const int key, const int upperLimit) const NOEXCEPT        { return std::abs (key) % upperLimit; }
     /** Generates a simple hash from an int64. */
-    int generateHash (const int64 key, const int upperLimit) const noexcept      { return std::abs ((int) key) % upperLimit; }
+    int generateHash (const int64 key, const int upperLimit) const NOEXCEPT      { return std::abs ((int) key) % upperLimit; }
     /** Generates a simple hash from a string. */
-    int generateHash (const String& key, const int upperLimit) const noexcept    { return (int) (((uint32) key.hashCode()) % (uint32) upperLimit); }
+    int generateHash (const String& key, const int upperLimit) const NOEXCEPT    { return (int) (((uint32) key.hashCode()) % (uint32) upperLimit); }
     /** Generates a simple hash from a variant. */
-    int generateHash (const var& key, const int upperLimit) const noexcept       { return generateHash (key.toString(), upperLimit); }
+    int generateHash (const var& key, const int upperLimit) const NOEXCEPT       { return generateHash (key.toString(), upperLimit); }
 };
 
 
@@ -156,7 +156,7 @@ public:
 
     //==============================================================================
     /** Returns the current number of items in the map. */
-    inline int size() const noexcept
+    inline int size() const NOEXCEPT
     {
         return totalNumItems;
     }
@@ -314,7 +314,7 @@ public:
         Each slot corresponds to a single hash-code, and each one can contain multiple items.
         @see getNumSlots()
     */
-    inline int getNumSlots() const noexcept
+    inline int getNumSlots() const NOEXCEPT
     {
         return hashSlots.size();
     }
@@ -322,7 +322,7 @@ public:
     //==============================================================================
     /** Efficiently swaps the contents of two hash-maps. */
     template <class OtherHashMapType>
-    void swapWith (OtherHashMapType& otherHashMap) noexcept
+    void swapWith (OtherHashMapType& otherHashMap) NOEXCEPT
     {
         const ScopedLockType lock1 (getLock());
         const typename OtherHashMapType::ScopedLockType lock2 (otherHashMap.getLock());
@@ -336,7 +336,7 @@ public:
         To lock, you can call getLock().enter() and getLock().exit(), or preferably use
         an object of ScopedLockType as an RAII lock for it.
     */
-    inline const TypeOfCriticalSectionToUse& getLock() const noexcept      { return lock; }
+    inline const TypeOfCriticalSectionToUse& getLock() const NOEXCEPT      { return lock; }
 
     /** Returns the type of scoped lock to use for locking this array */
     typedef typename TypeOfCriticalSectionToUse::ScopedLockType ScopedLockType;

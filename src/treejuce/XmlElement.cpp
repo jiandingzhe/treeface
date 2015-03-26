@@ -37,13 +37,13 @@
 
 TREEFACE_JUCE_NAMESPACE_BEGIN
 
-XmlElement::XmlAttributeNode::XmlAttributeNode (const XmlAttributeNode& other) noexcept
+XmlElement::XmlAttributeNode::XmlAttributeNode (const XmlAttributeNode& other) NOEXCEPT
     : name (other.name),
       value (other.value)
 {
 }
 
-XmlElement::XmlAttributeNode::XmlAttributeNode (const Identifier& n, const String& v) noexcept
+XmlElement::XmlAttributeNode::XmlAttributeNode (const Identifier& n, const String& v) NOEXCEPT
     : name (n), value (v)
 {
    #if JUCE_DEBUG
@@ -100,7 +100,7 @@ XmlElement::XmlElement (String::CharPointerType tagNameStart, String::CharPointe
     sanityCheckTagName (tagName);
 }
 
-XmlElement::XmlElement (int /*dummy*/) noexcept
+XmlElement::XmlElement (int /*dummy*/) NOEXCEPT
 {
 }
 
@@ -124,7 +124,7 @@ XmlElement& XmlElement::operator= (const XmlElement& other)
 }
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-XmlElement::XmlElement (XmlElement&& other) noexcept
+XmlElement::XmlElement (XmlElement&& other) NOEXCEPT
     : nextListItem      (static_cast<LinkedListPointer<XmlElement>&&> (other.nextListItem)),
       firstChildElement (static_cast<LinkedListPointer<XmlElement>&&> (other.firstChildElement)),
       attributes        (static_cast<LinkedListPointer<XmlAttributeNode>&&> (other.attributes)),
@@ -132,7 +132,7 @@ XmlElement::XmlElement (XmlElement&& other) noexcept
 {
 }
 
-XmlElement& XmlElement::operator= (XmlElement&& other) noexcept
+XmlElement& XmlElement::operator= (XmlElement&& other) NOEXCEPT
 {
     jassert (this != &other); // hopefully the compiler should make this situation impossible!
 
@@ -157,7 +157,7 @@ void XmlElement::copyChildrenAndAttributesFrom (const XmlElement& other)
     attributes.addCopyOfList (other.attributes);
 }
 
-XmlElement::~XmlElement() noexcept
+XmlElement::~XmlElement() NOEXCEPT
 {
     firstChildElement.deleteAll();
     attributes.deleteAll();
@@ -167,7 +167,7 @@ XmlElement::~XmlElement() noexcept
 namespace XmlOutputFunctions
 {
    #if 0 // (These functions are just used to generate the lookup table used below)
-    bool isLegalXmlCharSlow (const juce_wchar character) noexcept
+    bool isLegalXmlCharSlow (const juce_wchar character) NOEXCEPT
     {
         if ((character >= 'a' && character <= 'z')
              || (character >= 'A' && character <= 'Z')
@@ -201,7 +201,7 @@ namespace XmlOutputFunctions
     }
    #endif
 
-    static bool isLegalXmlChar (const uint32 c) noexcept
+    static bool isLegalXmlChar (const uint32 c) NOEXCEPT
     {
         static const unsigned char legalChars[] = { 0, 0, 0, 0, 187, 255, 255, 175, 255,
                                                     255, 255, 191, 254, 255, 255, 127 };
@@ -404,7 +404,7 @@ bool XmlElement::writeToFile (const File& file,
 }
 
 //==============================================================================
-bool XmlElement::hasTagName (StringRef possibleTagName) const noexcept
+bool XmlElement::hasTagName (StringRef possibleTagName) const NOEXCEPT
 {
     const bool matches = tagName.equalsIgnoreCase (possibleTagName);
 
@@ -441,12 +441,12 @@ XmlElement* XmlElement::getNextElementWithTagName (StringRef requiredTagName) co
 }
 
 //==============================================================================
-int XmlElement::getNumAttributes() const noexcept
+int XmlElement::getNumAttributes() const NOEXCEPT
 {
     return attributes.size();
 }
 
-const String& XmlElement::getAttributeName (const int index) const noexcept
+const String& XmlElement::getAttributeName (const int index) const NOEXCEPT
 {
     if (const XmlAttributeNode* const att = attributes [index])
         return att->name.toString();
@@ -454,7 +454,7 @@ const String& XmlElement::getAttributeName (const int index) const noexcept
     return String::empty;
 }
 
-const String& XmlElement::getAttributeValue (const int index) const noexcept
+const String& XmlElement::getAttributeValue (const int index) const NOEXCEPT
 {
     if (const XmlAttributeNode* const att = attributes [index])
         return att->value;
@@ -462,7 +462,7 @@ const String& XmlElement::getAttributeValue (const int index) const noexcept
     return String::empty;
 }
 
-XmlElement::XmlAttributeNode* XmlElement::getAttribute (StringRef attributeName) const noexcept
+XmlElement::XmlAttributeNode* XmlElement::getAttribute (StringRef attributeName) const NOEXCEPT
 {
     for (XmlAttributeNode* att = attributes; att != nullptr; att = att->nextListItem)
         if (att->name == attributeName)
@@ -471,13 +471,13 @@ XmlElement::XmlAttributeNode* XmlElement::getAttribute (StringRef attributeName)
     return nullptr;
 }
 
-bool XmlElement::hasAttribute (StringRef attributeName) const noexcept
+bool XmlElement::hasAttribute (StringRef attributeName) const NOEXCEPT
 {
     return getAttribute (attributeName) != nullptr;
 }
 
 //==============================================================================
-const String& XmlElement::getStringAttribute (StringRef attributeName) const noexcept
+const String& XmlElement::getStringAttribute (StringRef attributeName) const NOEXCEPT
 {
     if (const XmlAttributeNode* att = getAttribute (attributeName))
         return att->value;
@@ -527,7 +527,7 @@ bool XmlElement::getBoolAttribute (StringRef attributeName, const bool defaultRe
 
 bool XmlElement::compareAttribute (StringRef attributeName,
                                    StringRef stringToCompareAgainst,
-                                   const bool ignoreCase) const noexcept
+                                   const bool ignoreCase) const NOEXCEPT
 {
     if (const XmlAttributeNode* att = getAttribute (attributeName))
         return ignoreCase ? att->value.equalsIgnoreCase (stringToCompareAgainst)
@@ -572,7 +572,7 @@ void XmlElement::setAttribute (const Identifier& attributeName, const double num
     setAttribute (attributeName, String (number, 20));
 }
 
-void XmlElement::removeAttribute (const Identifier& attributeName) noexcept
+void XmlElement::removeAttribute (const Identifier& attributeName) NOEXCEPT
 {
     for (LinkedListPointer<XmlAttributeNode>* att = &attributes;
          att->get() != nullptr;
@@ -586,23 +586,23 @@ void XmlElement::removeAttribute (const Identifier& attributeName) noexcept
     }
 }
 
-void XmlElement::removeAllAttributes() noexcept
+void XmlElement::removeAllAttributes() NOEXCEPT
 {
     attributes.deleteAll();
 }
 
 //==============================================================================
-int XmlElement::getNumChildElements() const noexcept
+int XmlElement::getNumChildElements() const NOEXCEPT
 {
     return firstChildElement.size();
 }
 
-XmlElement* XmlElement::getChildElement (const int index) const noexcept
+XmlElement* XmlElement::getChildElement (const int index) const NOEXCEPT
 {
     return firstChildElement [index].get();
 }
 
-XmlElement* XmlElement::getChildByName (StringRef childName) const noexcept
+XmlElement* XmlElement::getChildByName (StringRef childName) const NOEXCEPT
 {
     jassert (! childName.isEmpty());
 
@@ -613,7 +613,7 @@ XmlElement* XmlElement::getChildByName (StringRef childName) const noexcept
     return nullptr;
 }
 
-XmlElement* XmlElement::getChildByAttribute (StringRef attributeName, StringRef attributeValue) const noexcept
+XmlElement* XmlElement::getChildByAttribute (StringRef attributeName, StringRef attributeValue) const NOEXCEPT
 {
     jassert (! attributeName.isEmpty());
 
@@ -624,7 +624,7 @@ XmlElement* XmlElement::getChildByAttribute (StringRef attributeName, StringRef 
     return nullptr;
 }
 
-void XmlElement::addChildElement (XmlElement* const newNode) noexcept
+void XmlElement::addChildElement (XmlElement* const newNode) NOEXCEPT
 {
     if (newNode != nullptr)
     {
@@ -635,7 +635,7 @@ void XmlElement::addChildElement (XmlElement* const newNode) noexcept
     }
 }
 
-void XmlElement::insertChildElement (XmlElement* const newNode, int indexToInsertAt) noexcept
+void XmlElement::insertChildElement (XmlElement* const newNode, int indexToInsertAt) NOEXCEPT
 {
     if (newNode != nullptr)
     {
@@ -646,7 +646,7 @@ void XmlElement::insertChildElement (XmlElement* const newNode, int indexToInser
     }
 }
 
-void XmlElement::prependChildElement (XmlElement* newNode) noexcept
+void XmlElement::prependChildElement (XmlElement* newNode) NOEXCEPT
 {
     if (newNode != nullptr)
     {
@@ -665,7 +665,7 @@ XmlElement* XmlElement::createNewChildElement (StringRef childTagName)
 }
 
 bool XmlElement::replaceChildElement (XmlElement* const currentChildElement,
-                                      XmlElement* const newNode) noexcept
+                                      XmlElement* const newNode) NOEXCEPT
 {
     if (newNode != nullptr)
     {
@@ -682,7 +682,7 @@ bool XmlElement::replaceChildElement (XmlElement* const currentChildElement,
 }
 
 void XmlElement::removeChildElement (XmlElement* const childToRemove,
-                                     const bool shouldDeleteTheChild) noexcept
+                                     const bool shouldDeleteTheChild) NOEXCEPT
 {
     if (childToRemove != nullptr)
     {
@@ -694,7 +694,7 @@ void XmlElement::removeChildElement (XmlElement* const childToRemove,
 }
 
 bool XmlElement::isEquivalentTo (const XmlElement* const other,
-                                 const bool ignoreOrderOfAttributes) const noexcept
+                                 const bool ignoreOrderOfAttributes) const NOEXCEPT
 {
     if (this != other)
     {
@@ -766,12 +766,12 @@ bool XmlElement::isEquivalentTo (const XmlElement* const other,
     return true;
 }
 
-void XmlElement::deleteAllChildElements() noexcept
+void XmlElement::deleteAllChildElements() NOEXCEPT
 {
     firstChildElement.deleteAll();
 }
 
-void XmlElement::deleteAllChildElementsWithTagName (StringRef name) noexcept
+void XmlElement::deleteAllChildElementsWithTagName (StringRef name) NOEXCEPT
 {
     for (XmlElement* child = firstChildElement; child != nullptr;)
     {
@@ -784,12 +784,12 @@ void XmlElement::deleteAllChildElementsWithTagName (StringRef name) noexcept
     }
 }
 
-bool XmlElement::containsChildElement (const XmlElement* const possibleChild) const noexcept
+bool XmlElement::containsChildElement (const XmlElement* const possibleChild) const NOEXCEPT
 {
     return firstChildElement.contains (possibleChild);
 }
 
-XmlElement* XmlElement::findParentElementOf (const XmlElement* const elementToLookFor) noexcept
+XmlElement* XmlElement::findParentElementOf (const XmlElement* const elementToLookFor) NOEXCEPT
 {
     if (this == elementToLookFor || elementToLookFor == nullptr)
         return nullptr;
@@ -806,12 +806,12 @@ XmlElement* XmlElement::findParentElementOf (const XmlElement* const elementToLo
     return nullptr;
 }
 
-void XmlElement::getChildElementsAsArray (XmlElement** elems) const noexcept
+void XmlElement::getChildElementsAsArray (XmlElement** elems) const NOEXCEPT
 {
     firstChildElement.copyToArray (elems);
 }
 
-void XmlElement::reorderChildElements (XmlElement** const elems, const int num) noexcept
+void XmlElement::reorderChildElements (XmlElement** const elems, const int num) NOEXCEPT
 {
     XmlElement* e = firstChildElement = elems[0];
 
@@ -825,14 +825,14 @@ void XmlElement::reorderChildElements (XmlElement** const elems, const int num) 
 }
 
 //==============================================================================
-bool XmlElement::isTextElement() const noexcept
+bool XmlElement::isTextElement() const NOEXCEPT
 {
     return tagName.isEmpty();
 }
 
 static const String juce_xmltextContentAttributeName ("text");
 
-const String& XmlElement::getText() const noexcept
+const String& XmlElement::getText() const NOEXCEPT
 {
     jassert (isTextElement());  // you're trying to get the text from an element that
                                 // isn't actually a text element.. If this contains text sub-nodes, you
@@ -885,7 +885,7 @@ void XmlElement::addTextElement (const String& text)
     addChildElement (createTextElement (text));
 }
 
-void XmlElement::deleteAllTextElements() noexcept
+void XmlElement::deleteAllTextElements() NOEXCEPT
 {
     for (XmlElement* child = firstChildElement; child != nullptr;)
     {

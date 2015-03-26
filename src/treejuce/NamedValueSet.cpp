@@ -36,12 +36,12 @@ TREEFACE_JUCE_NAMESPACE_BEGIN
 
 struct NamedValueSet::NamedValue
 {
-    NamedValue() noexcept {}
+    NamedValue() NOEXCEPT {}
     NamedValue (Identifier n, const var& v)  : name (n), value (v) {}
     NamedValue (const NamedValue& other) : name (other.name), value (other.value) {}
 
    #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-    NamedValue (NamedValue&& other) noexcept
+    NamedValue (NamedValue&& other) NOEXCEPT
         : name (static_cast<Identifier&&> (other.name)),
           value (static_cast<var&&> (other.value))
     {
@@ -51,7 +51,7 @@ struct NamedValueSet::NamedValue
     {
     }
 
-    NamedValue& operator= (NamedValue&& other) noexcept
+    NamedValue& operator= (NamedValue&& other) NOEXCEPT
     {
         name = static_cast<Identifier&&> (other.name);
         value = static_cast<var&&> (other.value);
@@ -59,15 +59,15 @@ struct NamedValueSet::NamedValue
     }
    #endif
 
-    bool operator== (const NamedValue& other) const noexcept   { return name == other.name && value == other.value; }
-    bool operator!= (const NamedValue& other) const noexcept   { return ! operator== (other); }
+    bool operator== (const NamedValue& other) const NOEXCEPT   { return name == other.name && value == other.value; }
+    bool operator!= (const NamedValue& other) const NOEXCEPT   { return ! operator== (other); }
 
     Identifier name;
     var value;
 };
 
 //==============================================================================
-NamedValueSet::NamedValueSet() noexcept
+NamedValueSet::NamedValueSet() NOEXCEPT
 {
 }
 
@@ -84,12 +84,12 @@ NamedValueSet& NamedValueSet::operator= (const NamedValueSet& other)
 }
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-NamedValueSet::NamedValueSet (NamedValueSet&& other) noexcept
+NamedValueSet::NamedValueSet (NamedValueSet&& other) NOEXCEPT
     : values (static_cast <Array<NamedValue>&&> (other.values))
 {
 }
 
-NamedValueSet& NamedValueSet::operator= (NamedValueSet&& other) noexcept
+NamedValueSet& NamedValueSet::operator= (NamedValueSet&& other) NOEXCEPT
 {
     other.values.swapWith (values);
     return *this;
@@ -116,7 +116,7 @@ bool NamedValueSet::operator!= (const NamedValueSet& other) const
     return ! operator== (other);
 }
 
-int NamedValueSet::size() const noexcept
+int NamedValueSet::size() const NOEXCEPT
 {
     return values.size();
 }
@@ -137,7 +137,7 @@ var NamedValueSet::getWithDefault (const Identifier& name, const var& defaultRet
     return defaultReturnValue;
 }
 
-var* NamedValueSet::getVarPointer (const Identifier& name) const noexcept
+var* NamedValueSet::getVarPointer (const Identifier& name) const NOEXCEPT
 {
     for (NamedValue* e = values.end(), *i = values.begin(); i != e; ++i)
         if (i->name == name)
@@ -183,7 +183,7 @@ bool NamedValueSet::contains (const Identifier& name) const
     return getVarPointer (name) != nullptr;
 }
 
-int NamedValueSet::indexOf (const Identifier& name) const noexcept
+int NamedValueSet::indexOf (const Identifier& name) const NOEXCEPT
 {
     const int numValues = values.size();
 
@@ -210,7 +210,7 @@ bool NamedValueSet::remove (const Identifier& name)
     return false;
 }
 
-Identifier NamedValueSet::getName (const int index) const noexcept
+Identifier NamedValueSet::getName (const int index) const NOEXCEPT
 {
     if (isPositiveAndBelow (index, values.size()))
         return values.getReference (index).name;
@@ -219,7 +219,7 @@ Identifier NamedValueSet::getName (const int index) const noexcept
     return Identifier();
 }
 
-const var& NamedValueSet::getValueAt (const int index) const noexcept
+const var& NamedValueSet::getValueAt (const int index) const NOEXCEPT
 {
     if (isPositiveAndBelow (index, values.size()))
         return values.getReference (index).value;
@@ -228,7 +228,7 @@ const var& NamedValueSet::getValueAt (const int index) const noexcept
     return var::null;
 }
 
-var* NamedValueSet::getVarPointerAt (int index) const noexcept
+var* NamedValueSet::getVarPointerAt (int index) const NOEXCEPT
 {
     if (isPositiveAndBelow (index, values.size()))
         return &(values.getReference (index).value);

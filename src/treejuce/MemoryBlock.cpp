@@ -31,7 +31,7 @@
 
 TREEFACE_JUCE_NAMESPACE_BEGIN
 
-MemoryBlock::MemoryBlock() noexcept
+MemoryBlock::MemoryBlock() NOEXCEPT
     : size (0)
 {
 }
@@ -76,7 +76,7 @@ MemoryBlock::MemoryBlock (const void* const dataToInitialiseFrom, const size_t s
     }
 }
 
-MemoryBlock::~MemoryBlock() noexcept
+MemoryBlock::~MemoryBlock() NOEXCEPT
 {
 }
 
@@ -92,13 +92,13 @@ MemoryBlock& MemoryBlock::operator= (const MemoryBlock& other)
 }
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-MemoryBlock::MemoryBlock (MemoryBlock&& other) noexcept
+MemoryBlock::MemoryBlock (MemoryBlock&& other) NOEXCEPT
     : data (static_cast <HeapBlock<char>&&> (other.data)),
       size (other.size)
 {
 }
 
-MemoryBlock& MemoryBlock::operator= (MemoryBlock&& other) noexcept
+MemoryBlock& MemoryBlock::operator= (MemoryBlock&& other) NOEXCEPT
 {
     data = static_cast <HeapBlock<char>&&> (other.data);
     size = other.size;
@@ -108,17 +108,17 @@ MemoryBlock& MemoryBlock::operator= (MemoryBlock&& other) noexcept
 
 
 //==============================================================================
-bool MemoryBlock::operator== (const MemoryBlock& other) const noexcept
+bool MemoryBlock::operator== (const MemoryBlock& other) const NOEXCEPT
 {
     return matches (other.data, other.size);
 }
 
-bool MemoryBlock::operator!= (const MemoryBlock& other) const noexcept
+bool MemoryBlock::operator!= (const MemoryBlock& other) const NOEXCEPT
 {
     return ! operator== (other);
 }
 
-bool MemoryBlock::matches (const void* dataToCompare, size_t dataSize) const noexcept
+bool MemoryBlock::matches (const void* dataToCompare, size_t dataSize) const NOEXCEPT
 {
     return size == dataSize
             && memcmp (data, dataToCompare, size) == 0;
@@ -165,14 +165,14 @@ void MemoryBlock::ensureSize (const size_t minimumSize, const bool initialiseToZ
         setSize (minimumSize, initialiseToZero);
 }
 
-void MemoryBlock::swapWith (MemoryBlock& other) noexcept
+void MemoryBlock::swapWith (MemoryBlock& other) NOEXCEPT
 {
     std::swap (size, other.size);
     data.swapWith (other.data);
 }
 
 //==============================================================================
-void MemoryBlock::fillWith (const uint8 value) noexcept
+void MemoryBlock::fillWith (const uint8 value) NOEXCEPT
 {
     memset (data, (int) value, size);
 }
@@ -232,7 +232,7 @@ void MemoryBlock::removeSection (const size_t startByte, const size_t numBytesTo
     }
 }
 
-void MemoryBlock::copyFrom (const void* const src, int offset, size_t num) noexcept
+void MemoryBlock::copyFrom (const void* const src, int offset, size_t num) NOEXCEPT
 {
     const char* d = static_cast<const char*> (src);
 
@@ -250,7 +250,7 @@ void MemoryBlock::copyFrom (const void* const src, int offset, size_t num) noexc
         memcpy (data + offset, d, num);
 }
 
-void MemoryBlock::copyTo (void* const dst, int offset, size_t num) const noexcept
+void MemoryBlock::copyTo (void* const dst, int offset, size_t num) const NOEXCEPT
 {
     char* d = static_cast<char*> (dst);
 
@@ -279,7 +279,7 @@ String MemoryBlock::toString() const
 }
 
 //==============================================================================
-int MemoryBlock::getBitRange (const size_t bitRangeStart, size_t numBits) const noexcept
+int MemoryBlock::getBitRange (const size_t bitRangeStart, size_t numBits) const NOEXCEPT
 {
     int res = 0;
 
@@ -303,7 +303,7 @@ int MemoryBlock::getBitRange (const size_t bitRangeStart, size_t numBits) const 
     return res;
 }
 
-void MemoryBlock::setBitRange (const size_t bitRangeStart, size_t numBits, int bitsToSet) noexcept
+void MemoryBlock::setBitRange (const size_t bitRangeStart, size_t numBits, int bitsToSet) NOEXCEPT
 {
     size_t byte = bitRangeStart >> 3;
     size_t offsetInByte = bitRangeStart & 7;

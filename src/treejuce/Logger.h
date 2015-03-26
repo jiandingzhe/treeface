@@ -61,10 +61,10 @@ public:
         the caller must make sure that it is not deleted while still being used.
         A null pointer can be passed-in to disable any logging.
     */
-    static void JUCE_CALLTYPE setCurrentLogger (Logger* newLogger) noexcept;
+    static void JUCE_CALLTYPE setCurrentLogger (Logger* newLogger) NOEXCEPT;
 
     /** Returns the current logger, or nullptr if none has been set. */
-    static Logger* getCurrentLogger() noexcept;
+    static Logger* getCurrentLogger() NOEXCEPT;
 
     /** Writes a string to the current logger.
 

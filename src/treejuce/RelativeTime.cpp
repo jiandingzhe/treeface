@@ -32,43 +32,43 @@
 
 TREEFACE_JUCE_NAMESPACE_BEGIN
 
-RelativeTime::RelativeTime (const double secs) noexcept           : numSeconds (secs) {}
-RelativeTime::RelativeTime (const RelativeTime& other) noexcept   : numSeconds (other.numSeconds) {}
-RelativeTime::~RelativeTime() noexcept {}
+RelativeTime::RelativeTime (const double secs) NOEXCEPT           : numSeconds (secs) {}
+RelativeTime::RelativeTime (const RelativeTime& other) NOEXCEPT   : numSeconds (other.numSeconds) {}
+RelativeTime::~RelativeTime() NOEXCEPT {}
 
 //==============================================================================
-RelativeTime RelativeTime::milliseconds (const int milliseconds) noexcept   { return RelativeTime (milliseconds * 0.001); }
-RelativeTime RelativeTime::milliseconds (const int64 milliseconds) noexcept { return RelativeTime (milliseconds * 0.001); }
-RelativeTime RelativeTime::seconds (double s) noexcept                      { return RelativeTime (s); }
-RelativeTime RelativeTime::minutes (const double numberOfMinutes) noexcept  { return RelativeTime (numberOfMinutes * 60.0); }
-RelativeTime RelativeTime::hours (const double numberOfHours) noexcept      { return RelativeTime (numberOfHours * (60.0 * 60.0)); }
-RelativeTime RelativeTime::days (const double numberOfDays) noexcept        { return RelativeTime (numberOfDays  * (60.0 * 60.0 * 24.0)); }
-RelativeTime RelativeTime::weeks (const double numberOfWeeks) noexcept      { return RelativeTime (numberOfWeeks * (60.0 * 60.0 * 24.0 * 7.0)); }
+RelativeTime RelativeTime::milliseconds (const int milliseconds) NOEXCEPT   { return RelativeTime (milliseconds * 0.001); }
+RelativeTime RelativeTime::milliseconds (const int64 milliseconds) NOEXCEPT { return RelativeTime (milliseconds * 0.001); }
+RelativeTime RelativeTime::seconds (double s) NOEXCEPT                      { return RelativeTime (s); }
+RelativeTime RelativeTime::minutes (const double numberOfMinutes) NOEXCEPT  { return RelativeTime (numberOfMinutes * 60.0); }
+RelativeTime RelativeTime::hours (const double numberOfHours) NOEXCEPT      { return RelativeTime (numberOfHours * (60.0 * 60.0)); }
+RelativeTime RelativeTime::days (const double numberOfDays) NOEXCEPT        { return RelativeTime (numberOfDays  * (60.0 * 60.0 * 24.0)); }
+RelativeTime RelativeTime::weeks (const double numberOfWeeks) NOEXCEPT      { return RelativeTime (numberOfWeeks * (60.0 * 60.0 * 24.0 * 7.0)); }
 
 //==============================================================================
-int64 RelativeTime::inMilliseconds() const noexcept { return (int64) (numSeconds * 1000.0); }
-double RelativeTime::inMinutes() const noexcept     { return numSeconds / 60.0; }
-double RelativeTime::inHours() const noexcept       { return numSeconds / (60.0 * 60.0); }
-double RelativeTime::inDays() const noexcept        { return numSeconds / (60.0 * 60.0 * 24.0); }
-double RelativeTime::inWeeks() const noexcept       { return numSeconds / (60.0 * 60.0 * 24.0 * 7.0); }
+int64 RelativeTime::inMilliseconds() const NOEXCEPT { return (int64) (numSeconds * 1000.0); }
+double RelativeTime::inMinutes() const NOEXCEPT     { return numSeconds / 60.0; }
+double RelativeTime::inHours() const NOEXCEPT       { return numSeconds / (60.0 * 60.0); }
+double RelativeTime::inDays() const NOEXCEPT        { return numSeconds / (60.0 * 60.0 * 24.0); }
+double RelativeTime::inWeeks() const NOEXCEPT       { return numSeconds / (60.0 * 60.0 * 24.0 * 7.0); }
 
 //==============================================================================
-RelativeTime& RelativeTime::operator= (const RelativeTime& other) noexcept      { numSeconds = other.numSeconds; return *this; }
+RelativeTime& RelativeTime::operator= (const RelativeTime& other) NOEXCEPT      { numSeconds = other.numSeconds; return *this; }
 
-RelativeTime RelativeTime::operator+= (RelativeTime t) noexcept     { numSeconds += t.numSeconds; return *this; }
-RelativeTime RelativeTime::operator-= (RelativeTime t) noexcept     { numSeconds -= t.numSeconds; return *this; }
-RelativeTime RelativeTime::operator+= (const double secs) noexcept  { numSeconds += secs; return *this; }
-RelativeTime RelativeTime::operator-= (const double secs) noexcept  { numSeconds -= secs; return *this; }
+RelativeTime RelativeTime::operator+= (RelativeTime t) NOEXCEPT     { numSeconds += t.numSeconds; return *this; }
+RelativeTime RelativeTime::operator-= (RelativeTime t) NOEXCEPT     { numSeconds -= t.numSeconds; return *this; }
+RelativeTime RelativeTime::operator+= (const double secs) NOEXCEPT  { numSeconds += secs; return *this; }
+RelativeTime RelativeTime::operator-= (const double secs) NOEXCEPT  { numSeconds -= secs; return *this; }
 
-RelativeTime operator+ (RelativeTime t1, RelativeTime t2) noexcept  { return t1 += t2; }
-RelativeTime operator- (RelativeTime t1, RelativeTime t2) noexcept  { return t1 -= t2; }
+RelativeTime operator+ (RelativeTime t1, RelativeTime t2) NOEXCEPT  { return t1 += t2; }
+RelativeTime operator- (RelativeTime t1, RelativeTime t2) NOEXCEPT  { return t1 -= t2; }
 
-bool operator== (RelativeTime t1, RelativeTime t2) noexcept       { return t1.inSeconds() == t2.inSeconds(); }
-bool operator!= (RelativeTime t1, RelativeTime t2) noexcept       { return t1.inSeconds() != t2.inSeconds(); }
-bool operator>  (RelativeTime t1, RelativeTime t2) noexcept       { return t1.inSeconds() >  t2.inSeconds(); }
-bool operator<  (RelativeTime t1, RelativeTime t2) noexcept       { return t1.inSeconds() <  t2.inSeconds(); }
-bool operator>= (RelativeTime t1, RelativeTime t2) noexcept       { return t1.inSeconds() >= t2.inSeconds(); }
-bool operator<= (RelativeTime t1, RelativeTime t2) noexcept       { return t1.inSeconds() <= t2.inSeconds(); }
+bool operator== (RelativeTime t1, RelativeTime t2) NOEXCEPT       { return t1.inSeconds() == t2.inSeconds(); }
+bool operator!= (RelativeTime t1, RelativeTime t2) NOEXCEPT       { return t1.inSeconds() != t2.inSeconds(); }
+bool operator>  (RelativeTime t1, RelativeTime t2) NOEXCEPT       { return t1.inSeconds() >  t2.inSeconds(); }
+bool operator<  (RelativeTime t1, RelativeTime t2) NOEXCEPT       { return t1.inSeconds() <  t2.inSeconds(); }
+bool operator>= (RelativeTime t1, RelativeTime t2) NOEXCEPT       { return t1.inSeconds() >= t2.inSeconds(); }
+bool operator<= (RelativeTime t1, RelativeTime t2) NOEXCEPT       { return t1.inSeconds() <= t2.inSeconds(); }
 
 //==============================================================================
 static void translateTimeField (String& result, int n, const char* singular, const char* plural)

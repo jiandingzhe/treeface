@@ -102,7 +102,7 @@ public:
         After creation, you can resize the array using the malloc(), calloc(),
         or realloc() methods.
     */
-    HeapBlock() noexcept  : data (nullptr)
+    HeapBlock() NOEXCEPT  : data (nullptr)
     {
     }
 
@@ -142,13 +142,13 @@ public:
     }
 
    #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-    HeapBlock (HeapBlock&& other) noexcept
+    HeapBlock (HeapBlock&& other) NOEXCEPT
         : data (other.data)
     {
         other.data = nullptr;
     }
 
-    HeapBlock& operator= (HeapBlock&& other) noexcept
+    HeapBlock& operator= (HeapBlock&& other) NOEXCEPT
     {
         std::swap (data, other.data);
         return *this;
@@ -160,55 +160,55 @@ public:
         This may be a null pointer if the data hasn't yet been allocated, or if it has been
         freed by calling the free() method.
     */
-    inline operator ElementType*() const noexcept                           { return data; }
+    inline operator ElementType*() const NOEXCEPT                           { return data; }
 
     /** Returns a raw pointer to the allocated data.
         This may be a null pointer if the data hasn't yet been allocated, or if it has been
         freed by calling the free() method.
     */
-    inline ElementType* getData() const noexcept                            { return data; }
+    inline ElementType* getData() const NOEXCEPT                            { return data; }
 
     /** Returns a void pointer to the allocated data.
         This may be a null pointer if the data hasn't yet been allocated, or if it has been
         freed by calling the free() method.
     */
-    inline operator void*() const noexcept                                  { return static_cast <void*> (data); }
+    inline operator void*() const NOEXCEPT                                  { return static_cast <void*> (data); }
 
     /** Returns a void pointer to the allocated data.
         This may be a null pointer if the data hasn't yet been allocated, or if it has been
         freed by calling the free() method.
     */
-    inline operator const void*() const noexcept                            { return static_cast <const void*> (data); }
+    inline operator const void*() const NOEXCEPT                            { return static_cast <const void*> (data); }
 
     /** Lets you use indirect calls to the first element in the array.
         Obviously this will cause problems if the array hasn't been initialised, because it'll
         be referencing a null pointer.
     */
-    inline ElementType* operator->() const  noexcept                        { return data; }
+    inline ElementType* operator->() const  NOEXCEPT                        { return data; }
 
     /** Returns a reference to one of the data elements.
         Obviously there's no bounds-checking here, as this object is just a dumb pointer and
         has no idea of the size it currently has allocated.
     */
     template <typename IndexType>
-    inline ElementType& operator[] (IndexType index) const noexcept         { return data [index]; }
+    inline ElementType& operator[] (IndexType index) const NOEXCEPT         { return data [index]; }
 
     /** Returns a pointer to a data element at an offset from the start of the array.
         This is the same as doing pointer arithmetic on the raw pointer itself.
     */
     template <typename IndexType>
-    inline ElementType* operator+ (IndexType index) const noexcept          { return data + index; }
+    inline ElementType* operator+ (IndexType index) const NOEXCEPT          { return data + index; }
 
     //==============================================================================
     /** Compares the pointer with another pointer.
         This can be handy for checking whether this is a null pointer.
     */
-    inline bool operator== (const ElementType* const otherPointer) const noexcept   { return otherPointer == data; }
+    inline bool operator== (const ElementType* const otherPointer) const NOEXCEPT   { return otherPointer == data; }
 
     /** Compares the pointer with another pointer.
         This can be handy for checking whether this is a null pointer.
     */
-    inline bool operator!= (const ElementType* const otherPointer) const noexcept   { return otherPointer != data; }
+    inline bool operator!= (const ElementType* const otherPointer) const NOEXCEPT   { return otherPointer != data; }
 
     //==============================================================================
     /** Allocates a specified amount of memory.
@@ -278,7 +278,7 @@ public:
         The two objects simply exchange their data pointers.
     */
     template <bool otherBlockThrows>
-    void swapWith (HeapBlock <ElementType, otherBlockThrows>& other) noexcept
+    void swapWith (HeapBlock <ElementType, otherBlockThrows>& other) NOEXCEPT
     {
         std::swap (data, other.data);
     }
@@ -287,7 +287,7 @@ public:
         Since the block has no way of knowing its own size, you must make sure that the number of
         elements you specify doesn't exceed the allocated size.
     */
-    void clear (size_t numElements) noexcept
+    void clear (size_t numElements) NOEXCEPT
     {
         zeromem (data, sizeof (ElementType) * numElements);
     }

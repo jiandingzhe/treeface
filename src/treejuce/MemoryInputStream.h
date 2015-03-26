@@ -77,10 +77,10 @@ public:
     ~MemoryInputStream();
 
     /** Returns a pointer to the source data block from which this stream is reading. */
-    const void* getData() const noexcept        { return data; }
+    const void* getData() const NOEXCEPT        { return data; }
 
     /** Returns the number of bytes of source data in the block from which this stream is reading. */
-    size_t getDataSize() const noexcept         { return dataSize; }
+    size_t getDataSize() const NOEXCEPT         { return dataSize; }
 
     //==============================================================================
     int64 getPosition() override;

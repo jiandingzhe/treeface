@@ -31,12 +31,12 @@
 
 TREEFACE_JUCE_NAMESPACE_BEGIN
 
-Identifier::Identifier() noexcept {}
-Identifier::~Identifier() noexcept {}
+Identifier::Identifier() NOEXCEPT {}
+Identifier::~Identifier() NOEXCEPT {}
 
-Identifier::Identifier (const Identifier& other) noexcept  : name (other.name) {}
+Identifier::Identifier (const Identifier& other) NOEXCEPT  : name (other.name) {}
 
-Identifier& Identifier::operator= (const Identifier other) noexcept
+Identifier& Identifier::operator= (const Identifier other) NOEXCEPT
 {
     name = other.name;
     return *this;
@@ -68,7 +68,7 @@ Identifier::Identifier (String::CharPointerType start, String::CharPointerType e
 
 Identifier Identifier::null;
 
-bool Identifier::isValidIdentifier (const String& possibleIdentifier) noexcept
+bool Identifier::isValidIdentifier (const String& possibleIdentifier) NOEXCEPT
 {
     return possibleIdentifier.isNotEmpty()
             && possibleIdentifier.containsOnly ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-:#@$%");

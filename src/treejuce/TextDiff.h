@@ -69,10 +69,10 @@ public:
                            insertion, this is the length of the new text being inserted. */
 
         /** Returns true if this change is a deletion, or false for an insertion. */
-        bool isDeletion() const noexcept;
+        bool isDeletion() const NOEXCEPT;
 
         /** Returns the result of applying this change to a string. */
-        String appliedTo (const String& original) const noexcept;
+        String appliedTo (const String& original) const NOEXCEPT;
     };
 
     /** The list of changes required to perform the transformation.

@@ -60,8 +60,13 @@
 
 #include <stdio.h>
 #include <inttypes.h>
-#include <unistd.h>
 #include <errno.h>
+
+#if _MSC_VER
+#  include <process.h>
+#else
+#  include <unistd.h>
+#endif
 
 using namespace std;
 
@@ -81,10 +86,11 @@ uint64_t _get_seed_from_time_()
 
 uint64_t _get_seed_from_pid_()
 {
-    uint32_t pid = uint32_t(getpid());
 #ifdef TREEFACE_OS_WINDOWS
-	uint32_t ppid = uint32_t(getpid());
+    uint32_t pid = uint32_t(_getpid());
+    uint32_t ppid = uint32_t(_getpid());
 #else
+    uint32_t pid = uint32_t(getpid());
     uint32_t ppid = uint32_t(getppid());
 #endif
     uint64_t result = pid;
@@ -117,7 +123,11 @@ void _get_seed_from_dev_random_(uint64_t* seeds, size_t len)
 void _get_seed_from_rand_s_(uint64_t* seeds, size_t len)
 {
     for (size_t i = 0; i < len; i++)
-        rand_s(&seeds[i]);
+    {
+        unsigned int rand_val = -1;
+        rand_s(&rand_val);
+        seeds[i] = rand_val;
+    }
 }
 #endif
 

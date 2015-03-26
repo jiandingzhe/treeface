@@ -81,15 +81,15 @@ public:
     /** Returns a pointer to the data that has been written to the stream.
         @see getDataSize
     */
-    const void* getData() const noexcept;
+    const void* getData() const NOEXCEPT;
 
     /** Returns the number of bytes of data that have been written to the stream.
         @see getData
     */
-    size_t getDataSize() const noexcept                 { return size; }
+    size_t getDataSize() const NOEXCEPT                 { return size; }
 
     /** Resets the stream, clearing any data that has been written to it so far. */
-    void reset() noexcept;
+    void reset() NOEXCEPT;
 
     /** Increases the internal storage capacity to be able to contain at least the specified
         amount of data without needing to be resized.

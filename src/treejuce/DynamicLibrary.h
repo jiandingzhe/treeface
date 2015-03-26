@@ -48,7 +48,7 @@ public:
     /** Creates an unopened DynamicLibrary object.
         Call open() to actually open one.
     */
-    DynamicLibrary() noexcept : handle (nullptr) {}
+    DynamicLibrary() NOEXCEPT : handle (nullptr) {}
 
     /**
     */
@@ -74,12 +74,12 @@ public:
     /** Tries to find a named function in the currently-open DLL, and returns a pointer to it.
         If no library is open, or if the function isn't found, this will return a null pointer.
     */
-    void* getFunction (const String& functionName) noexcept;
+    void* getFunction (const String& functionName) NOEXCEPT;
 
     /** Returns the platform-specific native library handle.
         You'll need to cast this to whatever is appropriate for the OS that's in use.
     */
-    void* getNativeHandle() const noexcept     { return handle; }
+    void* getNativeHandle() const NOEXCEPT     { return handle; }
 
 private:
     void* handle;

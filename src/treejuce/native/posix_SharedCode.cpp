@@ -52,7 +52,7 @@
 
 TREEFACE_JUCE_NAMESPACE_BEGIN
 
-CriticalSection::CriticalSection() noexcept
+CriticalSection::CriticalSection() NOEXCEPT
 {
     pthread_mutexattr_t atts;
     pthread_mutexattr_init (&atts);
@@ -64,13 +64,13 @@ CriticalSection::CriticalSection() noexcept
     pthread_mutexattr_destroy (&atts);
 }
 
-CriticalSection::~CriticalSection() noexcept        { pthread_mutex_destroy (&lock); }
-void CriticalSection::enter() const noexcept        { pthread_mutex_lock (&lock); }
-bool CriticalSection::tryEnter() const noexcept     { return pthread_mutex_trylock (&lock) == 0; }
-void CriticalSection::exit() const noexcept         { pthread_mutex_unlock (&lock); }
+CriticalSection::~CriticalSection() NOEXCEPT        { pthread_mutex_destroy (&lock); }
+void CriticalSection::enter() const NOEXCEPT        { pthread_mutex_lock (&lock); }
+bool CriticalSection::tryEnter() const NOEXCEPT     { return pthread_mutex_trylock (&lock) == 0; }
+void CriticalSection::exit() const NOEXCEPT         { pthread_mutex_unlock (&lock); }
 
 //==============================================================================
-WaitableEvent::WaitableEvent (const bool useManualReset) noexcept
+WaitableEvent::WaitableEvent (const bool useManualReset) NOEXCEPT
     : triggered (false), manualReset (useManualReset)
 {
     pthread_cond_init (&condition, 0);
@@ -83,13 +83,13 @@ WaitableEvent::WaitableEvent (const bool useManualReset) noexcept
     pthread_mutex_init (&mutex, &atts);
 }
 
-WaitableEvent::~WaitableEvent() noexcept
+WaitableEvent::~WaitableEvent() NOEXCEPT
 {
     pthread_cond_destroy (&condition);
     pthread_mutex_destroy (&mutex);
 }
 
-bool WaitableEvent::wait (const int timeOutMillisecs) const noexcept
+bool WaitableEvent::wait (const int timeOutMillisecs) const NOEXCEPT
 {
     pthread_mutex_lock (&mutex);
 
@@ -137,7 +137,7 @@ bool WaitableEvent::wait (const int timeOutMillisecs) const noexcept
     return true;
 }
 
-void WaitableEvent::signal() const noexcept
+void WaitableEvent::signal() const NOEXCEPT
 {
     pthread_mutex_lock (&mutex);
 
@@ -150,7 +150,7 @@ void WaitableEvent::signal() const noexcept
     pthread_mutex_unlock (&mutex);
 }
 
-void WaitableEvent::reset() const noexcept
+void WaitableEvent::reset() const NOEXCEPT
 {
     pthread_mutex_lock (&mutex);
     triggered = false;
@@ -267,8 +267,8 @@ Result getResultForReturnValue (int value)
     return value == -1 ? getResultForErrno() : Result::ok();
 }
 
-int getFD (void* handle) noexcept        { return (int) (pointer_sized_int) handle; }
-void* fdToVoidPointer (int fd) noexcept  { return (void*) (pointer_sized_int) fd; }
+int getFD (void* handle) NOEXCEPT        { return (int) (pointer_sized_int) handle; }
+void* fdToVoidPointer (int fd) NOEXCEPT  { return (void*) (pointer_sized_int) fd; }
 
 
 bool File::isDirectory() const
@@ -892,7 +892,7 @@ void DynamicLibrary::close()
     }
 }
 
-void* DynamicLibrary::getFunction (const String& functionName) noexcept
+void* DynamicLibrary::getFunction (const String& functionName) NOEXCEPT
 {
     return handle != nullptr ? dlsym (handle, functionName.toUTF8()) : nullptr;
 }

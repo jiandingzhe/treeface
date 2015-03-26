@@ -240,7 +240,7 @@ public:
     void setNewLineString (const String& newLineString);
 
     /** Returns the current new-line string that was set by setNewLineString(). */
-    const String& getNewLineString() const noexcept         { return newLineString; }
+    const String& getNewLineString() const NOEXCEPT         { return newLineString; }
 
 private:
     //==============================================================================

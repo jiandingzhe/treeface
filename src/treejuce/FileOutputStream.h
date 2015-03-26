@@ -72,17 +72,17 @@ public:
         The result will be ok if the file opened successfully. If an error occurs while
         opening or writing to the file, this will contain an error message.
     */
-    const Result& getStatus() const noexcept            { return status; }
+    const Result& getStatus() const NOEXCEPT            { return status; }
 
     /** Returns true if the stream couldn't be opened for some reason.
         @see getResult()
     */
-    bool failedToOpen() const noexcept                  { return status.failed(); }
+    bool failedToOpen() const NOEXCEPT                  { return status.failed(); }
 
     /** Returns true if the stream opened without problems.
         @see getResult()
     */
-    bool openedOk() const noexcept                      { return status.wasOk(); }
+    bool openedOk() const NOEXCEPT                      { return status.wasOk(); }
 
     /** Attempts to truncate the file to the current write position.
         To truncate a file to a specific size, first use setPosition() to seek to the

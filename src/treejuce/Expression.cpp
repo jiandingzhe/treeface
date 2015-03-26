@@ -30,7 +30,9 @@
 #include "treejuce/Holder.h"
 
 #include "treejuce/Expression.h"
+#include "treejuce/Logger.h"
 #include "treejuce/ScopedPointer.h"
+#include "treejuce/StringRef.h"
 
 TREEFACE_JUCE_NAMESPACE_BEGIN
 
@@ -40,7 +42,7 @@ public:
     Term() {}
     virtual ~Term() {}
 
-    virtual Type getType() const noexcept = 0;
+    virtual Type getType() const NOEXCEPT = 0;
     virtual Term* clone() const = 0;
     virtual Term* resolve (const Scope&, int recursionDepth) = 0;
     virtual String toString() const = 0;
@@ -121,7 +123,7 @@ struct Expression::Helpers
         Constant (const double val, const bool resolutionTarget)
             : value (val), isResolutionTarget (resolutionTarget) {}
 
-        Type getType() const noexcept                { return constantType; }
+        Type getType() const NOEXCEPT                { return constantType; }
         Term* clone() const                          { return new Constant (value, isResolutionTarget); }
         Term* resolve (const Scope&, int)          { return this; }
         double toDouble() const                      { return value; }
@@ -154,7 +156,7 @@ struct Expression::Helpers
             return possibleInput == left ? 0 : (possibleInput == right ? 1 : -1);
         }
 
-        Type getType() const noexcept       { return operatorType; }
+        Type getType() const NOEXCEPT       { return operatorType; }
         int getNumInputs() const            { return 2; }
         Term* getInput (int index) const    { return index == 0 ? left.get() : (index == 1 ? right.get() : 0); }
 
@@ -215,7 +217,7 @@ struct Expression::Helpers
             return scope.getSymbolValue (symbol).term->resolve (scope, recursionDepth + 1);
         }
 
-        Type getType() const noexcept   { return symbolType; }
+        Type getType() const NOEXCEPT   { return symbolType; }
         Term* clone() const             { return new SymbolTerm (symbol); }
         String toString() const         { return symbol; }
         String getName() const          { return symbol; }
@@ -246,7 +248,7 @@ struct Expression::Helpers
             : functionName (name), parameters (params)
         {}
 
-        Type getType() const noexcept   { return functionType; }
+        Type getType() const NOEXCEPT   { return functionType; }
         Term* clone() const             { return new Function (functionName, parameters); }
         int getNumInputs() const        { return parameters.size(); }
         Term* getInput (int i) const    { return parameters.getReference(i).term.get(); }
@@ -419,7 +421,7 @@ struct Expression::Helpers
             jassert (t != nullptr);
         }
 
-        Type getType() const noexcept                           { return operatorType; }
+        Type getType() const NOEXCEPT                           { return operatorType; }
         int getInputIndexFor (const Term* possibleInput) const  { return possibleInput == input ? 0 : -1; }
         int getNumInputs() const                                { return 1; }
         Term* getInput (int index) const                        { return index == 0 ? input.get() : nullptr; }
@@ -689,12 +691,12 @@ struct Expression::Helpers
         String::CharPointerType& text;
 
         //==============================================================================
-        static inline bool isDecimalDigit (const juce_wchar c) noexcept
+        static inline bool isDecimalDigit (const juce_wchar c) NOEXCEPT
         {
             return c >= '0' && c <= '9';
         }
 
-        bool readChar (const juce_wchar required) noexcept
+        bool readChar (const juce_wchar required) NOEXCEPT
         {
             if (*text == required)
             {
@@ -705,7 +707,7 @@ struct Expression::Helpers
             return false;
         }
 
-        bool readOperator (const char* ops, char* const opType = nullptr) noexcept
+        bool readOperator (const char* ops, char* const opType = nullptr) NOEXCEPT
         {
             text = text.findEndOfWhitespace();
 
@@ -725,7 +727,7 @@ struct Expression::Helpers
             return false;
         }
 
-        bool readIdentifier (String& identifier) noexcept
+        bool readIdentifier (String& identifier) NOEXCEPT
         {
             text = text.findEndOfWhitespace();
             String::CharPointerType t (text);
@@ -753,7 +755,7 @@ struct Expression::Helpers
             return false;
         }
 
-        Term* readNumber() noexcept
+        Term* readNumber() NOEXCEPT
         {
             text = text.findEndOfWhitespace();
             String::CharPointerType t (text);
@@ -960,12 +962,12 @@ Expression& Expression::operator= (const Expression& other)
 }
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-Expression::Expression (Expression&& other) noexcept
+Expression::Expression (Expression&& other) NOEXCEPT
     : term (static_cast <Holder<Term>&&> (other.term))
 {
 }
 
-Expression& Expression::operator= (Expression&& other) noexcept
+Expression& Expression::operator= (Expression&& other) NOEXCEPT
 {
     term = static_cast <Holder<Term>&&> (other.term);
     return *this;
@@ -1103,7 +1105,7 @@ void Expression::findReferencedSymbols (Array<Symbol>& results, const Scope& sco
 
 String Expression::toString() const                     { return term->toString(); }
 bool Expression::usesAnySymbols() const                 { return Helpers::containsAnySymbols (term); }
-Expression::Type Expression::getType() const noexcept   { return term->getType(); }
+Expression::Type Expression::getType() const NOEXCEPT   { return term->getType(); }
 String Expression::getSymbolOrFunction() const          { return term->getName(); }
 int Expression::getNumInputs() const                    { return term->getNumInputs(); }
 Expression Expression::getInput (int index) const       { return Expression (term->getInput (index)); }
@@ -1127,12 +1129,12 @@ Expression::Symbol::Symbol (const String& scopeUID_, const String& symbolName_)
 {
 }
 
-bool Expression::Symbol::operator== (const Symbol& other) const noexcept
+bool Expression::Symbol::operator== (const Symbol& other) const NOEXCEPT
 {
     return symbolName == other.symbolName && scopeUID == other.scopeUID;
 }
 
-bool Expression::Symbol::operator!= (const Symbol& other) const noexcept
+bool Expression::Symbol::operator!= (const Symbol& other) const NOEXCEPT
 {
     return ! operator== (other);
 }
