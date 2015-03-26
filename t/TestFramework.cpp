@@ -1,8 +1,4 @@
 #include "TestFramework.h"
-#include "htio2/SeqIO.h"
-#include "htio2/FastqSeq.h"
-#include "htio2/PlainFileHandle.h"
-#include "htio2/GzipFileHandle.h"
 
 #include <iostream>
 
