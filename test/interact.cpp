@@ -12,6 +12,10 @@
 #include "treeface/config.h"
 #include "treejuce/BasicNativeHeaders.h"
 
+#if defined _MSC_VER && defined TREEFACE_OS_WINDOWS
+#  include <wincon.h>
+#endif
+
 using namespace std;
 
 struct BBox
@@ -320,6 +324,22 @@ void build_up_sdl(SDL_Window** window, SDL_GLContext* context)
     }
 }
 
+void show_buffer_info(GLenum target)
+{
+	int mapped = -1;
+	int size = -1;
+	int usage = -1;
+	int map_length = -1;
+	int map_offset = -1;
+	glGetBufferParameteriv(target, GL_BUFFER_MAPPED, &mapped);
+	glGetBufferParameteriv(target, GL_BUFFER_SIZE, &size);
+	glGetBufferParameteriv(target, GL_BUFFER_USAGE, &usage);
+	glGetBufferParameteriv(target, GL_BUFFER_MAP_LENGTH, &map_length);
+	glGetBufferParameteriv(target, GL_BUFFER_MAP_OFFSET, &map_offset);
+
+	printf("mapped: %d at %d + %d, size %d, usage %d\n", mapped, map_offset, map_length, size, usage);
+}
+
 struct WidgetRenderer
 {
     void add_widget(Widget* widget)
@@ -342,13 +362,25 @@ struct WidgetRenderer
                 glUseProgram(program->program);
             }
 
-            glBindBuffer(GL_ARRAY_BUFFER, widget->geometry->buffer_vertex);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, widget->geometry->buffer_index);
+			printf("bind vertex array %u\n", widget->array);
             glBindVertexArray(widget->array);
+
+			printf("bind vertex buffer %u\n", widget->geometry->buffer_vertex);
+			glBindBuffer(GL_ARRAY_BUFFER, widget->geometry->buffer_vertex);
+			printf("  vertex buffer: ");
+			show_buffer_info(GL_ARRAY_BUFFER);
+
+			printf("bind index buffer %u\n", widget->geometry->buffer_index);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, widget->geometry->buffer_index);
+			printf("  index buffer: ");
+			show_buffer_info(GL_ELEMENT_ARRAY_BUFFER);
 
             glUniformMatrix4fv(program->uni_matrix, 1, GL_FALSE, widget->trans.data);
             glUniform1i(program->uni_active, widget->is_active);
 
+			printf("draw widget %p\n", widget);
+			printf("  geometry %p\n", widget->geometry);
+			printf("  %d indices\n", widget->geometry->n_index);
             glDrawElements(GL_TRIANGLES, widget->geometry->n_index, GL_UNSIGNED_SHORT, 0);
         }
     }
@@ -458,11 +490,12 @@ void on_mouse_up(SDL_MouseButtonEvent& e)
     }
 }
 
-#ifdef TREEFACE_OS_WINDOWS
-int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-#else
+//#ifdef TREEFACE_OS_WINDOWS
+//int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+//#else
+#undef main
 int main(int argc, char** argv)
-#endif
+//#endif
 {
     SDL_Window* window = nullptr;
     SDL_GLContext context = nullptr;

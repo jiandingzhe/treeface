@@ -8,8 +8,8 @@ include_directories(${SDL2_INCLUDE_DIR})
 add_executable(interact interact.cpp)
 target_link_libraries(interact ${SDL2_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_gl_LIBRARY})
 
-if(TREEFACE_OS STREQUAL "WINDOWS")
+if(MSVC AND TREEFACE_OS STREQUAL "WINDOWS")
     set_target_properties(interact PROPERTIES
-        WIN32_EXECUTABLE 1
+        WIN32_EXECUTABLE 0
     )
 endif()
