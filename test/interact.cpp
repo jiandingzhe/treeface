@@ -1,4 +1,6 @@
 #include <SDL.h>
+
+#define GLEW_STATIC
 #include <GL/glew.h>
 
 #include <stdio.h>
@@ -6,6 +8,9 @@
 #include <vector>
 #include <set>
 #include <map>
+
+#include "treeface/config.h"
+#include "treejuce/BasicNativeHeaders.h"
 
 using namespace std;
 
@@ -19,15 +24,42 @@ struct BBox
 
 struct Vector4F
 {
-    float data[4] = {0, 0, 0, 1};
+    Vector4F()
+    {
+        data[0] = 0;
+        data[1] = 0;
+        data[2] = 0;
+        data[3] = 1;
+    }
+    float data[4];
 };
 
 struct Matrix4F
 {
-    float data[16] = {1, 0, 0, 0,
-                      0, 1, 0, 0,
-                      0, 0, 1, 0,
-                      0, 0, 0, 1};
+    Matrix4F()
+    {
+        data[0] = 1;
+        data[1] = 0;
+        data[2] = 0;
+        data[3] = 0;
+
+        data[4] = 0;
+        data[5] = 1;
+        data[6] = 0;
+        data[7] = 0;
+
+        data[8] = 0;
+        data[9] = 0;
+        data[10] = 1;
+        data[11] = 0;
+
+        data[12] = 0;
+        data[13] = 0;
+        data[14] = 0;
+        data[15] = 1;
+    }
+
+    float data[16];
 };
 
 struct ColoredPoint
@@ -426,7 +458,11 @@ void on_mouse_up(SDL_MouseButtonEvent& e)
     }
 }
 
+#ifdef TREEFACE_OS_WINDOWS
+int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#else
 int main(int argc, char** argv)
+#endif
 {
     SDL_Window* window = nullptr;
     SDL_GLContext context = nullptr;
@@ -449,7 +485,7 @@ int main(int argc, char** argv)
         for (int j = 0; j < 10; j++)
         {
             float y = -1 + 2 * float(j) / 10;
-            Widget* widget = new Widget(x, y, 0.15, 0.1);
+            Widget* widget = new Widget(x, y, 0.15f, 0.1f);
             widget->program = &program;
             widget->geometry = &geom;
             widget->bound_geometry_with_program();
@@ -500,4 +536,6 @@ int main(int argc, char** argv)
 
     SDL_GL_DeleteContext(context);
     SDL_Quit();
+
+    return 0;
 }
