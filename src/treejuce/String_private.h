@@ -1,6 +1,7 @@
 #ifndef TREEJUCE_STRING_PRIVATE_H
 #define TREEJUCE_STRING_PRIVATE_H
 
+#include "treejuce/TargetPlatform.h"
 #include "treejuce/String.h"
 
 TREEFACE_JUCE_NAMESPACE_BEGIN

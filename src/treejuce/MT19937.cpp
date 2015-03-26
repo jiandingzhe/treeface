@@ -53,7 +53,7 @@
    email: m-mat @ math.sci.hiroshima-u.ac.jp (remove spaces)
 */
 
-
+#include "treeface/config.h"
 #include "treejuce/File.h"
 #include "treejuce/MT19937.h"
 #include "treejuce/Time.h"
@@ -82,7 +82,11 @@ uint64_t _get_seed_from_time_()
 uint64_t _get_seed_from_pid_()
 {
     uint32_t pid = uint32_t(getpid());
+#ifdef TREEFACE_OS_WINDOWS
+	uint32_t ppid = uint32_t(getpid());
+#else
     uint32_t ppid = uint32_t(getppid());
+#endif
     uint64_t result = pid;
     result <<= 32;
     result += ppid;

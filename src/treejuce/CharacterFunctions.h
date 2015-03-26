@@ -29,7 +29,9 @@
 #ifndef JUCE_CHARACTERFUNCTIONS_H_INCLUDED
 #define JUCE_CHARACTERFUNCTIONS_H_INCLUDED
 
+#include "treejuce/MathsFunctions.h"
 #include "treejuce/StandardHeader.h"
+#include "treejuce/TargetPlatform.h"
 
 //==============================================================================
 TREEFACE_JUCE_NAMESPACE_BEGIN

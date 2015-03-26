@@ -43,6 +43,14 @@ TREEFACE_JUCE_NAMESPACE_BEGIN
 class OutputStream;
 class StringRef;
 
+#if JUCE_NATIVE_WCHAR_IS_UTF8
+ typedef CharPointer_UTF8          CharPointer_wchar_t;
+#elif JUCE_NATIVE_WCHAR_IS_UTF16
+ typedef CharPointer_UTF16         CharPointer_wchar_t;
+#else
+ typedef CharPointer_UTF32         CharPointer_wchar_t;
+#endif
+
 //==============================================================================
 /**
     The JUCE String class!

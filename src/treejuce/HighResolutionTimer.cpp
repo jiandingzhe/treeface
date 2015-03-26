@@ -28,12 +28,15 @@
 
 #include "treeface/config.h"
 
+#include "treejuce/MathsFunctions.h"
 #include "treejuce/HighResolutionTimer.h"
 
-#ifdef TREEFACE_SYSTEM_Linux
-#include "treejuce/native/posix_HighResolutionTimer.h"
-#elif defined TREEFACE_SYSTEM_Windows
-#error "not implemented"
+#ifdef TREEFACE_OS_LINUX
+#  include "treejuce/native/posix_HighResolutionTimer.h"
+#elif defined TREEFACE_OS_WINDOWS
+#  include "treejuce/native/win32_HighResolutionTimer.h"
+#else
+#  error "unimplemented system"
 #endif
 
 TREEFACE_JUCE_NAMESPACE_BEGIN

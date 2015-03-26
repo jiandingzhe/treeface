@@ -29,6 +29,7 @@
 #ifndef JUCE_CRITICALSECTION_H_INCLUDED
 #define JUCE_CRITICALSECTION_H_INCLUDED
 
+#include "treejuce/MathsFunctions.h"
 #include "treejuce/StandardHeader.h"
 #include "treejuce/ScopedLock.h"
 

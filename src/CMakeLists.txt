@@ -1,3 +1,13 @@
+#
+# configure
+#
+
+include(CheckTypeSize)
+CHECK_TYPE_SIZE("void*" TREEFACE_PTR_SIZE)
+CHECK_TYPE_SIZE("wchar_t" TREEFACE_WCHAR_SIZE)
+
+message("wchar size: ${TREEFACE_WCHAR_SIZE}")
+
 configure_file(treeface/config.h.in treeface/config.h @ONLY)
 
 include_directories(zlib)
@@ -14,10 +24,14 @@ file(GLOB zlib_src_files
 # otherwise it won't use C compiler
 add_library(treeface_zlib STATIC ${zlib_src_files})
 
-set_target_properties(treeface_zlib
-    PROPERTIES
-    COMPILE_FLAGS -fPIC
-)
+if(MSVC)
+	# TODO
+else()
+	set_target_properties(treeface_zlib
+		PROPERTIES
+		COMPILE_FLAGS -fPIC
+	)
+endif()
 
 #
 # treeface
@@ -57,8 +71,10 @@ endif()
 
 add_library(treeface SHARED ${treeface_src_files} ${treeface_platform_src_files})
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+if(TREEFACE_OS STREQUAL "LINUX")
     target_link_libraries(treeface pthread dl)
+elseif(TREEFACE_OS STREQUAL "WINDOWS")
+	target_link_libraries(treeface version winmm Shlwapi)
 endif()
 
 target_link_libraries(treeface

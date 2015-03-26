@@ -29,6 +29,11 @@
 #ifndef JUCE_SCOPEDWRITELOCK_H_INCLUDED
 #define JUCE_SCOPEDWRITELOCK_H_INCLUDED
 
+#include "treejuce/StandardHeader.h"
+
+TREEFACE_JUCE_NAMESPACE_BEGIN
+
+class ReadWriteLock;
 
 //==============================================================================
 /**
@@ -86,5 +91,6 @@ private:
     JUCE_DECLARE_NON_COPYABLE (ScopedWriteLock)
 };
 
+TREEFACE_JUCE_NAMESPACE_END
 
 #endif   // JUCE_SCOPEDWRITELOCK_H_INCLUDED

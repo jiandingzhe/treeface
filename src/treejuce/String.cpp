@@ -48,14 +48,6 @@ NewLine newLine;
  #error "JUCE_STRINGS_ARE_UNICODE is deprecated! All strings are now unicode by default."
 #endif
 
-#if JUCE_NATIVE_WCHAR_IS_UTF8
- typedef CharPointer_UTF8          CharPointer_wchar_t;
-#elif JUCE_NATIVE_WCHAR_IS_UTF16
- typedef CharPointer_UTF16         CharPointer_wchar_t;
-#else
- typedef CharPointer_UTF32         CharPointer_wchar_t;
-#endif
-
 static inline CharPointer_wchar_t castToCharPointer_wchar_t (const void* t) noexcept
 {
     return CharPointer_wchar_t (static_cast<const CharPointer_wchar_t::CharType*> (t));

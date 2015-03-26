@@ -60,6 +60,7 @@
 #endif
 
 #include <cstdlib>
+#include <cstdint>
 #include <cstdarg>
 #include <climits>
 #include <limits>
