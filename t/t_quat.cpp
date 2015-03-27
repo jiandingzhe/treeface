@@ -24,7 +24,7 @@ void TestFramework::content()
 
         OK("inverse");
         Quatf b_inv = b;
-        b.inverse();
+        b_inv.inverse();
         IS(b_inv.get_x(), -1);
         IS(b_inv.get_y(), -2);
         IS(b_inv.get_z(), -3);
