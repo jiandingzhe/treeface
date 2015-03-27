@@ -29,7 +29,11 @@
 #ifndef JUCE_HASHMAP_H_INCLUDED
 #define JUCE_HASHMAP_H_INCLUDED
 
-#include "treejuce/Common.h"
+#include "treejuce/Array.h"
+#include "treejuce/LeakedObjectDetector.h"
+#include "treejuce/ScopedPointer.h"
+#include "treejuce/String.h"
+#include "treejuce/Variant.h"
 
 //==============================================================================
 TREEFACE_JUCE_NAMESPACE_BEGIN
