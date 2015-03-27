@@ -3,7 +3,6 @@
 
 #include "treejuce/Common.h"
 #include "treejuce/Atomic.h"
-#include "treeface/config.h"
 
 #include <cstdint>
 

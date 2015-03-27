@@ -34,31 +34,27 @@ else()
 endif()
 
 #
-# treeface
+# treejuce
 #
-file(GLOB treeface_src_files
-    "treeface/*.h"
-    "treeface/*.cpp"
-    "treeface/*/*.h"
-    "treeface/*/*.cpp"
+file(GLOB treejuce_src_files
     "treejuce/*.h"
     "treejuce/*.cpp"
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    file(GLOB treeface_platform_src_files
+    file(GLOB treejuce_platform_src_files
         "treejuce/native/linux_*.h"
         "treejuce/native/linux_*.cpp"
         "treejuce/native/posix_*.h"
         "treejuce/native/posix_*.cpp"
     )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    file(GLOB treeface_platform_src_files
+    file(GLOB treejuce_platform_src_files
         "treejuce/native/win32_*.h"
         "treejuce/native/win32_*.cpp"
     )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    file(GLOB treeface_platform_src_files
+    file(GLOB treejuce_platform_src_files
         "treejuce/native/mac_*.mm"
         "treejuce/native/osx_*.h"
         "treejuce/native/osx_*.cpp"
@@ -69,14 +65,30 @@ else()
     message(SEND_ERROR "unsupported target system: ${CMAKE_SYSTEM_NAME}")
 endif()
 
-add_library(treeface STATIC ${treeface_src_files} ${treeface_platform_src_files})
+add_library(treejuce STATIC ${treejuce_src_files} ${treejuce_platform_src_files})
 
 if(TREEFACE_OS STREQUAL "LINUX")
-    target_link_libraries(treeface pthread dl)
+    target_link_libraries(treejuce pthread dl)
 elseif(TREEFACE_OS STREQUAL "WINDOWS")
-    target_link_libraries(treeface version winmm Shlwapi Dbghelp)
+    target_link_libraries(treejuce version winmm Shlwapi Dbghelp)
 endif()
 
-target_link_libraries(treeface
+target_link_libraries(treejuce
     treeface_zlib
 )
+
+#
+# treeface
+#
+file(GLOB treeface_src_files
+    "treeface/*.h"
+    "treeface/*.cpp"
+    "treeface/*/*.h"
+    "treeface/*/*.cpp"
+)
+
+add_library(treeface STATIC ${treeface_src_files})
+
+
+
+
