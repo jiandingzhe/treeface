@@ -2,6 +2,7 @@
 #include "treeface/gl/vertexarray.h"
 #include "treeface/gl/vertexindexbuffer.h"
 
+#include "treejuce/StringArray.h"
 #include "treejuce/Logger.h"
 
 TREEFACE_NAMESPACE_BEGIN
@@ -28,11 +29,13 @@ void VertexArray::connect_buffer_and_program(VertexIndexBuffer* buffer,
     {
         if (program->m_attr_idx_by_name.contains(desc.name))
         {
-
+            treejuce::uint16 attr_idx = program->m_attr_idx_by_name[desc.name];
+            glEnableVertexAttribArray(attr_idx);
+            glVertexAttribPointer(attr_idx, desc.size, desc.type, desc.normalize, stride, desc.offset);
         }
         else
         {
-            Logger:: // TODO: raise a warn
+            treejuce::Logger::writeToLog("attempt to connect to attibute \""+desc.name+"\" which do not exist in program"); // TODO: raise a warn
         }
     }
 }

@@ -20,8 +20,10 @@ public:
     struct AttrDesc
     {
         treejuce::String name;
+        void* offset;
         GLsizei size;
         GLenum type;
+        bool normalize;
     };
 
     VertexArray();

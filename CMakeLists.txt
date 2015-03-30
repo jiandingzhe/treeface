@@ -59,6 +59,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_BINARY_DIR}/src
     ${GLEW_INCLUDE_DIR}
+    ${TREEJUCE_INCLUDE_DIR}
 )
 
 add_subdirectory(src)
