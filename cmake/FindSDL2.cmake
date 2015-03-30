@@ -28,18 +28,23 @@
 include(FindPackageMessage)
 include(FindPackageHandleStandardArgs)
 
-set(SDL2_SEARCH_PREFIX     "" CACHE PATH "additional path to search for SDL2")
-set(SDL2_SEARCH_PREFIX_INC "" CACHE PATH "additional path to search for SDL2 header SDL.h")
-set(SDL2_SEARCH_PREFIX_LIB "" CACHE PATH "additional path to search for SDL2 library")
-set(SDL2_SEARCH_STATIC     NO CACHE BOOL "search for static SDL2 library")
+set(SDL2_SEARCH_PREFIX      "" CACHE PATH   "additional path to search for SDL2")
+set(SDL2_SEARCH_PREFIX_INC  "" CACHE PATH   "additional path to search for SDL2 header SDL.h")
+set(SDL2_SEARCH_PREFIX_LIB  "" CACHE PATH   "additional path to search for SDL2 library")
+set(SDL2_SEARCH_STATIC      NO CACHE BOOL   "search for static SDL2 library")
+set(SDL2_SEARCH_32BIT_64BIT 64 CACHE STRING "search for 32bit or 64bit library")
 
+#
 # find header directory
+#
 find_path(SDL2_INCLUDE_DIR SDL.h
-    HINTS ${SDL2_SEARCH_PREFIX_INC} ${SDL2_SEARCH_PREFIX}
+    HINTS ${SDL2_SEARCH_PREFIX_INC} ${SDL2_SEARCH_PREFIX}/include
     PATH_SUFFIXES SDL2
 )
 
+#
 # read version from header file content
+#
 if(SDL2_INCLUDE_DIR)
     file(STRINGS ${SDL2_INCLUDE_DIR}/SDL_version.h tmp1 REGEX "define +SDL_MAJOR_VERSION +[0-9]+")
     file(STRINGS ${SDL2_INCLUDE_DIR}/SDL_version.h tmp2 REGEX "define +SDL_MINOR_VERSION +[0-9]+")
@@ -55,13 +60,28 @@ if(SDL2_INCLUDE_DIR)
     set(SDL2_VERSION ${SDL2_VERSION_MAJOR}.${SDL2_VERSION_MINOR}.${SDL2_VERSION_PATCH})
 endif()
 
+#
 # find library
+#
 if(SDL2_FIND_STATIC)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_STATIC_LIBRARY_SUFFIX})
 endif()
 
+# set library path to fit different path layouts on different OS
+if(WIN32)
+    if(SDL2_SEARCH_32BIT_64BIT EQUAL 32)
+        set(SDL2_LIB_HINT ${SDL2_SEARCH_PREFIX}/lib/x86 ${SDL2_SEARCH_PREFIX}/lib ${SDL2_SEARCH_PREFIX})
+    elseif(SDL2_SEARCH_32BIT_64BIT EQUAL 64)
+        set(SDL2_LIB_HINT ${SDL2_SEARCH_PREFIX}/lib/x64 ${SDL2_SEARCH_PREFIX}/lib ${SDL2_SEARCH_PREFIX})
+    else()
+        message(FATAL_ERROR "invalid value for SDL2_SEARCH_32BIT_64BIT: ${SDL2_SEARCH_32BIT_64BIT}, only 32|64 allowed.")
+    endif()
+else()
+    set(SDL2_LIB_HINT ${SDL2_SEARCH_PREFIX}/lib ${SDL2_SEARCH_PREFIX})
+endif()
+
 find_library(SDL2_LIBRARY SDL2
-    HINTS ${SDL2_SEARCH_PREFIX_LIB} ${SDL2_SEARCH_PREFIX}
+    HINTS ${SDL2_SEARCH_PREFIX_LIB} ${SDL2_LIB_HINT}
 )
 
 # finalize
