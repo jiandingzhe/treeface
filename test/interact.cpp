@@ -261,11 +261,12 @@ struct Widget
     void bound_geometry_with_program()
     {
         glBindVertexArray(array);
-        glEnableVertexAttribArray(program->attr_position);
-        glEnableVertexAttribArray(program->attr_color);
-
         glBindBuffer(GL_ARRAY_BUFFER, geometry->buffer_vertex);
+
+        glEnableVertexAttribArray(program->attr_position);
         glVertexAttribPointer(program->attr_position, 4, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), 0);
+
+        glEnableVertexAttribArray(program->attr_color);
         glVertexAttribPointer(program->attr_color, 4, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), (void*) (4 * sizeof(float)));
     }
 

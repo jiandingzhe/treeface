@@ -9,4 +9,10 @@
 #define TREEFACE_NAMESPACE_BEGIN namespace treeface {
 #define TREEFACE_NAMESPACE_END }
 
+TREEFACE_NAMESPACE_BEGIN
+
+void die(const char* format, ...);
+
+TREEFACE_NAMESPACE_END
+
 #endif // TREEFACE_COMMON_H

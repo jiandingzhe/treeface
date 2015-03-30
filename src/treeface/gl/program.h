@@ -13,8 +13,12 @@
 
 TREEFACE_NAMESPACE_BEGIN
 
+class VertexArray;
+
 class Program: public treejuce::Object
 {
+    friend class VertexArray;
+
 public:
     struct AttrInfo
     {
@@ -25,8 +29,21 @@ public:
 
     Program();
 
+    // invalidate copy and move
+    Program(const Program& other) = delete;
+    Program(Program&& other) = delete;
+    Program& operator = (const Program& other) = delete;
+    Program& operator = (Program&& other) = delete;
+
     virtual ~Program();
 
+    /**
+     * @brief create shader and program object, compile source, link
+     * @param src_vert
+     * @param src_geom
+     * @param src_frag
+     * @return
+     */
     treejuce::Result init(const char* src_vert, const char* src_geom, const char* src_frag);
 
     inline void use()

@@ -26,6 +26,11 @@ endif()
 #
 # find prerequisite libraries
 #
+find_package(TREEJUCE REQUIRED)
+message(STATUS "treejuce")
+message(STATUS "  inc ${TREEJUCE_INCLUDE_DIR}")
+message(STATUS "  lib ${TREEJUCE_LIBRARIES}")
+
 find_package(OpenGL REQUIRED)
 
 message(STATUS "GL")

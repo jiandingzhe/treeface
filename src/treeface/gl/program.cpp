@@ -8,12 +8,16 @@ using namespace std;
 
 TREEFACE_NAMESPACE_BEGIN
 
-Program::Program() {}
+Program::Program()
+{
+    m_program = glCreateProgram();
+    if (m_program == 0)
+        die("failed to create program object");
+}
 
 Program::~Program()
 {
-    if (m_program)
-        glDeleteProgram(m_program);
+    glDeleteProgram(m_program);
 
     if (m_shader_vert)
         glDeleteShader(m_shader_vert);
@@ -27,8 +31,7 @@ Program::~Program()
 
 treejuce::Result Program::init(const char* src_vert, const char* src_geom, const char* src_frag)
 {
-    m_program = glCreateProgram();
-
+    // compile shaders
     if (src_vert)
     {
         m_shader_vert = glCreateShader(GL_VERTEX_SHADER);
@@ -68,6 +71,7 @@ treejuce::Result Program::init(const char* src_vert, const char* src_geom, const
         glAttachShader(m_program, m_shader_frag);
     }
 
+    // link program
     glLinkProgram(m_program);
 
     {
@@ -81,10 +85,7 @@ treejuce::Result Program::init(const char* src_vert, const char* src_geom, const
     glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTES, &n_attr);
 
     if (n_attr == -1)
-    {
-        fprintf(stderr, "failed to get attribute number from program %u\n", m_program);
-        abort();
-    }
+        die("failed to get attribute number from program %u", m_program);
 
     for (int i_attr = 0; i_attr < n_attr; i_attr++)
     {
@@ -96,30 +97,21 @@ treejuce::Result Program::init(const char* src_vert, const char* src_geom, const
                           &attr_name_len, &attr_size, &attr_type, attr_name);
 
         if (attr_name_len == -1)
-        {
-            fprintf(stderr, "failed to get attribute %d info\n", i_attr);
-            abort();
-        }
+            die("failed to get attribute %d info", i_attr);
 
         if (attr_name_len >= 255)
-        {
-            fprintf(stderr, "attribute %d name is too long\n", i_attr);
-            abort();
-        }
+            die("attribute %d name is too long", i_attr);
 
         m_attr_info.add({treejuce::String(attr_name), attr_size, attr_type});
         m_attr_idx_by_name.set(treejuce::String(attr_name), i_attr);
     }
 
-    // TODO extract program uniforms
+    // extract program uniforms
     int n_uni = -1;
     glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &n_uni);
 
     if (n_uni == -1)
-    {
-        fprintf(stderr, "failed to get uniform number from program %u\n", m_program);
-        abort();
-    }
+        die("failed to get uniform number from program %u", m_program);
 
     for (int i_uni = 0; i_uni < n_uni; i_uni++)
     {
@@ -131,16 +123,10 @@ treejuce::Result Program::init(const char* src_vert, const char* src_geom, const
                            &uni_name_len, &uni_size, &uni_type, uni_name);
 
         if (uni_name_len == -1)
-        {
-            fprintf(stderr, "failed to get uniform %d info\n", i_uni);
-            abort();
-        }
+            die("failed to get uniform %d info", i_uni);
 
         if (uni_name_len >= 255)
-        {
-            fprintf(stderr, "uniform %d name is too long\n", i_uni);
-            abort();
-        }
+            die("uniform %d name is too long", i_uni);
 
         m_uni_info.add({uni_name, uni_size, uni_type});
         m_uni_idx_by_name.set(uni_name, i_uni);
@@ -171,8 +157,7 @@ treejuce::Result Program::fetch_shader_error_log(GLuint shader)
         }
         else
         {
-            fputs("failed to retrieve shader compile error log\n", stderr);
-            abort();
+            die("failed to retrieve shader compile error log");
         }
     }
     else
@@ -203,8 +188,7 @@ treejuce::Result Program::fetch_program_error_log()
         }
         else
         {
-            fputs("failed to retrieve program link error log\n", stderr);
-            abort();
+            die("failed to retrieve program link error log");
         }
     }
     else
