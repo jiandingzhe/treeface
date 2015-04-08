@@ -2,10 +2,11 @@
 #define TREEFACE_GL_PROGRAM_H
 
 #include "treeface/common.h"
+#include "treeface/math.h"
+#include "treeface/gl/sampler.h"
 
 #include "treejuce/Array.h"
 #include "treejuce/HashMap.h"
-#include "treejuce/Object.h"
 #include "treejuce/Result.h"
 #include "treejuce/String.h"
 
@@ -13,13 +14,8 @@
 
 TREEFACE_NAMESPACE_BEGIN
 
-class VertexArray;
-
-class Program: public treejuce::Object
+struct Program
 {
-    friend class VertexArray;
-
-public:
     struct AttrInfo
     {
         treejuce::String name;
@@ -35,7 +31,7 @@ public:
     Program& operator = (const Program& other) = delete;
     Program& operator = (Program&& other) = delete;
 
-    virtual ~Program();
+    ~Program();
 
     /**
      * @brief create shader and program object, compile source, link
@@ -44,21 +40,70 @@ public:
      * @param src_frag
      * @return
      */
-    treejuce::Result init(const char* src_vert, const char* src_geom, const char* src_frag);
+    treejuce::Result init(const char* src_vert, const char* src_frag);
 
-    inline void use()
+    inline void use() const NOEXCEPT
     {
         glUseProgram(m_program);
     }
 
-protected:
+    inline void unuse() const NOEXCEPT
+    {
+        glUseProgram(0);
+    }
+
+    inline void set_uniform(GLint uni, GLint value)
+    {
+        jassert(m_uni_info[uni].size == 1);
+        jassert(m_uni_info[uni].type == GL_INT);
+        glUniform1i(uni, value);
+    }
+
+    inline void set_uniform(GLint uni, GLuint value)
+    {
+        jassert(m_uni_info[uni].size == 1);
+        jassert(m_uni_info[uni].type == GL_UNSIGNED_INT);
+        glUniform1ui(uni, value);
+    }
+
+    inline void set_uniform(GLint uni, GLfloat value)
+    {
+        jassert(m_uni_info[uni].size == 1);
+        glUniform1f(uni, value);
+    }
+
+    inline void set_uniform(GLint uni, const Sampler& sampler)
+    {
+        jassert(m_uni_info[uni].size == 1);
+        jassert(m_uni_info[uni].type == GL_SAMPLER_2D ||
+                m_uni_info[uni].type == GL_SAMPLER_3D ||
+                m_uni_info[uni].type == GL_SAMPLER_CUBE ||
+                m_uni_info[uni].type == GL_SAMPLER_2D_SHADOW ||
+                m_uni_info[uni].type == GL_SAMPLER_2D_ARRAY ||
+                m_uni_info[uni].type == GL_SAMPLER_2D_ARRAY_SHADOW ||
+                m_uni_info[uni].type == GL_SAMPLER_CUBE_SHADOW);
+        glUniform1i(uni, sampler.m_sampler);
+    }
+
+    inline void set_uniform(GLint uni, const Vec4f& value)
+    {
+        jassert(m_uni_info[uni].size == 1);
+        jassert(m_uni_info[uni].type == GL_FLOAT_VEC4);
+        glUniform4fv(uni, 1, (const float*)&value);
+    }
+
+    inline void set_uniform(GLint uni, const Mat4f& value)
+    {
+        jassert(m_uni_info[uni].size == 1);
+        jassert(m_uni_info[uni].type == GL_FLOAT_MAT4);
+        glUniformMatrix4fv(uni, 1, false, (const float*) &value);
+    }
+
     treejuce::Result fetch_shader_error_log(GLuint shader);
     treejuce::Result fetch_program_error_log();
 
-protected:
     unsigned int m_program = 0;
     unsigned int m_shader_vert = 0;
-    unsigned int m_shader_geom = 0;
     unsigned int m_shader_frag = 0;
 
     treejuce::Array<AttrInfo> m_attr_info;
@@ -67,6 +112,7 @@ protected:
     treejuce::Array<AttrInfo> m_uni_info;
     treejuce::HashMap<treejuce::String, treejuce::uint16> m_uni_idx_by_name;
 };
+
 
 TREEFACE_NAMESPACE_END
 

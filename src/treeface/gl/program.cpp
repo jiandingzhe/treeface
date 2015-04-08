@@ -1,18 +1,17 @@
 #include "treeface/gl/program.h"
 
-#include "treejuce/StringRef.h"
+#include <treejuce/Logger.h>
+#include <treejuce/StringRef.h>
 
 #include <cstdio>
 
 using namespace std;
+using namespace treejuce;
 
 TREEFACE_NAMESPACE_BEGIN
 
 Program::Program()
 {
-    m_program = glCreateProgram();
-    if (m_program == 0)
-        die("failed to create program object");
 }
 
 Program::~Program()
@@ -22,15 +21,16 @@ Program::~Program()
     if (m_shader_vert)
         glDeleteShader(m_shader_vert);
 
-    if (m_shader_geom)
-        glDeleteShader(m_shader_geom);
-
     if (m_shader_frag)
         glDeleteShader(m_shader_frag);
 }
 
-treejuce::Result Program::init(const char* src_vert, const char* src_geom, const char* src_frag)
+treejuce::Result Program::init(const char* src_vert, const char* src_frag)
 {
+    m_program = glCreateProgram();
+    if (m_program == 0)
+        die("failed to create program object");
+
     // compile shaders
     if (src_vert)
     {
@@ -38,24 +38,11 @@ treejuce::Result Program::init(const char* src_vert, const char* src_geom, const
         glShaderSource(m_shader_vert, 1, &src_vert, nullptr);
         glCompileShader(m_shader_vert);
 
-        treejuce::Result re = fetch_shader_error_log(GL_VERTEX_SHADER);
+        treejuce::Result re = fetch_shader_error_log(m_shader_vert);
         if (!re)
             return re;
 
         glAttachShader(m_program, m_shader_vert);
-    }
-
-    if (src_geom)
-    {
-        m_shader_geom = glCreateShader(GL_GEOMETRY_SHADER);
-        glShaderSource(m_shader_geom, 1, &src_geom, nullptr);
-        glCompileShader(m_shader_geom);
-
-        treejuce::Result re = fetch_shader_error_log(GL_GEOMETRY_SHADER);
-        if (!re)
-            return re;
-
-        glAttachShader(m_program, m_shader_geom);
     }
 
     if (src_frag)
@@ -64,7 +51,7 @@ treejuce::Result Program::init(const char* src_vert, const char* src_geom, const
         glShaderSource(m_shader_frag, 1, &src_frag, nullptr);
         glCompileShader(m_shader_frag);
 
-        treejuce::Result re = fetch_shader_error_log(GL_FRAGMENT_SHADER);
+        treejuce::Result re = fetch_shader_error_log(m_shader_frag);
         if (!re)
             return re;
 
@@ -140,6 +127,9 @@ treejuce::Result Program::fetch_shader_error_log(GLuint shader)
     GLint result = -1;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
 
+    if (result == -1)
+        die("failed to fetch compile status from shader %u\n", shader);
+
     if (result == GL_FALSE)
     {
         GLint log_len = -1;
@@ -170,6 +160,9 @@ treejuce::Result Program::fetch_program_error_log()
 {
     GLint result = -1;
     glGetProgramiv(m_program, GL_LINK_STATUS, &result);
+
+    if (result == -1)
+        die("failed to fetch link status from program %u\n", m_program);
 
     if (result == GL_FALSE)
     {

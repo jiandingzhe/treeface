@@ -5,18 +5,16 @@
 
 #include "treejuce/Array.h"
 #include "treejuce/String.h"
-#include "treejuce/Object.h"
 
 #include "GL/glew.h"
 
 TREEFACE_NAMESPACE_BEGIN
 
-class VertexIndexBuffer;
-class Program;
+struct VertexIndexBuffer;
+struct Program;
 
-class VertexArray: public treejuce::Object
+struct VertexArray
 {
-public:
     struct AttrDesc
     {
         treejuce::String name;
@@ -30,17 +28,21 @@ public:
 
     virtual ~VertexArray();
 
-    void connect_buffer_and_program(VertexIndexBuffer* buffer,
-                                    GLsizei stride,
-                                    const treejuce::Array<AttrDesc>& attr_desc,
-                                    Program* program);
+    void init(const VertexIndexBuffer& buffer,
+              GLsizei stride,
+              const treejuce::Array<AttrDesc>& attr_desc,
+              const Program& program);
 
-    inline void bind() const
+    inline void use() const NOEXCEPT
     {
         glBindVertexArray(m_array);
     }
 
-private:
+    inline void unuse() const NOEXCEPT
+    {
+        glBindVertexArray(0);
+    }
+
     GLuint m_array = 0;
 };
 

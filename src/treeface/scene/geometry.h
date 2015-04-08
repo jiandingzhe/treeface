@@ -49,7 +49,6 @@ protected:
      */
     treejuce::Array<treejuce::uint8> m_data_vertex;
 
-    //
     /**
      * @brief index buffer on host side. It seems ten thousands of points for
      * one shape is enough, so we use 16bit uint.
@@ -59,7 +58,7 @@ protected:
     /**
      * @brief the buffer on GL server side
      */
-    treejuce::Holder<VertexIndexBuffer> m_gl_buffer = nullptr;
+    VertexIndexBuffer m_gl_buffer;
 
     /**
      * @brief whether we need to send data to server side
