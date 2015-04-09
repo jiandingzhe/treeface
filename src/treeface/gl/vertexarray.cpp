@@ -36,9 +36,9 @@ void VertexArray::init(const VertexIndexBuffer& buffer,
         if (program.m_attr_idx_by_name.contains(desc.name))
         {
             treejuce::uint16 attr_idx = program.m_attr_idx_by_name[desc.name];
-            Logger::outputDebugString("connect with attr "+desc.name+" at "+String(attr_idx)+", "+" size "+String(desc.size)+" offset "+String(uint64(desc.offset)));
+            Logger::outputDebugString("connect with attr "+desc.name+" at "+String(attr_idx)+", "+" size "+String(desc.n_elem)+" offset "+String(uint64(desc.offset)));
             glEnableVertexAttribArray(attr_idx);
-            glVertexAttribPointer(attr_idx, desc.size, desc.type, desc.normalize, stride, desc.offset);
+            glVertexAttribPointer(attr_idx, desc.n_elem, desc.type, desc.normalize, stride, reinterpret_cast<void*>(desc.offset));
         }
         else
         {

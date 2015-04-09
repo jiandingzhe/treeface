@@ -3,8 +3,9 @@
 
 #include "treeface/common.h"
 
-#include "treejuce/Array.h"
-#include "treejuce/String.h"
+#include <treejuce/Array.h>
+#include <treejuce/Object.h>
+#include <treejuce/String.h>
 
 #include "GL/glew.h"
 
@@ -13,20 +14,25 @@ TREEFACE_NAMESPACE_BEGIN
 struct VertexIndexBuffer;
 struct Program;
 
-struct VertexArray
+struct VertexArray: public treejuce::Object
 {
     struct AttrDesc
     {
         treejuce::String name;
-        void* offset;
-        GLsizei size;
+        GLsizei offset;
+        GLsizei n_elem;
         GLenum type;
         bool normalize;
     };
 
     VertexArray();
-
     virtual ~VertexArray();
+
+    // disable copy and move
+    VertexArray(const VertexArray&) = delete;
+    VertexArray(VertexArray&&) = delete;
+    VertexArray& operator = (const VertexArray&) = delete;
+    VertexArray& operator = (VertexArray&&) = delete;
 
     void init(const VertexIndexBuffer& buffer,
               GLsizei stride,
