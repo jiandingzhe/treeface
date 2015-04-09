@@ -23,7 +23,7 @@ class Texture: public treejuce::Object
 {
 public:
     Texture();
-    ~Texture();
+    virtual ~Texture();
 
     // disable copy and move
     Texture(const Texture&) = delete;

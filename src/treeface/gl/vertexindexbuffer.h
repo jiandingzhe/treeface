@@ -21,7 +21,7 @@ struct VertexIndexBuffer: public treejuce::Object
     VertexIndexBuffer& operator = (const VertexIndexBuffer& other) = delete;
     VertexIndexBuffer& operator = (VertexIndexBuffer&& other) = delete;
 
-    ~VertexIndexBuffer();
+    virtual ~VertexIndexBuffer();
 
     void init() NOEXCEPT;
     template<typename T_VTX, typename T_IDX>

@@ -38,7 +38,7 @@ public:
     Program& operator = (const Program& other) = delete;
     Program& operator = (Program&& other) = delete;
 
-    ~Program();
+    virtual ~Program();
 
     /**
      * @brief create shader and program object, compile source, link
