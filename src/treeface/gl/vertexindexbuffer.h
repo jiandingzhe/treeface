@@ -3,17 +3,19 @@
 
 #include "treeface/common.h"
 
-#include "treejuce/Array.h"
-#include "treejuce/Result.h"
+#include <treejuce/Array.h>
+#include <treejuce/Object.h>
+#include <treejuce/Result.h>
 
 #include <GL/glew.h>
 
 TREEFACE_NAMESPACE_BEGIN
 
-struct VertexIndexBuffer
+struct VertexIndexBuffer: public treejuce::Object
 {
     VertexIndexBuffer();
 
+    // disable copy and move
     VertexIndexBuffer(const VertexIndexBuffer& other) = delete;
     VertexIndexBuffer(VertexIndexBuffer&& other) = delete;
     VertexIndexBuffer& operator = (const VertexIndexBuffer& other) = delete;
