@@ -65,6 +65,9 @@ public:
      */
     treejuce::Result set_mipmap_data(ImageRef image, GLint internal_fmt) NOEXCEPT;
 
+    inline float get_min_lod() const NOEXCEPT
+    { return m_min_lod; }
+
     inline void set_min_lod(float value) NOEXCEPT
     {
         if (m_min_lod != value)
@@ -73,6 +76,9 @@ public:
             m_min_lod = value;
         }
     }
+
+    inline float get_max_lod() const NOEXCEPT
+    { return m_max_lod; }
 
     inline void set_max_lod(float value) NOEXCEPT
     {
@@ -83,6 +89,9 @@ public:
         }
     }
 
+    inline GLenum get_wrap_s() const NOEXCEPT
+    { return m_wrap_s; }
+
     inline void set_wrap_s(GLenum value) NOEXCEPT
     {
         if (m_wrap_s != value)
@@ -91,6 +100,9 @@ public:
             m_wrap_s = value;
         }
     }
+
+    inline GLenum get_wrap_t() const NOEXCEPT
+    { return m_wrap_t; }
 
     inline void set_wrap_t(GLenum value) NOEXCEPT
     {
@@ -101,6 +113,9 @@ public:
         }
     }
 
+    inline GLenum get_min_filter() const NOEXCEPT
+    { return m_min_filter; }
+
     inline void set_min_filter(GLenum value) NOEXCEPT
     {
         if (m_min_filter != value)
@@ -109,6 +124,9 @@ public:
             m_min_filter = value;
         }
     }
+
+    inline GLenum get_mag_filter() const NOEXCEPT
+    { return m_mag_filter; }
 
     inline void set_mag_filter(GLenum value) NOEXCEPT
     {
@@ -151,8 +169,8 @@ protected:
     float m_max_lod = 1000;
     GLenum m_wrap_s = GL_REPEAT;
     GLenum m_wrap_t = GL_REPEAT;
-    GLenum m_min_filter = GL_LINEAR;
-    GLenum m_mag_filter = GL_LINEAR;
+    GLenum m_min_filter = GL_NEAREST;
+    GLenum m_mag_filter = GL_NEAREST;
 };
 
 TREEFACE_NAMESPACE_END
