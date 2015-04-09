@@ -44,7 +44,7 @@ struct ColoredPoint
 };
 
 VertexArray::AttrDesc attr_desc_position{"in_position", 0, 4, GL_FLOAT, false};
-VertexArray::AttrDesc attr_desc_color{"in_color", reinterpret_cast<void*>(sizeof(float)*4), 4, GL_FLOAT, false};
+VertexArray::AttrDesc attr_desc_color{"in_color", sizeof(float)*4, 4, GL_FLOAT, false};
 
 const char* src_vertex =
         "#version 130\n"
@@ -233,16 +233,16 @@ struct WidgetRenderer
 
                 prev_program = program;
                 program->use();
-                i_matrix    = program->m_uni_idx_by_name["matrix"];
-                i_is_active = program->m_uni_idx_by_name["is_active"];
+                i_matrix    = program->get_uniform_index_by_name("matrix");
+                i_is_active = program->get_uniform_index_by_name("is_active");
             }
 
 
             widget->array.use();
             widget->geometry->buffer.use();
 
-            program->set_uniform(i_matrix, widget->trans);
-            program->set_uniform(i_is_active, widget->is_active);
+            program->instant_set_uniform(i_matrix, widget->trans);
+            program->instant_set_uniform(i_is_active, widget->is_active);
 
             glDrawElements(GL_TRIANGLES, widget->geometry->n_index, GL_UNSIGNED_SHORT, 0);
 
