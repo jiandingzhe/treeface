@@ -190,4 +190,20 @@ treejuce::Result Program::fetch_program_error_log()
     }
 }
 
+int Program::get_attribute_index_by_name(const treejuce::String& name) const NOEXCEPT
+{
+    if (m_attr_idx_by_name.contains(name))
+        return m_attr_idx_by_name[name];
+    else
+        return -1;
+}
+
+int Program::get_uniform_index_by_name(const treejuce::String& name) const NOEXCEPT
+{
+    if (m_uni_idx_by_name.contains(name))
+        return m_uni_idx_by_name[name];
+    else
+        return -1;
+}
+
 TREEFACE_NAMESPACE_END
