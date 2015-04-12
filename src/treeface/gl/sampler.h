@@ -5,14 +5,21 @@
 
 #include <GL/glew.h>
 
+#include <treejuce/Object.h>
 #include <treejuce/PlatformDefs.h>
 
 TREEFACE_NAMESPACE_BEGIN
 
-struct Sampler
+struct Sampler: public treejuce::Object
 {
     Sampler(GLenum unit): m_unit(unit - GL_TEXTURE0) {}
-    ~Sampler();
+    virtual ~Sampler();
+
+    // invalidate copy and move
+    Sampler(const Sampler& other) = delete;
+    Sampler(Sampler&& other) = delete;
+    Sampler& operator = (const Sampler& other) = delete;
+    Sampler& operator = (Sampler&& other) = delete;
 
     void init() NOEXCEPT;
 
