@@ -11,3 +11,20 @@ target_link_libraries(t_mat4 treeface TestFramework)
 
 add_executable(t_object t_object.cpp)
 target_link_libraries(t_object treeface TestFramework)
+
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp
+    COMMAND ${TREEJUCE_BIN_BUILDER} ${CMAKE_CURRENT_SOURCE_DIR}/resources ${CMAKE_CURRENT_BINARY_DIR} resources
+)
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+add_executable(t_resource_manager_keep_existing t_resource_manager_keep_existing.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp)
+target_link_libraries(t_resource_manager_keep_existing ${TREEJUCE_LIBRARIES} treeface TestFramework)
+
+add_executable(t_resource_manager_overwrite t_resource_manager_overwrite.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp)
+target_link_libraries(t_resource_manager_overwrite ${TREEJUCE_LIBRARIES} treeface TestFramework)
+
+add_executable(t_resource_manager_use_newer t_resource_manager_use_newer.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp)
+target_link_libraries(t_resource_manager_use_newer ${TREEJUCE_LIBRARIES} treeface TestFramework)
+
+add_executable(t_resource_manager_use_older t_resource_manager_use_older.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp)
+target_link_libraries(t_resource_manager_use_older ${TREEJUCE_LIBRARIES} treeface TestFramework)
