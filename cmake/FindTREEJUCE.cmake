@@ -3,9 +3,20 @@ include(FindPackageHandleStandardArgs)
 include(GNUInstallDirs)
 
 set(TREEJUCE_SEARCH_PREFIX "" CACHE PATH "additional path to search for treejuce")
+set(TREEJUCE_SEARCH_PREFIX_BIN "" CACHE PATH "additional path to search for treejuce programs")
 set(TREEJUCE_SEARCH_PREFIX_INC "" CACHE PATH "additional path to search for treejuce headers")
 set(TREEJUCE_SEARCH_PREFIX_LIB "" CACHE PATH "additional path to search for treejuce library")
 set(TREEJUCE_SEARCH_STATIC 0 CACHE BOOL "search static library instead of shared library")
+
+#
+# find binary builder
+#
+find_program(TREEJUCE_BIN_BUILDER treejuce_bin_builder
+    HINTS
+        ${TREEJUCE_SEARCH_PREFIX_BIN}
+        ${TREEJUCE_SEARCH_PREFIX}/${CMAKE_INSTALL_BINDIR}
+        ${TREEJUCE_SEARCH_PREFIX}/bin
+)
 
 #
 # find header directory
@@ -39,5 +50,8 @@ find_library(TREEJUCE_LIBRARIES ${treejuce_lib_name}
 # finalize
 #
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(TREEJUCE
-    REQUIRED_VARS TREEJUCE_INCLUDE_DIR TREEJUCE_LIBRARIES
+    REQUIRED_VARS
+        TREEJUCE_BIN_BUILDER
+        TREEJUCE_INCLUDE_DIR
+        TREEJUCE_LIBRARIES
 )
