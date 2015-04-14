@@ -26,3 +26,9 @@ if(MSVC AND TREEFACE_OS STREQUAL "WINDOWS")
         WIN32_EXECUTABLE 0
     )
 endif()
+
+file(GLOB image_files "*.bmp")
+file(COPY ${image_files} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+add_executable(freeimage_format freeimage_format.cpp)
+target_link_libraries(freeimage_format treeface ${FreeImage_LIBRARIES})
