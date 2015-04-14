@@ -42,6 +42,11 @@ message(STATUS "GLEW")
 message(STATUS "  lib ${GLEW_LIBRARY}")
 message(STATUS "  inc ${GLEW_INCLUDE_DIR}")
 
+find_package(FreeImage REQUIRED)
+message(STATUS "FreeImage")
+message(STATUS "  lib ${FreeImage_LIBRARIES}")
+message(STATUS "  inc ${FreeImage_INCLUDE_DIR}")
+
 #
 # set compiler options
 #
@@ -60,6 +65,7 @@ include_directories(
     ${CMAKE_BINARY_DIR}/src
     ${GLEW_INCLUDE_DIR}
     ${TREEJUCE_INCLUDE_DIR}
+    ${FreeImage_INCLUDE_DIR}
 )
 
 add_subdirectory(src)
