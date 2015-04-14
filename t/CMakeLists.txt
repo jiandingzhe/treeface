@@ -17,14 +17,14 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURREN
 )
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-add_executable(t_resource_manager_keep_existing t_resource_manager_keep_existing.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp)
-target_link_libraries(t_resource_manager_keep_existing ${TREEJUCE_LIBRARIES} treeface TestFramework)
+add_executable(t_package_manager_keep_existing t_package_manager_keep_existing.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp)
+target_link_libraries(t_package_manager_keep_existing ${TREEJUCE_LIBRARIES} treeface TestFramework)
 
-add_executable(t_resource_manager_overwrite t_resource_manager_overwrite.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp)
-target_link_libraries(t_resource_manager_overwrite ${TREEJUCE_LIBRARIES} treeface TestFramework)
+add_executable(t_package_manager_overwrite t_package_manager_overwrite.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp)
+target_link_libraries(t_package_manager_overwrite ${TREEJUCE_LIBRARIES} treeface TestFramework)
 
-add_executable(t_resource_manager_use_newer t_resource_manager_use_newer.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp)
-target_link_libraries(t_resource_manager_use_newer ${TREEJUCE_LIBRARIES} treeface TestFramework)
+add_executable(t_package_manager_use_newer t_package_manager_use_newer.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp)
+target_link_libraries(t_package_manager_use_newer ${TREEJUCE_LIBRARIES} treeface TestFramework)
 
-add_executable(t_resource_manager_use_older t_resource_manager_use_older.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp)
-target_link_libraries(t_resource_manager_use_older ${TREEJUCE_LIBRARIES} treeface TestFramework)
+add_executable(t_package_manager_use_older t_package_manager_use_older.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp)
+target_link_libraries(t_package_manager_use_older ${TREEJUCE_LIBRARIES} treeface TestFramework)
