@@ -1,5 +1,5 @@
-#ifndef TREEFACE_RESOURCE_MANAGER_H
-#define TREEFACE_RESOURCE_MANAGER_H
+#ifndef TREEFACE_PACKAGE_MANAGER_H
+#define TREEFACE_PACKAGE_MANAGER_H
 
 #include <treejuce/MathsFunctions.h>
 #include <treejuce/Singleton.h>
@@ -98,4 +98,4 @@ protected:
 
 TREEFACE_NAMESPACE_END
 
-#endif // TREEFACE_RESOURCE_MANAGER_H
+#endif // TREEFACE_PACKAGE_MANAGER_H
