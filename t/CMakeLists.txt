@@ -28,3 +28,11 @@ target_link_libraries(t_package_manager_use_newer ${TREEJUCE_LIBRARIES} treeface
 
 add_executable(t_package_manager_use_older t_package_manager_use_older.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp)
 target_link_libraries(t_package_manager_use_older ${TREEJUCE_LIBRARIES} treeface TestFramework)
+
+file(COPY images.zip DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+add_executable(t_image_manager t_image_manager.cpp)
+target_link_libraries(t_image_manager
+    ${TREEJUCE_LIBRARIES}
+    ${FreeImage_LIBRARIES}
+    treeface
+    TestFramework)
