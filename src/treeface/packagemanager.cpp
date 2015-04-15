@@ -94,10 +94,13 @@ treejuce::uint8* PackageManager::get_item_data(const treejuce::String& name, int
         return nullptr;
 
     size = stream->getTotalLength();
-    uint8* data = (uint8*) malloc(size);
+    uint8* data = (uint8*) malloc(size+1);
 
     if (stream->read(data, size) != size)
         abort();
+
+    // assign a zero on tail of data, so that it can be used as C string
+    data[size] = 0;
 
     delete stream;
     return data;
