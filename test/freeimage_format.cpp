@@ -3,7 +3,10 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "treeface/stringcast.h"
+
 using namespace std;
+using namespace treeface;
 
 int main(int argc, char** argv)
 {
@@ -19,7 +22,7 @@ int main(int argc, char** argv)
         printf("failed to determine image format from %s\n", argv[1]);
         exit(1);
     }
-    printf("format is %d\n", format);
+    printf("format is %s\n", to_string(format).toRawUTF8());
 
     if (!FreeImage_IsPluginEnabled(format))
     {
@@ -35,7 +38,7 @@ int main(int argc, char** argv)
     }
 
     FREE_IMAGE_TYPE img_type = FreeImage_GetImageType(img);
-    printf("image type: %d\n", img_type);
+    printf("image type: %s\n", to_string(img_type).toRawUTF8());
 
     unsigned int n_color = FreeImage_GetColorsUsed(img);
     printf("palette: %u\n", n_color);
@@ -44,5 +47,5 @@ int main(int argc, char** argv)
     printf("bits per pixel: %u\n", bit_per_pixel);
 
     FREE_IMAGE_COLOR_TYPE color_type = FreeImage_GetColorType(img);
-    printf("color type: %d\n", color_type);
+    printf("color type: %s\n", to_string(color_type).toRawUTF8());
 }
