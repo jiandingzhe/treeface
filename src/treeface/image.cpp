@@ -185,6 +185,38 @@ Image::Image(FIBITMAP* fi_img)
         die("%s", re.getErrorMessage().toRawUTF8());
 }
 
+Image::Image(const Image& other)
+    : m_gl_format(other.m_gl_format)
+    , m_gl_type(other.m_gl_type)
+    , m_fi_img(FreeImage_Clone(other.m_fi_img))
+{
+}
+
+Image& Image::operator = (const Image& other)
+{
+    m_gl_format = other.m_gl_format;
+    m_gl_type   = other .m_gl_type;
+    m_fi_img    = FreeImage_Clone(other.m_fi_img);
+    return *this;
+}
+
+Image::Image(Image&& other)
+    : m_gl_format(other.m_gl_format)
+    , m_gl_type(other.m_gl_type)
+    , m_fi_img(other.m_fi_img)
+{
+    other.m_fi_img = nullptr;
+}
+
+Image& Image::operator = (Image&& other)
+{
+    m_gl_format = other.m_gl_format;
+    m_gl_type   = other .m_gl_type;
+    m_fi_img    = other.m_fi_img;
+    other.m_fi_img = nullptr;
+    return *this;
+}
+
 Image::~Image()
 {
     if (m_fi_img)

@@ -32,9 +32,13 @@ public:
      */
     Image(FIBITMAP* fi_img);
 
-    // TODO implement copy and move for Image object
-    JUCE_DECLARE_NON_COPYABLE(Image);
-    JUCE_DECLARE_NON_MOVABLE(Image);
+    // copy
+    Image(const Image& other);
+    Image& operator = (const Image& other);
+
+    // move
+    Image(Image&& other);
+    Image& operator = (Image&& other);
 
     virtual ~Image();
 
