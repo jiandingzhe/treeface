@@ -3,6 +3,7 @@
 
 #include "treeface/common.h"
 
+#include "GL/glew.h"
 #include <treejuce/String.h>
 #include <FreeImage.h>
 
@@ -32,6 +33,8 @@ FREE_IMAGE_COLOR_TYPE from_string<FREE_IMAGE_COLOR_TYPE>(const treejuce::String&
 template<>
 treejuce::String to_string<FREE_IMAGE_COLOR_TYPE>(FREE_IMAGE_COLOR_TYPE arg);
 
+GLenum gl_internal_format_from_string(const treejuce::String& string);
+treejuce::String gl_internal_format_to_string(GLenum arg);
 
 TREEFACE_NAMESPACE_END
 

@@ -1,5 +1,7 @@
 #include "treeface/stringcast.h"
 
+#include <treejuce/StringRef.h>
+
 TREEFACE_NAMESPACE_BEGIN
 
 template<>
@@ -184,5 +186,143 @@ treejuce::String to_string<FREE_IMAGE_COLOR_TYPE>(FREE_IMAGE_COLOR_TYPE arg)
     }
 }
 
+GLenum gl_internal_format_from_string(const treejuce::String& string)
+{
+    if      (string.compareIgnoreCase("alpha") == 0)             return GL_ALPHA;
+    else if (string.compareIgnoreCase("blue") == 0)              return GL_BLUE;
+    else if (string.compareIgnoreCase("green") == 0)             return GL_GREEN;
+    else if (string.compareIgnoreCase("red") == 0)               return GL_RED;
+    else if (string.compareIgnoreCase("rgb") == 0)               return GL_RGB;
+    else if (string.compareIgnoreCase("rgba") == 0)              return GL_RGBA;
+
+    else if (string.compareIgnoreCase("luminance_alpha") == 0)   return GL_LUMINANCE_ALPHA;
+    else if (string.compareIgnoreCase("luminance") == 0)         return GL_LUMINANCE;
+    else if (string.compareIgnoreCase("depth16") == 0)           return GL_DEPTH_COMPONENT16;
+    else if (string.compareIgnoreCase("depth24") == 0)           return GL_DEPTH_COMPONENT24;
+    else if (string.compareIgnoreCase("depth32f") == 0)          return GL_DEPTH_COMPONENT32F;
+    else if (string.compareIgnoreCase("depth24_stencil8") == 0)  return GL_DEPTH24_STENCIL8;
+    else if (string.compareIgnoreCase("depth32f_stencil8") == 0) return GL_DEPTH32F_STENCIL8;
+
+    else if (string.compareIgnoreCase("r8") == 0)                return GL_R8;
+    else if (string.compareIgnoreCase("r8_snorm") == 0)          return GL_R8_SNORM;
+    else if (string.compareIgnoreCase("r16f") == 0)              return GL_R16F;
+    else if (string.compareIgnoreCase("r32f") == 0)              return GL_R32F;
+    else if (string.compareIgnoreCase("r16ui") == 0)             return GL_R16UI;
+    else if (string.compareIgnoreCase("r16i") == 0)              return GL_R16I;
+    else if (string.compareIgnoreCase("r32ui") == 0)             return GL_R32UI;
+    else if (string.compareIgnoreCase("r32i") == 0)              return GL_R32I;
+    else if (string.compareIgnoreCase("rg8") == 0)               return GL_RG8;
+    else if (string.compareIgnoreCase("rg8_snorm") == 0)         return GL_RG8_SNORM;
+    else if (string.compareIgnoreCase("rg16f") == 0)             return GL_RG16F;
+    else if (string.compareIgnoreCase("rg32f") == 0)             return GL_RG32F;
+    else if (string.compareIgnoreCase("rg8ui") == 0)             return GL_RG8UI;
+    else if (string.compareIgnoreCase("rg8i") == 0)              return GL_RG8I;
+    else if (string.compareIgnoreCase("rg16ui") == 0)            return GL_RG16UI;
+    else if (string.compareIgnoreCase("rg16i") == 0)             return GL_RG16I;
+    else if (string.compareIgnoreCase("rg32ui") == 0)            return GL_RG32UI;
+    else if (string.compareIgnoreCase("rg32i") == 0)             return GL_RG32I;
+    else if (string.compareIgnoreCase("rgb8") == 0)              return GL_RGB8;
+    else if (string.compareIgnoreCase("srgb8") == 0)             return GL_SRGB8;
+    else if (string.compareIgnoreCase("rgb565") == 0)            return GL_RGB565;
+    else if (string.compareIgnoreCase("rgb8_snorm") == 0)        return GL_RGB8_SNORM;
+    else if (string.compareIgnoreCase("r11f_g11f_b10f") == 0)    return GL_R11F_G11F_B10F;
+    else if (string.compareIgnoreCase("rgb9_e5") == 0)           return GL_RGB9_E5;
+    else if (string.compareIgnoreCase("rgb16f") == 0)            return GL_RGB16F;
+    else if (string.compareIgnoreCase("rgb32f") == 0)            return GL_RGB32F;
+    else if (string.compareIgnoreCase("rgb8ui") == 0)            return GL_RGB8UI;
+    else if (string.compareIgnoreCase("rgb8i") == 0)             return GL_RGB8I;
+    else if (string.compareIgnoreCase("rgb16ui") == 0)           return GL_RGB16UI;
+    else if (string.compareIgnoreCase("rgb16i") == 0)            return GL_RGB16I;
+    else if (string.compareIgnoreCase("rgb32ui") == 0)           return GL_RGB32UI;
+    else if (string.compareIgnoreCase("rgb32i") == 0)            return GL_RGB32I;
+    else if (string.compareIgnoreCase("rgba8") == 0)             return GL_RGBA8;
+    else if (string.compareIgnoreCase("srgb8_alpha8") == 0)      return GL_SRGB8_ALPHA8;
+    else if (string.compareIgnoreCase("rgba8_snorm") == 0)       return GL_RGBA8_SNORM;
+    else if (string.compareIgnoreCase("rgb5_a1") == 0)           return GL_RGB5_A1;
+    else if (string.compareIgnoreCase("rgba4") == 0)             return GL_RGBA4;
+    else if (string.compareIgnoreCase("rgb10_a2") == 0)          return GL_RGB10_A2;
+    else if (string.compareIgnoreCase("rgba16f") == 0)           return GL_RGBA16F;
+    else if (string.compareIgnoreCase("rgba32f") == 0)           return GL_RGBA32F;
+    else if (string.compareIgnoreCase("rgba8ui") == 0)           return GL_RGBA8UI;
+    else if (string.compareIgnoreCase("rgba8i") == 0)            return GL_RGBA8I;
+    else if (string.compareIgnoreCase("rgb10_a2ui") == 0)        return GL_RGB10_A2UI;
+    else if (string.compareIgnoreCase("rgba16ui") == 0)          return GL_RGBA16UI;
+    else if (string.compareIgnoreCase("rgba16i") == 0)           return GL_RGBA16I;
+    else if (string.compareIgnoreCase("rgba32i") == 0)           return GL_RGBA32I;
+    else if (string.compareIgnoreCase("rgba32ui") == 0)          return GL_RGBA32UI;
+
+    else die("not a valid gl internal format string representation: %s", string.toRawUTF8());
+}
+
+treejuce::String gl_internal_format_to_string(GLenum arg)
+{
+    switch(arg)
+    {
+    case GL_ALPHA:           return "alpha";
+    case GL_BLUE:            return "blue";
+    case GL_GREEN:           return "green";
+    case GL_RED:             return "red";
+    case GL_RGB:             return "rgb";
+    case GL_RGBA:            return "rgba";
+    case GL_LUMINANCE_ALPHA: return "luminance_alpha";
+    case GL_LUMINANCE:       return "luminance";
+
+    case GL_R8:             return "r8";
+    case GL_R8_SNORM:       return "r8_snorm";
+    case GL_R16F:           return "r16f";
+    case GL_R32F:           return "r32f";
+    case GL_R16UI:          return "r16ui";
+    case GL_R16I:           return "r16i";
+    case GL_R32UI:          return "r32ui";
+    case GL_R32I:           return "r32i";
+    case GL_RG8:            return "rg8";
+    case GL_RG8_SNORM:      return "rg8_snorm";
+    case GL_RG16F:          return "rg16f";
+    case GL_RG32F:          return "rg32f";
+    case GL_RG8UI:          return "rg8ui";
+    case GL_RG8I:           return "rg8i";
+    case GL_RG16UI:         return "rg16ui";
+    case GL_RG16I:          return "rg16i";
+    case GL_RG32UI:         return "rg32ui";
+    case GL_RG32I:          return "rg32i";
+    case GL_RGB8:           return "rgb8";
+    case GL_SRGB8:          return "srgb8";
+    case GL_RGB565:         return "rgb565";
+    case GL_RGB8_SNORM:     return "rgb8_snorm";
+    case GL_R11F_G11F_B10F: return "r11f_g11f_b10f";
+    case GL_RGB9_E5:        return "rgb9_e5";
+    case GL_RGB16F:         return "rgb16f";
+    case GL_RGB32F:         return "rgb32f";
+    case GL_RGB8UI:         return "rgb8ui";
+    case GL_RGB8I:          return "rgb8i";
+    case GL_RGB16UI:        return "rgb16ui";
+    case GL_RGB16I:         return "rgb16i";
+    case GL_RGB32UI:        return "rgb32ui";
+    case GL_RGB32I:         return "rgb32i";
+    case GL_RGBA8:          return "rgba8";
+    case GL_SRGB8_ALPHA8:   return "srgb8_alpha8";
+    case GL_RGBA8_SNORM:    return "rgba8_snorm";
+    case GL_RGB5_A1:        return "rgb5_a1";
+    case GL_RGBA4:          return "rgba4";
+    case GL_RGB10_A2:       return "rgb10_a2";
+    case GL_RGBA16F:        return "rgba16f";
+    case GL_RGBA32F:        return "rgba32f";
+    case GL_RGBA8UI:        return "rgba8ui";
+    case GL_RGBA8I:         return "rgba8i";
+    case GL_RGB10_A2UI:     return "rgb10_a2ui";
+    case GL_RGBA16UI:       return "rgba16ui";
+    case GL_RGBA16I:        return "rgba16i";
+    case GL_RGBA32I:        return "rgba32i";
+    case GL_RGBA32UI:       return "rgba32ui";
+
+    case GL_DEPTH_COMPONENT16:  return "depth16";
+    case GL_DEPTH_COMPONENT24:  return "depth24";
+    case GL_DEPTH_COMPONENT32F: return "depth32f";
+    case GL_DEPTH24_STENCIL8:   return "depth24_stencil8";
+    case GL_DEPTH32F_STENCIL8:  return "depth32f_stencil8";
+    default:
+        die("not a valid gl internal color enum: %d", arg);
+    }
+}
 
 TREEFACE_NAMESPACE_END
