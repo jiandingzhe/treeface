@@ -122,7 +122,7 @@ void build_up_gl()
     glActiveTexture(GL_TEXTURE1);
     texture.init();
     texture_fake.init();
-    texture.set_image_data(img_texture1, GL_RGBA);
+    texture.set_image_data(img_texture1, GL_RGBA, false);
     texture.set_min_filter(GL_NEAREST);
     texture.set_mag_filter(GL_NEAREST);
 

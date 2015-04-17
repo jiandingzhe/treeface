@@ -20,6 +20,7 @@ target_link_libraries(interact_wrap
 add_executable(texture texture.cpp)
 target_link_libraries(texture
     treeface
+    ${FreeImage_LIBRARIES}
     ${TREEJUCE_LIBRARIES}
     ${SDL2_LIBRARY}
     ${GLEW_LIBRARY}
@@ -42,4 +43,9 @@ target_link_libraries(freeimage_format
     treeface
     ${TREEJUCE_LIBRARIES}
     ${FreeImage_LIBRARIES}
+)
+
+add_executable(json_traverse json_traverse.cpp)
+target_link_libraries(json_traverse
+    ${TREEJUCE_LIBRARIES}
 )
