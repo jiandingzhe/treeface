@@ -10,6 +10,10 @@
 
 #include <GL/glew.h>
 
+TREEFACE_JUCE_NAMESPACE_BEGIN
+class var;
+TREEFACE_JUCE_NAMESPACE_END
+
 TREEFACE_NAMESPACE_BEGIN
 
 class ImageRef;
@@ -40,8 +44,10 @@ public:
      *
      * @param image: the image to be set
      * @param internal_fmt: device-side image format
+     * @param gen_mipmap: if set to true, will automatically generate a series
+     *        of mipmaps using GLU; otherwise only use single image.
      */
-    treejuce::Result set_image_data(ImageRef image, GLint internal_fmt) NOEXCEPT;
+    treejuce::Result set_image_data(ImageRef image, GLint internal_fmt, bool gen_mipmap) NOEXCEPT;
 
     /**
      * Specify image data for all mipmap levels.
@@ -54,16 +60,7 @@ public:
      */
     treejuce::Result set_image_data(treejuce::ArrayRef<ImageRef> images, GLint internal_fmt) NOEXCEPT;
 
-    /**
-     * automatically generate all mipmap levels using one image data.
-     *
-     * Mipmap base level and max level will be automatically adjusted. But you
-     * still need to manually modify filter_min to those mipmap-enabled modes.
-     *
-     * @param image: the image to be set
-     * @param internal_fmt: device-side image format
-     */
-    treejuce::Result set_mipmap_data(ImageRef image, GLint internal_fmt) NOEXCEPT;
+    treejuce::Result build(const treejuce::var& texture_root_node);
 
     inline float get_min_lod() const NOEXCEPT
     { return m_min_lod; }
