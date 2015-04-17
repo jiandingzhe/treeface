@@ -5,13 +5,22 @@
 
 #include <treejuce/Object.h>
 
+TREEFACE_JUCE_NAMESPACE_BEGIN
+class Result;
+class var;
+TREEFACE_JUCE_NAMESPACE_END
+
 TREEFACE_NAMESPACE_BEGIN
 
 class Material: public treejuce::Object
 {
 public:
     Material();
+    Material(const treejuce::var& root_node);
+
     virtual ~Material();
+
+    treejuce::Result init(const treejuce::var& root_node);
 
     JUCE_DECLARE_NON_COPYABLE(Material);
     JUCE_DECLARE_NON_MOVABLE(Material);
