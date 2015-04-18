@@ -32,12 +32,10 @@ message(STATUS "  inc ${TREEJUCE_INCLUDE_DIR}")
 message(STATUS "  lib ${TREEJUCE_LIBRARIES}")
 
 find_package(OpenGL REQUIRED)
-
 message(STATUS "GL")
 message(STATUS "  lib ${OPENGL_gl_LIBRARY}")
 
 find_package(GLEW REQUIRED)
-
 message(STATUS "GLEW")
 message(STATUS "  lib ${GLEW_LIBRARY}")
 message(STATUS "  inc ${GLEW_INCLUDE_DIR}")
@@ -46,6 +44,11 @@ find_package(FreeImage REQUIRED)
 message(STATUS "FreeImage")
 message(STATUS "  lib ${FreeImage_LIBRARIES}")
 message(STATUS "  inc ${FreeImage_INCLUDE_DIR}")
+
+find_package(SDL2 REQUIRED)
+message(STATUS "SDL2:")
+message(STATUS "  inc ${SDL2_INCLUDE_DIR}")
+message(STATUS "  lib ${SDL2_LIBRARY}")
 
 #
 # set compiler options
@@ -66,6 +69,7 @@ include_directories(
     ${GLEW_INCLUDE_DIR}
     ${TREEJUCE_INCLUDE_DIR}
     ${FreeImage_INCLUDE_DIR}
+    ${SDL2_INCLUDE_DIR}
 )
 
 add_subdirectory(src)

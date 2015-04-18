@@ -1,9 +1,4 @@
-find_package(SDL2 REQUIRED)
-message(STATUS "SDL2:")
-message(STATUS "  inc ${SDL2_INCLUDE_DIR}")
-message(STATUS "  lib ${SDL2_LIBRARY}")
-
-include_directories(${SDL2_INCLUDE_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/examples/resource.zip DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(interact interact.cpp)
 target_link_libraries(interact ${SDL2_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_gl_LIBRARY})
@@ -35,9 +30,6 @@ if(MSVC AND TREEFACE_OS STREQUAL "WINDOWS")
     )
 endif()
 
-file(GLOB image_files "*.bmp")
-file(COPY ${image_files} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
 add_executable(freeimage_format freeimage_format.cpp)
 target_link_libraries(freeimage_format
     treeface
@@ -49,3 +41,14 @@ add_executable(json_traverse json_traverse.cpp)
 target_link_libraries(json_traverse
     ${TREEJUCE_LIBRARIES}
 )
+
+#add_executable(materials materials.cpp)
+#target_link_libraries(materials
+#    treeface
+#    ${TREEJUCE_LIBRARIES}
+#    ${FreeImage_LIBRARIES}
+#    ${SDL2_LIBRARY}
+#    ${GLEW_LIBRARY}
+#    ${OPENGL_gl_LIBRARY}
+#    ${OPENGL_glu_LIBRARY}
+#)
