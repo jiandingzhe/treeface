@@ -1,6 +1,7 @@
 #ifndef TREEFACE_PACKAGE_MANAGER_H
 #define TREEFACE_PACKAGE_MANAGER_H
 
+#include <treejuce/ArrayRef.h>
 #include <treejuce/MathsFunctions.h>
 #include <treejuce/Singleton.h>
 #include <treejuce/String.h>
@@ -75,7 +76,7 @@ public:
      * @return the raw data of this item. User is responsible for free the data
      *         when it is no longer needed.
      */
-    treejuce::uint8* get_item_data(const treejuce::String& name, treejuce::int64& size);
+    treejuce::ArrayRef<treejuce::uint8> get_item_data(const treejuce::String& name);
 
     bool has_resource(const treejuce::String& name) const NOEXCEPT;
 

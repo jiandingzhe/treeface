@@ -50,12 +50,12 @@ Image* ImageManager::get_image(const String& name)
     }
     else
     {
-        int64 data_size = -1;
-        ScopedPointer<uint8> data = PackageManager::getInstance()->get_item_data(name, data_size);
-        if (!data)
+        ArrayRef<uint8> data = PackageManager::getInstance()->get_item_data(name);
+        ScopedPointer<uint8> data_holder(data.get_data());
+        if (!data.get_data())
             return nullptr;
 
-        FIMEMORY* mem_stream = FreeImage_OpenMemory(data.get(), data_size);
+        FIMEMORY* mem_stream = FreeImage_OpenMemory(data.get_data(), data.size());
         if (!mem_stream)
             return nullptr;
 

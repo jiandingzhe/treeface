@@ -87,13 +87,13 @@ treejuce::InputStream* PackageManager::get_item_stream(const treejuce::String& n
     }
 }
 
-treejuce::uint8* PackageManager::get_item_data(const treejuce::String& name, int64& size)
+ArrayRef<uint8> PackageManager::get_item_data(const treejuce::String& name)
 {
     InputStream* stream = get_item_stream(name);
     if (!stream)
-        return nullptr;
+        return ArrayRef<uint8>();
 
-    size = stream->getTotalLength();
+    size_t size = stream->getTotalLength();
     uint8* data = (uint8*) malloc(size+1);
 
     if (stream->read(data, size) != size)
@@ -103,7 +103,7 @@ treejuce::uint8* PackageManager::get_item_data(const treejuce::String& name, int
     data[size] = 0;
 
     delete stream;
-    return data;
+    return ArrayRef<uint8>(data, size);
 }
 
 bool PackageManager::has_resource(const treejuce::String& name) const NOEXCEPT

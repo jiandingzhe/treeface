@@ -46,18 +46,18 @@ Program* ProgramManager::get_program(const treejuce::String& name_vertex, const 
     }
     else
     {
-        int64 src_vertex_size = -1;
-        ScopedPointer<uint8> src_vertex = PackageManager::getInstance()->get_item_data(name_vertex, src_vertex_size);
-        if (!src_vertex)
+        ArrayRef<uint8> src_vertex = PackageManager::getInstance()->get_item_data(name_vertex);
+        ScopedPointer<uint8> src_vertex_holder(src_vertex.get_data());
+        if (!src_vertex.get_data())
             return nullptr;
 
-        int64 src_frag_size = -1;
-        ScopedPointer<uint8> src_frag = PackageManager::getInstance()->get_item_data(name_fragment, src_frag_size);
-        if (!src_frag)
+        ArrayRef<uint8> src_frag = PackageManager::getInstance()->get_item_data(name_fragment);
+        ScopedPointer<uint8> src_frag_holder(src_frag.get_data());
+        if (!src_frag.get_data())
             return nullptr;
 
         Program* program = new Program();
-        Result program_re = program->init((char*)src_vertex.get(), (char*)src_frag.get());
+        Result program_re = program->init((char*)src_vertex.get_data(), (char*)src_frag.get_data());
 
         if (!program_re)
             die("%s", program_re.getErrorMessage().toRawUTF8());
@@ -86,6 +86,17 @@ bool ProgramManager::release_program_hold(const treejuce::String& name_vertex, c
     {
         return false;
     }
+}
+
+ProgramManager::ProgramManager()
+    : m_impl(new ProgramManager::Impl())
+{
+}
+
+ProgramManager::~ProgramManager()
+{
+    if (m_impl)
+        delete m_impl;
 }
 
 
