@@ -6,6 +6,7 @@
 
 #include <treejuce/DynamicObject.h>
 #include <treejuce/Logger.h>
+#include <treejuce/HashSet.h>
 #include <treejuce/NamedValueSet.h>
 #include <treejuce/String.h>
 #include <treejuce/StringRef.h>
@@ -162,19 +163,47 @@ treejuce::Result Texture::set_image_data(treejuce::ArrayRef<ImageRef> images, GL
     return treejuce::Result::ok();
 }
 
+Result _validate_keys_(NamedValueSet& kv)
+{
+    HashSet<String> expected_keys;
+    expected_keys.insert("image");
+    expected_keys.insert("internal_format");
+    expected_keys.insert("mag_filter_linear");
+    expected_keys.insert("min_filter_linear");
+    expected_keys.insert("mipmap");
+    expected_keys.insert("mipmap_filter_linear");
+    expected_keys.insert("wrap_s");
+    expected_keys.insert("wrap_t");
+
+    for (int i = 0; i < kv.size(); i++)
+    {
+        Identifier key = kv.getName(i);
+        if (!expected_keys.contains(key.toString()))
+        {
+            return Result::fail("texture specification contain unidentified key: "+key.toString());
+        }
+    }
+    return Result::ok();
+}
+
 Result Texture::build(const treejuce::var& tex_node)
 {
     if (!tex_node.isObject())
         return Result::fail("texture node is not KV");
 
     NamedValueSet& tex_kv = tex_node.getDynamicObject()->getProperties();
+    {
+        Result re = _validate_keys_(tex_kv);
+        if (!re)
+            return re;
+    }
 
     //
     // load properties
     //
     m_param_changed = true;
 
-    bool mag_linear = true;
+    bool mag_linear = false;
     if (tex_kv.contains("mag_filter_linear"))
         mag_linear = bool(tex_kv["mag_filter_linear"]);
 
@@ -287,6 +316,8 @@ Result Texture::build(const treejuce::var& tex_node)
         else
             m_min_filter = GL_NEAREST;
     }
+
+    return Result::ok();
 }
 
 TREEFACE_NAMESPACE_END
