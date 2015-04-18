@@ -55,7 +55,7 @@ treejuce::Result Material::init(const treejuce::var& root_node)
 
     if (!root_node.isObject())
     {
-        return Result::fail("root node is not KV");
+        return Result::fail("material root node is not KV");
     }
 
     NamedValueSet& root_kv = root_node.getDynamicObject()->getProperties();
@@ -130,5 +130,35 @@ treejuce::Result Material::init(const treejuce::var& root_node)
 
     return Result::ok();
 }
+
+Program* Material::get_program() NOEXCEPT
+{
+    return m_impl->program.get();
+}
+
+int32 Material::get_num_textures() const NOEXCEPT
+{
+    return m_impl->layers.size();
+}
+
+Texture* Material::get_texture(treejuce::int32 layer_idx) NOEXCEPT
+{
+    if (layer_idx >= m_impl->layers.size())
+        return nullptr;
+    else
+        return m_impl->layers[layer_idx].gl_texture.get();
+}
+
+Texture* Material::get_texture(treejuce::StringRef name) NOEXCEPT
+{
+    for (int i = 0; i < m_impl->layers.size(); i++)
+    {
+        if (m_impl->layers[i].name == name)
+            return m_impl->layers[i].gl_texture.get();
+    }
+
+    return nullptr;
+}
+
 
 TREEFACE_NAMESPACE_END
