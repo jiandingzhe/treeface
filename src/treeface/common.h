@@ -18,6 +18,7 @@ TREEFACE_JUCE_NAMESPACE_END
 TREEFACE_NAMESPACE_BEGIN
 
 void die(treejuce::StringRef format, ...);
+void warn(treejuce::StringRef format, ...);
 
 TREEFACE_NAMESPACE_END
 
