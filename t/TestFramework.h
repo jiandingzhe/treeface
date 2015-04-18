@@ -3,11 +3,17 @@
 
 #include "treeface/common.h"
 
+#include <treejuce/Common.h>
+
 #include <cstdint>
 #include <cstdlib>
 
 #include <iostream>
 #include <cmath>
+
+TREEFACE_JUCE_NAMESPACE_BEGIN
+class Result;
+TREEFACE_JUCE_NAMESPACE_END
 
 #define OK(arg) ok(arg, EXPAND_AND_STRINGIFY(arg))
 #define IS(arg1, arg2) is(arg1, arg2, EXPAND_AND_STRINGIFY(arg1) " == " EXPAND_AND_STRINGIFY(arg2))
@@ -25,6 +31,7 @@ public:
     ~TestFramework();
 
     void ok(bool value, const char* desc);
+    void ok(const treejuce::Result& result, const char* desc);
 
     template<typename T1, typename T2>
     void is(T1 value, T2 expect, const char* desc);

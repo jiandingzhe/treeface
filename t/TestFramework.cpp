@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <treejuce/Result.h>
+
 using namespace std;
 
 TestFramework::TestFramework(): n_planned(0), n_got(0), n_fail(0)
@@ -46,6 +48,20 @@ void TestFramework::ok(bool value, const char *desc)
     else
     {
         cout << "NOT ok " << n_got << " - " << desc << endl;
+        n_fail++;
+    }
+}
+
+void TestFramework::ok(const treejuce::Result& result, const char* desc)
+{
+    n_got++;
+    if (result)
+    {
+        cout << "ok " << n_got << " - " << desc << endl;
+    }
+    else
+    {
+        cout << "NOT ok " << n_got << " - " << result.getErrorMessage().toRawUTF8() << endl;
         n_fail++;
     }
 }
