@@ -18,6 +18,16 @@ find_program(TREEJUCE_BIN_BUILDER treejuce_bin_builder
         ${TREEJUCE_SEARCH_PREFIX}/bin
 )
 
+function(TREEJUCE_WRAP_RESOURCE input_dir class_name)
+    add_custom_command(
+        OUTPUT
+            ${CMAKE_CURRENT_BINARY_DIR}/${class_name}.h
+            ${CMAKE_CURRENT_BINARY_DIR}/${class_name}.cpp
+        COMMAND
+            ${TREEJUCE_BIN_BUILDER} ${input_dir} ${CMAKE_CURRENT_BINARY_DIR} ${class_name}
+    )
+endfunction()
+
 #
 # find header directory
 #
