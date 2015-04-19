@@ -76,10 +76,12 @@ treejuce::Result Material::init(const treejuce::var& root_node)
 
     String name_vertex = program_names->getReference(0).toString();
     String name_frag = program_names->getReference(1).toString();
-    Program* program = ProgramManager::getInstance()->get_program(name_vertex, name_frag);
 
-    if (!program)
-        return Result::fail("Failed to build GL program using shader "+name_vertex+" and "+name_frag);
+    Program* program = nullptr;
+    Result program_re = ProgramManager::getInstance()->get_program(name_vertex, name_frag, &program);
+
+    if (!program_re)
+        return Result::fail("material: failed to build GL program:\n"+program_re.getErrorMessage());
 
     m_impl->program = program;
 

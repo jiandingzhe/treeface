@@ -3,6 +3,7 @@
 
 #include "treeface/common.h"
 
+#include <treejuce/Result.h>
 #include <treejuce/Singleton.h>
 #include <treejuce/String.h>
 
@@ -17,7 +18,7 @@ public:
     JUCE_DECLARE_NON_MOVABLE(ImageManager);
     juce_DeclareSingleton(ImageManager, false);
 
-    Image* get_image(const treejuce::String& name);
+    treejuce::Result get_image(const treejuce::String& name, Image** img);
     bool image_is_cached(const treejuce::String& name) const;
     bool release_image_hold(const treejuce::String& name);
 

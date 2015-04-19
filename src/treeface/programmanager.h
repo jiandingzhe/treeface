@@ -3,6 +3,7 @@
 
 #include "treeface/common.h"
 
+#include <treejuce/Result.h>
 #include <treejuce/Singleton.h>
 #include <treejuce/String.h>
 
@@ -17,7 +18,7 @@ public:
     JUCE_DECLARE_NON_MOVABLE(ProgramManager);
     juce_DeclareSingleton(ProgramManager, false);
 
-    Program* get_program(const treejuce::String& name_vertex, const treejuce::String& name_fragment);
+    treejuce::Result get_program(const treejuce::String& name_vertex, const treejuce::String& name_fragment, Program** program_pp);
     bool program_is_cached(const treejuce::String& name_vertex, const treejuce::String& name_fragment);
     bool release_program_hold(const treejuce::String& name_vertex, const treejuce::String& name_fragment);
 

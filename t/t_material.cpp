@@ -76,7 +76,9 @@ void TestFramework::content()
         OK(mat1->init(root_node_mat1));
 
         ok(prog_mgr->program_is_cached("common_vertex.glsl", "frag_one_tex.glsl"), "program common_vertex.glsl frag_one_tex.glsl is cached");
-        IS(mat1->get_program(), prog_mgr->get_program("common_vertex.glsl", "frag_one_tex.glsl"));
+        Program* program_from_mgr = nullptr;
+        OK(prog_mgr->get_program("common_vertex.glsl", "frag_one_tex.glsl", &program_from_mgr));
+        IS(mat1->get_program(), program_from_mgr);
         OK(img_mgr->image_is_cached("moon.jpg"));
     }
 

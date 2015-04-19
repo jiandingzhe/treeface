@@ -267,9 +267,10 @@ Result Texture::build(const treejuce::var& tex_node)
         for (int i = 0; i < image_name_nodes->size(); i++)
         {
             String img_name = image_name_nodes->getReference(i).toString();
-            Image* img = ImageManager::getInstance()->get_image(img_name);
-            if (!img)
-                return Result::fail("no image named "+img_name);
+            Image* img = nullptr;
+            Result img_re = ImageManager::getInstance()->get_image(img_name, &img);
+            if (!img_re)
+                return img_re;
             img_refs.add(img->get_image_ref());
         }
 
@@ -278,9 +279,10 @@ Result Texture::build(const treejuce::var& tex_node)
     else
     {
         String img_name = tex_kv["image"].toString();
-        Image* img = ImageManager::getInstance()->get_image(img_name);
-        if (!img)
-            return Result::fail("failed to get image named "+img_name);
+        Image* img = nullptr;
+        Result img_re = ImageManager::getInstance()->get_image(img_name, &img);
+        if (!img_re)
+            return img_re;
 
         set_image_data(img->get_image_ref(), internal_format, use_mipmap);
     }

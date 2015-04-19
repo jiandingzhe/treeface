@@ -1,6 +1,7 @@
 #include "treeface/image.h"
-#include "treeface/packagemanager.h"
 #include "treeface/imagemanager.h"
+#include "treeface/packagemanager.h"
+#include "treeface/stringcast.h"
 
 #include <FreeImage.h>
 
@@ -42,22 +43,29 @@ ImageManager::~ImageManager()
         delete m_impl;
 }
 
-Image* ImageManager::get_image(const String& name)
+Result ImageManager::get_image(const String& name, Image** img)
 {
     if (m_impl->items.contains(name))
     {
-        return m_impl->items[name].get();
+        *img = m_impl->items[name].get();
+        return Result::ok();
     }
     else
     {
         ArrayRef<uint8> data = PackageManager::getInstance()->get_item_data(name);
         ScopedPointer<uint8> data_holder(data.get_data());
         if (!data.get_data())
-            return nullptr;
+        {
+            *img = nullptr;
+            return Result::fail("failed to get image data from package manager using name \""+name+"\"");
+        }
 
         FIMEMORY* mem_stream = FreeImage_OpenMemory(data.get_data(), data.size());
         if (!mem_stream)
-            return nullptr;
+        {
+            *img = nullptr;
+            return Result::fail("failed to create FreeImage memory handle from data of \""+name+"\"");
+        }
 
         FREE_IMAGE_FORMAT format = FreeImage_GetFileTypeFromMemory(mem_stream);
         FIBITMAP* fi_img = FreeImage_LoadFromMemory(format, mem_stream);
@@ -65,11 +73,15 @@ Image* ImageManager::get_image(const String& name)
         FreeImage_CloseMemory(mem_stream);
 
         if (!fi_img)
-            return nullptr;
+        {
+            *img =  nullptr;
+            return Result::fail("failed to load FreeImage from data of \""+name+"\" (format is "+to_string(format)+")");
+        }
 
-        Image* img = new Image(fi_img);
-        m_impl->items.set(name, img);
-        return img;
+        *img = new Image(fi_img);
+        m_impl->items.set(name, *img);
+
+        return Result::ok();
     }
 }
 

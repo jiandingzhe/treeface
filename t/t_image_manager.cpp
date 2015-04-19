@@ -25,8 +25,8 @@ void TestFramework::content()
     OK(img_mgr);
 
     {
-        Image* img = img_mgr->get_image("earth.png");
-        OK(img);
+        Image* img = nullptr;;
+        OK(img_mgr->get_image("earth.png", &img));
         OK(img_mgr->image_is_cached("earth.png"));
 
         ImageRef ref_img = img->get_image_ref();
@@ -36,8 +36,8 @@ void TestFramework::content()
     }
 
     {
-        Image* img = img_mgr->get_image("moon.jpg");
-        OK(img);
+        Image* img = nullptr;
+        OK(img_mgr->get_image("moon.jpg", &img));
         OK(img_mgr->image_is_cached("moon.jpg"));
 
         ImageRef ref_img = img->get_image_ref();
@@ -47,8 +47,8 @@ void TestFramework::content()
     }
 
     {
-        Image* img = img_mgr->get_image("moon.pfm");
-        OK(img);
+        Image* img = nullptr;
+        OK(img_mgr->get_image("moon.pfm", &img));
         OK(img_mgr->image_is_cached("moon.pfm"));
 
         ImageRef ref_img = img->get_image_ref();
@@ -58,8 +58,8 @@ void TestFramework::content()
     }
 
     {
-        Image* img = img_mgr->get_image("moonbump.jpg");
-        OK(img);
+        Image* img = nullptr;
+        OK(img_mgr->get_image("moonbump.jpg", &img));
         OK(img_mgr->image_is_cached("moonbump.jpg"));
 
         ImageRef ref_img = img->get_image_ref();
@@ -69,8 +69,8 @@ void TestFramework::content()
     }
 
     {
-        Image* img = img_mgr->get_image("moonbump.pfm");
-        OK(img);
+        Image* img = nullptr;
+        OK(img_mgr->get_image("moonbump.pfm", &img));
         OK(img_mgr->image_is_cached("moonbump.pfm"));
 
         ImageRef ref_img = img->get_image_ref();

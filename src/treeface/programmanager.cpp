@@ -36,35 +36,52 @@ inline String _format_key_(const treejuce::String& name_vertex, const treejuce::
     return name_vertex + "|||" + name_fragment;
 }
 
-Program* ProgramManager::get_program(const treejuce::String& name_vertex, const treejuce::String& name_fragment)
+Result ProgramManager::get_program(const treejuce::String& name_vertex, const treejuce::String& name_fragment, Program** program_pp)
 {
     String key = _format_key_(name_vertex, name_fragment);
 
     if (m_impl->programs.contains(key))
     {
-        return m_impl->programs[key];
+        *program_pp = m_impl->programs[key];
+        return Result::ok();
     }
     else
     {
         ArrayRef<uint8> src_vertex = PackageManager::getInstance()->get_item_data(name_vertex);
         ScopedPointer<uint8> src_vertex_holder(src_vertex.get_data());
         if (!src_vertex.get_data())
-            return nullptr;
+        {
+            *program_pp = nullptr;
+            return Result::fail("failed to get vertex shader source code using name \""+name_vertex+"\"");
+        }
 
         ArrayRef<uint8> src_frag = PackageManager::getInstance()->get_item_data(name_fragment);
         ScopedPointer<uint8> src_frag_holder(src_frag.get_data());
         if (!src_frag.get_data())
-            return nullptr;
+        {
+            *program_pp = nullptr;
+            return Result::fail("failed to get fragment shader source code using name \""+name_fragment+"\"");
+        }
 
-        Program* program = new Program();
+        Holder<Program> program = new Program();
         Result program_re = program->init((char*)src_vertex.get_data(), (char*)src_frag.get_data());
 
         if (!program_re)
-            die("%s", program_re.getErrorMessage().toRawUTF8());
+        {
+            *program_pp = nullptr;
+            return Result::fail("failed to create program using \""+name_vertex+"\" and \""+name_fragment+"\":\n"+
+                                program_re.getErrorMessage()+"\n"
+                                "source code:\n"
+                                "==== vertex shader ====\n" +
+                                String((char*)src_vertex.get_data())+"\n"
+                                "==== fragment shader ====\n" +
+                                String((char*)src_frag.get_data()));
+        }
 
         m_impl->programs.set(key, program);
+        *program_pp = program.get();
 
-        return program;
+        return Result::ok();
     }
 }
 
