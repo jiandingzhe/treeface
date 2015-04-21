@@ -64,7 +64,7 @@ Result ProgramManager::get_program(const treejuce::String& name_vertex, const tr
         }
 
         Holder<Program> program = new Program();
-        Result program_re = program->init((char*)src_vertex.get_data(), (char*)src_frag.get_data());
+        Result program_re = program->build((char*)src_vertex.get_data(), (char*)src_frag.get_data());
 
         if (!program_re)
         {

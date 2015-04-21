@@ -7,33 +7,29 @@
 
 #include <treejuce/Object.h>
 #include <treejuce/PlatformDefs.h>
+#include <treejuce/Result.h>
 
 TREEFACE_NAMESPACE_BEGIN
 
 struct Sampler: public treejuce::Object
 {
-    Sampler(GLenum unit): m_unit(unit - GL_TEXTURE0) {}
+    Sampler();
     virtual ~Sampler();
 
     // invalidate copy and move
-    Sampler(const Sampler& other) = delete;
-    Sampler(Sampler&& other) = delete;
-    Sampler& operator = (const Sampler& other) = delete;
-    Sampler& operator = (Sampler&& other) = delete;
+    JUCE_DECLARE_NON_COPYABLE(Sampler);
+    JUCE_DECLARE_NON_MOVABLE(Sampler);
 
-    void init() NOEXCEPT;
-
-    void use() const NOEXCEPT
+    void use(GLuint unit) const NOEXCEPT
     {
-        glBindSampler(m_unit, m_sampler);
+        glBindSampler(unit, m_sampler);
     }
 
-    void unuse() const NOEXCEPT
+    void unuse(GLuint unit) const NOEXCEPT
     {
-        glBindSampler(m_unit, 0);
+        glBindSampler(unit, 0);
     }
 
-    GLuint m_unit = -1;
     GLuint m_sampler = 0;
 };
 

@@ -12,11 +12,23 @@ TREEFACE_NAMESPACE_BEGIN
 
 Program::Program()
 {
+    m_program = glCreateProgram();
+    if (m_program == 0)
+        die("failed to allocate program ID");
+
+    m_shader_vert = glCreateShader(GL_VERTEX_SHADER);
+    if (!m_shader_vert)
+        die("failed to allocate shader ID for vertex shader");
+
+    m_shader_frag = glCreateShader(GL_FRAGMENT_SHADER);
+    if (!m_shader_frag)
+        die("failed to allocate shader ID for fragment shader");
 }
 
 Program::~Program()
 {
-    glDeleteProgram(m_program);
+    if (m_program)
+        glDeleteProgram(m_program);
 
     if (m_shader_vert)
         glDeleteShader(m_shader_vert);
@@ -25,16 +37,14 @@ Program::~Program()
         glDeleteShader(m_shader_frag);
 }
 
-treejuce::Result Program::init(const char* src_vert, const char* src_frag)
+treejuce::Result Program::build(const char* src_vert, const char* src_frag)
 {
-    m_program = glCreateProgram();
-    if (m_program == 0)
-        die("failed to create program object");
+    if (compiled_and_linked)
+        return Result::fail("attempt to build program which is already built");
 
     // compile shaders
     if (src_vert)
     {
-        m_shader_vert = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(m_shader_vert, 1, &src_vert, nullptr);
         glCompileShader(m_shader_vert);
 
@@ -47,7 +57,6 @@ treejuce::Result Program::init(const char* src_vert, const char* src_frag)
 
     if (src_frag)
     {
-        m_shader_frag = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(m_shader_frag, 1, &src_frag, nullptr);
         glCompileShader(m_shader_frag);
 
@@ -72,7 +81,7 @@ treejuce::Result Program::init(const char* src_vert, const char* src_frag)
     glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTES, &n_attr);
 
     if (n_attr == -1)
-        die("failed to get attribute number from program %u", m_program);
+        die("failed to get attribute number in program " + String(m_program));
 
     for (int i_attr = 0; i_attr < n_attr; i_attr++)
     {
@@ -84,10 +93,10 @@ treejuce::Result Program::init(const char* src_vert, const char* src_frag)
                           &attr_name_len, &attr_size, &attr_type, attr_name);
 
         if (attr_name_len == -1)
-            die("failed to get attribute %d info", i_attr);
+            die("failed to get info for attribute " + String(i_attr));
 
         if (attr_name_len >= 255)
-            die("attribute %d name is too long", i_attr);
+            die("attribute " + String(i_attr) + " name is too long");
 
         m_attr_info.add({treejuce::String(attr_name), attr_size, attr_type});
         m_attr_idx_by_name.set(treejuce::String(attr_name), i_attr);
@@ -110,7 +119,7 @@ treejuce::Result Program::init(const char* src_vert, const char* src_frag)
                            &uni_name_len, &uni_size, &uni_type, uni_name);
 
         if (uni_name_len == -1)
-            die("failed to get uniform %d info", i_uni);
+            die("failed to get info for uniform %d", i_uni);
 
         if (uni_name_len >= 255)
             die("uniform %d name is too long", i_uni);

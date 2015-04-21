@@ -49,7 +49,7 @@ Material::~Material()
         delete m_impl;
 }
 
-treejuce::Result Material::init(const treejuce::var& root_node)
+treejuce::Result Material::build(const treejuce::var& root_node)
 {
     m_impl = new Impl();
 
@@ -119,7 +119,6 @@ treejuce::Result Material::init(const treejuce::var& root_node)
                 return Result::fail("program don't have texture uniform named "+tex_name);
 
             Texture* tex_obj = new Texture();
-            tex_obj->init();
             m_impl->layers.add({tex_name, tex_obj, i_tex, uni_idx});
 
             Result tex_re = tex_obj->build(tex_node);

@@ -53,19 +53,15 @@ const GLenum TEXTURE_UNITS[32] = {
 
 Texture::Texture()
 {
+    glGenTextures(1, &m_texture);
+    if (!m_texture)
+        die("failed to generate texture");
 }
 
 Texture::~Texture()
 {
     if (m_texture)
         glDeleteTextures(1, &m_texture);
-}
-
-void Texture::init() NOEXCEPT
-{
-    glGenTextures(1, &m_texture);
-    if (!m_texture)
-        die("failed to generate texture");
 }
 
 treejuce::Result Texture::set_image_data(ImageRef image, GLint internal_fmt, bool gen_mipmap) NOEXCEPT

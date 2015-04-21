@@ -61,7 +61,7 @@ Result MaterialManager::get_material(const String& name, Material** mat)
         }
 
         Holder<Material> mat_holder = new Material();
-        Result mat_re = mat_holder->init(mat_root_node);
+        Result mat_re = mat_holder->build(mat_root_node);
         if (!mat_re)
         {
             *mat = nullptr;

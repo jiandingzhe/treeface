@@ -3,8 +3,11 @@
 
 #include "treeface/common.h"
 
-#include <treejuce/Array.h>
+#include "treeface/gl/vertexattrib.h"
+
+#include <treejuce/ArrayRef.h>
 #include <treejuce/Object.h>
+#include <treejuce/Result.h>
 #include <treejuce/String.h>
 
 #include "GL/glew.h"
@@ -16,28 +19,29 @@ struct Program;
 
 struct VertexArray: public treejuce::Object
 {
-    struct AttrDesc
-    {
-        treejuce::String name;
-        GLsizei offset;
-        GLsizei n_elem;
-        GLenum type;
-        bool normalize;
-    };
-
     VertexArray();
     virtual ~VertexArray();
 
     // disable copy and move
-    VertexArray(const VertexArray&) = delete;
-    VertexArray(VertexArray&&) = delete;
-    VertexArray& operator = (const VertexArray&) = delete;
-    VertexArray& operator = (VertexArray&&) = delete;
+    JUCE_DECLARE_NON_COPYABLE(VertexArray);
+    JUCE_DECLARE_NON_MOVABLE(VertexArray);
 
-    void init(const VertexIndexBuffer& buffer,
-              GLsizei stride,
-              const treejuce::Array<AttrDesc>& attr_desc,
-              const Program& program);
+    /**
+     * @brief build vertex array
+     * @param buffer
+     * @param attribs
+     * @param program
+     * @return
+     */
+    treejuce::Result build(const VertexIndexBuffer* buffer,
+                           treejuce::ArrayRef<HostVertexAttrib> attribs,
+                           const Program* program);
+
+    
+    treejuce::Result build_one(const VertexIndexBuffer* buffer,
+                               HostVertexAttrib attrib,
+                               GLsizei stride,
+                               const Program* program);
 
     inline void use() const NOEXCEPT
     {

@@ -13,11 +13,15 @@
 #include "treeface/gl/program.h"
 #include "treeface/gl/vertexindexbuffer.h"
 #include "treeface/gl/vertexarray.h"
+#include "treeface/gl/vertexattrib.h"
 
 #include <vector>
 #include <set>
 #include <map>
+
 #include <treejuce/BasicNativeHeaders.h>
+#include <treejuce/Holder.h>
+#include <treejuce/Logger.h>
 
 using namespace std;
 using namespace treeface;
@@ -43,8 +47,8 @@ struct ColoredPoint
     float a;
 };
 
-VertexArray::AttrDesc attr_desc_position{"in_position", 0, 4, GL_FLOAT, false};
-VertexArray::AttrDesc attr_desc_color{"in_color", sizeof(float)*4, 4, GL_FLOAT, false};
+HostVertexAttrib attr_desc_position{"in_position", 4, GL_FLOAT, 0, false};
+HostVertexAttrib attr_desc_color{"in_color", 4, GL_FLOAT, sizeof(float)*4, false};
 
 const char* src_vertex =
         "#version 130\n"
@@ -72,28 +76,6 @@ const char* src_fragment =
         "{\n"
         "  gl_FragColor = frag_color;\n"
         "}\n";
-
-struct Geometry
-{
-    Geometry()
-    {
-        buffer.init();
-    }
-
-    void set_data(const vector<ColoredPoint>& vertices, const vector<unsigned short>& indices)
-    {
-        n_vertex = vertices.size();
-        n_index = indices.size();
-
-        buffer.load_data(vertices.data(), vertices.size(),
-                         indices.data(),  indices.size());
-    }
-
-    int n_vertex = 0;
-    int n_index = 0;
-
-    VertexIndexBuffer buffer;
-};
 
 struct Widget
 {
@@ -132,10 +114,10 @@ struct Widget
 
     void bound_geometry_with_program()
     {
-        Array<VertexArray::AttrDesc> attr_desc_list;
+        Array<HostVertexAttrib> attr_desc_list;
         attr_desc_list.add(attr_desc_position);
         attr_desc_list.add(attr_desc_color);
-        array.init(geometry->buffer, sizeof(ColoredPoint), attr_desc_list, *program);
+        array.build(geom_buffer, attr_desc_list, program);
     }
 
     BBox bound;
@@ -144,8 +126,10 @@ struct Widget
 
     bool is_active = false;
     bool is_pressed = false;
-    Program* program = nullptr;
-    Geometry* geometry = nullptr;
+    Holder<Program> program = nullptr;
+    Holder<VertexIndexBuffer> geom_buffer = nullptr;
+    size_t n_vertex = 0;
+    size_t n_index = 0;
 
     VertexArray array;
 };
@@ -239,14 +223,15 @@ struct WidgetRenderer
 
 
             widget->array.use();
-            widget->geometry->buffer.use();
+            widget->geom_buffer->use();
 
             program->instant_set_uniform(i_matrix, widget->trans);
             program->instant_set_uniform(i_is_active, widget->is_active);
 
-            glDrawElements(GL_TRIANGLES, widget->geometry->n_index, GL_UNSIGNED_SHORT, 0);
+            widget->geom_buffer->draw(GL_TRIANGLES);
 
             widget->array.unuse();
+            widget->geom_buffer->unuse();
         }
 
         prev_program->unuse();
@@ -368,12 +353,14 @@ int main(int argc, char** argv)
     SDL_GLContext context = nullptr;
     build_up_sdl(&window, &context);
 
-    Program program;
-    program.init(src_vertex, src_fragment);
+    Holder<Program> program = new Program();
+    program->build(src_vertex, src_fragment);
 
-    Geometry geom;
-    geom.set_data(vertex_rect, index_rect);
-    printf("geometry vertex: %u, index: %u\n", geom.buffer.m_buffer_vtx, geom.buffer.m_buffer_idx);
+    Holder<VertexIndexBuffer> geom_buffer_rect = new VertexIndexBuffer();
+    geom_buffer_rect->set_host_data(ArrayRef<const ColoredPoint>(vertex_rect.data(), vertex_rect.size()),
+                                    ArrayRef<const uint16>(index_rect.data(), index_rect.size())
+                                    );
+    Logger::writeToLog("geometry vertex: "+String(geom_buffer_rect->get_vertex_buffer_id())+", index: "+String(geom_buffer_rect->get_index_buffer_id()));
 
     vector<Widget*> widgets;
 
@@ -384,8 +371,10 @@ int main(int argc, char** argv)
         {
             float y = -1 + 2 * float(j) / 10;
             Widget* widget = new Widget(x, y, 0.15f, 0.1f);
-            widget->program = &program;
-            widget->geometry = &geom;
+            widget->program = program;
+            widget->geom_buffer = geom_buffer_rect;
+            widget->n_vertex = vertex_rect.size();
+            widget->n_index = index_rect.size();
             widget->bound_geometry_with_program();
             renderer.add_widget(widget);
         }
@@ -429,7 +418,7 @@ int main(int argc, char** argv)
         renderer.render();
 
         SDL_GL_SwapWindow(window);
-        SDL_Delay(10);
+        SDL_Delay(20);
     }
 
     SDL_GL_DeleteContext(context);

@@ -3,34 +3,35 @@
 
 #include "treeface/common.h"
 
+#include "treeface/gl/vertexattrib.h"
+
 #include <treejuce/Array.h>
+#include <treejuce/ArrayRef.h>
+#include <treejuce/IntTypes.h>
+#include <treejuce/MemoryBlock.h>
 #include <treejuce/Object.h>
-#include <treejuce/Result.h>
 
 #include <GL/glew.h>
 
-TREEFACE_NAMESPACE_BEGIN
+TREEFACE_JUCE_NAMESPACE_BEGIN
+class Result;
+class var;
+TREEFACE_JUCE_NAMESPACE_END
 
-struct VertexIndexBuffer: public treejuce::Object
+TREEFACE_NAMESPACE_BEGIN
+class VertexArray;
+
+class VertexIndexBuffer: public treejuce::Object
 {
+    friend class VertexArray;
+public:
     VertexIndexBuffer();
 
     // disable copy and move
-    VertexIndexBuffer(const VertexIndexBuffer& other) = delete;
-    VertexIndexBuffer(VertexIndexBuffer&& other) = delete;
-    VertexIndexBuffer& operator = (const VertexIndexBuffer& other) = delete;
-    VertexIndexBuffer& operator = (VertexIndexBuffer&& other) = delete;
+    JUCE_DECLARE_NON_COPYABLE(VertexIndexBuffer);
+    JUCE_DECLARE_NON_MOVABLE(VertexIndexBuffer);
 
     virtual ~VertexIndexBuffer();
-
-    void init() NOEXCEPT;
-    template<typename T_VTX, typename T_IDX>
-    treejuce::Result load_data(const treejuce::Array<T_VTX>& data_vertex,
-                               const treejuce::Array<T_IDX>& data_index);
-
-    template<typename T_VTX, typename T_IDX>
-    treejuce::Result load_data(const T_VTX* data_vertex, size_t n_vertex,
-                               const T_IDX* data_index, size_t n_index);
 
     inline void use() const NOEXCEPT
     {
@@ -44,44 +45,44 @@ struct VertexIndexBuffer: public treejuce::Object
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
-    inline void draw(GLenum primitive, GLsizei n_index, GLenum index_type) const NOEXCEPT
+    template<typename VTX_T>
+    inline void set_host_data(treejuce::ArrayRef<VTX_T> data_vtx, treejuce::ArrayRef<const treejuce::uint16> data_idx) NOEXCEPT
     {
-        glDrawElements(primitive, n_index, index_type, nullptr);
+        m_data_vtx.replaceWith(data_vtx.get_const_data(), sizeof(VTX_T) * data_vtx.size());
+        m_data_idx.resize(data_idx.size());
+        memcpy(m_data_idx.getRawDataPointer(), data_idx.get_const_data(), data_idx.size() * sizeof(treejuce::uint16));
+        m_data_changed = true;
     }
 
+    inline void draw(GLenum primitive) NOEXCEPT
+    {
+        if (m_data_changed)
+        {
+            upload_data();
+            m_data_changed = false;
+        }
+        glDrawElements(primitive, m_data_idx.size(), GL_UNSIGNED_SHORT, nullptr);
+    }
+
+    inline GLuint get_vertex_buffer_id() const NOEXCEPT
+    {
+        return m_buffer_vtx;
+    }
+
+    inline GLuint get_index_buffer_id() const NOEXCEPT
+    {
+        return m_buffer_idx;
+    }
+
+protected:
+    void upload_data() const NOEXCEPT;
+
+    bool m_data_changed = false;
+    treejuce::MemoryBlock m_data_vtx;
+    treejuce::Array<treejuce::uint16> m_data_idx;
     GLuint m_buffer_vtx = 0;
     GLuint m_buffer_idx = 0;
 };
-
-template<typename T_VTX, typename T_IDX>
-treejuce::Result VertexIndexBuffer::load_data(const treejuce::Array<T_VTX>& data_vertex,
-                                              const treejuce::Array<T_IDX>& data_index)
-{
-    return load_data(data_vertex.getRawDataPointer(), data_vertex.size(),
-                     data_index.getRawDataPointer(),  data_index.size());
-}
-
-template<typename T_VTX, typename T_IDX>
-treejuce::Result VertexIndexBuffer::load_data(const T_VTX* data_vertex, size_t n_vertex,
-                                              const T_IDX* data_index, size_t n_index)
-{
-    if (!m_buffer_vtx || !m_buffer_idx)
-        return treejuce::Result::fail("vertex index buffer not initialized");
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_buffer_vtx);
-    glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(T_VTX) * n_vertex,
-                 data_vertex,
-                 GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffer_idx);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof(T_IDX) * n_index,
-                 data_index,
-                 GL_STATIC_DRAW);
-
-    return treejuce::Result::ok();
-}
 
 TREEFACE_NAMESPACE_END
 

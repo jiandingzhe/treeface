@@ -4,6 +4,7 @@
 #include "treeface/common.h"
 #include "treeface/math.h"
 #include "treeface/gl/sampler.h"
+#include "treeface/gl/vertexattrib.h"
 
 #include <treejuce/Array.h>
 #include <treejuce/HashMap.h>
@@ -23,20 +24,14 @@ class Program: public treejuce::Object
     friend class VertexArray;
 
 public:
-    struct AttrInfo
-    {
-        treejuce::String name;
-        GLsizei size;
-        GLenum type;
-    };
-
+    /**
+     * @brief allocate shader and program IDs
+     */
     Program();
 
     // invalidate copy and move
-    Program(const Program& other) = delete;
-    Program(Program&& other) = delete;
-    Program& operator = (const Program& other) = delete;
-    Program& operator = (Program&& other) = delete;
+    JUCE_DECLARE_NON_COPYABLE(Program);
+    JUCE_DECLARE_NON_MOVABLE(Program);
 
     virtual ~Program();
 
@@ -47,7 +42,12 @@ public:
      * @param src_frag
      * @return
      */
-    treejuce::Result init(const char* src_vert, const char* src_frag);
+    treejuce::Result build(const char* src_vert, const char* src_frag);
+
+    inline bool usable() const NOEXCEPT
+    {
+        return compiled_and_linked;
+    }
 
     inline void use() const NOEXCEPT
     {
@@ -115,7 +115,7 @@ public:
      */
     int get_attribute_index_by_name(const treejuce::String& name) const NOEXCEPT;
 
-    const AttrInfo& get_attribute_info_by_index(int i_attr) const NOEXCEPT
+    const VertexAttrib& get_attribute_info_by_index(int i_attr) const NOEXCEPT
     {
         return m_attr_info.getReference(i_attr);
     }
@@ -129,6 +129,11 @@ public:
      */
     int get_uniform_index_by_name(const treejuce::String& name) const NOEXCEPT;
 
+    const VertexAttrib& get_uniform_info_by_index(int i_uni)
+    {
+        return m_uni_info.getReference(i_uni);
+    }
+
 protected:
     treejuce::Result fetch_shader_error_log(GLuint shader);
     treejuce::Result fetch_program_error_log();
@@ -137,10 +142,12 @@ protected:
     unsigned int m_shader_vert = 0;
     unsigned int m_shader_frag = 0;
 
-    treejuce::Array<AttrInfo> m_attr_info;
+    bool compiled_and_linked = false;
+
+    treejuce::Array<VertexAttrib> m_attr_info;
     treejuce::HashMap<treejuce::String, treejuce::uint16> m_attr_idx_by_name;
 
-    treejuce::Array<AttrInfo> m_uni_info;
+    treejuce::Array<VertexAttrib> m_uni_info;
     treejuce::HashMap<treejuce::String, treejuce::uint16> m_uni_idx_by_name;
 };
 

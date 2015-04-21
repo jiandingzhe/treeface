@@ -24,7 +24,7 @@ public:
 
     virtual ~Material();
 
-    treejuce::Result init(const treejuce::var& root_node);
+    treejuce::Result build(const treejuce::var& root_node);
 
     Program* get_program() NOEXCEPT;
     treejuce::int32 get_num_textures() const NOEXCEPT;

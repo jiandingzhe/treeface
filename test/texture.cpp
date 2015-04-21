@@ -3,6 +3,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
+#include <treejuce/Holder.h>
 #include <treejuce/Logger.h>
 #include <treejuce/MathsFunctions.h>
 #include <treejuce/Result.h>
@@ -12,8 +13,9 @@
 #include "treeface/gl/program.h"
 #include "treeface/gl/sampler.h"
 #include "treeface/gl/texture.h"
-#include "treeface/gl/vertexindexbuffer.h"
 #include "treeface/gl/vertexarray.h"
+#include "treeface/gl/vertexattrib.h"
+#include "treeface/gl/vertexindexbuffer.h"
 
 using namespace treejuce;
 using namespace treeface;
@@ -27,11 +29,11 @@ const float data_vertices[] = {
 
 const uint16 data_indices[6] = {0, 1, 2, 2, 1, 3};
 
-treeface::VertexIndexBuffer buffer;
-treeface::VertexArray vertex_array;
-treeface::Texture texture;
-treeface::Texture texture_fake;
-treeface::Program program;
+Holder<treeface::VertexIndexBuffer> buffer;
+Holder<treeface::VertexArray> vertex_array;
+Holder<treeface::Texture> texture;
+Holder<treeface::Texture> texture_fake;
+Holder<treeface::Program> program;
 
 int window_w = 400;
 int window_h = 400;
@@ -109,38 +111,40 @@ void build_up_sdl(SDL_Window** window, SDL_GLContext* context)
 
 void build_up_gl()
 {
-    Result program_re = program.init(src_vertex, src_fragment);
+    program = new Program();
+    Result program_re = program->build(src_vertex, src_fragment);
     if (!program_re)
     {
         Logger::writeToLog(program_re.getErrorMessage());
         abort();
     }
 
-    buffer.init();
-    buffer.load_data(data_vertices, 24, data_indices, 6);
+    buffer = new VertexIndexBuffer();
+    buffer->set_host_data(ArrayRef<const float>(data_vertices, 24), ArrayRef<const uint16>(data_indices, 6));
 
     glActiveTexture(GL_TEXTURE1);
-    texture.init();
-    texture_fake.init();
-    texture.set_image_data(img_texture1, GL_RGBA, false);
-    texture.set_min_filter(GL_NEAREST);
-    texture.set_mag_filter(GL_NEAREST);
+    texture = new Texture();
+    texture_fake = new Texture();
+    texture->set_image_data(img_texture1, GL_RGBA, false);
+    texture->set_min_filter(GL_NEAREST);
+    texture->set_mag_filter(GL_NEAREST);
 
-    VertexArray::AttrDesc attr1 = {"position",     0,               4, GL_FLOAT, false};
-    VertexArray::AttrDesc attr2 = {"tex_position", sizeof(float)*4, 2, GL_FLOAT, false};
-    Array<VertexArray::AttrDesc> attributes;
+    HostVertexAttrib attr1 = {"position",     4, GL_FLOAT, 0,               false};
+    HostVertexAttrib attr2 = {"tex_position", 2, GL_FLOAT, sizeof(float)*4, false};
+    Array<HostVertexAttrib> attributes;
     attributes.add(attr1);
     attributes.add(attr2);
-    vertex_array.init(buffer, sizeof(float)*6, attributes, program);
+
+    vertex_array = new VertexArray();
+    vertex_array->build(buffer, attributes, program);
 }
 
 void main_loop(SDL_Window* window)
 {
-    int uni_tex = program.get_uniform_index_by_name("tex_sampler");
+    int uni_tex = program->get_uniform_index_by_name("tex_sampler");
     Logger::outputDebugString("set to texture uniform: " + String(uni_tex));
 
     glActiveTexture(GL_TEXTURE0);
-    Sampler sampler(GL_TEXTURE0);
 
     while (1)
     {
@@ -170,26 +174,26 @@ void main_loop(SDL_Window* window)
         glClear(GL_COLOR_BUFFER_BIT);
 
         printf("  use vertex array\n");
-        vertex_array.use();
+        vertex_array->use();
         printf("  use buffer\n");
-        buffer.use();
+        buffer->use();
 
         glActiveTexture(GL_TEXTURE0);
         printf("  use texture\n");
-        texture.use();
+        texture->use();
 
         printf("  use program\n");
-        program.use();
+        program->use();
         printf("  set sampler %u to uniform %d\n", 0, uni_tex);
-        program.instant_set_uniform(uni_tex, int(0));
+        program->instant_set_uniform(uni_tex, int(0));
 
         printf("  draw using index buffer\n");
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
 
-        program.unuse();
-        vertex_array.unuse();
-        buffer.unuse();
-        texture.unuse();
+        program->unuse();
+        vertex_array->unuse();
+        buffer->unuse();
+        texture->unuse();
         glBindSampler(0, 0);
 
         SDL_GL_SwapWindow(window);

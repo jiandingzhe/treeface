@@ -73,7 +73,7 @@ void TestFramework::content()
         OK(JSON::parse((char*)src_mat1.get_data(), root_node_mat1));
 
         Material* mat1 = new Material();
-        OK(mat1->init(root_node_mat1));
+        OK(mat1->build(root_node_mat1));
 
         ok(prog_mgr->program_is_cached("common_vertex.glsl", "frag_one_tex.glsl"), "program common_vertex.glsl frag_one_tex.glsl is cached");
         Program* program_from_mgr = nullptr;
@@ -92,7 +92,7 @@ void TestFramework::content()
         OK(JSON::parse((char*)src_mat2.get_data(), root_node_mat2));
 
         Material* mat2 = new Material();
-        OK(mat2->init(root_node_mat2));
+        OK(mat2->build(root_node_mat2));
 
         OK(prog_mgr->program_is_cached("common_vertex.glsl", "frag_two_tex.glsl"));
     }

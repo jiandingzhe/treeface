@@ -30,12 +30,8 @@ public:
     virtual ~Texture();
 
     // disable copy and move
-    Texture(const Texture&) = delete;
-    Texture(Texture&&) = delete;
-    Texture& operator = (const Texture&) = delete;
-    Texture& operator = (Texture&&) = delete;
-
-    void init() NOEXCEPT;
+    JUCE_DECLARE_NON_COPYABLE(Texture);
+    JUCE_DECLARE_NON_MOVABLE(Texture);
 
     /**
      * Set image data and set to only using single mipmap level.
