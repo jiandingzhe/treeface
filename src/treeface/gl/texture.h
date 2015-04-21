@@ -137,6 +137,7 @@ public:
         if (m_param_changed)
         {
             m_param_changed = false;
+
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, m_min_lod);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, m_max_lod);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_wrap_s);
