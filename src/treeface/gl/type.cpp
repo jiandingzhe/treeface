@@ -30,6 +30,18 @@ int size_of_gl_type(GLenum type)
         return sizeof(GLTypeHelper<GL_UNSIGNED_INT>::Type);
     case GL_FLOAT:
         return sizeof(GLTypeHelper<GL_FLOAT>::Type);
+    case GL_FLOAT_VEC2:
+        return sizeof(GLTypeHelper<GL_FLOAT>::Type) * 2;
+    case GL_FLOAT_VEC3:
+        return sizeof(GLTypeHelper<GL_FLOAT>::Type) * 3;
+    case GL_FLOAT_VEC4:
+        return sizeof(GLTypeHelper<GL_FLOAT>::Type) * 4;
+    case GL_FLOAT_MAT2:
+        return sizeof(GLTypeHelper<GL_FLOAT>::Type) * 2 * 2;
+    case GL_FLOAT_MAT3:
+        return sizeof(GLTypeHelper<GL_FLOAT>::Type) * 3 * 3;
+    case GL_FLOAT_MAT4:
+        return sizeof(GLTypeHelper<GL_FLOAT>::Type) * 4 * 4;
     case GL_DOUBLE:
         return sizeof(GLTypeHelper<GL_DOUBLE>::Type);
     default:
