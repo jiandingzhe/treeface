@@ -36,6 +36,9 @@ treejuce::String to_string<FREE_IMAGE_COLOR_TYPE>(FREE_IMAGE_COLOR_TYPE arg);
 GLenum gl_internal_format_from_string(const treejuce::String& string);
 treejuce::String gl_internal_format_to_string(GLenum arg);
 
+GLenum gl_type_from_string(const treejuce::String& str);
+treejuce::String gl_type_to_string(GLenum arg);
+
 TREEFACE_NAMESPACE_END
 
 #endif // TREEFACE_STRING_CAST_H

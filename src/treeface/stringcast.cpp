@@ -325,4 +325,99 @@ treejuce::String gl_internal_format_to_string(GLenum arg)
     }
 }
 
+GLenum gl_type_from_string(const treejuce::String& str)
+{
+    if (str.compareIgnoreCase("float"))                              return GL_FLOAT                        ;
+    else if (str.compareIgnoreCase("float_vec2"))                    return GL_FLOAT_VEC2                   ;
+    else if (str.compareIgnoreCase("float_vec3"))                    return GL_FLOAT_VEC3                   ;
+    else if (str.compareIgnoreCase("float_vec4"))                    return GL_FLOAT_VEC4                   ;
+    else if (str.compareIgnoreCase("int"))                           return GL_INT                          ;
+    else if (str.compareIgnoreCase("int_vec2"))                      return GL_INT_VEC2                     ;
+    else if (str.compareIgnoreCase("int_vec3"))                      return GL_INT_VEC3                     ;
+    else if (str.compareIgnoreCase("int_vec4"))                      return GL_INT_VEC4                     ;
+    else if (str.compareIgnoreCase("unsigned_int"))                  return GL_UNSIGNED_INT                 ;
+    else if (str.compareIgnoreCase("unsigned_int_vec2"))             return GL_UNSIGNED_INT_VEC2            ;
+    else if (str.compareIgnoreCase("unsigned_int_vec3"))             return GL_UNSIGNED_INT_VEC3            ;
+    else if (str.compareIgnoreCase("unsigned_int_vec4"))             return GL_UNSIGNED_INT_VEC4            ;
+    else if (str.compareIgnoreCase("bool"))                          return GL_BOOL                         ;
+    else if (str.compareIgnoreCase("bool_vec2"))                     return GL_BOOL_VEC2                    ;
+    else if (str.compareIgnoreCase("bool_vec3"))                     return GL_BOOL_VEC3                    ;
+    else if (str.compareIgnoreCase("bool_vec4"))                     return GL_BOOL_VEC4                    ;
+    else if (str.compareIgnoreCase("float_mat2"))                    return GL_FLOAT_MAT2                   ;
+    else if (str.compareIgnoreCase("float_mat3"))                    return GL_FLOAT_MAT3                   ;
+    else if (str.compareIgnoreCase("float_mat4"))                    return GL_FLOAT_MAT4                   ;
+    else if (str.compareIgnoreCase("float_mat2x3"))                  return GL_FLOAT_MAT2x3                 ;
+    else if (str.compareIgnoreCase("float_mat2x4"))                  return GL_FLOAT_MAT2x4                 ;
+    else if (str.compareIgnoreCase("float_mat3x2"))                  return GL_FLOAT_MAT3x2                 ;
+    else if (str.compareIgnoreCase("float_mat3x4"))                  return GL_FLOAT_MAT3x4                 ;
+    else if (str.compareIgnoreCase("float_mat4x2"))                  return GL_FLOAT_MAT4x2                 ;
+    else if (str.compareIgnoreCase("float_mat4x3"))                  return GL_FLOAT_MAT4x3                 ;
+    else if (str.compareIgnoreCase("sampler_2d"))                    return GL_SAMPLER_2D                   ;
+    else if (str.compareIgnoreCase("sampler_3d"))                    return GL_SAMPLER_3D                   ;
+    else if (str.compareIgnoreCase("sampler_cube"))                  return GL_SAMPLER_CUBE                 ;
+    else if (str.compareIgnoreCase("sampler_2d_shadow"))             return GL_SAMPLER_2D_SHADOW            ;
+    else if (str.compareIgnoreCase("sampler_2d_array"))              return GL_SAMPLER_2D_ARRAY             ;
+    else if (str.compareIgnoreCase("sampler_2d_array_shadow"))       return GL_SAMPLER_2D_ARRAY_SHADOW      ;
+    else if (str.compareIgnoreCase("sampler_cube_shadow"))           return GL_SAMPLER_CUBE_SHADOW          ;
+    else if (str.compareIgnoreCase("int_sampler_2d"))                return GL_INT_SAMPLER_2D               ;
+    else if (str.compareIgnoreCase("int_sampler_3d"))                return GL_INT_SAMPLER_3D               ;
+    else if (str.compareIgnoreCase("int_sampler_cube"))              return GL_INT_SAMPLER_CUBE             ;
+    else if (str.compareIgnoreCase("int_sampler_2d_array"))          return GL_INT_SAMPLER_2D_ARRAY         ;
+    else if (str.compareIgnoreCase("unsigned_int_sampler_2d"))       return GL_UNSIGNED_INT_SAMPLER_2D      ;
+    else if (str.compareIgnoreCase("unsigned_int_sampler_3d"))       return GL_UNSIGNED_INT_SAMPLER_3D      ;
+    else if (str.compareIgnoreCase("unsigned_int_sampler_cube"))     return GL_UNSIGNED_INT_SAMPLER_CUBE    ;
+    else if (str.compareIgnoreCase("unsigned_int_sampler_2d_array")) return GL_UNSIGNED_INT_SAMPLER_2D_ARRAY;
+    else die("invalid gl type string representation: %s", str.toRawUTF8());
+}
+
+treejuce::String gl_type_to_string(GLenum arg)
+{
+    switch (arg)
+    {
+    case GL_FLOAT                        : return "float";
+    case GL_FLOAT_VEC2                   : return "float_vec2";
+    case GL_FLOAT_VEC3                   : return "float_vec3";
+    case GL_FLOAT_VEC4                   : return "float_vec4";
+    case GL_INT                          : return "int";
+    case GL_INT_VEC2                     : return "int_vec2";
+    case GL_INT_VEC3                     : return "int_vec3";
+    case GL_INT_VEC4                     : return "int_vec4";
+    case GL_UNSIGNED_INT                 : return "unsigned_int";
+    case GL_UNSIGNED_INT_VEC2            : return "unsigned_int_vec2";
+    case GL_UNSIGNED_INT_VEC3            : return "unsigned_int_vec3";
+    case GL_UNSIGNED_INT_VEC4            : return "unsigned_int_vec4";
+    case GL_BOOL                         : return "bool";
+    case GL_BOOL_VEC2                    : return "bool_vec2";
+    case GL_BOOL_VEC3                    : return "bool_vec3";
+    case GL_BOOL_VEC4                    : return "bool_vec4";
+    case GL_FLOAT_MAT2                   : return "float_mat2";
+    case GL_FLOAT_MAT3                   : return "float_mat3";
+    case GL_FLOAT_MAT4                   : return "float_mat4";
+    case GL_FLOAT_MAT2x3                 : return "float_mat2x3";
+    case GL_FLOAT_MAT2x4                 : return "float_mat2x4";
+    case GL_FLOAT_MAT3x2                 : return "float_mat3x2";
+    case GL_FLOAT_MAT3x4                 : return "float_mat3x4";
+    case GL_FLOAT_MAT4x2                 : return "float_mat4x2";
+    case GL_FLOAT_MAT4x3                 : return "float_mat4x3";
+    case GL_SAMPLER_2D                   : return "sampler_2d";
+    case GL_SAMPLER_3D                   : return "sampler_3d";
+    case GL_SAMPLER_CUBE                 : return "sampler_cube";
+    case GL_SAMPLER_2D_SHADOW            : return "sampler_2d_shadow";
+    case GL_SAMPLER_2D_ARRAY             : return "sampler_2d_array";
+    case GL_SAMPLER_2D_ARRAY_SHADOW      : return "sampler_2d_array_shadow";
+    case GL_SAMPLER_CUBE_SHADOW          : return "sampler_cube_shadow";
+    case GL_INT_SAMPLER_2D               : return "int_sampler_2d";
+    case GL_INT_SAMPLER_3D               : return "int_sampler_3d";
+    case GL_INT_SAMPLER_CUBE             : return "int_sampler_cube";
+    case GL_INT_SAMPLER_2D_ARRAY         : return "int_sampler_2d_array";
+    case GL_UNSIGNED_INT_SAMPLER_2D      : return "unsigned_int_sampler_2d";
+    case GL_UNSIGNED_INT_SAMPLER_3D      : return "unsigned_int_sampler_3d";
+    case GL_UNSIGNED_INT_SAMPLER_CUBE    : return "unsigned_int_sampler_cube";
+    case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY: return "unsigned_int_sampler_2d_array";
+    default:
+        die("not a valid GL type enum: %x", arg);
+    }
+}
+
+
 TREEFACE_NAMESPACE_END
