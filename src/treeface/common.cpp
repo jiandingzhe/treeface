@@ -21,7 +21,7 @@ void die(StringRef format, ...)
     vsnprintf(buffer, 65536, (const char*)(format), args);
     va_end(args);
 
-    Logger::writeToLog("DIE: " + String(buffer)+"\n");
+    Logger::writeToLog("DIE: " + String(buffer));
 
     abort();
 }
