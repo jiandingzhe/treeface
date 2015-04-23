@@ -52,9 +52,12 @@ HostVertexAttrib attr_desc_color{"in_color", 4, GL_FLOAT, sizeof(float)*4, false
 
 const char* src_vertex =
         "#version 130\n"
+        ""
         "in vec4 in_position;\n"
         "in vec4 in_color;\n"
+        ""
         "out vec4 frag_color;\n"
+        ""
         "uniform bool is_active;\n"
         "uniform mat4 matrix;\n"
         ""
@@ -216,17 +219,21 @@ struct WidgetRenderer
                     prev_program->unuse();
 
                 prev_program = program;
-                program->use();
-                i_matrix    = program->get_uniform_index_by_name("matrix");
-                i_is_active = program->get_uniform_index_by_name("is_active");
+
+//                program->use();
+
+                i_matrix    = program->get_uniform_index("matrix");
+                i_is_active = program->get_uniform_index("is_active");
             }
 
+//            program->instant_set_uniform(i_is_active, widget->is_active);
+//            program->instant_set_uniform(i_matrix, widget->trans);
+            program->set_uniform(i_matrix, widget->trans);
+            program->set_uniform(i_is_active, widget->is_active);
+            program->use();
 
             widget->array.use();
             widget->geom_buffer->use();
-
-            program->instant_set_uniform(i_matrix, widget->trans);
-            program->instant_set_uniform(i_is_active, widget->is_active);
 
             widget->geom_buffer->draw(GL_TRIANGLES);
 
@@ -252,21 +259,21 @@ vector<unsigned short> index_rect = {
     2, 3, 1
 };
 
-vector<ColoredPoint> vertex_hex = {
-    {0.5, 1, 0, 1, 1, 0, 0, 1},
-    {1, 0, 0, 1, 1, 0, 0, 1},
-    {0.5, -1, 0, 1, 1, 0, 0, 1},
-    {-0.5, -1, 0, 1, 1, 0, 0, 1},
-    {-1, 0, 0, 1, 1, 0, 0, 1},
-    {-0.5, 1, 0, 1, 1, 0, 0, 1}
-};
+//vector<ColoredPoint> vertex_hex = {
+//    {0.5, 1, 0, 1, 1, 0, 0, 1},
+//    {1, 0, 0, 1, 1, 0, 0, 1},
+//    {0.5, -1, 0, 1, 1, 0, 0, 1},
+//    {-0.5, -1, 0, 1, 1, 0, 0, 1},
+//    {-1, 0, 0, 1, 1, 0, 0, 1},
+//    {-0.5, 1, 0, 1, 1, 0, 0, 1}
+//};
 
-vector<unsigned short> index_hex = {
-    0, 2, 1,
-    0, 3, 2,
-    0, 5, 3,
-    5, 4, 3
-};
+//vector<unsigned short> index_hex = {
+//    0, 2, 1,
+//    0, 3, 2,
+//    0, 5, 3,
+//    5, 4, 3
+//};
 
 float iden_mat[16] = {1, 0, 0, 0,
                       0, 1, 0, 0,

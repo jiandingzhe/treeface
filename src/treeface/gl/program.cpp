@@ -1,4 +1,8 @@
 #include "treeface/gl/program.h"
+#include "treeface/gl/type.h"
+#include "treeface/gl/vertexattrib.h"
+
+#include "treeface/stringcast.h"
 
 #include <treejuce/Logger.h>
 #include <treejuce/StringRef.h>
@@ -10,7 +14,228 @@ using namespace treejuce;
 
 TREEFACE_NAMESPACE_BEGIN
 
-Program::Program()
+typedef void (*upload_func_t)(GLint uni, const void* data);
+
+void upload_bool(GLint uni, const void* data)
+{
+    GLboolean value = *((GLboolean*) &data);
+    glUniform1i(uni, value);
+}
+
+void upload_int(GLint uni, const void* data)
+{
+    GLint value = *((GLint*) &data);
+    glUniform1i(uni, value);
+}
+
+void upload_uint(GLint uni, const void* data)
+{
+    GLuint value = *((GLuint*) &data);
+    glUniform1ui(uni, value);
+}
+
+void upload_float(GLint uni, const void* data)
+{
+    float value = *((float*) &data);
+    glUniform1f(uni, value);
+}
+
+void upload_vec4f(GLint uni, const void* data)
+{
+    glUniform4fv(uni, 1, (float*)data);
+}
+
+void upload_mat4f(GLint uni, const void* data)
+{
+    glUniformMatrix4fv(uni, 1, false, (float*)data);
+}
+
+struct Uniform
+{
+    Uniform(const treejuce::String& name, GLsizei n_elem, GLenum type);
+    ~Uniform();
+
+    Uniform(Uniform&& other):
+        info(other.info),
+        changed(other.changed),
+        size(other.size),
+        store(other.store),
+        uploader(other.uploader)
+    {
+        other.store = nullptr;
+    }
+
+    Uniform& operator = (Uniform&& other)
+    {
+        info = other.info;
+        changed = other.changed;
+        size = other.size;
+        store = other.store;
+        uploader = other.uploader;
+
+        other.store = nullptr;
+
+        return *this;
+    }
+
+    JUCE_DECLARE_NON_COPYABLE(Uniform);
+
+    inline void set(bool value) NOEXCEPT
+    {
+        jassert(info.n_elem == 1);
+        jassert(info.type == GL_BOOL);
+        store = reinterpret_cast<void*>(value);
+        changed = true;
+    }
+
+    inline void set(GLint value) NOEXCEPT
+    {
+        jassert(info.n_elem == 1);
+        jassert(info.type == GL_BOOL ||
+                info.type == GL_INT ||
+                info.type == GL_SAMPLER_2D ||
+                info.type == GL_SAMPLER_3D ||
+                info.type == GL_SAMPLER_CUBE ||
+                info.type == GL_SAMPLER_2D_SHADOW ||
+                info.type == GL_SAMPLER_2D_ARRAY ||
+                info.type == GL_SAMPLER_2D_ARRAY_SHADOW ||
+                info.type == GL_SAMPLER_CUBE_SHADOW);
+        store = reinterpret_cast<void*>(value);
+        changed = true;
+    }
+
+    inline void set(GLuint value) NOEXCEPT
+    {
+        jassert(info.n_elem == 1);
+        jassert(info.type == GL_UNSIGNED_INT);
+        store = reinterpret_cast<void*>(value);
+        changed = true;
+    }
+
+    inline void set(float value) NOEXCEPT
+    {
+        jassert(info.n_elem == 1);
+        jassert(info.type == GL_FLOAT);
+        treejuce::int32* value_p = (treejuce::int32*) &value;
+        store = reinterpret_cast<void*>(*value_p);
+        changed = true;
+    }
+
+    inline void set(const Sampler& value) NOEXCEPT
+    {
+        jassert(info.n_elem == 1);
+        jassert(info.type == GL_SAMPLER_2D ||
+                info.type == GL_SAMPLER_3D ||
+                info.type == GL_SAMPLER_CUBE ||
+                info.type == GL_SAMPLER_2D_SHADOW ||
+                info.type == GL_SAMPLER_2D_ARRAY ||
+                info.type == GL_SAMPLER_2D_ARRAY_SHADOW ||
+                info.type == GL_SAMPLER_CUBE_SHADOW);
+        store = reinterpret_cast<void*>(value.m_sampler);
+        changed = true;
+    }
+
+    inline void set(const Vec4f& value) NOEXCEPT
+    {
+        jassert(info.n_elem == 1);
+        jassert(info.type == GL_FLOAT_VEC4);
+        memcpy(store, &value, sizeof(Vec4f));
+        changed = true;
+    }
+
+    inline void set(const Mat4f& value) NOEXCEPT
+    {
+        jassert(info.n_elem == 1);
+        jassert(info.type == GL_FLOAT_MAT4);
+        memcpy(store, &value, sizeof(Mat4f));
+        changed = true;
+    }
+
+    inline void upload_data(GLint uni_idx)
+    {
+        if (changed)
+        {
+            uploader(uni_idx, store);
+            changed = false;
+        }
+    }
+
+    VertexAttrib info;
+    bool changed           = false;
+    treejuce::uint32 size  = 0;
+    void* store            = nullptr;
+    upload_func_t uploader = nullptr;
+};
+
+
+Uniform::Uniform(const treejuce::String& name, GLsizei n_elem, GLenum type)
+    : info({name, n_elem, type})
+    , size(n_elem * size_of_gl_type(type))
+{
+    switch(type)
+    {
+    case GL_BOOL:
+        if (n_elem != 1)
+            die("uniform bool %d array not supported", n_elem);
+        uploader = upload_bool;
+        break;
+    case GL_INT:
+        if (n_elem != 1)
+            die("uniform int %d array not supported", n_elem);
+        uploader = upload_int;
+        break;
+    case GL_UNSIGNED_INT:
+        if (n_elem != 1)
+            die("uniform uint %d array not supported", n_elem);
+        uploader = upload_uint;
+        break;
+    case GL_FLOAT:
+        if (n_elem != 1)
+            die("uniform float %d array not supported", n_elem);
+        uploader = upload_float;
+        break;
+    case GL_FLOAT_VEC4:
+        if (n_elem != 1)
+            die("uniform vec4 %d array not supported", n_elem);
+        uploader = upload_float;
+        break;
+    case GL_FLOAT_MAT4:
+        if (n_elem != 1)
+            die("uniform mat4 %d array not supported", n_elem);
+        uploader = upload_mat4f;
+        break;
+    case GL_SAMPLER_2D:
+        if (n_elem != 1)
+            die("number of sampler uniform not one");
+        uploader = upload_int;
+        break;
+    default:
+        die("unsupported program uniform type: " + gl_type_to_string(type));
+    }
+
+    if (size > sizeof(void*))
+    {
+        store = malloc(size);
+    }
+}
+
+Uniform::~Uniform()
+{
+    if(size > sizeof(void*) && store != nullptr)
+        free(store);
+}
+
+struct Program::Impl
+{
+    treejuce::Array<VertexAttrib> attr_info;
+    treejuce::HashMap<treejuce::String, treejuce::uint16> attr_idx_by_name;
+
+    bool uni_changed = false;
+    treejuce::Array<Uniform> uni_store;
+    treejuce::HashMap<treejuce::String, treejuce::uint16> uni_idx_by_name;
+};
+
+Program::Program(): m_impl(new Impl())
 {
     m_program = glCreateProgram();
     if (m_program == 0)
@@ -35,6 +260,9 @@ Program::~Program()
 
     if (m_shader_frag)
         glDeleteShader(m_shader_frag);
+
+    if (m_impl)
+        delete m_impl;
 }
 
 treejuce::Result Program::build(const char* src_vert, const char* src_frag)
@@ -98,8 +326,8 @@ treejuce::Result Program::build(const char* src_vert, const char* src_frag)
         if (attr_name_len >= 255)
             die("attribute " + String(i_attr) + " name is too long");
 
-        m_attr_info.add({treejuce::String(attr_name), attr_size, attr_type});
-        m_attr_idx_by_name.set(treejuce::String(attr_name), i_attr);
+        m_impl->attr_info.add({treejuce::String(attr_name), attr_size, attr_type});
+        m_impl->attr_idx_by_name.set(treejuce::String(attr_name), i_attr);
     }
 
     // extract program uniforms
@@ -124,11 +352,25 @@ treejuce::Result Program::build(const char* src_vert, const char* src_frag)
         if (uni_name_len >= 255)
             die("uniform %d name is too long", i_uni);
 
-        m_uni_info.add({uni_name, uni_size, uni_type});
-        m_uni_idx_by_name.set(uni_name, i_uni);
+        m_impl->uni_store.add({uni_name, uni_size, uni_type});
+        m_impl->uni_idx_by_name.set(uni_name, i_uni);
     }
 
     return treejuce::Result::ok();
+}
+
+void Program::use() NOEXCEPT
+{
+    glUseProgram(m_program);
+
+    if (m_impl->uni_changed)
+    {
+        for (int i_uni = 0; i_uni < m_impl->uni_store.size(); i_uni++)
+        {
+            m_impl->uni_store.getReference(i_uni).upload_data(i_uni);
+        }
+        m_impl->uni_changed = false;
+    }
 }
 
 treejuce::Result Program::fetch_shader_error_log(GLuint shader)
@@ -199,20 +441,122 @@ treejuce::Result Program::fetch_program_error_log()
     }
 }
 
-int Program::get_attribute_index_by_name(const treejuce::String& name) const NOEXCEPT
+void Program::instant_set_uniform(GLint uni, GLint value) const NOEXCEPT
 {
-    if (m_attr_idx_by_name.contains(name))
-        return m_attr_idx_by_name[name];
+    jassert(m_impl->uni_store.getReference(uni).size == 1);
+    jassert(m_impl->uni_store.getReference(uni).info.type == GL_INT ||
+            m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_2D ||
+            m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_3D ||
+            m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_CUBE ||
+            m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_2D_SHADOW ||
+            m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_2D_ARRAY ||
+            m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_2D_ARRAY_SHADOW ||
+            m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_CUBE_SHADOW);
+    printf("upload int %d to uniform %d\n", value, uni);
+    glUniform1i(uni, value);
+}
+
+void Program::instant_set_uniform(GLint uni, GLuint value) const NOEXCEPT
+{
+    jassert(m_impl->uni_store.getReference(uni).size == 1);
+    jassert(m_impl->uni_store.getReference(uni).info.type == GL_UNSIGNED_INT);
+    glUniform1ui(uni, value);
+}
+
+void Program::instant_set_uniform(GLint uni, GLfloat value) const NOEXCEPT
+{
+    jassert(m_impl->uni_store.getReference(uni).size == 1);
+    jassert(m_impl->uni_store.getReference(uni).info.type == GL_FLOAT);
+    glUniform1f(uni, value);
+}
+
+void Program::instant_set_uniform(GLint uni, const Sampler& sampler) const NOEXCEPT
+{
+    jassert(m_impl->uni_store.getReference(uni).size == 1);
+    jassert(m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_2D ||
+            m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_3D ||
+            m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_CUBE ||
+            m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_2D_SHADOW ||
+            m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_2D_ARRAY ||
+            m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_2D_ARRAY_SHADOW ||
+            m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_CUBE_SHADOW);
+    glUniform1i(uni, sampler.m_sampler);
+}
+
+void Program::instant_set_uniform(GLint uni, const Vec4f& value) const NOEXCEPT
+{
+    jassert(m_impl->uni_store.getReference(uni).size == 1);
+    jassert(m_impl->uni_store.getReference(uni).info.type == GL_FLOAT_VEC4);
+    glUniform4fv(uni, 1, (const float*)&value);
+}
+
+void Program::instant_set_uniform(GLint uni, const Mat4f& value) const NOEXCEPT
+{
+    jassert(m_impl->uni_store.getReference(uni).size == 1);
+    jassert(m_impl->uni_store.getReference(uni).info.type == GL_FLOAT_MAT4);
+    glUniformMatrix4fv(uni, 1, false, (const float*) &value);
+}
+
+void Program::set_uniform(GLint i_uni, GLint value) NOEXCEPT
+{
+    m_impl->uni_store.getReference(i_uni).set(value);
+    m_impl->uni_changed = true;
+}
+
+void Program::set_uniform(GLint i_uni, GLuint value) NOEXCEPT
+{
+    m_impl->uni_store.getReference(i_uni).set(value);
+    m_impl->uni_changed = true;
+}
+
+void Program::set_uniform(GLint i_uni, float value) NOEXCEPT
+{
+    m_impl->uni_store.getReference(i_uni).set(value);
+    m_impl->uni_changed = true;
+}
+
+void Program::set_uniform(GLint i_uni, const Sampler& value) NOEXCEPT
+{
+    m_impl->uni_store.getReference(i_uni).set(value);
+    m_impl->uni_changed = true;
+}
+
+void Program::set_uniform(GLint i_uni, const Vec4f& value) NOEXCEPT
+{
+    m_impl->uni_store.getReference(i_uni).set(value);
+    m_impl->uni_changed = true;
+}
+
+void Program::set_uniform(GLint i_uni, const Mat4f& value) NOEXCEPT
+{
+    m_impl->uni_store.getReference(i_uni).set(value);
+    m_impl->uni_changed = true;
+}
+
+int Program::get_attribute_index(const treejuce::String& name) const NOEXCEPT
+{
+    if (m_impl->attr_idx_by_name.contains(name))
+        return m_impl->attr_idx_by_name[name];
     else
         return -1;
 }
 
-int Program::get_uniform_index_by_name(const treejuce::String& name) const NOEXCEPT
+const VertexAttrib& Program::get_attribute_info(int i_attr) const NOEXCEPT
 {
-    if (m_uni_idx_by_name.contains(name))
-        return m_uni_idx_by_name[name];
+    return m_impl->attr_info.getReference(i_attr);
+}
+
+int Program::get_uniform_index(const treejuce::String& name) const NOEXCEPT
+{
+    if (m_impl->uni_idx_by_name.contains(name))
+        return m_impl->uni_idx_by_name[name];
     else
         return -1;
+}
+
+const VertexAttrib& Program::get_uniform_info(int i_uni) const NOEXCEPT
+{
+    return m_impl->uni_store.getReference(i_uni).info;
 }
 
 TREEFACE_NAMESPACE_END

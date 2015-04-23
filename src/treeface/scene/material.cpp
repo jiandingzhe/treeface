@@ -114,7 +114,7 @@ treejuce::Result Material::build(const treejuce::var& root_node)
             String tex_name = tex_key.toString();
 
             // create texture layer
-            int uni_idx = program->get_uniform_index_by_name(tex_name);
+            int uni_idx = program->get_uniform_index(tex_name);
             if (uni_idx < 0)
                 return Result::fail("program don't have texture uniform named "+tex_name);
 

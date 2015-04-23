@@ -28,10 +28,10 @@ void _build_one_(HostVertexAttrib attr,
                  GLsizei stride,
                  const Program* program)
 {
-    int attr_idx = program->get_attribute_index_by_name(attr.name);
+    int attr_idx = program->get_attribute_index(attr.name);
     if (attr_idx != -1)
     {
-        Logger::outputDebugString("connect with attr "+attr.name+" at "+String(attr_idx)+", "+" size "+String(attr.n_elem)+" offset "+String(uint64(attr.offset)));
+        Logger::outputDebugString("connect with attr "+attr.name+" at "+String(attr_idx)+", size "+String(attr.n_elem)+" offset "+String(uint64(attr.offset)));
         glEnableVertexAttribArray(attr_idx);
         glVertexAttribPointer(attr_idx,
                               attr.n_elem,

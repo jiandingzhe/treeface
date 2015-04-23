@@ -148,7 +148,7 @@ void build_up_gl()
         if (!re)
             die("%s", re.getErrorMessage().toRawUTF8());
     }
-    program_simple_uni = program_simple->get_uniform_index_by_name("matrix");
+    program_simple_uni = program_simple->get_uniform_index("matrix");
     if (program_simple_uni == -1)
         die("failed to get uniform");
 
@@ -188,7 +188,7 @@ void build_up_gl()
 
 void main_loop(SDL_Window* window)
 {
-    int uni_tex = program_tex->get_uniform_index_by_name("tex_sampler");
+    int uni_tex = program_tex->get_uniform_index("tex_sampler");
     Logger::outputDebugString("set to texture uniform: " + String(uni_tex));
 
     glActiveTexture(GL_TEXTURE0);

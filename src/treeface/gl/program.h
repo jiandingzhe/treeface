@@ -1,13 +1,14 @@
 #ifndef TREEFACE_GL_PROGRAM_H
 #define TREEFACE_GL_PROGRAM_H
 
+#include "treeface/gl/sampler.h"
+
 #include "treeface/common.h"
 #include "treeface/math.h"
-#include "treeface/gl/sampler.h"
-#include "treeface/gl/vertexattrib.h"
 
 #include <treejuce/Array.h>
 #include <treejuce/HashMap.h>
+#include <treejuce/Object.h>
 #include <treejuce/Result.h>
 #include <treejuce/String.h>
 
@@ -16,7 +17,9 @@
 TREEFACE_NAMESPACE_BEGIN
 
 class Material;
+class Uniform;
 class VertexArray;
+class VertexAttrib;
 
 class Program: public treejuce::Object
 {
@@ -49,62 +52,26 @@ public:
         return compiled_and_linked;
     }
 
-    inline void use() const NOEXCEPT
-    {
-        glUseProgram(m_program);
-    }
+    void use() NOEXCEPT;
 
     inline void unuse() const NOEXCEPT
     {
         glUseProgram(0);
     }
 
-    inline void instant_set_uniform(GLint uni, GLint value) const NOEXCEPT
-    {
-        jassert(m_uni_info[uni].size == 1);
-        jassert(m_uni_info[uni].type == GL_INT);
-        glUniform1i(uni, value);
-    }
+    void instant_set_uniform(GLint uni, GLint value) const NOEXCEPT;
+    void instant_set_uniform(GLint uni, GLuint value) const NOEXCEPT;
+    void instant_set_uniform(GLint uni, GLfloat value) const NOEXCEPT;
+    void instant_set_uniform(GLint uni, const Sampler& sampler) const NOEXCEPT;
+    void instant_set_uniform(GLint uni, const Vec4f& value) const NOEXCEPT;
+    void instant_set_uniform(GLint uni, const Mat4f& value) const NOEXCEPT;
 
-    inline void instant_set_uniform(GLint uni, GLuint value) const NOEXCEPT
-    {
-        jassert(m_uni_info[uni].size == 1);
-        jassert(m_uni_info[uni].type == GL_UNSIGNED_INT);
-        glUniform1ui(uni, value);
-    }
-
-    inline void instant_set_uniform(GLint uni, GLfloat value) const NOEXCEPT
-    {
-        jassert(m_uni_info[uni].size == 1);
-        glUniform1f(uni, value);
-    }
-
-    inline void instant_set_uniform(GLint uni, const Sampler& sampler) const NOEXCEPT
-    {
-        jassert(m_uni_info[uni].size == 1);
-        jassert(m_uni_info[uni].type == GL_SAMPLER_2D ||
-                m_uni_info[uni].type == GL_SAMPLER_3D ||
-                m_uni_info[uni].type == GL_SAMPLER_CUBE ||
-                m_uni_info[uni].type == GL_SAMPLER_2D_SHADOW ||
-                m_uni_info[uni].type == GL_SAMPLER_2D_ARRAY ||
-                m_uni_info[uni].type == GL_SAMPLER_2D_ARRAY_SHADOW ||
-                m_uni_info[uni].type == GL_SAMPLER_CUBE_SHADOW);
-        glUniform1i(uni, sampler.m_sampler);
-    }
-
-    inline void instant_set_uniform(GLint uni, const Vec4f& value) const NOEXCEPT
-    {
-        jassert(m_uni_info[uni].size == 1);
-        jassert(m_uni_info[uni].type == GL_FLOAT_VEC4);
-        glUniform4fv(uni, 1, (const float*)&value);
-    }
-
-    inline void instant_set_uniform(GLint uni, const Mat4f& value) const NOEXCEPT
-    {
-        jassert(m_uni_info[uni].size == 1);
-        jassert(m_uni_info[uni].type == GL_FLOAT_MAT4);
-        glUniformMatrix4fv(uni, 1, false, (const float*) &value);
-    }
+    void set_uniform(GLint i_uni, GLint value) NOEXCEPT;
+    void set_uniform(GLint i_uni, GLuint value) NOEXCEPT;
+    void set_uniform(GLint i_uni, float value) NOEXCEPT;
+    void set_uniform(GLint i_uni, const Sampler& value) NOEXCEPT;
+    void set_uniform(GLint i_uni, const Vec4f& value) NOEXCEPT;
+    void set_uniform(GLint i_uni, const Mat4f& value) NOEXCEPT;
 
     /**
      * get attribute index by name
@@ -113,12 +80,9 @@ public:
      * @return attribute index. -1 will be returned if the name does not exist
      * in program.
      */
-    int get_attribute_index_by_name(const treejuce::String& name) const NOEXCEPT;
+    int get_attribute_index(const treejuce::String& name) const NOEXCEPT;
 
-    const VertexAttrib& get_attribute_info_by_index(int i_attr) const NOEXCEPT
-    {
-        return m_attr_info.getReference(i_attr);
-    }
+    const VertexAttrib& get_attribute_info(int i_attr) const NOEXCEPT;
 
     /**
      * get uniform index by name
@@ -127,14 +91,13 @@ public:
      * @return uniform index. -1 will be returned if the name does not exist
      * in program.
      */
-    int get_uniform_index_by_name(const treejuce::String& name) const NOEXCEPT;
+    int get_uniform_index(const treejuce::String& name) const NOEXCEPT;
 
-    const VertexAttrib& get_uniform_info_by_index(int i_uni)
-    {
-        return m_uni_info.getReference(i_uni);
-    }
+    const VertexAttrib& get_uniform_info(int i_uni) const NOEXCEPT;
 
 protected:
+    struct Impl;
+
     treejuce::Result fetch_shader_error_log(GLuint shader);
     treejuce::Result fetch_program_error_log();
 
@@ -144,11 +107,7 @@ protected:
 
     bool compiled_and_linked = false;
 
-    treejuce::Array<VertexAttrib> m_attr_info;
-    treejuce::HashMap<treejuce::String, treejuce::uint16> m_attr_idx_by_name;
-
-    treejuce::Array<VertexAttrib> m_uni_info;
-    treejuce::HashMap<treejuce::String, treejuce::uint16> m_uni_idx_by_name;
+    Impl* m_impl = nullptr;
 };
 
 
