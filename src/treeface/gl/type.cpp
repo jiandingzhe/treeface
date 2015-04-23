@@ -8,6 +8,8 @@ int size_of_gl_type(GLenum type)
 {
     switch (type)
     {
+    case GL_BOOL:
+        return sizeof(GLTypeHelper<GL_BOOL>::Type);
     case GL_BYTE:
         return sizeof(GLTypeHelper<GL_BYTE>::Type);
     case GL_UNSIGNED_BYTE:
@@ -44,6 +46,22 @@ int size_of_gl_type(GLenum type)
         return sizeof(GLTypeHelper<GL_FLOAT>::Type) * 4 * 4;
     case GL_DOUBLE:
         return sizeof(GLTypeHelper<GL_DOUBLE>::Type);
+    case GL_SAMPLER_2D                   :
+    case GL_SAMPLER_3D                   :
+    case GL_SAMPLER_CUBE                 :
+    case GL_SAMPLER_2D_SHADOW            :
+    case GL_SAMPLER_2D_ARRAY             :
+    case GL_SAMPLER_2D_ARRAY_SHADOW      :
+    case GL_SAMPLER_CUBE_SHADOW          :
+    case GL_INT_SAMPLER_2D               :
+    case GL_INT_SAMPLER_3D               :
+    case GL_INT_SAMPLER_CUBE             :
+    case GL_INT_SAMPLER_2D_ARRAY         :
+    case GL_UNSIGNED_INT_SAMPLER_2D      :
+    case GL_UNSIGNED_INT_SAMPLER_3D      :
+    case GL_UNSIGNED_INT_SAMPLER_CUBE    :
+    case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
+        return sizeof(GLTypeHelper<GL_INT>::Type);
     default:
         die("attempt to get type size using unknown/unsupported enum: %x", type);
     }

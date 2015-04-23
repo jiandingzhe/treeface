@@ -11,6 +11,12 @@ struct GLTypeHelper
 {};
 
 template<>
+struct GLTypeHelper<GL_BOOL>
+{
+    typedef GLboolean Type;
+};
+
+template<>
 struct GLTypeHelper<GL_BYTE>
 {
     typedef GLbyte Type;
