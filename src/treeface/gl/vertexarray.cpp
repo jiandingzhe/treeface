@@ -3,6 +3,8 @@
 #include "treeface/gl/vertexarray.h"
 #include "treeface/gl/vertexindexbuffer.h"
 
+#include "treeface/misc/vertextemplate.h"
+
 #include <treejuce/ArrayRef.h>
 #include <treejuce/Logger.h>
 #include <treejuce/StringArray.h>
@@ -47,27 +49,17 @@ void _build_one_(HostVertexAttrib attr,
 }
 
 treejuce::Result VertexArray::build(const VertexIndexBuffer* buffer,
-                                    ArrayRef<HostVertexAttrib> attribs,
+                                    const VertexTemplate& vertex_info,
                                     const Program* program)
 {
     glBindVertexArray(m_array);
     glBindBuffer(GL_ARRAY_BUFFER, buffer->m_buffer_vtx);
 
-    // calculate stride
-    GLsizei stride = 0;
-    for (int i = 0; i < attribs.size(); i++)
-    {
-        const HostVertexAttrib attr = attribs[i];
-        if (attr.offset != stride)
-            return Result::fail("attribute "+attr.name+" offset is "+String(attr.offset)+", but previously accumulated offset is "+String(stride));
-
-        stride += attr.n_elem * size_of_gl_type(attr.type);
-    }
-
     // set attribute binding for vertex array
-    for (int i = 0; i < attribs.size(); i++)
+    GLsizei stride = vertex_info.vertex_size();
+    for (int i = 0; i < vertex_info.n_attribs(); i++)
     {
-        _build_one_(attribs[i], stride, program);
+        _build_one_(vertex_info.get_attrib(i), stride, program);
     }
 
     glBindVertexArray(0);

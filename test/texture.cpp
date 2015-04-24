@@ -17,6 +17,8 @@
 #include "treeface/gl/vertexattrib.h"
 #include "treeface/gl/vertexindexbuffer.h"
 
+#include "treeface/misc/vertextemplate.h"
+
 using namespace treejuce;
 using namespace treeface;
 
@@ -165,22 +167,22 @@ void build_up_gl()
     texture->set_min_filter(GL_NEAREST);
     texture->set_mag_filter(GL_NEAREST);
 
-    HostVertexAttrib attr1 = {"position",     4, GL_FLOAT, 0,               false};
-    HostVertexAttrib attr2 = {"tex_position", 2, GL_FLOAT, sizeof(float)*4, false};
-    Array<HostVertexAttrib> attributes;
-    attributes.add(attr1);
-    attributes.add(attr2);
+    VertexAttrib attr1 = {"position",     4, GL_FLOAT};
+    VertexAttrib attr2 = {"tex_position", 2, GL_FLOAT};
+    VertexTemplate vtx_temp;
+    vtx_temp.add_attrib(attr1, false);
+    vtx_temp.add_attrib(attr2, false);
 
     vertex_array_tex = new VertexArray();
     {
-        Result re = vertex_array_tex->build(buffer, attributes, program_tex);
+        Result re = vertex_array_tex->build(buffer, vtx_temp, program_tex);
         if (!re)
             die("vertex array building failed: %s", re.getErrorMessage().toRawUTF8());
     }
 
     vertex_array_simple = new VertexArray();
     {
-        Result re = vertex_array_simple->build(buffer, attributes, program_simple);
+        Result re = vertex_array_simple->build(buffer, vtx_temp, program_simple);
         if (!re)
             die("vertex array building failed: %s", re.getErrorMessage().toRawUTF8());
     }
@@ -258,7 +260,7 @@ void main_loop(SDL_Window* window)
         buffer->unuse();
 
         SDL_GL_SwapWindow(window);
-        SDL_Delay(20);
+        SDL_Delay(200);
     }
 }
 

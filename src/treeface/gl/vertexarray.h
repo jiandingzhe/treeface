@@ -17,6 +17,8 @@ TREEFACE_NAMESPACE_BEGIN
 struct VertexIndexBuffer;
 struct Program;
 
+class VertexTemplate;
+
 struct VertexArray: public treejuce::Object
 {
     VertexArray();
@@ -34,7 +36,7 @@ struct VertexArray: public treejuce::Object
      * @return
      */
     treejuce::Result build(const VertexIndexBuffer* buffer,
-                           treejuce::ArrayRef<HostVertexAttrib> attribs,
+                           const VertexTemplate& vertex_info,
                            const Program* program);
 
     

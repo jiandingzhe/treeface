@@ -25,9 +25,12 @@ public:
 
     virtual ~Geometry();
 
+    void set_vertex_template();
+
     /**
-     * @brief set data. This method will mark geometry dirty.
+     * @brief set data.
      */
+    // NOTE: this is not thread-safe
     treejuce::Result build(const treejuce::var& geom_root_node) NOEXCEPT;
 
     /**

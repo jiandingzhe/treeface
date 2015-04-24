@@ -72,6 +72,13 @@ target_link_libraries(t_image_manager
     TestFramework
 )
 
+add_executable(t_vertex_template t_vertex_template.cpp)
+target_link_libraries(t_vertex_template
+    treeface
+    TestFramework
+    ${TREEJUCE_LIBRARIES}
+)
+
 add_executable(t_material t_material.cpp)
 target_link_libraries(t_material
     treeface

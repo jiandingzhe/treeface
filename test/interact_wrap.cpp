@@ -14,6 +14,7 @@
 #include "treeface/gl/vertexindexbuffer.h"
 #include "treeface/gl/vertexarray.h"
 #include "treeface/gl/vertexattrib.h"
+#include "treeface/misc/vertextemplate.h"
 
 #include <vector>
 #include <set>
@@ -47,8 +48,8 @@ struct ColoredPoint
     float a;
 };
 
-HostVertexAttrib attr_desc_position{"in_position", 4, GL_FLOAT, 0, false};
-HostVertexAttrib attr_desc_color{"in_color", 4, GL_FLOAT, sizeof(float)*4, false};
+VertexAttrib attr_desc_position{"in_position", 4, GL_FLOAT};
+VertexAttrib attr_desc_color{"in_color", 4, GL_FLOAT};
 
 const char* src_vertex =
         "#version 130\n"
@@ -117,10 +118,10 @@ struct Widget
 
     void bound_geometry_with_program()
     {
-        Array<HostVertexAttrib> attr_desc_list;
-        attr_desc_list.add(attr_desc_position);
-        attr_desc_list.add(attr_desc_color);
-        array.build(geom_buffer, attr_desc_list, program);
+        VertexTemplate vtx_temp;
+        vtx_temp.add_attrib(attr_desc_position, false);
+        vtx_temp.add_attrib(attr_desc_color, false);
+        array.build(geom_buffer, vtx_temp, program);
     }
 
     BBox bound;

@@ -54,7 +54,8 @@ FREE_IMAGE_FORMAT from_string<FREE_IMAGE_FORMAT>(const treejuce::String& string)
     else if (string.compareIgnoreCase("pict") == 0)   return FIF_PICT;
     else if (string.compareIgnoreCase("pic") == 0)    return FIF_PICT;
     else if (string.compareIgnoreCase("raw") == 0)    return FIF_RAW;
-    else                                              return FIF_UNKNOWN;
+    else
+        die("invalid FreeImage format string representation: %s", string.toRawUTF8());
 }
 
 template<>
@@ -99,7 +100,8 @@ treejuce::String to_string<FREE_IMAGE_FORMAT>(FREE_IMAGE_FORMAT arg)
     case FIF_PFM:     return "pfm";
     case FIF_PICT:    return "pct";
     case FIF_RAW:     return "raw";
-    default:          return "unknown";
+    default:
+        die("invlid FreeImage format enum: %x", arg);
     }
 }
 
@@ -168,7 +170,8 @@ FREE_IMAGE_COLOR_TYPE from_string<FREE_IMAGE_COLOR_TYPE>(const treejuce::String&
     else if (string.compareIgnoreCase("rgbalpha"))   return FIC_RGBALPHA;
     else if (string.compareIgnoreCase("rgba"))       return FIC_RGBALPHA;
     else if (string.compareIgnoreCase("cmyk"))       return FIC_CMYK;
-    else return FIC_RGBALPHA;
+    else
+        die("invalid FreeImage color type string representation: %s", string.toRawUTF8());
 }
 
 template<>
@@ -182,7 +185,8 @@ treejuce::String to_string<FREE_IMAGE_COLOR_TYPE>(FREE_IMAGE_COLOR_TYPE arg)
     case FIC_PALETTE:    return "palette";
     case FIC_RGBALPHA:   return "rgba";
     case FIC_CMYK:       return "cmyk";
-    default:             return "";
+    default:
+        die("invalid FreeImage color type enum: %x", arg);
     }
 }
 
@@ -251,7 +255,7 @@ GLenum gl_internal_format_from_string(const treejuce::String& string)
     else if (string.compareIgnoreCase("rgba32i") == 0)           return GL_RGBA32I;
     else if (string.compareIgnoreCase("rgba32ui") == 0)          return GL_RGBA32UI;
 
-    else die("not a valid gl internal format string representation: %s", string.toRawUTF8());
+    else die("invalid GL internal format string representation: %s", string.toRawUTF8());
 }
 
 treejuce::String gl_internal_format_to_string(GLenum arg)
@@ -321,7 +325,7 @@ treejuce::String gl_internal_format_to_string(GLenum arg)
     case GL_DEPTH24_STENCIL8:   return "depth24_stencil8";
     case GL_DEPTH32F_STENCIL8:  return "depth32f_stencil8";
     default:
-        die("not a valid gl internal color enum: %d", arg);
+        die("invalid GL internal color enum: %d", arg);
     }
 }
 
@@ -367,7 +371,7 @@ GLenum gl_type_from_string(const treejuce::String& str)
     else if (str.compareIgnoreCase("unsigned_int_sampler_3d"))       return GL_UNSIGNED_INT_SAMPLER_3D      ;
     else if (str.compareIgnoreCase("unsigned_int_sampler_cube"))     return GL_UNSIGNED_INT_SAMPLER_CUBE    ;
     else if (str.compareIgnoreCase("unsigned_int_sampler_2d_array")) return GL_UNSIGNED_INT_SAMPLER_2D_ARRAY;
-    else die("invalid gl type string representation: %s", str.toRawUTF8());
+    else die("invalid GL type string representation: %s", str.toRawUTF8());
 }
 
 treejuce::String gl_type_to_string(GLenum arg)
@@ -415,9 +419,37 @@ treejuce::String gl_type_to_string(GLenum arg)
     case GL_UNSIGNED_INT_SAMPLER_CUBE    : return "unsigned_int_sampler_cube";
     case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY: return "unsigned_int_sampler_2d_array";
     default:
-        die("not a valid GL type enum: %x", arg);
+        die("invalid GL type enum: %x", arg);
     }
 }
 
+GLenum gl_primitive_from_string(const treejuce::String& str)
+{
+    if      (str.compareIgnoreCase("points"        )) return GL_POINTS        ;
+    else if (str.compareIgnoreCase("lines"         )) return GL_LINES         ;
+    else if (str.compareIgnoreCase("line_strip"    )) return GL_LINE_STRIP    ;
+    else if (str.compareIgnoreCase("line_loop"     )) return GL_LINE_LOOP     ;
+    else if (str.compareIgnoreCase("triangles"     )) return GL_TRIANGLES     ;
+    else if (str.compareIgnoreCase("triangle_strip")) return GL_TRIANGLE_STRIP;
+    else if (str.compareIgnoreCase("triangle_fan"  )) return GL_TRIANGLE_FAN  ;
+    else
+        die("invalid GL primitive string representation: %s", str.toRawUTF8());
+}
+
+treejuce::String gl_primitive_to_string(GLenum arg)
+{
+    switch (arg)
+    {
+    case GL_POINTS        : return "points"        ;
+    case GL_LINES         : return "lines"         ;
+    case GL_LINE_STRIP    : return "line_strip"    ;
+    case GL_LINE_LOOP     : return "line_loop"     ;
+    case GL_TRIANGLES     : return "triangles"     ;
+    case GL_TRIANGLE_STRIP: return "triangle_strip";
+    case GL_TRIANGLE_FAN  : return "triangle_fan"  ;
+    default:
+        die("invalid GL primitive enum: %x", arg);
+    }
+}
 
 TREEFACE_NAMESPACE_END

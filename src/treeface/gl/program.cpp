@@ -55,12 +55,13 @@ struct Uniform
     Uniform(const treejuce::String& name, GLsizei n_elem, GLenum type);
     ~Uniform();
 
-    Uniform(Uniform&& other):
-        info(other.info),
-        changed(other.changed),
-        size(other.size),
-        store(other.store),
-        uploader(other.uploader)
+    Uniform(Uniform&& other)
+        : info(other.info)
+        , changed(other.changed)
+        , n_elem(other.n_elem)
+        , size(other.size)
+        , store(other.store)
+        , uploader(other.uploader)
     {
         other.store = nullptr;
     }
@@ -69,6 +70,7 @@ struct Uniform
     {
         info = other.info;
         changed = other.changed;
+        n_elem = other.n_elem;
         size = other.size;
         store = other.store;
         uploader = other.uploader;
@@ -162,6 +164,7 @@ struct Uniform
 
     VertexAttrib info;
     bool changed           = false;
+    treejuce::int32 n_elem = 0;
     treejuce::uint32 size  = 0;
     void* store            = nullptr;
     upload_func_t uploader = nullptr;
@@ -170,6 +173,7 @@ struct Uniform
 
 Uniform::Uniform(const treejuce::String& name, GLsizei n_elem, GLenum type)
     : info({name, n_elem, type})
+    , n_elem(n_elem)
     , size(n_elem * size_of_gl_type(type))
 {
     switch(type)
@@ -267,6 +271,7 @@ Program::~Program()
 
 treejuce::Result Program::build(const char* src_vert, const char* src_frag)
 {
+    DBG("build program");
     if (compiled_and_linked)
         return Result::fail("attempt to build program which is already built");
 
@@ -345,6 +350,8 @@ treejuce::Result Program::build(const char* src_vert, const char* src_frag)
         GLenum uni_type = 0;
         glGetActiveUniform(m_program, i_uni, 256,
                            &uni_name_len, &uni_size, &uni_type, uni_name);
+
+        DBG("  uniform "+String(i_uni)+": name "+String(uni_name)+", type "+gl_type_to_string(uni_type)+", size "+String(uni_size));
 
         if (uni_name_len == -1)
             die("failed to get info for uniform %d", i_uni);
@@ -443,7 +450,7 @@ treejuce::Result Program::fetch_program_error_log()
 
 void Program::instant_set_uniform(GLint uni, GLint value) const NOEXCEPT
 {
-    jassert(m_impl->uni_store.getReference(uni).size == 1);
+    jassert(m_impl->uni_store.getReference(uni).n_elem == 1);
     jassert(m_impl->uni_store.getReference(uni).info.type == GL_INT ||
             m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_2D ||
             m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_3D ||
@@ -452,27 +459,26 @@ void Program::instant_set_uniform(GLint uni, GLint value) const NOEXCEPT
             m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_2D_ARRAY ||
             m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_2D_ARRAY_SHADOW ||
             m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_CUBE_SHADOW);
-    printf("upload int %d to uniform %d\n", value, uni);
     glUniform1i(uni, value);
 }
 
 void Program::instant_set_uniform(GLint uni, GLuint value) const NOEXCEPT
 {
-    jassert(m_impl->uni_store.getReference(uni).size == 1);
+    jassert(m_impl->uni_store.getReference(uni).n_elem == 1);
     jassert(m_impl->uni_store.getReference(uni).info.type == GL_UNSIGNED_INT);
     glUniform1ui(uni, value);
 }
 
 void Program::instant_set_uniform(GLint uni, GLfloat value) const NOEXCEPT
 {
-    jassert(m_impl->uni_store.getReference(uni).size == 1);
+    jassert(m_impl->uni_store.getReference(uni).n_elem == 1);
     jassert(m_impl->uni_store.getReference(uni).info.type == GL_FLOAT);
     glUniform1f(uni, value);
 }
 
 void Program::instant_set_uniform(GLint uni, const Sampler& sampler) const NOEXCEPT
 {
-    jassert(m_impl->uni_store.getReference(uni).size == 1);
+    jassert(m_impl->uni_store.getReference(uni).n_elem == 1);
     jassert(m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_2D ||
             m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_3D ||
             m_impl->uni_store.getReference(uni).info.type == GL_SAMPLER_CUBE ||
@@ -485,14 +491,14 @@ void Program::instant_set_uniform(GLint uni, const Sampler& sampler) const NOEXC
 
 void Program::instant_set_uniform(GLint uni, const Vec4f& value) const NOEXCEPT
 {
-    jassert(m_impl->uni_store.getReference(uni).size == 1);
+    jassert(m_impl->uni_store.getReference(uni).n_elem == 1);
     jassert(m_impl->uni_store.getReference(uni).info.type == GL_FLOAT_VEC4);
     glUniform4fv(uni, 1, (const float*)&value);
 }
 
 void Program::instant_set_uniform(GLint uni, const Mat4f& value) const NOEXCEPT
 {
-    jassert(m_impl->uni_store.getReference(uni).size == 1);
+    jassert(m_impl->uni_store.getReference(uni).n_elem == 1);
     jassert(m_impl->uni_store.getReference(uni).info.type == GL_FLOAT_MAT4);
     glUniformMatrix4fv(uni, 1, false, (const float*) &value);
 }

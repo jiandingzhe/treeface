@@ -4,12 +4,17 @@
 #include "treeface/gl/vertexattrib.h"
 #include "treeface/gl/vertexindexbuffer.h"
 
+#include "treeface/misc/propertyvalidator.h"
+#include "treeface/misc/vertextemplate.h"
+
 #include <treejuce/Array.h>
+#include <treejuce/CriticalSection.h>
 #include <treejuce/DynamicObject.h>
 #include <treejuce/HashSet.h>
 #include <treejuce/Holder.h>
 #include <treejuce/NamedValueSet.h>
 #include <treejuce/Result.h>
+#include <treejuce/ScopedLock.h>
 #include <treejuce/Variant.h>
 
 using namespace treejuce;
@@ -19,6 +24,7 @@ TREEFACE_NAMESPACE_BEGIN
 struct Geometry::Impl
 {
     Array<HostVertexAttrib> attrs;
+    VertexTemplate vtx_template;
     VertexIndexBuffer buffer;
 };
 
@@ -32,28 +38,23 @@ Geometry::~Geometry()
         delete m_impl;
 }
 
-treejuce::Result _validate_root_kv_(const NamedValueSet& kv)
+#define KEY_ATTR "attributes"
+#define KEY_VTX  "vertices"
+#define KEY_IDX  "indices"
+#define KEY_PRIM "primitive"
+
+Result _validate_root_kv_(const NamedValueSet& kv)
 {
-    if (!kv.contains("attributes"))
-        return Result::fail("geometry node don't contain property \"attributes\"");
-    if (!kv.contains("vertex"))
-        return Result::fail("geometry node don't contain property \"vertex\"");
-    if (!kv.contains("index"))
-        return Result::fail("geometry node don't contain property \"index\"");
-
-    HashSet<String> wanted_keys;
-    wanted_keys.insert("attributes");
-    wanted_keys.insert("vertex");
-    wanted_keys.insert("index");
-
-    for (int i = 0; i < kv.size(); i++)
+    static PropertyValidator* validator = nullptr;
+    if (!validator)
     {
-        String key = kv.getName(i).toString();
-        if (!wanted_keys.contains(key))
-            return Result::fail("geometry node contains unidentified property \""+key+"\"");
+        validator = new PropertyValidator();
+        validator->add_item(KEY_ATTR, PropertyValidator::ITEM_HASH, true);
+        validator->add_item(KEY_VTX, PropertyValidator::ITEM_ARRAY, true);
+        validator->add_item(KEY_IDX, PropertyValidator::ITEM_ARRAY, true);
+        validator->add_item(KEY_PRIM, PropertyValidator::ITEM_SCALAR, true);
     }
-
-    return Result::ok();
+    return validator->validate(kv);
 }
 
 treejuce::Result Geometry::build(const treejuce::var& geom_root_node) NOEXCEPT

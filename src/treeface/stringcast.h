@@ -39,6 +39,9 @@ treejuce::String gl_internal_format_to_string(GLenum arg);
 GLenum gl_type_from_string(const treejuce::String& str);
 treejuce::String gl_type_to_string(GLenum arg);
 
+GLenum gl_primitive_from_string(const treejuce::String& str);
+treejuce::String gl_primitive_to_string(GLenum arg);
+
 TREEFACE_NAMESPACE_END
 
 #endif // TREEFACE_STRING_CAST_H

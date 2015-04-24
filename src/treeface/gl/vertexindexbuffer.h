@@ -20,10 +20,12 @@ TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
 class VertexArray;
+class Geometry;
 
 class VertexIndexBuffer: public treejuce::Object
 {
     friend class VertexArray;
+    friend class Geometry;
 public:
     VertexIndexBuffer();
 
