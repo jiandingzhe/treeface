@@ -1,8 +1,15 @@
+#include "treeface/misc/propertyvalidator.h"
 #include "treeface/misc/vertextemplate.h"
 
 #include "treeface/gl/type.h"
 
+#include "treeface/stringcast.h"
+
 #include <treejuce/Array.h>
+#include <treejuce/DynamicObject.h>
+#include <treejuce/NamedValueSet.h>
+#include <treejuce/Result.h>
+#include <treejuce/Variant.h>
 
 using namespace treejuce;
 
@@ -66,6 +73,60 @@ void VertexTemplate::add_attrib(const VertexAttrib& attr, bool normalize)
     m_impl->size += attr.size();
 }
 
+#define KEY_NAME "name"
+#define KEY_N_ELEM "n_elem"
+#define KEY_TYPE "type"
+#define KEY_NORM "normalized"
+
+Result _validate_attr_kv_(const NamedValueSet& kv)
+{
+    static PropertyValidator* validator = nullptr;
+    if (!validator)
+    {
+        validator = new PropertyValidator();
+        validator->add_item(KEY_NAME, PropertyValidator::ITEM_SCALAR, true);
+        validator->add_item(KEY_N_ELEM, PropertyValidator::ITEM_SCALAR, true);
+        validator->add_item(KEY_TYPE, PropertyValidator::ITEM_SCALAR, true);
+        validator->add_item(KEY_NORM, PropertyValidator::ITEM_SCALAR, false);
+    }
+
+    return validator->validate(kv);
+}
+
+treejuce::Result VertexTemplate::add_attribs(const treejuce::var& list_node)
+{
+    if (!list_node.isArray())
+        return Result::fail("node is not an array");
+
+    const Array<var>* attr_nodes = list_node.getArray();
+
+    for (int i = 0; i < attr_nodes->size(); i++)
+    {
+        const var& attr_node = attr_nodes->getReference(i);
+        if (!attr_node.isObject())
+            return Result::fail("attrib node at "+String(i)+" is not a KV");
+
+        const NamedValueSet& attr_kv = attr_node.getDynamicObject()->getProperties();
+        {
+            Result re = _validate_attr_kv_(attr_kv);
+            if (!re)
+                return Result::fail("attrib node at "+String(i)+" is invalid: "+re.getErrorMessage());
+        }
+
+        bool do_norm = false;
+        if (attr_kv.contains(Identifier(KEY_NORM)))
+            do_norm = bool(attr_kv[KEY_NORM]);
+
+        add_attrib(VertexAttrib(attr_kv[KEY_NAME].toString(),
+                                int(attr_kv[KEY_N_ELEM]),
+                                gl_type_from_string(attr_kv[KEY_TYPE].toString())
+                                ),
+                   do_norm);
+    }
+
+    return Result::ok();
+}
+
 size_t VertexTemplate::vertex_size() const NOEXCEPT
 {
     return m_impl->size;
@@ -112,6 +173,41 @@ const HostVertexAttrib& VertexTemplate::get_elem_attrib(int i_elem) const NOEXCE
 {
     int i_attr = m_impl->elem_attr_index[i_elem];
     return m_impl->attrs.getReference(i_attr);
+}
+
+void VertexTemplate::set_value_at(void* vertex, int i_elem, const treejuce::var& value) NOEXCEPT
+{
+    size_t offset = get_elem_offset(i_elem);
+    char* value_p = (char*) vertex;
+    value_p += offset;
+
+    GLenum type = get_elem_attrib(i_elem).type;
+    switch (type)
+    {
+    case GL_BYTE:
+        *((GLbyte*)value_p)   = int(value); break;
+    case GL_UNSIGNED_BYTE:
+        *((GLubyte*)value_p)  = int(value); break;
+    case GL_SHORT:
+        *((GLshort*)value_p)  = int(value); break;
+    case GL_UNSIGNED_SHORT:
+    case GL_UNSIGNED_SHORT_5_5_5_1: // TODO should we support composite type?
+    case GL_UNSIGNED_SHORT_5_6_5:
+    case GL_UNSIGNED_SHORT_4_4_4_4:
+        *((GLushort*)value_p) = int(value); break;
+    case GL_INT:
+        *((GLint*)value_p)    = int(value); break;
+    case GL_UNSIGNED_INT:
+    case GL_UNSIGNED_INT_8_8_8_8: // TODO should we support composite type?
+    case GL_UNSIGNED_INT_10_10_10_2:
+        *((GLuint*)value_p)   = int64(value); break;
+    case GL_FLOAT:
+        *((GLfloat*)value_p)  = float(value); break;
+    case GL_DOUBLE:
+        *((GLdouble*)value_p) = double(value); break;
+    default:
+        die("vertex template got unsupported GL type enum %x", type);
+    }
 }
 
 TREEFACE_NAMESPACE_END

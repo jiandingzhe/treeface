@@ -4,8 +4,12 @@
 #include "treeface/common.h"
 #include "treeface/gl/vertexattrib.h"
 
-#include <treejuce/ArrayRef.h>
 #include <treejuce/IntTypes.h>
+
+TREEFACE_JUCE_NAMESPACE_BEGIN
+class var;
+class Result;
+TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
 
@@ -29,6 +33,7 @@ public:
     JUCE_DECLARE_NON_COPYABLE(VertexTemplate);
 
     void add_attrib(const VertexAttrib& attr, bool normalize);
+    treejuce::Result add_attribs(const treejuce::var& list_node);
 
     size_t vertex_size() const NOEXCEPT;
     int n_elems() const NOEXCEPT;
@@ -43,6 +48,7 @@ public:
     const HostVertexAttrib& get_attrib(int i_attr) const NOEXCEPT;
     const HostVertexAttrib& get_elem_attrib(int i_elem) const NOEXCEPT;
 
+    void set_value_at(void* vertex, int i_elem, const treejuce::var& value) NOEXCEPT;
 protected:
     struct Impl;
     Impl* m_impl = nullptr;
