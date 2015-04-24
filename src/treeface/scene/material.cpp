@@ -8,6 +8,7 @@
 #include "treeface/packagemanager.h"
 #include "treeface/programmanager.h"
 #include "treeface/stringcast.h"
+#include "treeface/misc/propertyvalidator.h"
 
 #include <treejuce/Array.h>
 #include <treejuce/DynamicObject.h>
@@ -49,6 +50,28 @@ Material::~Material()
         delete m_impl;
 }
 
+#define KEY_PROGRAM      "program"
+#define KEY_PROJ_SHADOW  "project_shadow"
+#define KEY_RECV_SHADOW  "receive_shadow"
+#define KEY_TRANSLUSCENT "transluscent"
+#define KEY_TEX          "textures"
+
+PropertyValidator* _validator_ = nullptr;
+Result _validate_(const NamedValueSet& kv)
+{
+    if (!_validator_)
+    {
+        _validator_ = new PropertyValidator();
+        _validator_->add_item(KEY_PROGRAM, PropertyValidator::ITEM_ARRAY, true);
+        _validator_->add_item(KEY_PROJ_SHADOW, PropertyValidator::ITEM_SCALAR, false);
+        _validator_->add_item(KEY_RECV_SHADOW, PropertyValidator::ITEM_SCALAR, false);
+        _validator_->add_item(KEY_TRANSLUSCENT, PropertyValidator::ITEM_SCALAR, false);
+        _validator_->add_item(KEY_TEX, PropertyValidator::ITEM_HASH, false);
+    }
+
+    return _validator_->validate(kv);
+}
+
 treejuce::Result Material::build(const treejuce::var& root_node)
 {
     m_impl = new Impl();
@@ -63,13 +86,7 @@ treejuce::Result Material::build(const treejuce::var& root_node)
     //
     // firstly, build program
     //
-    if (!root_kv.contains("program"))
-        return Result::fail("root node has no program");
-
-    const var& node_program = root_kv["program"];
-    if (!node_program.isArray())
-        return Result::fail("Invalid program specification: "+node_program.toString()+".\nExpect an array of two strings specifying vertex and fragment shader name.");
-
+    const var& node_program = root_node[KEY_PROGRAM];
     Array<var>* program_names = node_program.getArray();
     if (program_names->size() != 2)
         return Result::fail("Invalid program specification: "+node_program.toString()+".\nExpect an array of two strings specifying vertex and fragment shader name.");
@@ -88,23 +105,20 @@ treejuce::Result Material::build(const treejuce::var& root_node)
     //
     // load properties
     //
-    if (root_kv.contains("project_shadow"))
-        m_impl->project_shadow = bool(root_kv["project_shadow"]);
-    if (root_kv.contains("receive_shadow"))
-        m_impl->project_shadow = bool(root_kv["receive_shadow"]);
-    if (root_kv.contains("transluscent"))
-        m_impl->project_shadow = bool(root_kv["transluscent"]);
+    if (root_kv.contains(KEY_PROJ_SHADOW))
+        m_impl->project_shadow = bool(root_kv[KEY_PROJ_SHADOW]);
+    if (root_kv.contains(KEY_RECV_SHADOW))
+        m_impl->project_shadow = bool(root_kv[KEY_RECV_SHADOW]);
+    if (root_kv.contains(KEY_TRANSLUSCENT))
+        m_impl->project_shadow = bool(root_kv[KEY_TRANSLUSCENT]);
 
     //
     // load textures
     //
     HashMap<String, TextureLayer> textures_by_name;
-    if (root_kv.contains("texture"))
+    if (root_kv.contains(KEY_TEX))
     {
-        const var& node_tex_list = root_kv["texture"];
-        if (!node_tex_list.isObject())
-            return Result::fail("the value of \"texture\" is not an object");
-
+        const var& node_tex_list = root_kv[KEY_TEX];
         const NamedValueSet& tex_list = node_tex_list.getDynamicObject()->getProperties();
 
         for (int i_tex = 0; i_tex < tex_list.size(); i_tex++)

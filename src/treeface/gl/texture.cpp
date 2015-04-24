@@ -3,6 +3,7 @@
 #include "treeface/image.h"
 #include "treeface/imagemanager.h"
 #include "treeface/stringcast.h"
+#include "treeface/misc/propertyvalidator.h"
 
 #include <treejuce/DynamicObject.h>
 #include <treejuce/Logger.h>
@@ -159,27 +160,32 @@ treejuce::Result Texture::set_image_data(treejuce::ArrayRef<ImageRef> images, GL
     return treejuce::Result::ok();
 }
 
+#define KEY_IMG           "image"
+#define KEY_INTN_FMT      "internal_format"
+#define KEY_MAG_LINEAR    "mag_filter_linear"
+#define KEY_MIN_LINEAR    "min_filter_linear"
+#define KEY_MIPMAP        "mipmap"
+#define KEY_MIPMAP_LINEAR "mipmap_filter_linear"
+#define KEY_WRAP_S        "wrap_s"
+#define KEY_WRAP_T        "wrap_t"
+
+
 Result _validate_keys_(NamedValueSet& kv)
 {
-    HashSet<String> expected_keys;
-    expected_keys.insert("image");
-    expected_keys.insert("internal_format");
-    expected_keys.insert("mag_filter_linear");
-    expected_keys.insert("min_filter_linear");
-    expected_keys.insert("mipmap");
-    expected_keys.insert("mipmap_filter_linear");
-    expected_keys.insert("wrap_s");
-    expected_keys.insert("wrap_t");
-
-    for (int i = 0; i < kv.size(); i++)
+    static PropertyValidator* validator = nullptr;
+    if (!validator)
     {
-        Identifier key = kv.getName(i);
-        if (!expected_keys.contains(key.toString()))
-        {
-            return Result::fail("texture specification contain unidentified key: "+key.toString());
-        }
+        validator = new PropertyValidator();
+        validator->add_item(KEY_IMG, PropertyValidator::ITEM_SCALAR|PropertyValidator::ITEM_ARRAY, true);
+        validator->add_item(KEY_INTN_FMT, PropertyValidator::ITEM_SCALAR, true);
+        validator->add_item(KEY_MAG_LINEAR, PropertyValidator::ITEM_SCALAR, false);
+        validator->add_item(KEY_MIN_LINEAR, PropertyValidator::ITEM_SCALAR, false);
+        validator->add_item(KEY_MIPMAP, PropertyValidator::ITEM_SCALAR, false);
+        validator->add_item(KEY_MIPMAP_LINEAR, PropertyValidator::ITEM_SCALAR, false);
+        validator->add_item(KEY_WRAP_S, PropertyValidator::ITEM_SCALAR, false);
+        validator->add_item(KEY_WRAP_T, PropertyValidator::ITEM_SCALAR, false);
     }
-    return Result::ok();
+    return validator->validate(kv);
 }
 
 Result Texture::build(const treejuce::var& tex_node)
@@ -211,23 +217,13 @@ Result Texture::build(const treejuce::var& tex_node)
     if (tex_kv.contains("wrap_s"))
     {
         String wrap_s_str = tex_kv["wrap_s"].toString();
-        if (wrap_s_str.compareIgnoreCase("repeat") == 0)
-            m_wrap_s = GL_REPEAT;
-        else if (wrap_s_str.compareIgnoreCase("mirrored_repeat") == 0)
-            m_wrap_s = GL_MIRRORED_REPEAT;
-        else if (wrap_s_str.compareIgnoreCase("clamp_to_edge") == 0)
-            m_wrap_s = GL_CLAMP_TO_EDGE;
+        m_wrap_s = gl_tex_wrap_from_string(wrap_s_str);
     }
 
     if (tex_kv.contains("wrap_t"))
     {
         String wrap_t_str = tex_kv["wrap_t"].toString();
-        if (wrap_t_str.compareIgnoreCase("repeat") == 0)
-            m_wrap_t = GL_REPEAT;
-        else if (wrap_t_str.compareIgnoreCase("mirrored_repeat") == 0)
-            m_wrap_t = GL_MIRRORED_REPEAT;
-        else if (wrap_t_str.compareIgnoreCase("clamp_to_edge") == 0)
-            m_wrap_t = GL_CLAMP_TO_EDGE;
+        m_wrap_t = gl_tex_wrap_from_string(wrap_t_str);
     }
 
     //

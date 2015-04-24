@@ -16,9 +16,12 @@ TREEFACE_NAMESPACE_BEGIN
 
 class Program;
 class Texture;
+class Renderer;
 
 class Material: public treejuce::Object
 {
+    friend class Renderer;
+
 public:
     Material();
 
