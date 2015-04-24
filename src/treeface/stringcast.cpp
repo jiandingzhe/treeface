@@ -452,4 +452,29 @@ treejuce::String gl_primitive_to_string(GLenum arg)
     }
 }
 
+GLenum gl_tex_wrap_from_string(const treejuce::String& str)
+{
+    if (str.compareIgnoreCase("clamp_to_edge"))
+        return GL_CLAMP_TO_EDGE;
+    else if (str.compareIgnoreCase("mirrored_repeat"))
+        return GL_MIRRORED_REPEAT;
+    else if (str.compareIgnoreCase("repeat"))
+        return GL_REPEAT;
+    else
+        die("invalid GL texture wrap string representation: %s", str.toRawUTF8());
+}
+
+treejuce::String gl_tex_wrap_to_string(GLenum arg)
+{
+    switch (arg)
+    {
+    case GL_CLAMP_TO_EDGE:   return "clamp_to_edge";
+    case GL_MIRRORED_REPEAT: return "mirrored_repeat";
+    case GL_REPEAT:          return "repeat";
+    default:
+        die("invalid GL texture wrap enum: %x", arg);
+    }
+}
+
+
 TREEFACE_NAMESPACE_END
