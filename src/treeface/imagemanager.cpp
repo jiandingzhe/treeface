@@ -5,7 +5,6 @@
 
 #include <FreeImage.h>
 
-#include <treejuce/InputStream.h>
 #include <treejuce/HashMap.h>
 #include <treejuce/Holder.h>
 #include <treejuce/ScopedPointer.h>
