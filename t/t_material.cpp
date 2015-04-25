@@ -79,7 +79,10 @@ void TestFramework::content()
         Program* program_from_mgr = nullptr;
         OK(prog_mgr->get_program("common_vertex.glsl", "frag_one_tex.glsl", &program_from_mgr));
         IS(mat1->get_program(), program_from_mgr);
+
+        IS(mat1->get_num_textures(), 1);
         OK(img_mgr->image_is_cached("moon.jpg"));
+
     }
 
     // material 2
@@ -95,6 +98,9 @@ void TestFramework::content()
         OK(mat2->build(root_node_mat2));
 
         OK(prog_mgr->program_is_cached("common_vertex.glsl", "frag_two_tex.glsl"));
+
+        IS(mat2->get_num_textures(), 2);
+        OK(img_mgr->image_is_cached("moonbump.pfm"));
     }
 
     SDL_GL_DeleteContext(context);
