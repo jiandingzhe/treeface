@@ -312,9 +312,9 @@ treejuce::Result Program::build(const char* src_vert, const char* src_frag)
     // extract program attributes
     int n_attr = -1;
     glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTES, &n_attr);
-
     if (n_attr == -1)
         die("failed to get attribute number in program " + String(m_program));
+    DBG("vertex attribute amount: "+String(n_attr));
 
     for (int i_attr = 0; i_attr < n_attr; i_attr++)
     {
@@ -324,6 +324,8 @@ treejuce::Result Program::build(const char* src_vert, const char* src_frag)
         GLsizei attr_size = -1;
         glGetActiveAttrib(m_program, i_attr, 256,
                           &attr_name_len, &attr_size, &attr_type, attr_name);
+
+        DBG("  attribute "+String(i_attr)+": name "+String(attr_name)+", type "+gl_type_to_string(attr_type)+", size "+String(attr_size));
 
         if (attr_name_len == -1)
             die("failed to get info for attribute " + String(i_attr));
@@ -338,9 +340,9 @@ treejuce::Result Program::build(const char* src_vert, const char* src_frag)
     // extract program uniforms
     int n_uni = -1;
     glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &n_uni);
-
     if (n_uni == -1)
         die("failed to get uniform number from program %u", m_program);
+    DBG("uniform amount: "+String(n_uni));
 
     for (int i_uni = 0; i_uni < n_uni; i_uni++)
     {
