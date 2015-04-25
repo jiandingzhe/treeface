@@ -54,7 +54,7 @@ Material::~Material()
 #define KEY_PROJ_SHADOW  "project_shadow"
 #define KEY_RECV_SHADOW  "receive_shadow"
 #define KEY_TRANSLUSCENT "transluscent"
-#define KEY_TEX          "textures"
+#define KEY_TEXTURE          "textures"
 
 PropertyValidator* _validator_ = nullptr;
 Result _validate_(const NamedValueSet& kv)
@@ -66,7 +66,7 @@ Result _validate_(const NamedValueSet& kv)
         _validator_->add_item(KEY_PROJ_SHADOW, PropertyValidator::ITEM_SCALAR, false);
         _validator_->add_item(KEY_RECV_SHADOW, PropertyValidator::ITEM_SCALAR, false);
         _validator_->add_item(KEY_TRANSLUSCENT, PropertyValidator::ITEM_SCALAR, false);
-        _validator_->add_item(KEY_TEX, PropertyValidator::ITEM_HASH, false);
+        _validator_->add_item(KEY_TEXTURE, PropertyValidator::ITEM_ARRAY, false);
     }
 
     return _validator_->validate(kv);
@@ -115,31 +115,28 @@ treejuce::Result Material::build(const treejuce::var& root_node)
     //
     // load textures
     //
-    HashMap<String, TextureLayer> textures_by_name;
-    if (root_kv.contains(KEY_TEX))
+    if (root_kv.contains(KEY_TEXTURE))
     {
-        const var& node_tex_list = root_kv[KEY_TEX];
-        const NamedValueSet& tex_list = node_tex_list.getDynamicObject()->getProperties();
+        const var& tex_list_node = root_kv[KEY_TEXTURE];
+        const Array<var>* tex_list = tex_list_node.getArray();
 
-        for (int i_tex = 0; i_tex < tex_list.size(); i_tex++)
+        for (int i_tex = 0; i_tex < tex_list->size(); i_tex++)
         {
-            Identifier tex_key = tex_list.getName(i_tex);
-            const var& tex_node = tex_list[tex_key];
-            String tex_name = tex_key.toString();
+            const var& tex_node = tex_list->getReference(i_tex);
+
+            Texture* tex_obj = new Texture();
+            Result tex_re = tex_obj->build(tex_node);
+            if (!tex_re)
+                return Result::fail("failed to build texture "+String(i_tex)+": "+tex_re.getErrorMessage());
 
             // create texture layer
+            // the "name" property should has been checked inside build method of Texture object
+            String tex_name = tex_node.getProperty(Identifier("name"), var::null).toString();
             int uni_idx = program->get_uniform_index(tex_name);
             if (uni_idx < 0)
                 return Result::fail("program don't have texture uniform named "+tex_name);
 
-            Texture* tex_obj = new Texture();
             m_impl->layers.add({tex_name, tex_obj, i_tex, uni_idx});
-
-            Result tex_re = tex_obj->build(tex_node);
-            if (!tex_re)
-            {
-                return Result::fail("failed to build texture "+tex_name+": "+tex_re.getErrorMessage());
-            }
         }
     }
 
