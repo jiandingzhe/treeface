@@ -14,7 +14,7 @@
 #include "treeface/gl/vertexindexbuffer.h"
 #include "treeface/gl/vertexarray.h"
 #include "treeface/gl/vertexattrib.h"
-#include "treeface/misc/vertextemplate.h"
+#include "treeface/gl/vertextemplate.h"
 
 #include <vector>
 #include <set>

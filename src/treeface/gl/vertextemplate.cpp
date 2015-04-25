@@ -1,7 +1,7 @@
-#include "treeface/misc/propertyvalidator.h"
-#include "treeface/misc/vertextemplate.h"
-
 #include "treeface/gl/type.h"
+#include "treeface/gl/vertextemplate.h"
+
+#include "treeface/misc/propertyvalidator.h"
 
 #include "treeface/stringcast.h"
 

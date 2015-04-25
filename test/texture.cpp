@@ -16,8 +16,7 @@
 #include "treeface/gl/vertexarray.h"
 #include "treeface/gl/vertexattrib.h"
 #include "treeface/gl/vertexindexbuffer.h"
-
-#include "treeface/misc/vertextemplate.h"
+#include "treeface/gl/vertextemplate.h"
 
 using namespace treejuce;
 using namespace treeface;

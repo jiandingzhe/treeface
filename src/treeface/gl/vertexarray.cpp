@@ -2,8 +2,7 @@
 #include "treeface/gl/type.h"
 #include "treeface/gl/vertexarray.h"
 #include "treeface/gl/vertexindexbuffer.h"
-
-#include "treeface/misc/vertextemplate.h"
+#include "treeface/gl/vertextemplate.h"
 
 #include <treejuce/ArrayRef.h>
 #include <treejuce/Logger.h>
