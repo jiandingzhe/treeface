@@ -69,9 +69,8 @@ treejuce::Result PropertyValidator::validate(const treejuce::NamedValueSet& kv) 
                  &&
                  !(type & ITEM_SCALAR))
             return Result::fail("property \""+key_str+"\" is scalar, which is unexpected");
-
-        return Result::ok();
     }
+    return Result::ok();
 }
 
 TREEFACE_NAMESPACE_END

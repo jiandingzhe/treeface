@@ -90,3 +90,10 @@ target_link_libraries(t_material
     ${OPENGL_gl_LIBRARY}
     ${OPENGL_glu_LIBRARY}
 )
+
+add_executable(t_property_validator t_property_validator.cpp)
+target_link_libraries(t_property_validator
+    treeface
+    TestFramework
+    ${TREEJUCE_LIBRARIES}
+)
