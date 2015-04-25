@@ -5,6 +5,7 @@
 
 #include <treejuce/Array.h>
 #include <treejuce/ArrayRef.h>
+#include <treejuce/Variant.h>
 
 using namespace treeface;
 using namespace treejuce;
@@ -67,4 +68,39 @@ void TestFramework::content()
     IS(vtx_temp.get_elem_type(10), GL_FLOAT);
     IS(vtx_temp.get_elem_type(11), GL_FLOAT);
     IS(vtx_temp.get_elem_type(12), GL_FLOAT);
+
+    GLbyte* mem = (GLbyte*) malloc(vtx_temp.vertex_size());
+    vtx_temp.set_value_at(mem, 0, var(1.0));
+    vtx_temp.set_value_at(mem, 1, var(2.0));
+    vtx_temp.set_value_at(mem, 2, var(3.0));
+
+    vtx_temp.set_value_at(mem, 3, var(255));
+    vtx_temp.set_value_at(mem, 4, var(127));
+    vtx_temp.set_value_at(mem, 5, var(63));
+    vtx_temp.set_value_at(mem, 6, var(255));
+
+    vtx_temp.set_value_at(mem, 7, var(4.0));
+    vtx_temp.set_value_at(mem, 8, var(5.0));
+    vtx_temp.set_value_at(mem, 9, var(6.0));
+
+    vtx_temp.set_value_at(mem, 10, var(7.0));
+    vtx_temp.set_value_at(mem, 11, var(8.0));
+    vtx_temp.set_value_at(mem, 12, var(9.0));
+
+    IS(*(float*)mem, 1.0);
+    IS(*(float*)(mem+4), 2.0);
+    IS(*(float*)(mem+8), 3.0);
+
+    IS(*(GLubyte*)(mem+12), 0xff);
+    IS(*(GLubyte*)(mem+13), 0x7f);
+    IS(*(GLubyte*)(mem+14), 0x3f);
+    IS(*(GLubyte*)(mem+15), 0xff);
+
+    IS(*(float*)(mem+16), 4.0);
+    IS(*(float*)(mem+20), 5.0);
+    IS(*(float*)(mem+24), 6.0);
+
+    IS(*(float*)(mem+28), 7.0);
+    IS(*(float*)(mem+32), 8.0);
+    IS(*(float*)(mem+36), 9.0);
 }
