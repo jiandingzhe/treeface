@@ -3,6 +3,7 @@
 #include "treeface/scene/material.h"
 
 #include "treeface/imagemanager.h"
+#include "treeface/materialmanager.h"
 #include "treeface/packagemanager.h"
 #include "treeface/programmanager.h"
 
@@ -59,21 +60,17 @@ void TestFramework::content()
 
     PackageManager* pkg_mgr = PackageManager::getInstance();
     ImageManager* img_mgr = ImageManager::getInstance();
+    MaterialManager* mat_mgr = MaterialManager::getInstance();
     ProgramManager* prog_mgr = ProgramManager::getInstance();
 
     pkg_mgr->add_package(File("resource.zip"), PackageManager::KEEP_EXISTING);
 
     // material 1
     {
-        ArrayRef<uint8> src_mat1 = pkg_mgr->get_item_data("material1.json");
-        ScopedPointer<uint8> src_mat1_scope(src_mat1.get_data());
-        OK(src_mat1.get_data());
-
-        var root_node_mat1;
-        OK(JSON::parse((char*)src_mat1.get_data(), root_node_mat1));
-
-        Material* mat1 = new Material();
-        OK(mat1->build(root_node_mat1));
+        Material* mat1 = nullptr;
+        OK(mat_mgr->get_material("material1.json", &mat1));
+        OK(mat1);
+        IS(mat1->get_ref_count(), 1);
 
         ok(prog_mgr->program_is_cached("common_vertex.glsl", "frag_one_tex.glsl"), "program common_vertex.glsl frag_one_tex.glsl is cached");
         Program* program_from_mgr = nullptr;
@@ -82,26 +79,26 @@ void TestFramework::content()
 
         IS(mat1->get_num_textures(), 1);
         OK(img_mgr->image_is_cached("moon.jpg"));
-
     }
 
     // material 2
     {
-        ArrayRef<uint8> src_mat2 = pkg_mgr->get_item_data("material2.json");
-        ScopedPointer<uint8> src_mat2_scope(src_mat2.get_data());
-        OK(src_mat2.get_data());
-
-        var root_node_mat2;
-        OK(JSON::parse((char*)src_mat2.get_data(), root_node_mat2));
-
-        Material* mat2 = new Material();
-        OK(mat2->build(root_node_mat2));
+        Material* mat2 = nullptr;
+        OK(mat_mgr->get_material("material2.json", &mat2));
+        OK(mat2);
+        IS(mat2->get_ref_count(), 1);
 
         OK(prog_mgr->program_is_cached("common_vertex.glsl", "frag_two_tex.glsl"));
 
         IS(mat2->get_num_textures(), 2);
         OK(img_mgr->image_is_cached("moonbump.pfm"));
     }
+
+    // suppress valgrind warnings
+    ProgramManager::deleteInstance();
+    PackageManager::deleteInstance();
+    MaterialManager::deleteInstance();
+    ImageManager::deleteInstance();
 
     SDL_GL_DeleteContext(context);
     SDL_Quit();
