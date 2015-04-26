@@ -7,6 +7,8 @@
 #include <treejuce/IntTypes.h>
 #include <treejuce/Object.h>
 
+#include <GL/glew.h>
+
 TREEFACE_JUCE_NAMESPACE_BEGIN
 class MemoryBlock;
 class Result;
@@ -38,7 +40,11 @@ public:
      */
     bool is_dirty() const NOEXCEPT;
 
+
     void mark_dirty() NOEXCEPT;
+
+    GLenum get_primitive() const NOEXCEPT;
+    void set_primitive(GLenum value) NOEXCEPT;
 
     treejuce::MemoryBlock& get_vertex_store() NOEXCEPT;
 

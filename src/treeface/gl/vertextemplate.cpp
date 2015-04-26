@@ -117,9 +117,10 @@ treejuce::Result VertexTemplate::add_attribs(const treejuce::var& list_node)
         if (attr_kv.contains(Identifier(KEY_NORM)))
             do_norm = bool(attr_kv[KEY_NORM]);
 
+        GLenum type = gl_type_from_string(attr_kv[KEY_TYPE].toString());
         add_attrib(VertexAttrib(attr_kv[KEY_NAME].toString(),
                                 int(attr_kv[KEY_N_ELEM]),
-                                gl_type_from_string(attr_kv[KEY_TYPE].toString())
+                                type
                                 ),
                    do_norm);
     }

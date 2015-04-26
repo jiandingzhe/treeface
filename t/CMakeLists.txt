@@ -1,6 +1,7 @@
 add_library(TestFramework TestFramework.cpp)
 
 file(COPY ${CMAKE_SOURCE_DIR}/examples/resource.zip DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY images.zip DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(t_vec4 t_vec4.cpp)
 target_link_libraries(t_vec4
@@ -63,7 +64,6 @@ target_link_libraries(t_package_manager_use_older
     TestFramework
 )
 
-file(COPY images.zip DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 add_executable(t_image_manager t_image_manager.cpp)
 target_link_libraries(t_image_manager
     ${TREEJUCE_LIBRARIES}
@@ -96,4 +96,13 @@ target_link_libraries(t_property_validator
     treeface
     TestFramework
     ${TREEJUCE_LIBRARIES}
+)
+
+add_executable(t_geometry t_geometry.cpp)
+target_link_libraries(t_geometry
+    treeface
+    TestFramework
+    ${TREEJUCE_LIBRARIES}
+    ${SDL2_LIBRARY}
+    ${GLEW_LIBRARY}
 )
