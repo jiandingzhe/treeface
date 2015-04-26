@@ -61,14 +61,26 @@ treejuce::Result PropertyValidator::validate(const treejuce::NamedValueSet& kv) 
         uint32 type = m_impl->key_types[key_str];
 
         const var& value = kv.getValueAt(i);
-        if (value.isArray() && !(type & ITEM_ARRAY))
-            return Result::fail("property \""+key_str+"\" is array, which is unexpected");
-        else if (value.isObject() && !(type & ITEM_HASH))
-            return Result::fail("property \""+key_str+"\" is object, which is unexpected");
-        else if ((value.isBool() || value.isInt() || value.isDouble() || value.isUndefined())
-                 &&
-                 !(type & ITEM_SCALAR))
-            return Result::fail("property \""+key_str+"\" is scalar, which is unexpected");
+        if (value.isArray())
+        {
+            if (!(type & ITEM_ARRAY))
+                return Result::fail("property \""+key_str+"\" is array, which is unexpected");
+        }
+        else if (value.isObject())
+        {
+            if (!(type & ITEM_HASH))
+                return Result::fail("property \""+key_str+"\" is object, which is unexpected");
+        }
+        else if (value.isBool()      ||
+                 value.isInt()       ||
+                 value.isDouble()    ||
+                 value.isUndefined() ||
+                 value.isString()
+                 )
+        {
+            if (!(type & ITEM_SCALAR))
+                return Result::fail("property \""+key_str+"\" is scalar, which is unexpected");
+        }
     }
     return Result::ok();
 }
