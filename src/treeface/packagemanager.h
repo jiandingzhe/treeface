@@ -86,14 +86,6 @@ protected:
 
     struct Impl;
 
-    struct PackageEntryPoint
-    {
-        treejuce::ZipFile* package;
-        int entry_index;
-        treejuce::Time time;
-    };
-
-
     Impl* m_impl = nullptr;
 }; // class ResourceManage
 

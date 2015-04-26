@@ -12,6 +12,13 @@ using namespace treejuce;
 
 TREEFACE_NAMESPACE_BEGIN
 
+struct PackageEntryPoint
+{
+    treejuce::ZipFile* package;
+    int entry_index;
+    treejuce::Time time;
+};
+
 struct PackageManager::Impl
 {
     treejuce::HashSet<treejuce::ZipFile*> m_packages;
