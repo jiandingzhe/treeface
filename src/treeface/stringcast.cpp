@@ -163,13 +163,13 @@ treejuce::String to_string<FREE_IMAGE_TYPE>(FREE_IMAGE_TYPE arg)
 template<>
 FREE_IMAGE_COLOR_TYPE from_string<FREE_IMAGE_COLOR_TYPE>(const treejuce::String& string)
 {
-    if      (string.compareIgnoreCase("miniswhite")) return FIC_MINISWHITE;
-    else if (string.compareIgnoreCase("minisblack")) return FIC_MINISBLACK;
-    else if (string.compareIgnoreCase("rgb"))        return FIC_RGB;
-    else if (string.compareIgnoreCase("palette"))    return FIC_PALETTE;
-    else if (string.compareIgnoreCase("rgbalpha"))   return FIC_RGBALPHA;
-    else if (string.compareIgnoreCase("rgba"))       return FIC_RGBALPHA;
-    else if (string.compareIgnoreCase("cmyk"))       return FIC_CMYK;
+    if      (string.compareIgnoreCase("miniswhite") == 0) return FIC_MINISWHITE;
+    else if (string.compareIgnoreCase("minisblack") == 0) return FIC_MINISBLACK;
+    else if (string.compareIgnoreCase("rgb") == 0)        return FIC_RGB;
+    else if (string.compareIgnoreCase("palette") == 0)    return FIC_PALETTE;
+    else if (string.compareIgnoreCase("rgbalpha") == 0)   return FIC_RGBALPHA;
+    else if (string.compareIgnoreCase("rgba") == 0)       return FIC_RGBALPHA;
+    else if (string.compareIgnoreCase("cmyk") == 0)       return FIC_CMYK;
     else
         die("invalid FreeImage color type string representation: %s", string.toRawUTF8());
 }
@@ -331,53 +331,57 @@ treejuce::String gl_internal_format_to_string(GLenum arg)
 
 GLenum gl_type_from_string(const treejuce::String& str)
 {
-    if (str.compareIgnoreCase("float"))                              return GL_FLOAT                        ;
-    else if (str.compareIgnoreCase("float_vec2"))                    return GL_FLOAT_VEC2                   ;
-    else if (str.compareIgnoreCase("float_vec3"))                    return GL_FLOAT_VEC3                   ;
-    else if (str.compareIgnoreCase("float_vec4"))                    return GL_FLOAT_VEC4                   ;
-    else if (str.compareIgnoreCase("int"))                           return GL_INT                          ;
-    else if (str.compareIgnoreCase("int_vec2"))                      return GL_INT_VEC2                     ;
-    else if (str.compareIgnoreCase("int_vec3"))                      return GL_INT_VEC3                     ;
-    else if (str.compareIgnoreCase("int_vec4"))                      return GL_INT_VEC4                     ;
-    else if (str.compareIgnoreCase("unsigned_int"))                  return GL_UNSIGNED_INT                 ;
-    else if (str.compareIgnoreCase("unsigned_int_vec2"))             return GL_UNSIGNED_INT_VEC2            ;
-    else if (str.compareIgnoreCase("unsigned_int_vec3"))             return GL_UNSIGNED_INT_VEC3            ;
-    else if (str.compareIgnoreCase("unsigned_int_vec4"))             return GL_UNSIGNED_INT_VEC4            ;
-    else if (str.compareIgnoreCase("bool"))                          return GL_BOOL                         ;
-    else if (str.compareIgnoreCase("bool_vec2"))                     return GL_BOOL_VEC2                    ;
-    else if (str.compareIgnoreCase("bool_vec3"))                     return GL_BOOL_VEC3                    ;
-    else if (str.compareIgnoreCase("bool_vec4"))                     return GL_BOOL_VEC4                    ;
-    else if (str.compareIgnoreCase("float_mat2"))                    return GL_FLOAT_MAT2                   ;
-    else if (str.compareIgnoreCase("float_mat3"))                    return GL_FLOAT_MAT3                   ;
-    else if (str.compareIgnoreCase("float_mat4"))                    return GL_FLOAT_MAT4                   ;
-    else if (str.compareIgnoreCase("float_mat2x3"))                  return GL_FLOAT_MAT2x3                 ;
-    else if (str.compareIgnoreCase("float_mat2x4"))                  return GL_FLOAT_MAT2x4                 ;
-    else if (str.compareIgnoreCase("float_mat3x2"))                  return GL_FLOAT_MAT3x2                 ;
-    else if (str.compareIgnoreCase("float_mat3x4"))                  return GL_FLOAT_MAT3x4                 ;
-    else if (str.compareIgnoreCase("float_mat4x2"))                  return GL_FLOAT_MAT4x2                 ;
-    else if (str.compareIgnoreCase("float_mat4x3"))                  return GL_FLOAT_MAT4x3                 ;
-    else if (str.compareIgnoreCase("sampler_2d"))                    return GL_SAMPLER_2D                   ;
-    else if (str.compareIgnoreCase("sampler_3d"))                    return GL_SAMPLER_3D                   ;
-    else if (str.compareIgnoreCase("sampler_cube"))                  return GL_SAMPLER_CUBE                 ;
-    else if (str.compareIgnoreCase("sampler_2d_shadow"))             return GL_SAMPLER_2D_SHADOW            ;
-    else if (str.compareIgnoreCase("sampler_2d_array"))              return GL_SAMPLER_2D_ARRAY             ;
-    else if (str.compareIgnoreCase("sampler_2d_array_shadow"))       return GL_SAMPLER_2D_ARRAY_SHADOW      ;
-    else if (str.compareIgnoreCase("sampler_cube_shadow"))           return GL_SAMPLER_CUBE_SHADOW          ;
-    else if (str.compareIgnoreCase("int_sampler_2d"))                return GL_INT_SAMPLER_2D               ;
-    else if (str.compareIgnoreCase("int_sampler_3d"))                return GL_INT_SAMPLER_3D               ;
-    else if (str.compareIgnoreCase("int_sampler_cube"))              return GL_INT_SAMPLER_CUBE             ;
-    else if (str.compareIgnoreCase("int_sampler_2d_array"))          return GL_INT_SAMPLER_2D_ARRAY         ;
-    else if (str.compareIgnoreCase("unsigned_int_sampler_2d"))       return GL_UNSIGNED_INT_SAMPLER_2D      ;
-    else if (str.compareIgnoreCase("unsigned_int_sampler_3d"))       return GL_UNSIGNED_INT_SAMPLER_3D      ;
-    else if (str.compareIgnoreCase("unsigned_int_sampler_cube"))     return GL_UNSIGNED_INT_SAMPLER_CUBE    ;
-    else if (str.compareIgnoreCase("unsigned_int_sampler_2d_array")) return GL_UNSIGNED_INT_SAMPLER_2D_ARRAY;
+    if (str.compareIgnoreCase("float") == 0)                              return GL_FLOAT                        ;
+    else if (str.compareIgnoreCase("byte") == 0)                          return GL_BYTE                         ;
+    else if (str.compareIgnoreCase("unsigned_byte") == 0)                 return GL_UNSIGNED_BYTE                ;
+    else if (str.compareIgnoreCase("float_vec2") == 0)                    return GL_FLOAT_VEC2                   ;
+    else if (str.compareIgnoreCase("float_vec3") == 0)                    return GL_FLOAT_VEC3                   ;
+    else if (str.compareIgnoreCase("float_vec4") == 0)                    return GL_FLOAT_VEC4                   ;
+    else if (str.compareIgnoreCase("int") == 0)                           return GL_INT                          ;
+    else if (str.compareIgnoreCase("int_vec2") == 0)                      return GL_INT_VEC2                     ;
+    else if (str.compareIgnoreCase("int_vec3") == 0)                      return GL_INT_VEC3                     ;
+    else if (str.compareIgnoreCase("int_vec4") == 0)                      return GL_INT_VEC4                     ;
+    else if (str.compareIgnoreCase("unsigned_int") == 0)                  return GL_UNSIGNED_INT                 ;
+    else if (str.compareIgnoreCase("unsigned_int_vec2") == 0)             return GL_UNSIGNED_INT_VEC2            ;
+    else if (str.compareIgnoreCase("unsigned_int_vec3") == 0)             return GL_UNSIGNED_INT_VEC3            ;
+    else if (str.compareIgnoreCase("unsigned_int_vec4") == 0)             return GL_UNSIGNED_INT_VEC4            ;
+    else if (str.compareIgnoreCase("bool") == 0)                          return GL_BOOL                         ;
+    else if (str.compareIgnoreCase("bool_vec2") == 0)                     return GL_BOOL_VEC2                    ;
+    else if (str.compareIgnoreCase("bool_vec3") == 0)                     return GL_BOOL_VEC3                    ;
+    else if (str.compareIgnoreCase("bool_vec4") == 0)                     return GL_BOOL_VEC4                    ;
+    else if (str.compareIgnoreCase("float_mat2") == 0)                    return GL_FLOAT_MAT2                   ;
+    else if (str.compareIgnoreCase("float_mat3") == 0)                    return GL_FLOAT_MAT3                   ;
+    else if (str.compareIgnoreCase("float_mat4") == 0)                    return GL_FLOAT_MAT4                   ;
+    else if (str.compareIgnoreCase("float_mat2x3") == 0)                  return GL_FLOAT_MAT2x3                 ;
+    else if (str.compareIgnoreCase("float_mat2x4") == 0)                  return GL_FLOAT_MAT2x4                 ;
+    else if (str.compareIgnoreCase("float_mat3x2") == 0)                  return GL_FLOAT_MAT3x2                 ;
+    else if (str.compareIgnoreCase("float_mat3x4") == 0)                  return GL_FLOAT_MAT3x4                 ;
+    else if (str.compareIgnoreCase("float_mat4x2") == 0)                  return GL_FLOAT_MAT4x2                 ;
+    else if (str.compareIgnoreCase("float_mat4x3") == 0)                  return GL_FLOAT_MAT4x3                 ;
+    else if (str.compareIgnoreCase("sampler_2d") == 0)                    return GL_SAMPLER_2D                   ;
+    else if (str.compareIgnoreCase("sampler_3d") == 0)                    return GL_SAMPLER_3D                   ;
+    else if (str.compareIgnoreCase("sampler_cube") == 0)                  return GL_SAMPLER_CUBE                 ;
+    else if (str.compareIgnoreCase("sampler_2d_shadow") == 0)             return GL_SAMPLER_2D_SHADOW            ;
+    else if (str.compareIgnoreCase("sampler_2d_array") == 0)              return GL_SAMPLER_2D_ARRAY             ;
+    else if (str.compareIgnoreCase("sampler_2d_array_shadow") == 0)       return GL_SAMPLER_2D_ARRAY_SHADOW      ;
+    else if (str.compareIgnoreCase("sampler_cube_shadow") == 0)           return GL_SAMPLER_CUBE_SHADOW          ;
+    else if (str.compareIgnoreCase("int_sampler_2d") == 0)                return GL_INT_SAMPLER_2D               ;
+    else if (str.compareIgnoreCase("int_sampler_3d") == 0)                return GL_INT_SAMPLER_3D               ;
+    else if (str.compareIgnoreCase("int_sampler_cube") == 0)              return GL_INT_SAMPLER_CUBE             ;
+    else if (str.compareIgnoreCase("int_sampler_2d_array") == 0)          return GL_INT_SAMPLER_2D_ARRAY         ;
+    else if (str.compareIgnoreCase("unsigned_int_sampler_2d") == 0)       return GL_UNSIGNED_INT_SAMPLER_2D      ;
+    else if (str.compareIgnoreCase("unsigned_int_sampler_3d") == 0)       return GL_UNSIGNED_INT_SAMPLER_3D      ;
+    else if (str.compareIgnoreCase("unsigned_int_sampler_cube") == 0)     return GL_UNSIGNED_INT_SAMPLER_CUBE    ;
+    else if (str.compareIgnoreCase("unsigned_int_sampler_2d_array") == 0) return GL_UNSIGNED_INT_SAMPLER_2D_ARRAY;
     else die("invalid GL type string representation: %s", str.toRawUTF8());
 }
 
 treejuce::String gl_type_to_string(GLenum arg)
-{
+{// TODO short?
     switch (arg)
     {
+    case GL_BYTE                         : return "byte";
+    case GL_UNSIGNED_BYTE                : return "unsigned_byte";
     case GL_FLOAT                        : return "float";
     case GL_FLOAT_VEC2                   : return "float_vec2";
     case GL_FLOAT_VEC3                   : return "float_vec3";
@@ -425,13 +429,13 @@ treejuce::String gl_type_to_string(GLenum arg)
 
 GLenum gl_primitive_from_string(const treejuce::String& str)
 {
-    if      (str.compareIgnoreCase("points"        )) return GL_POINTS        ;
-    else if (str.compareIgnoreCase("lines"         )) return GL_LINES         ;
-    else if (str.compareIgnoreCase("line_strip"    )) return GL_LINE_STRIP    ;
-    else if (str.compareIgnoreCase("line_loop"     )) return GL_LINE_LOOP     ;
-    else if (str.compareIgnoreCase("triangles"     )) return GL_TRIANGLES     ;
-    else if (str.compareIgnoreCase("triangle_strip")) return GL_TRIANGLE_STRIP;
-    else if (str.compareIgnoreCase("triangle_fan"  )) return GL_TRIANGLE_FAN  ;
+    if      (str.compareIgnoreCase("points"        ) == 0) return GL_POINTS        ;
+    else if (str.compareIgnoreCase("lines"         ) == 0) return GL_LINES         ;
+    else if (str.compareIgnoreCase("line_strip"    ) == 0) return GL_LINE_STRIP    ;
+    else if (str.compareIgnoreCase("line_loop"     ) == 0) return GL_LINE_LOOP     ;
+    else if (str.compareIgnoreCase("triangles"     ) == 0) return GL_TRIANGLES     ;
+    else if (str.compareIgnoreCase("triangle_strip") == 0) return GL_TRIANGLE_STRIP;
+    else if (str.compareIgnoreCase("triangle_fan"  ) == 0) return GL_TRIANGLE_FAN  ;
     else
         die("invalid GL primitive string representation: %s", str.toRawUTF8());
 }
@@ -454,11 +458,11 @@ treejuce::String gl_primitive_to_string(GLenum arg)
 
 GLenum gl_tex_wrap_from_string(const treejuce::String& str)
 {
-    if (str.compareIgnoreCase("clamp_to_edge"))
+    if (str.compareIgnoreCase("clamp_to_edge") == 0)
         return GL_CLAMP_TO_EDGE;
-    else if (str.compareIgnoreCase("mirrored_repeat"))
+    else if (str.compareIgnoreCase("mirrored_repeat") == 0)
         return GL_MIRRORED_REPEAT;
-    else if (str.compareIgnoreCase("repeat"))
+    else if (str.compareIgnoreCase("repeat") == 0)
         return GL_REPEAT;
     else
         die("invalid GL texture wrap string representation: %s", str.toRawUTF8());
