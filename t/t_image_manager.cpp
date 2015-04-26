@@ -13,7 +13,7 @@ using namespace treejuce;
 void TestFramework::content()
 {
     PackageManager* pkg_mgr = PackageManager::getInstance();
-    pkg_mgr->add_package(File("images.zip"), PackageManager::KEEP_EXISTING);
+    pkg_mgr->add_package(File("./images.zip"), PackageManager::KEEP_EXISTING);
 
     OK(pkg_mgr->has_resource("earth.png"));
     OK(pkg_mgr->has_resource("moon.jpg"));
@@ -78,4 +78,9 @@ void TestFramework::content()
         IS(ref_img.format, GL_ALPHA);
         IS(ref_img.type, GL_FLOAT);
     }
+
+    // delete managers, which will release object hold
+    // otherwise valgrind will report many possible losts
+    PackageManager::deleteInstance();
+    ImageManager::deleteInstance();
 }
