@@ -17,6 +17,9 @@ TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
 
+class VertexIndexBuffer;
+class VertexTemplate;
+
 class Geometry: public treejuce::Object
 {
 public:
@@ -40,15 +43,13 @@ public:
      */
     bool is_dirty() const NOEXCEPT;
 
-
     void mark_dirty() NOEXCEPT;
 
     GLenum get_primitive() const NOEXCEPT;
     void set_primitive(GLenum value) NOEXCEPT;
 
-    treejuce::MemoryBlock& get_vertex_store() NOEXCEPT;
-
-    treejuce::Array<treejuce::uint16>& get_index_store() NOEXCEPT;
+    treeface::VertexIndexBuffer* get_buffer() NOEXCEPT;
+    const VertexTemplate& get_vertex_template() const NOEXCEPT;
 
     /**
      * @brief send data to GL server side
@@ -57,9 +58,7 @@ public:
 
 protected:
     struct Impl;
-
     Impl* m_impl = nullptr;
-
 };
 
 TREEFACE_NAMESPACE_END

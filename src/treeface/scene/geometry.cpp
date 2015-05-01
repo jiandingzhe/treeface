@@ -27,12 +27,13 @@ struct Geometry::Impl
 {
     Array<HostVertexAttrib> attrs;
     VertexTemplate vtx_template;
-    VertexIndexBuffer buffer;
+    Holder<VertexIndexBuffer> buffer;
     GLenum primitive;
 };
 
 Geometry::Geometry(): m_impl(new Impl())
 {
+    m_impl->buffer = new VertexIndexBuffer;
 }
 
 Geometry::~Geometry()
@@ -92,9 +93,9 @@ treejuce::Result Geometry::build(const treejuce::var& geom_root_node) NOEXCEPT
     //
     const Array<var>* vtx_nodes = geom_root_node[KEY_VTX].getArray();
 
-    m_impl->buffer.m_data_vtx.setSize(vtx_size * vtx_nodes->size(), false);
+    m_impl->buffer->m_data_vtx.setSize(vtx_size * vtx_nodes->size(), false);
 
-    GLbyte* vtx_data = (GLbyte*) m_impl->buffer.m_data_vtx.getData();
+    GLbyte* vtx_data = (GLbyte*) m_impl->buffer->m_data_vtx.getData();
 
     for (int i_vtx = 0; i_vtx < vtx_nodes->size(); i_vtx++)
     {
@@ -129,20 +130,23 @@ treejuce::Result Geometry::build(const treejuce::var& geom_root_node) NOEXCEPT
         int idx = int(idx_nodes->getReference(i_idx));
         if (idx >= vtx_nodes->size())
             return Result::fail("vertex amount is "+String(vtx_nodes->size())+", but got index "+String(idx));
-        m_impl->buffer.m_data_idx.add(idx);
+        m_impl->buffer->m_data_idx.add(idx);
     }
+
+    // mark data change
+    m_impl->buffer->m_data_changed = true;
 
     return Result::ok();
 }
 
 bool Geometry::is_dirty() const NOEXCEPT
 {
-    return m_impl->buffer.m_data_changed;
+    return m_impl->buffer->m_data_changed;
 }
 
 void Geometry::mark_dirty() NOEXCEPT
 {
-    m_impl->buffer.m_data_changed = true;
+    m_impl->buffer->m_data_changed = true;
 }
 
 GLenum Geometry::get_primitive() const NOEXCEPT
@@ -155,14 +159,14 @@ void Geometry::set_primitive(GLenum value) NOEXCEPT
     m_impl->primitive = value;
 }
 
-treejuce::MemoryBlock& Geometry::get_vertex_store() NOEXCEPT
+treeface::VertexIndexBuffer* Geometry::get_buffer() NOEXCEPT
 {
-    return m_impl->buffer.m_data_vtx;
+    return m_impl->buffer.get();
 }
 
-treejuce::Array<treejuce::uint16>& Geometry::get_index_store() NOEXCEPT
+const VertexTemplate& Geometry::get_vertex_template() const NOEXCEPT
 {
-    return m_impl->buffer.m_data_idx;
+    return m_impl->vtx_template;
 }
 
 TREEFACE_NAMESPACE_END
