@@ -18,6 +18,8 @@ class Result;
 class var;
 TREEFACE_JUCE_NAMESPACE_END
 
+class TestFramework;
+
 TREEFACE_NAMESPACE_BEGIN
 class VertexArray;
 class Geometry;
@@ -26,6 +28,7 @@ class VertexIndexBuffer: public treejuce::Object
 {
     friend class VertexArray;
     friend class Geometry;
+    friend class ::TestFramework;
 public:
     VertexIndexBuffer();
 
