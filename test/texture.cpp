@@ -230,6 +230,11 @@ void main_loop(SDL_Window* window)
         printf("  use texture\n");
         texture->use();
 
+
+        //
+        // NOTE: the program must be used AFTER textures,
+        //       otherwise it will FUCK YOU SILENTLY!!!
+        //
         printf("  use program\n");
         program_tex->use();
         printf("  set sampler %u to uniform %d\n", 0 , uni_tex);
