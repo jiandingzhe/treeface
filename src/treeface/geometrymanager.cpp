@@ -91,7 +91,15 @@ treejuce::Result GeometryManager::get_geometry(const treejuce::String& name, Geo
     return Result::ok();
 }
 
-bool GeometryManager::has_geometry(const treejuce::String& name)
+treejuce::Result GeometryManager::get_geometry(const treejuce::String& name, treejuce::Holder<Geometry>& result)
+{
+    Geometry* geom = nullptr;
+    Result re = get_geometry(name, &geom);
+    result = geom;
+    return re;
+}
+
+bool GeometryManager::has_geometry(const treejuce::String& name) const NOEXCEPT
 {
     return m_impl->items.contains(name);
 }
