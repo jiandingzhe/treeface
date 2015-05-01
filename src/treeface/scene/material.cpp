@@ -2,9 +2,12 @@
 
 #include "treeface/image.h"
 #include "treeface/imagemanager.h"
+
 #include "treeface/gl/imageref.h"
 #include "treeface/gl/program.h"
+#include "treeface/gl/sampler.h"
 #include "treeface/gl/texture.h"
+
 #include "treeface/packagemanager.h"
 #include "treeface/programmanager.h"
 #include "treeface/stringcast.h"
@@ -26,6 +29,7 @@ struct TextureLayer
 {
     String name;
     Holder<Texture> gl_texture;
+    Holder<Sampler> gl_sampler;
     GLint layer;
     GLint program_uniform_idx;
 };
@@ -54,7 +58,7 @@ Material::~Material()
 #define KEY_PROJ_SHADOW  "project_shadow"
 #define KEY_RECV_SHADOW  "receive_shadow"
 #define KEY_TRANSLUSCENT "transluscent"
-#define KEY_TEXTURE          "textures"
+#define KEY_TEXTURE      "textures"
 
 PropertyValidator* _validator_ = nullptr;
 Result _validate_(const NamedValueSet& kv)
@@ -129,6 +133,8 @@ treejuce::Result Material::build(const treejuce::var& root_node)
             if (!tex_re)
                 return Result::fail("failed to build texture "+String(i_tex)+": "+tex_re.getErrorMessage());
 
+            Sampler* sampler_obj = new Sampler();
+
             // create texture layer
             // the "name" property should has been checked inside build method of Texture object
             String tex_name = tex_node.getProperty(Identifier("name"), var::null).toString();
@@ -136,7 +142,7 @@ treejuce::Result Material::build(const treejuce::var& root_node)
             if (uni_idx < 0)
                 return Result::fail("program don't have texture uniform named "+tex_name);
 
-            m_impl->layers.add({tex_name, tex_obj, i_tex, uni_idx});
+            m_impl->layers.add({tex_name, tex_obj, sampler_obj, i_tex, uni_idx});
         }
     }
 
@@ -170,6 +176,39 @@ Texture* Material::get_texture(treejuce::StringRef name) NOEXCEPT
     }
 
     return nullptr;
+}
+
+void Material::use() NOEXCEPT
+{
+
+    for (int i_layer = 0; i_layer < m_impl->layers.size(); i_layer++)
+    {
+        TextureLayer& curr_layer = m_impl->layers.getReference(i_layer);
+        jassert(i_layer == curr_layer.layer);
+
+        glActiveTexture(GL_TEXTURE0 + i_layer);
+        curr_layer.gl_sampler->use(i_layer);
+        curr_layer.gl_texture->use();
+        m_impl->program->instant_set_uniform(curr_layer.program_uniform_idx, *curr_layer.gl_sampler);
+    }
+
+    glActiveTexture(GL_TEXTURE0);
+    m_impl->program->use();
+}
+
+void Material::unuse() NOEXCEPT
+{
+    for (int i_layer = 0; i_layer < m_impl->layers.size(); i_layer++)
+    {
+        TextureLayer& curr_layer = m_impl->layers.getReference(i_layer);
+
+        glActiveTexture(GL_TEXTURE0 + i_layer);
+        curr_layer.gl_sampler->unuse(i_layer);
+        curr_layer.gl_texture->unuse();
+    }
+
+    glActiveTexture(GL_TEXTURE0);
+    m_impl->program->unuse();
 }
 
 

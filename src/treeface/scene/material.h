@@ -34,10 +34,13 @@ public:
     Texture* get_texture(treejuce::int32 layer_idx) NOEXCEPT;
     Texture* get_texture(treejuce::StringRef name) NOEXCEPT;
 
+    void use() NOEXCEPT;
+    void unuse() NOEXCEPT;
+
     JUCE_DECLARE_NON_COPYABLE(Material);
     JUCE_DECLARE_NON_MOVABLE(Material);
 
-protected:
+private:
     struct Impl;
 
     Impl* m_impl = nullptr;
