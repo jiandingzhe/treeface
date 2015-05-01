@@ -42,13 +42,13 @@ target_link_libraries(json_traverse
     ${TREEJUCE_LIBRARIES}
 )
 
-#add_executable(materials materials.cpp)
-#target_link_libraries(materials
-#    treeface
-#    ${TREEJUCE_LIBRARIES}
-#    ${FreeImage_LIBRARIES}
-#    ${SDL2_LIBRARY}
-#    ${GLEW_LIBRARY}
-#    ${OPENGL_gl_LIBRARY}
-#    ${OPENGL_glu_LIBRARY}
-#)
+add_executable(geometry_and_material geometry_and_material.cpp)
+target_link_libraries(geometry_and_material
+    treeface
+    ${TREEJUCE_LIBRARIES}
+    ${FreeImage_LIBRARIES}
+    ${SDL2_LIBRARY}
+    ${GLEW_LIBRARY}
+    ${OPENGL_gl_LIBRARY}
+    ${OPENGL_glu_LIBRARY}
+)
