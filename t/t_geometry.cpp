@@ -3,6 +3,8 @@
 #include "treeface/geometrymanager.h"
 #include "treeface/packagemanager.h"
 
+#include "treeface/gl/vertexindexbuffer.h"
+
 #include "treeface/scene/geometry.h"
 
 #include <treejuce/File.h>
@@ -60,47 +62,60 @@ void TestFramework::content()
 
     IS(geom->get_primitive(), GL_TRIANGLES);
 
-    MemoryBlock& data_vtx = geom->get_vertex_store();
+    VertexIndexBuffer* vtx_idx_buf = geom->get_buffer();
+    MemoryBlock& data_vtx = vtx_idx_buf->m_data_vtx;
     GLbyte* data_p = (GLbyte*) data_vtx.getData();
 
-    IS(data_vtx.getSize(), 64);
+    IS(data_vtx.getSize(), 96);
     IS(*(float*)(data_p + 0), 0);
     IS(*(float*)(data_p + 4), 0);
     IS(*(float*)(data_p + 8), 0);
 
-    IS(*(GLubyte*)(data_p + 12), 127);
-    IS(*(GLubyte*)(data_p + 13), 127);
-    IS(*(GLubyte*)(data_p + 14), 127);
-    IS(*(GLubyte*)(data_p + 15), 255);
+    IS(*(float*)(data_p + 12), 0);
+    IS(*(float*)(data_p + 16), 0);
 
-    IS(*(float*)(data_p + 16), 0.5);
-    IS(*(float*)(data_p + 20), 0);
-    IS(*(float*)(data_p + 24), 0);
+    IS(*(GLubyte*)(data_p + 20), 127);
+    IS(*(GLubyte*)(data_p + 21), 127);
+    IS(*(GLubyte*)(data_p + 22), 127);
+    IS(*(GLubyte*)(data_p + 23), 255);
 
-    IS(*(GLubyte*)(data_p + 28), 255);
-    IS(*(GLubyte*)(data_p + 29), 0);
-    IS(*(GLubyte*)(data_p + 30), 0);
-    IS(*(GLubyte*)(data_p + 31), 255);
-
+    IS(*(float*)(data_p + 24), 0.5);
+    IS(*(float*)(data_p + 28), 0);
     IS(*(float*)(data_p + 32), 0);
-    IS(*(float*)(data_p + 36), 0.5);
-    IS(*(float*)(data_p + 40), 0);
 
-    IS(*(GLubyte*)(data_p + 44), 0);
-    IS(*(GLubyte*)(data_p + 45), 255);
+    IS(*(float*)(data_p + 36), 0);
+    IS(*(float*)(data_p + 40), 1);
+
+    IS(*(GLubyte*)(data_p + 44), 255);
+    IS(*(GLubyte*)(data_p + 45), 0);
     IS(*(GLubyte*)(data_p + 46), 0);
     IS(*(GLubyte*)(data_p + 47), 255);
 
     IS(*(float*)(data_p + 48), 0);
-    IS(*(float*)(data_p + 52), 0);
-    IS(*(float*)(data_p + 56), 0.5);
+    IS(*(float*)(data_p + 52), 0.5);
+    IS(*(float*)(data_p + 56), 0);
 
-    IS(*(GLubyte*)(data_p + 60), 0);
-    IS(*(GLubyte*)(data_p + 61), 0);
-    IS(*(GLubyte*)(data_p + 62), 255);
-    IS(*(GLubyte*)(data_p + 63), 255);
+    IS(*(float*)(data_p + 60), 1);
+    IS(*(float*)(data_p + 64), 0);
 
-    Array<uint16>& data_idx = geom->get_index_store();
+    IS(*(GLubyte*)(data_p + 68), 0);
+    IS(*(GLubyte*)(data_p + 69), 255);
+    IS(*(GLubyte*)(data_p + 70), 0);
+    IS(*(GLubyte*)(data_p + 71), 255);
+
+    IS(*(float*)(data_p + 72), 0);
+    IS(*(float*)(data_p + 76), 0);
+    IS(*(float*)(data_p + 80), 0.5);
+
+    IS(*(float*)(data_p + 84), 1);
+    IS(*(float*)(data_p + 88), 1);
+
+    IS(*(GLubyte*)(data_p + 92), 0);
+    IS(*(GLubyte*)(data_p + 93), 0);
+    IS(*(GLubyte*)(data_p + 94), 255);
+    IS(*(GLubyte*)(data_p + 95), 255);
+
+    Array<uint16>& data_idx = vtx_idx_buf->m_data_idx;
     IS(data_idx.size(), 12);
     IS(data_idx[0], 0);
     IS(data_idx[1], 2);
