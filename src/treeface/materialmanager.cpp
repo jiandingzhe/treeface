@@ -75,6 +75,14 @@ Result MaterialManager::get_material(const String& name, Material** mat)
     return Result::ok();
 }
 
+treejuce::Result MaterialManager::get_material(const treejuce::String& name, treejuce::Holder<Material>& result)
+{
+    Material* mat_ptr = nullptr;
+    Result re = get_material(name, &mat_ptr);
+    result = mat_ptr;
+    return re;
+}
+
 bool MaterialManager::material_is_cached(const treejuce::String& name)
 {
     return m_impl->materials.contains(name);

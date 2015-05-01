@@ -3,6 +3,7 @@
 
 #include "treeface/common.h"
 
+#include <treejuce/Holder.h>
 #include <treejuce/Result.h>
 #include <treejuce/Singleton.h>
 #include <treejuce/String.h>
@@ -18,6 +19,9 @@ public:
     juce_DeclareSingleton(MaterialManager, false);
 
     treejuce::Result get_material(const treejuce::String& name, Material** mat);
+
+    treejuce::Result get_material(const treejuce::String& name, treejuce::Holder<Material>& mat);
+
     bool material_is_cached(const treejuce::String& name);
     bool release_material_hold(const treejuce::String& name);
 
