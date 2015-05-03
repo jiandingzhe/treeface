@@ -1,40 +1,11 @@
 #ifndef TREEFACE_MAT4_H
 #define TREEFACE_MAT4_H
 
+#include "treeface/math/matutils.h"
 #include "treeface/math/vec4.h"
 #include "treeface/math/quat.h"
 
 TREEFACE_NAMESPACE_BEGIN
-
-template<typename T, int SZ = sizeof(T) * 4>
-T det3x3(const treejuce::SIMDType<SZ>& v0,
-         const treejuce::SIMDType<SZ>& v1,
-         const treejuce::SIMDType<SZ>& v2);
-
-template<>
-inline float det3x3<float, 16>(const treejuce::SIMDType<16>& v0,
-                    const treejuce::SIMDType<16>& v1,
-                    const treejuce::SIMDType<16>& v2)
-{
-//        + v00 * v11 * v22
-//        + v02 * v10 * v21
-//        + v01 * v12 * v20
-//        - v02 * v11 * v20
-//        - v01 * v10 * v22
-//        - v00 * v12 * v21
-    treejuce::SIMDType<16> tmp1 = treejuce::simd_shuffle<0, 2, 1, 0>(v0);
-    treejuce::SIMDType<16> tmp2 = treejuce::simd_shuffle<1, 0, 2, 0>(v1);
-    treejuce::SIMDType<16> tmp3 = treejuce::simd_shuffle<2, 1, 0, 0>(v2);
-    treejuce::SIMDType<16> re = treejuce::simd_mul<float>(tmp1, treejuce::simd_mul<float>(tmp2, tmp3));
-
-    tmp1 = treejuce::simd_shuffle<2, 1, 0, 0>(v0);
-    tmp2 = treejuce::simd_shuffle<1, 0, 2, 0>(v1);
-    tmp3 = treejuce::simd_shuffle<0, 2, 1, 0>(v2);
-
-    re = treejuce::simd_sub<float>(re, treejuce::simd_mul<float>(tmp1, treejuce::simd_mul<float>(tmp2, tmp3)));
-    re = treejuce::simd_and<std::int32_t>(re, treejuce::simd_set<std::int32_t, 16>(0xffffffff, 0xffffffff, 0xffffffff, 0));
-    return treejuce::simd_sum<float>(re);
-}
 
 template<typename T, int SZ = sizeof(T) * 4>
 struct Mat4
@@ -170,6 +141,20 @@ struct Mat4
         data[3] = tmp3;
     }
 
+    Mat4<T> get_normal_matrix() const NOEXCEPT
+    {
+        Mat4<T> re(*this);
+
+        treejuce::simd_set_one<3, T>(re.data[0], 0);
+        treejuce::simd_set_one<3, T>(re.data[1], 0);
+        treejuce::simd_set_one<3, T>(re.data[2], 0);
+        re.data[3] = treejuce::simd_set<T, SZ>(0, 0, 0, 1);
+
+        re.inverse();
+        re.transpose();
+        return re;
+    }
+
     /**
      * @brief calculate matrix determinant
      * @return determinant value
@@ -222,6 +207,9 @@ struct Mat4
         // 30 31 32 33
         T det4 = determinant();
 
+        if (det4 == 0)
+            return 0;
+
         T v00 = + det3x3<T, SZ>(treejuce::simd_shuffle<1, 2, 3, 0>(data[1]), treejuce::simd_shuffle<1, 2, 3, 0>(data[2]), treejuce::simd_shuffle<1, 2, 3, 0>(data[3])) / det4;
         T v10 = - det3x3<T, SZ>(treejuce::simd_shuffle<1, 2, 3, 0>(data[0]), treejuce::simd_shuffle<1, 2, 3, 0>(data[2]), treejuce::simd_shuffle<1, 2, 3, 0>(data[3])) / det4;
         T v20 = + det3x3<T, SZ>(treejuce::simd_shuffle<1, 2, 3, 0>(data[0]), treejuce::simd_shuffle<1, 2, 3, 0>(data[1]), treejuce::simd_shuffle<1, 2, 3, 0>(data[3])) / det4;
@@ -246,6 +234,8 @@ struct Mat4
 
         return det4;
     }
+
+
 
     /**
      * @brief set first 3x3 dimention to rotate matrix using specified quaternion. The 4th translation column is untouched.
