@@ -54,7 +54,7 @@ public:
 
     void use() NOEXCEPT;
 
-    inline void unuse() const NOEXCEPT
+    inline static void unuse() NOEXCEPT
     {
         glUseProgram(0);
     }
