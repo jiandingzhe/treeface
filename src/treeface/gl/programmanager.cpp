@@ -1,6 +1,9 @@
+#include "treeface/gl/programmanager.h"
+
 #include "treeface/gl/program.h"
+#include "treeface/gl/sceneprogram.h"
+
 #include "treeface/packagemanager.h"
-#include "treeface/programmanager.h"
 
 #include <treejuce/HashMap.h>
 #include <treejuce/Holder.h>
@@ -24,8 +27,6 @@ using namespace treejuce;
 
 TREEFACE_NAMESPACE_BEGIN
 
-juce_ImplementSingleton(ProgramManager);
-
 struct ProgramManager::Impl
 {
     HashMap<String, Holder<Program> > programs;
@@ -36,7 +37,7 @@ inline String _format_key_(const treejuce::String& name_vertex, const treejuce::
     return name_vertex + "|||" + name_fragment;
 }
 
-Result ProgramManager::get_program(const treejuce::String& name_vertex, const treejuce::String& name_fragment, Program** program_pp)
+Result ProgramManager::get_program(const treejuce::String& name_vertex, const treejuce::String& name_fragment, bool scene_additive, Program** program_pp)
 {
     String key = _format_key_(name_vertex, name_fragment);
 
@@ -63,19 +64,14 @@ Result ProgramManager::get_program(const treejuce::String& name_vertex, const tr
             return Result::fail("failed to get fragment shader source code using name \""+name_fragment+"\"");
         }
 
-        Holder<Program> program = new Program();
+        Holder<Program> program = scene_additive ? new SceneProgram() : new Program();
         Result program_re = program->build((char*)src_vertex.get_data(), (char*)src_frag.get_data());
 
         if (!program_re)
         {
             *program_pp = nullptr;
             return Result::fail("failed to create program using \""+name_vertex+"\" and \""+name_fragment+"\":\n"+
-                                program_re.getErrorMessage()+"\n"
-                                "source code:\n"
-                                "==== vertex shader ====\n" +
-                                String((char*)src_vertex.get_data())+"\n"
-                                "==== fragment shader ====\n" +
-                                String((char*)src_frag.get_data()));
+                                program_re.getErrorMessage()+"\n");
         }
 
         m_impl->programs.set(key, program);
