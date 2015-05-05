@@ -41,9 +41,8 @@ public:
     /**
      * @brief create shader and program object, compile source, link
      * @param src_vert
-     * @param src_geom
      * @param src_frag
-     * @return
+     * @return ok if success, fail if any compilation and link error occurred.
      */
     treejuce::Result build(const char* src_vert, const char* src_frag);
 
@@ -97,6 +96,8 @@ public:
 
 protected:
     struct Impl;
+
+    virtual void preprocess_shader_source(treejuce::String& src_vertex, treejuce::String& src_fragment) const;
 
     treejuce::Result fetch_shader_error_log(GLuint shader);
     treejuce::Result fetch_program_error_log();
