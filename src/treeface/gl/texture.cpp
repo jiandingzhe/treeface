@@ -2,8 +2,8 @@
 #include "treeface/gl/texture.h"
 #include "treeface/image.h"
 #include "treeface/imagemanager.h"
-#include "treeface/stringcast.h"
 #include "treeface/misc/propertyvalidator.h"
+#include "treeface/misc/stringcast.h"
 
 #include <treejuce/DynamicObject.h>
 #include <treejuce/Logger.h>

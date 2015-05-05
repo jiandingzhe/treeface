@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "treeface/stringcast.h"
+#include "treeface/misc/stringcast.h"
 
 using namespace std;
 using namespace treeface;

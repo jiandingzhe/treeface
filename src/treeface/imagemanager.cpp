@@ -1,7 +1,7 @@
 #include "treeface/image.h"
 #include "treeface/imagemanager.h"
 #include "treeface/packagemanager.h"
-#include "treeface/stringcast.h"
+#include "treeface/misc/stringcast.h"
 
 #include <FreeImage.h>
 

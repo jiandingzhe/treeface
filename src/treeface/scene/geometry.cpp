@@ -7,7 +7,7 @@
 
 #include "treeface/misc/propertyvalidator.h"
 
-#include "treeface/stringcast.h"
+#include "treeface/misc/stringcast.h"
 
 #include <treejuce/Array.h>
 #include <treejuce/CriticalSection.h>

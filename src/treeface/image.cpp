@@ -1,5 +1,5 @@
 #include "treeface/image.h"
-#include "treeface/stringcast.h"
+#include "treeface/misc/stringcast.h"
 
 #include "treeface/gl/imageref.h"
 
