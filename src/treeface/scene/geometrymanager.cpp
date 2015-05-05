@@ -1,4 +1,4 @@
-#include "treeface/geometrymanager.h"
+#include "treeface/scene/geometrymanager.h"
 #include "treeface/packagemanager.h"
 
 #include "treeface/scene/geometry.h"
@@ -24,8 +24,6 @@ TREEFACE_JUCE_NAMESPACE_END
 using namespace treejuce;
 
 TREEFACE_NAMESPACE_BEGIN
-
-juce_ImplementSingleton(GeometryManager);
 
 struct GeometryManager::Impl
 {

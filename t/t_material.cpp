@@ -3,9 +3,9 @@
 #include "treeface/scene/material.h"
 
 #include "treeface/imagemanager.h"
-#include "treeface/materialmanager.h"
+#include "treeface/scene/materialmanager.h"
 #include "treeface/packagemanager.h"
-#include "treeface/programmanager.h"
+#include "treeface/gl/programmanager.h"
 
 #include <treejuce/File.h>
 #include <treejuce/JSON.h>
@@ -60,10 +60,11 @@ void TestFramework::content()
 
     PackageManager* pkg_mgr = PackageManager::getInstance();
     ImageManager* img_mgr = ImageManager::getInstance();
-    MaterialManager* mat_mgr = MaterialManager::getInstance();
-    ProgramManager* prog_mgr = ProgramManager::getInstance();
 
-    pkg_mgr->add_package(File("resource.zip"), PackageManager::KEEP_EXISTING);
+    Holder<ProgramManager> prog_mgr = new ProgramManager();
+    Holder<MaterialManager> mat_mgr = new MaterialManager(prog_mgr);
+
+    pkg_mgr->add_package(File("./resource.zip"), PackageManager::KEEP_EXISTING);
 
     // material 1
     {
@@ -74,7 +75,7 @@ void TestFramework::content()
 
         ok(prog_mgr->program_is_cached("common_vertex.glsl", "frag_one_tex.glsl"), "program common_vertex.glsl frag_one_tex.glsl is cached");
         Program* program_from_mgr = nullptr;
-        OK(prog_mgr->get_program("common_vertex.glsl", "frag_one_tex.glsl", &program_from_mgr));
+        OK(prog_mgr->get_program("common_vertex.glsl", "frag_one_tex.glsl", false, &program_from_mgr));
         IS(mat1->get_program(), program_from_mgr);
 
         IS(mat1->get_num_textures(), 1);
@@ -95,9 +96,7 @@ void TestFramework::content()
     }
 
     // suppress valgrind warnings
-    ProgramManager::deleteInstance();
     PackageManager::deleteInstance();
-    MaterialManager::deleteInstance();
     ImageManager::deleteInstance();
 
     SDL_GL_DeleteContext(context);

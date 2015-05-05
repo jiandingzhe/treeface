@@ -1,4 +1,4 @@
-#include "treeface/stringcast.h"
+#include "treeface/misc/stringcast.h"
 
 #include <treejuce/StringRef.h>
 

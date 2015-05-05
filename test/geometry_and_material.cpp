@@ -3,15 +3,15 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-#include "treeface/geometrymanager.h"
-#include "treeface/programmanager.h"
 #include "treeface/packagemanager.h"
-#include "treeface/materialmanager.h"
 
 #include "treeface/scene/geometry.h"
+#include "treeface/scene/geometrymanager.h"
 #include "treeface/scene/material.h"
+#include "treeface/scene/materialmanager.h"
 
 #include "treeface/gl/program.h"
+#include "treeface/gl/programmanager.h"
 #include "treeface/gl/texture.h"
 #include "treeface/gl/vertexarray.h"
 #include "treeface/gl/vertexindexbuffer.h"
@@ -61,12 +61,13 @@ void build_up_sdl(SDL_Window** window, SDL_GLContext* context)
     }
 }
 
-GeometryManager* geo_mgr = nullptr;
-MaterialManager* mat_mgr = nullptr;
+Holder<GeometryManager> geo_mgr;
+Holder<ProgramManager> prg_mgr;
+Holder<MaterialManager> mat_mgr;
 PackageManager* pkg_mgr = nullptr;
 VertexArray* vao = nullptr;
 
-String name_geo("geom_simple.json");
+String name_geo("geom_cube.json");
 String name_mat("material1.json");
 
 Holder<Geometry> geo = nullptr;
@@ -74,8 +75,11 @@ Holder<Material> mat = nullptr;
 
 void build_up_gl()
 {
-    geo_mgr = GeometryManager::getInstance();
-    mat_mgr = MaterialManager::getInstance();
+    glEnable(GL_DEPTH_TEST);
+
+    geo_mgr = new GeometryManager();
+    prg_mgr = new ProgramManager();
+    mat_mgr = new MaterialManager(prg_mgr);
     pkg_mgr = PackageManager::getInstance();
 
     String pkg_file_name("./resource.zip");
@@ -120,15 +124,14 @@ void build_up_gl()
 
 void main_loop(SDL_Window* window)
 {
-    GLint idx_uni_mat = mat->get_program()->get_uniform_index("model_view_mat");
+    GLint idx_uni_mat = mat->get_program()->get_uniform_index("matrix_model_view");
     Mat4f model_view_mat;
-
 
     float angle = 0;
 
     while (1)
     {
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // process events
         SDL_Event event{};
@@ -152,7 +155,7 @@ void main_loop(SDL_Window* window)
         if (should_exit) break;
 
         angle += 0.02;
-        Quatf rot(angle, Vec4f(1, 0, 0, 0));
+        Quatf rot(angle, Vec4f(1, 1, 0, 0));
         model_view_mat.set_rotate(rot);
 
         mat->use();

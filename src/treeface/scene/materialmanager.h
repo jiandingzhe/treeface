@@ -4,21 +4,32 @@
 #include "treeface/common.h"
 
 #include <treejuce/Holder.h>
+#include <treejuce/Object.h>
 #include <treejuce/Result.h>
-#include <treejuce/Singleton.h>
 #include <treejuce/String.h>
+
+TREEFACE_JUCE_NAMESPACE_BEGIN
+class var;
+TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
 class Material;
+class ProgramManager;
 
-class MaterialManager
+class MaterialManager: public treejuce::Object
 {
 public:
+    MaterialManager() = delete;
+    MaterialManager(ProgramManager* prog_mgr);
+
     JUCE_DECLARE_NON_COPYABLE(MaterialManager);
     JUCE_DECLARE_NON_MOVABLE(MaterialManager);
-    juce_DeclareSingleton(MaterialManager, false);
 
-    treejuce::Result get_material(const treejuce::String& name, Material** mat);
+    virtual ~MaterialManager();
+
+    treejuce::Result build_material(const treejuce::var& data, Material* mat);
+
+    treejuce::Result get_material(const treejuce::String& name, Material** mat_pp);
 
     treejuce::Result get_material(const treejuce::String& name, treejuce::Holder<Material>& mat);
 
@@ -27,9 +38,6 @@ public:
 
 protected:
     struct Impl;
-
-    MaterialManager();
-    ~MaterialManager();
 
     Impl* m_impl = nullptr;
 };

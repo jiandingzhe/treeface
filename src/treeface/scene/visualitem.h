@@ -36,15 +36,13 @@ public:
 
     JUCE_DECLARE_NON_COPYABLE(VisualItem);
 
-    treejuce::Result build(const treejuce::String& geom_name, const treejuce::String& mat_name) NOEXCEPT;
-    treejuce::Result build(const treejuce::var& node) NOEXCEPT;
     treejuce::Result build(Geometry* geom, Material* mat) NOEXCEPT;
 
     Material* get_material() NOEXCEPT;
     Geometry* get_geometry() NOEXCEPT;
     VertexArray* get_vertex_array() NOEXCEPT;
 
-private:
+protected:
     struct Impl;
     Impl* m_impl = nullptr;
 };

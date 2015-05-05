@@ -3,9 +3,6 @@
 #include "treeface/scene/geometry.h"
 #include "treeface/gl/vertexarray.h"
 
-#include "treeface/geometrymanager.h"
-#include "treeface/materialmanager.h"
-
 #include "treeface/misc/propertyvalidator.h"
 
 #include <treejuce/DynamicObject.h>
@@ -35,53 +32,6 @@ VisualItem::~VisualItem()
         delete m_impl;
 }
 
-treejuce::Result VisualItem::build(const treejuce::String& geom_name, const treejuce::String& mat_name) NOEXCEPT
-{
-    Geometry* geom = nullptr;
-    Result re_geom = GeometryManager::getInstance()->get_geometry(geom_name, &geom);
-    if (!re_geom)
-        return re_geom;
-
-    Material* mat = nullptr;
-    Result re_mat = MaterialManager::getInstance()->get_material(mat_name, &mat);
-    if (!re_mat)
-        return re_mat;
-
-    return build(geom, mat);
-}
-
-#define KEY_MAT "material"
-#define KEY_GEO "geometry"
-Result _validate_(const treejuce::NamedValueSet& kv)
-{
-    static PropertyValidator* validator = nullptr;
-    if (!validator)
-    {
-        validator = new PropertyValidator();
-        validator->add_item(KEY_MAT, PropertyValidator::ITEM_SCALAR, true);
-        validator->add_item(KEY_GEO, PropertyValidator::ITEM_SCALAR, true);
-    }
-
-    return validator->validate(kv);
-}
-
-treejuce::Result VisualItem::build(const treejuce::var& node) NOEXCEPT
-{
-    if (!node.isObject())
-        return Result::fail("visual item node is not KV");
-
-    const NamedValueSet& node_kv = node.getDynamicObject()->getProperties();
-    {
-        Result re = _validate_(node_kv);
-        if (!re)
-            return re;
-    }
-
-    String name_mat = node_kv[KEY_MAT].toString();
-    String name_geo = node_kv[KEY_GEO].toString();
-
-    return build(name_geo, name_mat);
-}
 
 treejuce::Result VisualItem::build(Geometry* geom, Material* mat) NOEXCEPT
 {

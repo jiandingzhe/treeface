@@ -14,20 +14,20 @@ TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
 
+class MaterialManager;
 class Program;
-class Texture;
 class Renderer;
+class Texture;
 
 class Material: public treejuce::Object
 {
+    friend class MaterialManager;
     friend class Renderer;
 
 public:
     Material();
 
     virtual ~Material();
-
-    treejuce::Result build(const treejuce::var& root_node);
 
     Program* get_program() NOEXCEPT;
     treejuce::int32 get_num_textures() const NOEXCEPT;

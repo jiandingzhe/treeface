@@ -14,11 +14,13 @@ class var;
 TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
-
+class NodeManager;
 class VisualItem;
 
 class Node: public treejuce::Object
 {
+    friend class NodeManager;
+
 public:
     Node();
 
@@ -37,8 +39,6 @@ public:
     }
 
     virtual ~Node();
-
-    treejuce::Result build(const treejuce::var& node_var);
 
     const Mat4f& get_transform() NOEXCEPT;
     const Mat4f& get_global_transform() NOEXCEPT;

@@ -4,7 +4,7 @@
 #include "treeface/common.h"
 
 #include <treejuce/Holder.h>
-#include <treejuce/Singleton.h>
+#include <treejuce/Object.h>
 #include <treejuce/String.h>
 #include <treejuce/Result.h>
 
@@ -13,12 +13,15 @@ TREEFACE_NAMESPACE_BEGIN
 
 class Geometry;
 
-class GeometryManager
+class GeometryManager: public treejuce::Object
 {
 public:
+    GeometryManager();
+
     JUCE_DECLARE_NON_COPYABLE(GeometryManager);
     JUCE_DECLARE_NON_MOVABLE(GeometryManager);
-    juce_DeclareSingleton(GeometryManager, false);
+
+    virtual ~GeometryManager();
 
     treejuce::Result get_geometry(const treejuce::String& name, Geometry** result);
 
@@ -29,9 +32,6 @@ public:
 
 private:
     struct Impl;
-
-    GeometryManager();
-    ~GeometryManager();
 
     Impl* m_impl;
 };

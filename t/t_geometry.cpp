@@ -1,6 +1,6 @@
 #include "TestFramework.h"
 
-#include "treeface/geometrymanager.h"
+#include "treeface/scene/geometrymanager.h"
 #include "treeface/packagemanager.h"
 
 #include "treeface/gl/vertexindexbuffer.h"
@@ -53,7 +53,7 @@ void TestFramework::content()
     build_up_sdl(&window, &context);
 
     PackageManager* pkg_mgr = PackageManager::getInstance();
-    GeometryManager* geom_mgr = GeometryManager::getInstance();
+    Holder<GeometryManager> geom_mgr = new GeometryManager();
 
     pkg_mgr->add_package(File("./resource.zip"), PackageManager::KEEP_EXISTING);
 
