@@ -28,8 +28,23 @@ public:
 
     virtual ~NodeManager();
 
-    treejuce::Result get_node(const treejuce::String& name, Node** node_pp);
-    bool has_node(const treejuce::String& name);
+    treejuce::Result add_nodes(const treejuce::var& data);
+
+    /**
+     * @brief
+     * @param data_name
+     * @return
+     * @see add_nodes(const treejuce::var& data)
+     */
+    treejuce::Result add_nodes(const treejuce::String& data_name);
+
+    /**
+     * @brief get named node object
+     * @param name
+     * @return If has node object with name, return node object; otherwise
+     *         return nullptr.
+     */
+    Node* get_node(const treejuce::String& name);
 
     treejuce::Result build_visual_item(const treejuce::var& data, VisualItem* visual_item);
     treejuce::Result build_node(const treejuce::var& data, Node* node);

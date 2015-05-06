@@ -13,9 +13,13 @@
 
 #include "treeface/private/node_private.h"
 
+#include "treeface/packagemanager.h"
+
 #include <treejuce/CriticalSection.h>
 #include <treejuce/DynamicObject.h>
 #include <treejuce/HashMap.h>
+#include <treejuce/JSON.h>
+#include <treejuce/MemoryBlock.h>
 #include <treejuce/NamedValueSet.h>
 #include <treejuce/Result.h>
 #include <treejuce/Variant.h>
@@ -37,6 +41,47 @@ NodeManager::NodeManager(GeometryManager* geo_mgr, MaterialManager* mat_mgr)
 {
     m_impl->geo_mgr = geo_mgr;
     m_impl->mat_mgr = mat_mgr;
+}
+
+NodeManager::~NodeManager()
+{
+    if (m_impl)
+        delete m_impl;
+}
+
+treejuce::Result NodeManager::add_nodes(const treejuce::var& data)
+{
+    Node* root_node = new Node();
+    return build_node(data, root_node);
+}
+
+treejuce::Result NodeManager::add_nodes(const treejuce::String& data_name)
+{
+    MemoryBlock json_src;
+    Result item_re = PackageManager::getInstance()->get_item_data(data_name, json_src);
+    if (!item_re)
+        return Result::fail("NodeManager: failed to get nodes:\n" +
+                            item_re.getErrorMessage());
+
+    var data;
+    Result json_re = JSON::parse((char*)json_src.getData(), data);
+    if (!json_re)
+        return Result::fail("NodeManager: failed to parse JSON content:\n" +
+                            json_re.getErrorMessage() + "\n\n" +
+                            String("==== JSON source ====\n\n") +
+                            String((char*)json_src.getData()) + "\n" +
+                            String("==== end of JSON source ====\n")
+                            );
+
+    return add_nodes(data);
+}
+
+Node* NodeManager::get_node(const treejuce::String& name)
+{
+    if (m_impl->nodes.contains(name))
+    {
+        return m_impl->nodes[name].get();
+    }
 }
 
 #define KEY_VISUAL_MAT "material"
@@ -84,8 +129,9 @@ treejuce::Result NodeManager::build_visual_item(const var &data, VisualItem *vis
     return visual_item->build(geom, mat);
 }
 
-#define KEY_TRANS "transform"
-#define KEY_CHILD "children"
+#define KEY_ID     "id"
+#define KEY_TRANS  "transform"
+#define KEY_CHILD  "children"
 #define KEY_VISUAL "visual_items"
 
 Result _validate_node_(const NamedValueSet& kv)
@@ -94,9 +140,10 @@ Result _validate_node_(const NamedValueSet& kv)
     if (!validator)
     {
         validator = new PropertyValidator();
-        validator->add_item(KEY_TRANS, PropertyValidator::ITEM_ARRAY, false);
-        validator->add_item(KEY_CHILD, PropertyValidator::ITEM_ARRAY, false);
-        validator->add_item(KEY_VISUAL, PropertyValidator::ITEM_ARRAY, false);
+        validator->add_item(KEY_ID,     PropertyValidator::ITEM_SCALAR, false);
+        validator->add_item(KEY_TRANS,  PropertyValidator::ITEM_ARRAY,  false);
+        validator->add_item(KEY_CHILD,  PropertyValidator::ITEM_ARRAY,  false);
+        validator->add_item(KEY_VISUAL, PropertyValidator::ITEM_ARRAY,  false);
     }
     return validator->validate(kv);
 }
@@ -163,6 +210,14 @@ treejuce::Result NodeManager::build_node(const treejuce::var& data, Node* node)
             child->m_impl->global_dirty = true;
             node->m_impl->child_nodes.add(child);
         }
+    }
+
+    //
+    // if has ID, store it
+    //
+    if (data_kv.contains(KEY_ID))
+    {
+        m_impl->nodes.set(data_kv[KEY_ID].toString(), node);
     }
 
     return Result::ok();
