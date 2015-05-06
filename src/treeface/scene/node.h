@@ -56,7 +56,7 @@ public:
     bool add_child(Node* child);
     bool has_child(Node* child) const NOEXCEPT;
     bool remove_child(Node* child) NOEXCEPT;
-    int get_num_child() const NOEXCEPT;
+    int get_num_children() const NOEXCEPT;
     Node* get_child_at(int idx) NOEXCEPT;
 
     Node* get_parent() NOEXCEPT;

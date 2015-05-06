@@ -126,7 +126,7 @@ bool Node::remove_child(Node* child) NOEXCEPT
     }
 }
 
-int Node::get_num_child() const NOEXCEPT
+int Node::get_num_children() const NOEXCEPT
 {
     return m_impl->child_nodes.size();
 }
