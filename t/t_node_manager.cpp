@@ -140,12 +140,24 @@ void TestFramework::content()
     IS(node_b->get_num_visual_items(), 2);
 
     VisualItem* visual_b1 = node_b->get_visual_item_at(0);
-    IS(visual_b1->get_geometry(), geom_cube);
-    IS(visual_b1->get_material(), material_plain);
-
     VisualItem* visual_b2 = node_b->get_visual_item_at(1);
-    IS(visual_b2->get_geometry(), geom_colored);
-    IS(visual_b2->get_material(), material1);
+
+    if (visual_b1->get_geometry() == geom_cube)
+    {
+        IS(visual_b1->get_geometry(), geom_cube);
+        IS(visual_b1->get_material(), material_plain);
+
+        IS(visual_b2->get_geometry(), geom_colored);
+        IS(visual_b2->get_material(), material1);
+    }
+    else
+    {
+        IS(visual_b1->get_geometry(), geom_colored);
+        IS(visual_b1->get_material(), material1);
+
+        IS(visual_b2->get_geometry(), geom_cube);
+        IS(visual_b2->get_material(), material_plain);
+    }
 
     SDL_GL_DeleteContext(context);
     SDL_Quit();
