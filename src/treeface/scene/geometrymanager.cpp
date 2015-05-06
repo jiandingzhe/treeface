@@ -88,7 +88,7 @@ treejuce::Result GeometryManager::get_geometry(const treejuce::String& name, tre
     return re;
 }
 
-bool GeometryManager::has_geometry(const treejuce::String& name) const NOEXCEPT
+bool GeometryManager::geometry_is_cached(const treejuce::String& name) const NOEXCEPT
 {
     return m_impl->items.contains(name);
 }

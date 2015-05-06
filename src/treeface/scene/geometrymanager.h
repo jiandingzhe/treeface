@@ -27,7 +27,7 @@ public:
 
     treejuce::Result get_geometry(const treejuce::String& name, treejuce::Holder<Geometry>& result);
 
-    bool has_geometry(const treejuce::String& name) const NOEXCEPT;
+    bool geometry_is_cached(const treejuce::String& name) const NOEXCEPT;
     bool release_geometry_hold(const treejuce::String& name);
 
 private:
