@@ -1,7 +1,6 @@
 #ifndef TREEFACE_PACKAGE_MANAGER_H
 #define TREEFACE_PACKAGE_MANAGER_H
 
-#include <treejuce/ArrayRef.h>
 #include <treejuce/MathsFunctions.h>
 #include <treejuce/Singleton.h>
 #include <treejuce/String.h>
@@ -14,6 +13,7 @@ class File;
 class InputStream;
 class Result;
 class ZipFile;
+class MemoryBlock;
 TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
@@ -73,10 +73,15 @@ public:
     /**
      * @brief get the raw data of an item
      * @param name: item name
-     * @return the raw data of this item. User is responsible for free the data
-     *         when it is no longer needed.
+     * @param data: the place to store data. Existing data in this memory block
+     *              object will be erased. A trailing '0' will be appended after
+     *              the end of data, so that it can be directly used as a C
+     *              string. As a result, the size of memory block will be set to
+     *              data size + 1, be careful with that.
+     * @return ok if success, otherwise fail.
      */
-    treejuce::ArrayRef<treejuce::uint8> get_item_data(const treejuce::String& name);
+    treejuce::Result get_item_data(const treejuce::String& name,
+                                   treejuce::MemoryBlock& data);
 
     bool has_resource(const treejuce::String& name) const NOEXCEPT;
 

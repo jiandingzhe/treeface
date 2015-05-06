@@ -6,20 +6,10 @@
 #include <treejuce/HashMap.h>
 #include <treejuce/Holder.h>
 #include <treejuce/JSON.h>
+#include <treejuce/MemoryBlock.h>
 #include <treejuce/Result.h>
 #include <treejuce/ScopedPointer.h>
 #include <treejuce/String.h>
-
-TREEFACE_JUCE_NAMESPACE_BEGIN
-template <>
-struct ContainerDeletePolicy<uint8>
-{
-    static void destroy (uint8* ptr)
-    {
-        free(ptr);
-    }
-};
-TREEFACE_JUCE_NAMESPACE_END
 
 using namespace treejuce;
 
@@ -49,25 +39,26 @@ treejuce::Result GeometryManager::get_geometry(const treejuce::String& name, Geo
     }
 
     // get raw data from package manager
-    ArrayRef<uint8> data = PackageManager::getInstance()->get_item_data(name);
-    ScopedPointer<uint8> data_holder(data.get_data());
+    MemoryBlock data;
+    Result item_re = PackageManager::getInstance()->get_item_data(name, data);
 
-    if (!data.get_data())
+    if (!item_re)
     {
         *result = nullptr;
-        return Result::fail("failed to get geometry data from package manager using name \""+name+"\"");
+        return Result::fail("failed to get geometry data:\n" +
+                            item_re.getErrorMessage());
     }
 
     // parse JSON
     var geom_root_node;
-    Result json_re = JSON::parse((const char*)data.get_data(), geom_root_node);
+    Result json_re = JSON::parse((const char*)data.getData(), geom_root_node);
 
     if (!json_re)
     {
         *result = nullptr;
         return Result::fail(String("failed to parse geometry JSON content for \"") + name + String("\":\n") +
                             json_re.getErrorMessage() + String("\n") +
-                            String((const char*)data.get_data())
+                            String((const char*)data.getData())
                             );
     }
 
@@ -80,7 +71,7 @@ treejuce::Result GeometryManager::get_geometry(const treejuce::String& name, Geo
         *result = nullptr;
         return Result::fail(String("failed to build geometry using JSON content for \"") + name + String("\":\n") +
                             geom_re.getErrorMessage() + String("\n") +
-                            String((const char*)data.get_data())
+                            String((const char*)data.getData())
                             );
     }
 

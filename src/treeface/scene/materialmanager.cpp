@@ -13,19 +13,9 @@
 #include <treejuce/DynamicObject.h>
 #include <treejuce/HashMap.h>
 #include <treejuce/Holder.h>
+#include <treejuce/MemoryBlock.h>
 #include <treejuce/JSON.h>
 #include <treejuce/String.h>
-
-TREEFACE_JUCE_NAMESPACE_BEGIN
-template <>
-struct ContainerDeletePolicy<uint8>
-{
-    static void destroy (uint8* ptr)
-    {
-        free(ptr);
-    }
-};
-TREEFACE_JUCE_NAMESPACE_END
 
 
 using namespace treejuce;
@@ -176,24 +166,24 @@ Result MaterialManager::get_material(const String& name, Material** mat_pp)
         return Result::ok();
     }
 
-    ArrayRef<uint8> mat_data = PackageManager::getInstance()->get_item_data(name);
-    if (!mat_data.get_data())
+    MemoryBlock mat_data;
+    Result item_re = PackageManager::getInstance()->get_item_data(name, mat_data);
+    if (!item_re)
     {
         *mat_pp = nullptr;
-        return Result::fail("failed to get material config from package manager using name \""+name+"\"");
+        return Result::fail("failed to get material config:\n" +
+                            item_re.getErrorMessage());
     }
 
-    ScopedPointer<uint8> mat_data_scope(mat_data.get_data());
-
     var mat_root_node;
-    Result json_re = JSON::parse((char*)mat_data.get_data(), mat_root_node);
+    Result json_re = JSON::parse((char*)mat_data.getData(), mat_root_node);
     if (!json_re)
     {
         *mat_pp = nullptr;
         return Result::fail(String("failed to parse material JSON content for \"") + name + String("\":\n") +
                             json_re.getErrorMessage() + String("\n") +
                             "==== material JSON content ====\n\n" +
-                            String((const char*)mat_data.get_data()) + "\n" +
+                            String((const char*)mat_data.getData()) + "\n" +
                             "==== end of JSON content ====\n\n"
                             );
     }
@@ -206,7 +196,7 @@ Result MaterialManager::get_material(const String& name, Material** mat_pp)
         return Result::fail(String("failed to build material using JSON content for \"") + name + String("\":\n") +
                             mat_re.getErrorMessage() + "\n" +
                             "==== material JSON content ====\n\n" +
-                            String((const char*)mat_data.get_data()) + "\n" +
+                            String((const char*)mat_data.getData()) + "\n" +
                             "==== end of JSON content ====\n\n"
                             );
     }

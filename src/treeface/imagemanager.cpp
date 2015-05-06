@@ -7,19 +7,8 @@
 
 #include <treejuce/HashMap.h>
 #include <treejuce/Holder.h>
+#include <treejuce/MemoryBlock.h>
 #include <treejuce/ScopedPointer.h>
-
-TREEFACE_JUCE_NAMESPACE_BEGIN
-template <>
-struct ContainerDeletePolicy<uint8>
-{
-    static void destroy (uint8* ptr)
-    {
-        free(ptr);
-    }
-};
-TREEFACE_JUCE_NAMESPACE_END
-
 
 using namespace treejuce;
 
@@ -50,15 +39,16 @@ Result ImageManager::get_image(const String& name, Image** img)
         return Result::ok();
     }
 
-    ArrayRef<uint8> data = PackageManager::getInstance()->get_item_data(name);
-    ScopedPointer<uint8> data_holder(data.get_data());
-    if (!data.get_data())
+    MemoryBlock data;
+    Result item_re = PackageManager::getInstance()->get_item_data(name, data);
+    if (!item_re)
     {
         *img = nullptr;
-        return Result::fail("failed to get image data from package manager using name \""+name+"\"");
+        return Result::fail("failed to get image data:\n" +
+                            item_re.getErrorMessage());
     }
 
-    FIMEMORY* mem_stream = FreeImage_OpenMemory(data.get_data(), data.size());
+    FIMEMORY* mem_stream = FreeImage_OpenMemory((BYTE*)data.getData(), data.getSize()-1);
     if (!mem_stream)
     {
         *img = nullptr;

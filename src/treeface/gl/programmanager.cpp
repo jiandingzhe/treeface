@@ -7,20 +7,10 @@
 
 #include <treejuce/HashMap.h>
 #include <treejuce/Holder.h>
+#include <treejuce/MemoryBlock.h>
 #include <treejuce/ScopedPointer.h>
 #include <treejuce/StringRef.h>
 #include <treejuce/ContainerDeletePolicy.h>
-
-TREEFACE_JUCE_NAMESPACE_BEGIN
-template <>
-struct ContainerDeletePolicy<uint8>
-{
-    static void destroy (uint8* ptr)
-    {
-        free(ptr);
-    }
-};
-TREEFACE_JUCE_NAMESPACE_END
 
 
 using namespace treejuce;
@@ -48,30 +38,32 @@ Result ProgramManager::get_program(const treejuce::String& name_vertex, const tr
     }
     else
     {
-        ArrayRef<uint8> src_vertex = PackageManager::getInstance()->get_item_data(name_vertex);
-        ScopedPointer<uint8> src_vertex_holder(src_vertex.get_data());
-        if (!src_vertex.get_data())
+        MemoryBlock src_vertex;
+        Result re_src_vertex = PackageManager::getInstance()->get_item_data(name_vertex, src_vertex);
+        if (!re_src_vertex)
         {
             *program_pp = nullptr;
-            return Result::fail("failed to get vertex shader source code using name \""+name_vertex+"\"");
+            return Result::fail("failed to get vertex shader source code:\n" +
+                                re_src_vertex.getErrorMessage());
         }
 
-        ArrayRef<uint8> src_frag = PackageManager::getInstance()->get_item_data(name_fragment);
-        ScopedPointer<uint8> src_frag_holder(src_frag.get_data());
-        if (!src_frag.get_data())
+        MemoryBlock src_frag;
+        Result re_src_frag = PackageManager::getInstance()->get_item_data(name_fragment, src_frag);
+        if (!re_src_frag)
         {
             *program_pp = nullptr;
-            return Result::fail("failed to get fragment shader source code using name \""+name_fragment+"\"");
+            return Result::fail("failed to get fragment shader source code:\n" +
+                                re_src_frag.getErrorMessage());
         }
 
         Holder<Program> program = scene_additive ? new SceneProgram() : new Program();
-        Result program_re = program->build((char*)src_vertex.get_data(), (char*)src_frag.get_data());
+        Result program_re = program->build((char*)src_vertex.getData(), (char*)src_frag.getData());
 
         if (!program_re)
         {
             *program_pp = nullptr;
             return Result::fail("failed to create program using \""+name_vertex+"\" and \""+name_fragment+"\":\n"+
-                                program_re.getErrorMessage()+"\n");
+                                program_re.getErrorMessage());
         }
 
         m_impl->programs.set(key, program);

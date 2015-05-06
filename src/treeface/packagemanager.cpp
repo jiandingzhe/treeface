@@ -4,8 +4,10 @@
 #include <treejuce/HashMap.h>
 #include <treejuce/HashSet.h>
 #include <treejuce/InputStream.h>
+#include <treejuce/MemoryBlock.h>
 #include <treejuce/MemoryInputStream.h>
 #include <treejuce/Result.h>
+#include <treejuce/StringRef.h>
 #include <treejuce/ZipFile.h>
 
 using namespace treejuce;
@@ -94,23 +96,26 @@ treejuce::InputStream* PackageManager::get_item_stream(const treejuce::String& n
     }
 }
 
-ArrayRef<uint8> PackageManager::get_item_data(const treejuce::String& name)
+treejuce::Result PackageManager::get_item_data(const treejuce::String& name,
+                                               treejuce::MemoryBlock& data)
 {
     InputStream* stream = get_item_stream(name);
     if (!stream)
-        return ArrayRef<uint8>();
+        return Result::fail("PackageManager: failed to get item using name \""+name+"\"");
 
     size_t size = stream->getTotalLength();
-    uint8* data = (uint8*) malloc(size+1);
+    data.ensureSize(size + 1, false);
 
-    if (stream->read(data, size) != size)
-        abort();
+    int size_got = stream->read(data.getData(), size);
+    if (size_got != size)
+        die("PackageManager item %s size %lu, got %d",
+            name.toRawUTF8(), size, size_got);
 
-    // assign a zero on tail of data, so that it can be used as C string
+    // assign a zero on tail of data, so that it can be directly used as C string
     data[size] = 0;
 
     delete stream;
-    return ArrayRef<uint8>(data, size);
+    return Result::ok();
 }
 
 bool PackageManager::has_resource(const treejuce::String& name) const NOEXCEPT
