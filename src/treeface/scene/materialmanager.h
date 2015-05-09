@@ -14,20 +14,18 @@ TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
 class Material;
-class ProgramManager;
 
 class MaterialManager: public treejuce::Object
 {
 public:
-    MaterialManager() = delete;
-    MaterialManager(ProgramManager* prog_mgr);
+    MaterialManager();
 
     JUCE_DECLARE_NON_COPYABLE(MaterialManager);
     JUCE_DECLARE_NON_MOVABLE(MaterialManager);
 
     virtual ~MaterialManager();
 
-    treejuce::Result build_material(const treejuce::var& data, Material* mat);
+    treejuce::Result build_material(const treejuce::var& data, treejuce::Holder<Material>& mat);
 
     treejuce::Result get_material(const treejuce::String& name, Material** mat_pp);
 

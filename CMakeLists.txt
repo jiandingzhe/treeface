@@ -27,40 +27,47 @@ endif()
 # find prerequisite libraries
 #
 find_package(TREEJUCE REQUIRED)
-message(STATUS "treejuce")
-message(STATUS "  inc ${TREEJUCE_INCLUDE_DIR}")
+message(STATUS "treejuce: ${TREEJUCE_FOUND}")
 message(STATUS "  lib ${TREEJUCE_LIBRARIES}")
+message(STATUS "  inc ${TREEJUCE_INCLUDE_DIR}")
 
 find_package(OpenGL REQUIRED)
-message(STATUS "GL")
+message(STATUS "GL: ${OPENGL_FOUND}")
+message(STATUS "GLU: ${OPENGL_GLU_FOUND}")
 message(STATUS "  lib ${OPENGL_gl_LIBRARY}")
+message(STATUS "  inc ${OPENGL_INCLUDE_DIR}")
 
 find_package(GLEW REQUIRED)
-message(STATUS "GLEW")
+message(STATUS "GLEW: ${GLEW_FOUND}")
 message(STATUS "  lib ${GLEW_LIBRARY}")
 message(STATUS "  inc ${GLEW_INCLUDE_DIR}")
 
 find_package(FreeImage REQUIRED)
-message(STATUS "FreeImage")
+message(STATUS "FreeImage: ${FreeImage_FOUND}")
 message(STATUS "  lib ${FreeImage_LIBRARIES}")
 message(STATUS "  inc ${FreeImage_INCLUDE_DIR}")
 
-find_package(SDL2 REQUIRED)
-message(STATUS "SDL2:")
+find_package(SDL2)
+message(STATUS "SDL2: ${SDL2_FOUND}")
 message(STATUS "  inc ${SDL2_INCLUDE_DIR}")
 message(STATUS "  lib ${SDL2_LIBRARY}")
+
+find_package(ZIP REQUIRED)
+message(STATUS "ZIP: ${ZIP_FOUND}")
+message(STATUS "  bin: ${Zip_EXECUTABLE}")
+
 
 #
 # set compiler options
 #
 if(MSVC)
-        add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 else()
-	add_definitions(-std=c++11)
-	if(TREEFACE_CPU STREQUAL "X86_64")
-		add_definitions(-msse2)
-	else()
-	endif()
+    add_definitions(-std=c++11)
+    if(TREEFACE_CPU STREQUAL "X86_64")
+        add_definitions(-msse2)
+    else()
+    endif()
 endif()
 
 include_directories(
@@ -72,6 +79,13 @@ include_directories(
     ${SDL2_INCLUDE_DIR}
 )
 
+if(ZIP_FOUND)
+    add_subdirectory(examples)
+endif()
+
+if(SDL2_FOUND AND ZIP_FOUND)
+    add_subdirectory(test)
+    add_subdirectory(t)
+endif()
+
 add_subdirectory(src)
-add_subdirectory(test)
-add_subdirectory(t)

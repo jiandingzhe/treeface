@@ -97,8 +97,6 @@ public:
 protected:
     struct Impl;
 
-    virtual void preprocess_shader_source(treejuce::String& src_vertex, treejuce::String& src_fragment) const;
-
     treejuce::Result fetch_shader_error_log(GLuint shader);
     treejuce::Result fetch_program_error_log();
 

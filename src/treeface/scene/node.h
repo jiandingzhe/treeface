@@ -36,6 +36,7 @@ public:
         jassert(m_impl == nullptr);
         m_impl = other.m_impl;
         other.m_impl = nullptr;
+        return *this;
     }
 
     virtual ~Node();

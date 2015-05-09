@@ -12,7 +12,7 @@ TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
 
-class Material;
+class SceneGraphMaterial;
 class Geometry;
 class VertexArray;
 
@@ -32,13 +32,14 @@ public:
         jassert(m_impl == nullptr);
         m_impl = other.m_impl;
         other.m_impl = nullptr;
+        return *this;
     }
 
     JUCE_DECLARE_NON_COPYABLE(VisualItem);
 
-    treejuce::Result build(Geometry* geom, Material* mat) NOEXCEPT;
+    treejuce::Result build(Geometry* geom, SceneGraphMaterial* mat) NOEXCEPT;
 
-    Material* get_material() NOEXCEPT;
+    SceneGraphMaterial* get_material() NOEXCEPT;
     Geometry* get_geometry() NOEXCEPT;
     VertexArray* get_vertex_array() NOEXCEPT;
 

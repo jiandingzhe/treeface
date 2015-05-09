@@ -25,7 +25,7 @@ struct Sampler: public treejuce::Object
         glBindSampler(unit, m_sampler);
     }
 
-    void unuse(GLuint unit) const NOEXCEPT
+    static void unuse(GLuint unit) NOEXCEPT
     {
         glBindSampler(unit, 0);
     }

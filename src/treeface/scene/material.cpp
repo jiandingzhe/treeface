@@ -9,7 +9,6 @@
 #include "treeface/private/material_private.h"
 
 #include "treeface/packagemanager.h"
-#include "treeface/gl/programmanager.h"
 #include "treeface/misc/stringcast.h"
 
 #include <treejuce/Logger.h>
@@ -34,7 +33,7 @@ Material::~Material()
 
 Program* Material::get_program() NOEXCEPT
 {
-    return m_impl->program.get();
+    return m_program.get();
 }
 
 int32 Material::get_num_textures() const NOEXCEPT
@@ -63,20 +62,28 @@ Texture* Material::get_texture(treejuce::StringRef name) NOEXCEPT
 
 void Material::use() NOEXCEPT
 {
-
+    // use materials
     for (int i_layer = 0; i_layer < m_impl->layers.size(); i_layer++)
     {
         TextureLayer& curr_layer = m_impl->layers.getReference(i_layer);
-        jassert(i_layer == curr_layer.layer);
 
         glActiveTexture(GL_TEXTURE0 + i_layer);
-        curr_layer.gl_sampler->use(i_layer);
+        glBindSampler(i_layer, i_layer);
         curr_layer.gl_texture->use();
-        m_impl->program->instant_set_uniform(curr_layer.program_uniform_idx, *curr_layer.gl_sampler);
     }
 
-    glActiveTexture(GL_TEXTURE0);
-    m_impl->program->use();
+    // use program
+    m_program->use();
+
+    // set samplers to program
+    for (int i_layer = 0; i_layer < m_impl->layers.size(); i_layer++)
+    {
+        TextureLayer& curr_layer = m_impl->layers.getReference(i_layer);
+        if (curr_layer.program_uniform_idx >= 0)
+        {
+            m_program->instant_set_uniform(curr_layer.program_uniform_idx, i_layer);
+        }
+    }
 }
 
 void Material::unuse() NOEXCEPT
@@ -86,12 +93,12 @@ void Material::unuse() NOEXCEPT
         TextureLayer& curr_layer = m_impl->layers.getReference(i_layer);
 
         glActiveTexture(GL_TEXTURE0 + i_layer);
-        curr_layer.gl_sampler->unuse(i_layer);
-        curr_layer.gl_texture->unuse();
+        glBindSampler(i_layer, 0);
+        Texture::unuse();
     }
 
     glActiveTexture(GL_TEXTURE0);
-    m_impl->program->unuse();
+    m_program->unuse();
 }
 
 

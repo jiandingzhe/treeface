@@ -147,7 +147,7 @@ public:
         }
     }
 
-    inline void unuse() const NOEXCEPT
+    static inline void unuse() NOEXCEPT
     {
         glBindTexture(GL_TEXTURE_2D, 0);
     }

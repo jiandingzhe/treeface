@@ -5,7 +5,6 @@
 #include "treeface/imagemanager.h"
 #include "treeface/scene/materialmanager.h"
 #include "treeface/packagemanager.h"
-#include "treeface/gl/programmanager.h"
 
 #include <treejuce/File.h>
 #include <treejuce/JSON.h>
@@ -61,10 +60,9 @@ void TestFramework::content()
     PackageManager* pkg_mgr = PackageManager::getInstance();
     ImageManager* img_mgr = ImageManager::getInstance();
 
-    Holder<ProgramManager> prog_mgr = new ProgramManager();
-    Holder<MaterialManager> mat_mgr = new MaterialManager(prog_mgr);
+    Holder<MaterialManager> mat_mgr = new MaterialManager();
 
-    pkg_mgr->add_package(File("./resource.zip"), PackageManager::KEEP_EXISTING);
+    pkg_mgr->add_package(File("../examples/resource.zip"), PackageManager::KEEP_EXISTING);
 
     // material 1
     {
@@ -72,11 +70,6 @@ void TestFramework::content()
         OK(mat_mgr->get_material("material1.json", &mat1));
         OK(mat1);
         IS(mat1->get_ref_count(), 1);
-
-        ok(prog_mgr->program_is_cached("common_vertex.glsl", "frag_one_tex.glsl"), "program common_vertex.glsl frag_one_tex.glsl is cached");
-        Program* program_from_mgr = nullptr;
-        OK(prog_mgr->get_program("common_vertex.glsl", "frag_one_tex.glsl", false, &program_from_mgr));
-        IS(mat1->get_program(), program_from_mgr);
 
         IS(mat1->get_num_textures(), 1);
         OK(img_mgr->image_is_cached("moon.jpg"));
@@ -88,8 +81,6 @@ void TestFramework::content()
         OK(mat_mgr->get_material("material2.json", &mat2));
         OK(mat2);
         IS(mat2->get_ref_count(), 1);
-
-        OK(prog_mgr->program_is_cached("common_vertex.glsl", "frag_two_tex.glsl"));
 
         IS(mat2->get_num_textures(), 2);
         OK(img_mgr->image_is_cached("moonbump.pfm"));

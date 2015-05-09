@@ -55,7 +55,7 @@ void TestFramework::content()
     PackageManager* pkg_mgr = PackageManager::getInstance();
     Holder<GeometryManager> geom_mgr = new GeometryManager();
 
-    pkg_mgr->add_package(File("./resource.zip"), PackageManager::KEEP_EXISTING);
+    pkg_mgr->add_package(File("../examples/resource.zip"), PackageManager::KEEP_EXISTING);
 
     Geometry* geom = nullptr;
     OK(geom_mgr->get_geometry("geom_colored.json", &geom));

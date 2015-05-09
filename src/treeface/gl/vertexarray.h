@@ -50,7 +50,7 @@ struct VertexArray: public treejuce::Object
         glBindVertexArray(m_array);
     }
 
-    inline void unuse() const NOEXCEPT
+    inline static void unuse() NOEXCEPT
     {
         glBindVertexArray(0);
     }

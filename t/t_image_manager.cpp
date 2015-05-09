@@ -13,7 +13,7 @@ using namespace treejuce;
 void TestFramework::content()
 {
     PackageManager* pkg_mgr = PackageManager::getInstance();
-    pkg_mgr->add_package(File("./images.zip"), PackageManager::KEEP_EXISTING);
+    pkg_mgr->add_package(File("../examples/resource.zip"), PackageManager::KEEP_EXISTING);
 
     OK(pkg_mgr->has_resource("earth.png"));
     OK(pkg_mgr->has_resource("moon.jpg"));

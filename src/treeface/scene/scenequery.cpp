@@ -39,7 +39,7 @@ treejuce::Result SceneQuery::recur_part(Node* node) NOEXCEPT
     if (!one_node_re)
         return one_node_re;
 
-    for (int i = 0; i < node->get_num_child(); i++)
+    for (int i = 0; i < node->get_num_children(); i++)
     {
         Node* child = node->get_child_at(i);
         Result child_re = recur_part(child);

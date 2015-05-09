@@ -3,6 +3,7 @@
 
 #include "treeface/common.h"
 
+#include <treejuce/Holder.h>
 #include <treejuce/IntTypes.h>
 #include <treejuce/Object.h>
 
@@ -16,13 +17,13 @@ TREEFACE_NAMESPACE_BEGIN
 
 class MaterialManager;
 class Program;
-class Renderer;
+class SceneRenderer;
 class Texture;
 
 class Material: public treejuce::Object
 {
     friend class MaterialManager;
-    friend class Renderer;
+    friend class SceneRenderer;
 
 public:
     Material();
@@ -39,6 +40,9 @@ public:
 
     JUCE_DECLARE_NON_COPYABLE(Material);
     JUCE_DECLARE_NON_MOVABLE(Material);
+
+protected:
+    treejuce::Holder<Program> m_program;
 
 private:
     struct Impl;

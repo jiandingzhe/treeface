@@ -2,6 +2,7 @@
 #define TREEFACE_STRING_CAST_H
 
 #include "treeface/common.h"
+#include "treeface/enums.h"
 
 #include "GL/glew.h"
 #include <treejuce/String.h>
@@ -14,6 +15,12 @@ T from_string(const treejuce::String& string);
 
 template<typename T>
 treejuce::String to_string(T arg);
+
+template<>
+MaterialType from_string<MaterialType>(const treejuce::String& string);
+
+template<>
+treejuce::String to_string<MaterialType>(MaterialType value);
 
 template<>
 FREE_IMAGE_FORMAT from_string<FREE_IMAGE_FORMAT>(const treejuce::String& string);

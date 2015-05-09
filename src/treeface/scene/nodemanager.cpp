@@ -2,7 +2,7 @@
 
 #include "treeface/scene/geometry.h"
 #include "treeface/scene/geometrymanager.h"
-#include "treeface/scene/material.h"
+#include "treeface/scene/scenegraphmaterial.h"
 #include "treeface/scene/materialmanager.h"
 #include "treeface/scene/node.h"
 #include "treeface/scene/visualitem.h"
@@ -82,6 +82,8 @@ Node* NodeManager::get_node(const treejuce::String& name)
     {
         return m_impl->nodes[name].get();
     }
+
+    return nullptr;
 }
 
 #define KEY_VISUAL_MAT "material"
@@ -126,7 +128,7 @@ treejuce::Result NodeManager::build_visual_item(const var &data, VisualItem *vis
         return Result::fail("failed to build visual item:\n" + geom_re.getErrorMessage());
 
     // do build
-    return visual_item->build(geom, mat);
+    return visual_item->build(geom, dynamic_cast<SceneGraphMaterial*>(mat));
 }
 
 #define KEY_ID     "id"

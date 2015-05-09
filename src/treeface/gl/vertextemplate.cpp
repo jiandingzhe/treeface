@@ -75,7 +75,7 @@ void VertexTemplate::add_attrib(const VertexAttrib& attr, bool normalize)
 #define KEY_NAME "name"
 #define KEY_N_ELEM "n_elem"
 #define KEY_TYPE "type"
-#define KEY_NORM "normalized"
+#define KEY_NORM "normalize"
 
 Result _validate_attr_kv_(const NamedValueSet& kv)
 {

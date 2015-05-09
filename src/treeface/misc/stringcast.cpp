@@ -5,6 +5,29 @@
 TREEFACE_NAMESPACE_BEGIN
 
 template<>
+MaterialType from_string<MaterialType>(const treejuce::String& string)
+{
+    if (string.compareIgnoreCase("raw") == 0)               return MATERIAL_RAW;
+    else if (string.compareIgnoreCase("scene_graph") == 0)  return MATERIAL_SCENE_GRAPH;
+    else if (string.compareIgnoreCase("screen_space") == 0) return MATERIAL_SCREEN_SPACE;
+    else
+        die("invalid material type string representation: %s", string.toRawUTF8());
+}
+
+template<>
+treejuce::String to_string<MaterialType>(MaterialType value)
+{
+    switch (value)
+    {
+    case MATERIAL_RAW:          return "raw";
+    case MATERIAL_SCENE_GRAPH:  return "scene_graph";
+    case MATERIAL_SCREEN_SPACE: return "screen_space";
+    default:
+        die("invalid material type enum: %x", value);
+    }
+}
+
+template<>
 FREE_IMAGE_FORMAT from_string<FREE_IMAGE_FORMAT>(const treejuce::String& string)
 {
     if (string.compareIgnoreCase("unknown") == 0)     return FIF_UNKNOWN;

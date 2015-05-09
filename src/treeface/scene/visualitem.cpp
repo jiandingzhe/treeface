@@ -1,6 +1,8 @@
 #include "treeface/scene/visualitem.h"
-#include "treeface/scene/material.h"
+
 #include "treeface/scene/geometry.h"
+#include "treeface/scene/scenegraphmaterial.h"
+
 #include "treeface/gl/vertexarray.h"
 
 #include "treeface/misc/propertyvalidator.h"
@@ -17,7 +19,7 @@ TREEFACE_NAMESPACE_BEGIN
 
 struct VisualItem::Impl
 {
-    Holder<Material> material = nullptr;
+    Holder<SceneGraphMaterial> material = nullptr;
     Holder<Geometry> geometry = nullptr;
     Holder<VertexArray> vertex_array = nullptr;
 };
@@ -33,7 +35,7 @@ VisualItem::~VisualItem()
 }
 
 
-treejuce::Result VisualItem::build(Geometry* geom, Material* mat) NOEXCEPT
+treejuce::Result VisualItem::build(Geometry* geom, SceneGraphMaterial* mat) NOEXCEPT
 {
     m_impl->geometry = geom;
     m_impl->material = mat;
@@ -42,7 +44,7 @@ treejuce::Result VisualItem::build(Geometry* geom, Material* mat) NOEXCEPT
     return m_impl->vertex_array->build(geom->get_buffer(), geom->get_vertex_template(), mat->get_program());
 }
 
-Material* VisualItem::get_material() NOEXCEPT
+SceneGraphMaterial* VisualItem::get_material() NOEXCEPT
 {
     return m_impl->material;
 }

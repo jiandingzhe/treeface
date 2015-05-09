@@ -44,7 +44,7 @@ public:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffer_idx);
     }
 
-    inline void unuse() const NOEXCEPT
+    inline static void unuse() NOEXCEPT
     {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

@@ -1,8 +1,5 @@
 add_library(TestFramework TestFramework.cpp)
 
-file(COPY ${CMAKE_SOURCE_DIR}/examples/resource.zip DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY images.zip DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
 add_executable(t_vec4 t_vec4.cpp)
 target_link_libraries(t_vec4
     ${TREEJUCE_LIBRARIES}

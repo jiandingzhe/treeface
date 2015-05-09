@@ -1,5 +1,3 @@
-file(COPY ${CMAKE_SOURCE_DIR}/examples/resource.zip DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
 add_executable(interact interact.cpp)
 target_link_libraries(interact ${SDL2_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_gl_LIBRARY})
 

@@ -275,18 +275,9 @@ treejuce::Result Program::build(const char* src_vert_raw, const char* src_frag_r
     if (compiled_and_linked)
         return Result::fail("attempt to build program which is already built");
 
-    // preprocess shader
-    // The default Program class will add "#version 300 es" in the beginning of
-    // vertex and fragment shader source. The SceneProgram class will also add
-    // some uniforms.
-    String src_vert(src_vert_raw);
-    String src_frag(src_frag_raw);
-    preprocess_shader_source(src_vert, src_frag);
-
     // compile shaders
     {
-        const char* src_p = src_vert.toRawUTF8();
-        glShaderSource(m_shader_vert, 1, &src_p, nullptr);
+        glShaderSource(m_shader_vert, 1, &src_vert_raw, nullptr);
         glCompileShader(m_shader_vert);
 
         treejuce::Result re = fetch_shader_error_log(m_shader_vert);
@@ -294,15 +285,14 @@ treejuce::Result Program::build(const char* src_vert_raw, const char* src_frag_r
             return Result::fail("failed to compile vertex shader:\n" +
                                 re.getErrorMessage() + "\n" +
                                 "==== vertex shader source ====\n\n" +
-                                src_vert + "\n" +
+                                String(src_vert_raw) + "\n" +
                                 "==============================\n");
 
         glAttachShader(m_program, m_shader_vert);
     }
 
     {
-        const char* src_p = src_frag.toRawUTF8();
-        glShaderSource(m_shader_frag, 1, &src_p, nullptr);
+        glShaderSource(m_shader_frag, 1, &src_frag_raw, nullptr);
         glCompileShader(m_shader_frag);
 
         treejuce::Result re = fetch_shader_error_log(m_shader_frag);
@@ -310,7 +300,7 @@ treejuce::Result Program::build(const char* src_vert_raw, const char* src_frag_r
             return Result::fail("failed to compile fragment shader:\n" +
                                 re.getErrorMessage() + "\n" +
                                 "==== fragment shader source ====\n\n" +
-                                src_frag + "\n" +
+                                String(src_frag_raw) + "\n" +
                                 "================================\n");
 
         glAttachShader(m_program, m_shader_frag);
@@ -399,16 +389,6 @@ void Program::use() NOEXCEPT
     }
 }
 
-const char* PROGRAM_SRC_ADDITION =
-        "#version 300 es\n"
-        ;
-
-void Program::preprocess_shader_source(treejuce::String& src_vertex, treejuce::String& src_fragment) const
-{
-    src_vertex = PROGRAM_SRC_ADDITION + src_vertex;
-    src_fragment = PROGRAM_SRC_ADDITION + src_fragment;
-}
-
 treejuce::Result Program::fetch_shader_error_log(GLuint shader)
 {
     GLint result = -1;
@@ -437,10 +417,8 @@ treejuce::Result Program::fetch_shader_error_log(GLuint shader)
             die("failed to retrieve shader compile error log");
         }
     }
-    else
-    {
-        return treejuce::Result::ok();
-    }
+
+    return treejuce::Result::ok();
 }
 
 treejuce::Result Program::fetch_program_error_log()
@@ -471,10 +449,8 @@ treejuce::Result Program::fetch_program_error_log()
             die("failed to retrieve program link error log");
         }
     }
-    else
-    {
-        return treejuce::Result::ok();
-    }
+
+    return treejuce::Result::ok();
 }
 
 void Program::instant_set_uniform(GLint uni, GLint value) const NOEXCEPT

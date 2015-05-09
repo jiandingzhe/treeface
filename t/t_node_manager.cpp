@@ -3,15 +3,13 @@
 #include "treeface/imagemanager.h"
 
 #include "treeface/scene/geometrymanager.h"
-#include "treeface/scene/material.h"
+#include "treeface/scene/scenegraphmaterial.h"
 #include "treeface/scene/materialmanager.h"
 #include "treeface/scene/node.h"
 #include "treeface/scene/nodemanager.h"
 #include "treeface/scene/visualitem.h"
 
 #include "treeface/packagemanager.h"
-
-#include "treeface/gl/programmanager.h"
 
 #include <treejuce/File.h>
 #include <treejuce/Holder.h>
@@ -67,12 +65,11 @@ void TestFramework::content()
 
     PackageManager* pkg_mgr = PackageManager::getInstance();
 
-    Holder<ProgramManager> prog_mgr = new ProgramManager();
-    Holder<MaterialManager> mat_mgr = new MaterialManager(prog_mgr);
+    Holder<MaterialManager> mat_mgr = new MaterialManager();
     Holder<GeometryManager> geo_mgr = new GeometryManager();
     Holder<NodeManager> node_mgr = new NodeManager(geo_mgr, mat_mgr);
 
-    pkg_mgr->add_package(File("./resource.zip"), PackageManager::KEEP_EXISTING);
+    pkg_mgr->add_package(File("../examples/resource.zip"), PackageManager::KEEP_EXISTING);
 
     OK(node_mgr->add_nodes(String("nodes.json")));
     Node* node_a = node_mgr->get_node("a");
@@ -125,7 +122,7 @@ void TestFramework::content()
 
     VisualItem* visual_a = node_a->get_visual_item_at(0);
     IS(visual_a->get_geometry(), geom_colored);
-    IS(visual_a->get_material(), material_vert_color);
+    IS(static_cast<Material*>(visual_a->get_material()), material_vert_color);
 
     // contents of unamed node
     IS(unamed_node->get_num_children(), 0);

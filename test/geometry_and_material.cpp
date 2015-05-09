@@ -8,10 +8,10 @@
 #include "treeface/scene/geometry.h"
 #include "treeface/scene/geometrymanager.h"
 #include "treeface/scene/material.h"
+#include "treeface/scene/scenegraphmaterial.h"
 #include "treeface/scene/materialmanager.h"
 
 #include "treeface/gl/program.h"
-#include "treeface/gl/programmanager.h"
 #include "treeface/gl/texture.h"
 #include "treeface/gl/vertexarray.h"
 #include "treeface/gl/vertexindexbuffer.h"
@@ -62,56 +62,75 @@ void build_up_sdl(SDL_Window** window, SDL_GLContext* context)
 }
 
 Holder<GeometryManager> geo_mgr;
-Holder<ProgramManager> prg_mgr;
 Holder<MaterialManager> mat_mgr;
 PackageManager* pkg_mgr = nullptr;
-VertexArray* vao = nullptr;
+Holder<VertexArray> vao_a = nullptr;
+Holder<VertexArray> vao_b = nullptr;
 
-String name_geo("geom_cube.json");
-String name_mat("material1.json");
+String name_geo_a("geom_cube.json");
+String name_geo_b("geom_colored.json");
+String name_mat_a("material1.json");
+String name_mat_b("material2.json");
 
-Holder<Geometry> geo = nullptr;
-Holder<Material> mat = nullptr;
+Holder<Geometry> geo_a = nullptr;
+Holder<Geometry> geo_b = nullptr;
+Holder<SceneGraphMaterial> mat_a = nullptr;
+Holder<SceneGraphMaterial> mat_b = nullptr;
 
 void build_up_gl()
 {
     glEnable(GL_DEPTH_TEST);
 
     geo_mgr = new GeometryManager();
-    prg_mgr = new ProgramManager();
-    mat_mgr = new MaterialManager(prg_mgr);
+    mat_mgr = new MaterialManager();
     pkg_mgr = PackageManager::getInstance();
 
-    String pkg_file_name("./resource.zip");
+    String pkg_file_name("../examples/resource.zip");
     Logger::writeToLog("load package from file " + pkg_file_name);
     pkg_mgr->add_package(File(pkg_file_name), PackageManager::USE_NEWER);
 
     {
-        Result re_geo = geo_mgr->get_geometry(name_geo, geo);
+        Result re_geo = geo_mgr->get_geometry(name_geo_a, geo_a);
         if (!re_geo)
         {
             die("failed to load geometry %s:\n"
                 "%s\n",
-                name_geo.toRawUTF8(),
+                name_geo_a.toRawUTF8(),
                 re_geo.getErrorMessage().toRawUTF8());
         }
     }
 
     {
-        Result re_mat = mat_mgr->get_material(name_mat, mat);
+        Result re = geo_mgr->get_geometry(name_geo_b, geo_b);
+        if (!re)
+            die("%s", re.getErrorMessage().toRawUTF8());
+    }
+
+    {
+        Material* mat = nullptr;
+        Result re_mat = mat_mgr->get_material(name_mat_a, &mat);
         if (!re_mat)
         {
             die("failed to load material %s:\n"
                 "%s\n",
-                name_mat.toRawUTF8(),
+                name_mat_a.toRawUTF8(),
                 re_mat.getErrorMessage().toRawUTF8());
         }
+        mat_a = dynamic_cast<SceneGraphMaterial*>(mat);
     }
 
     {
-        // create vertex array, bind vertex attributes
-        vao = new VertexArray();
-        Result re_vao = vao->build(geo->get_buffer(), geo->get_vertex_template(), mat->get_program());
+        Material* mat = nullptr;
+        Result re = mat_mgr->get_material(name_mat_b, &mat);
+        if (!re)
+            die("%s", re.getErrorMessage().toRawUTF8());
+        mat_b = dynamic_cast<SceneGraphMaterial*>(mat);
+    }
+
+    // create vertex array, bind vertex attributes
+    {
+        vao_a = new VertexArray();
+        Result re_vao = vao_a->build(geo_a->get_buffer(), geo_a->get_vertex_template(), mat_a->get_program());
         if (!re_vao)
         {
             die("failed to connect buffer and program with vertex array:\n"
@@ -119,13 +138,21 @@ void build_up_gl()
                 re_vao.getErrorMessage().toRawUTF8());
         }
     }
+
+    {
+        vao_b = new VertexArray();
+        Result re = vao_b->build(geo_b->get_buffer(), geo_b->get_vertex_template(), mat_b->get_program());
+        if (!re)
+            die("%s", re.getErrorMessage().toRawUTF8());
+    }
 }
 
 
 void main_loop(SDL_Window* window)
 {
-    GLint idx_uni_mat = mat->get_program()->get_uniform_index("matrix_model_view");
     Mat4f model_view_mat;
+    Mat4f scale_3x;
+    scale_3x.set_scale(3, 3, 3);
 
     float angle = 0;
 
@@ -158,20 +185,35 @@ void main_loop(SDL_Window* window)
         Quatf rot(angle, Vec4f(1, 1, 0, 0));
         model_view_mat.set_rotate(rot);
 
-        mat->use();
-        mat->get_program()->instant_set_uniform(idx_uni_mat, model_view_mat);
+        // draw A
+        mat_a->use();
+        mat_a->instant_set_transform(model_view_mat, Mat4f());
 
-        vao->use();
-        geo->get_buffer()->use();
+        vao_a->use();
+        geo_a->get_buffer()->use();
 
-        geo->get_buffer()->draw(geo->get_primitive());
+        geo_a->get_buffer()->draw(geo_a->get_primitive());
 
-        mat->unuse();
-        vao->unuse();
-        geo->get_buffer()->unuse();
+        mat_a->unuse();
+        vao_a->unuse();
+        geo_a->get_buffer()->unuse();
 
+        // draw B
+        mat_b->use();
+        mat_b->instant_set_transform(scale_3x, Mat4f());
+
+        vao_b->use();
+        geo_b->get_buffer()->use();
+
+        geo_b->get_buffer()->draw(geo_b->get_primitive());
+
+        mat_b->unuse();
+        vao_b->unuse();
+        geo_b->get_buffer()->unuse();
+
+        // finalize
         SDL_GL_SwapWindow(window);
-        SDL_Delay(20);
+        SDL_Delay(50);
     }
 }
 

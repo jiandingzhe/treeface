@@ -32,7 +32,7 @@ void _build_one_(HostVertexAttrib attr,
     int attr_idx = program->get_attribute_index(attr.name);
     if (attr_idx != -1)
     {
-        Logger::outputDebugString("connect with attr "+attr.name+" at "+String(attr_idx)+", size "+String(attr.n_elem)+" offset "+String(uint64(attr.offset)));
+        DBG("  connect with attr "+attr.name+" at "+String(attr_idx)+", size "+String(attr.n_elem)+" offset "+String(uint64(attr.offset)));
         glEnableVertexAttribArray(attr_idx);
         glVertexAttribPointer(attr_idx,
                               attr.n_elem,
@@ -55,6 +55,7 @@ treejuce::Result VertexArray::build(const VertexIndexBuffer* buffer,
     glBindBuffer(GL_ARRAY_BUFFER, buffer->m_buffer_vtx);
 
     // set attribute binding for vertex array
+    DBG("connect buffer with program");
     GLsizei stride = vertex_info.vertex_size();
     for (int i = 0; i < vertex_info.n_attribs(); i++)
     {
