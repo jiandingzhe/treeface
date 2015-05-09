@@ -50,3 +50,14 @@ target_link_libraries(geometry_and_material
     ${OPENGL_gl_LIBRARY}
     ${OPENGL_glu_LIBRARY}
 )
+
+add_executable(scene_renderer scene_renderer.cpp)
+target_link_libraries(scene_renderer
+    treeface
+    ${TREEJUCE_LIBRARIES}
+    ${FreeImage_LIBRARIES}
+    ${SDL2_LIBRARY}
+    ${GLEW_LIBRARY}
+    ${OPENGL_gl_LIBRARY}
+    ${OPENGL_glu_LIBRARY}
+)
