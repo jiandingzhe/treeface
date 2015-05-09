@@ -23,10 +23,16 @@ function(ZIP_FILES OUTPUT_FILE)
         set(output_file_use ${CMAKE_CURRENT_BINARY_DIR}/${OUTPUT_FILE})
     endif()
 
-    add_custom_target(${OUTPUT_FILE} ALL
+    add_custom_command(
         DEPENDS ${input_files}
+        OUTPUT ${output_file_use}
         COMMAND ${ZIP_EXECUTABLE} ${output_file_use} ${ARGN}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+
+    string(REPLACE "/" "___" zip_target ${output_file_use})
+    add_custom_target(ZIP_TARGET_${zip_target} ALL
+        DEPENDS ${output_file_use}
     )
 endfunction()
 
