@@ -1,4 +1,4 @@
-#include "treeface/scene/material.h"
+#include "treeface/material.h"
 
 #include "treeface/image.h"
 #include "treeface/imagemanager.h"

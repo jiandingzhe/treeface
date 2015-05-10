@@ -3,7 +3,6 @@
 #include "treeface/scene/geometry.h"
 #include "treeface/scene/geometrymanager.h"
 #include "treeface/scene/scenegraphmaterial.h"
-#include "treeface/scene/materialmanager.h"
 #include "treeface/scene/scenenode.h"
 #include "treeface/scene/visualitem.h"
 
@@ -13,6 +12,7 @@
 
 #include "treeface/private/node_private.h"
 
+#include "treeface/materialmanager.h"
 #include "treeface/packagemanager.h"
 
 #include <treejuce/CriticalSection.h>

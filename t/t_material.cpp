@@ -1,9 +1,9 @@
 #include "TestFramework.h"
 
-#include "treeface/scene/material.h"
 
 #include "treeface/imagemanager.h"
-#include "treeface/scene/materialmanager.h"
+#include "treeface/material.h"
+#include "treeface/materialmanager.h"
 #include "treeface/packagemanager.h"
 
 #include <treejuce/File.h>

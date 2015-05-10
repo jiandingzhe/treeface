@@ -1,15 +1,14 @@
 #include "TestFramework.h"
 
 #include "treeface/imagemanager.h"
+#include "treeface/materialmanager.h"
+#include "treeface/packagemanager.h"
 
 #include "treeface/scene/geometrymanager.h"
 #include "treeface/scene/scenegraphmaterial.h"
-#include "treeface/scene/materialmanager.h"
 #include "treeface/scene/scenenode.h"
 #include "treeface/scene/scenenodemanager.h"
 #include "treeface/scene/visualitem.h"
-
-#include "treeface/packagemanager.h"
 
 #include <treejuce/File.h>
 #include <treejuce/Holder.h>

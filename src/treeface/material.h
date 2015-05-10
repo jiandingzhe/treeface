@@ -1,5 +1,5 @@
-#ifndef TREEFACE_SCENE_MATERIAL_H
-#define TREEFACE_SCENE_MATERIAL_H
+#ifndef TREEFACE_MATERIAL_H
+#define TREEFACE_MATERIAL_H
 
 #include "treeface/common.h"
 
@@ -52,4 +52,4 @@ private:
 
 TREEFACE_NAMESPACE_END
 
-#endif // TREEFACE_SCENE_MATERIAL_H
+#endif // TREEFACE_MATERIAL_H

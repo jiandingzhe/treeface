@@ -1,7 +1,7 @@
 #ifndef TREEFACE_SCENE_GRAPH_MATERIAL_H
 #define TREEFACE_SCENE_GRAPH_MATERIAL_H
 
-#include "treeface/scene/material.h"
+#include "treeface/material.h"
 #include "treeface/math/mat4.h"
 
 #include <GL/glew.h>

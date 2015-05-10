@@ -4,7 +4,7 @@
 #include "treeface/gl/sampler.h"
 #include "treeface/gl/texture.h"
 
-#include "treeface/scene/material.h"
+#include "treeface/material.h"
 
 #include <treejuce/Array.h>
 #include <treejuce/Holder.h>

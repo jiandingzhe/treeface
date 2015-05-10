@@ -1,9 +1,10 @@
-#include "treeface/scene/materialmanager.h"
-#include "treeface/scene/material.h"
-#include "treeface/scene/scenegraphmaterial.h"
+#include "treeface/materialmanager.h"
 
 #include "treeface/enums.h"
+#include "treeface/material.h"
 #include "treeface/packagemanager.h"
+
+#include "treeface/scene/scenegraphmaterial.h"
 
 #include "treeface/gl/program.h"
 
