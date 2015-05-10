@@ -16,11 +16,11 @@ public:
     JUCE_DECLARE_NON_COPYABLE(SceneRenderer);
     JUCE_DECLARE_NON_MOVABLE(SceneRenderer);
 
-    void render(const treeface::Mat4f& matrix_proj, Node* root_node);
+    void render(const treeface::Mat4f& matrix_proj, SceneNode* root_node);
 
 protected:
     virtual treejuce::Result traverse_begin() NOEXCEPT;
-    virtual treejuce::Result traverse_one_node(Node* node) NOEXCEPT;
+    virtual treejuce::Result traverse_one_node(SceneNode* node) NOEXCEPT;
     virtual treejuce::Result traverse_end() NOEXCEPT;
 
 private:

@@ -1,5 +1,5 @@
-#ifndef TREEFACE_NODE_MANAGER_H
-#define TREEFACE_NODE_MANAGER_H
+#ifndef TREEFACE_SCENE_NODE_MANAGER_H
+#define TREEFACE_SCENE_NODE_MANAGER_H
 
 #include "treeface/common.h"
 
@@ -14,19 +14,19 @@ TREEFACE_JUCE_NAMESPACE_END
 TREEFACE_NAMESPACE_BEGIN
 class GeometryManager;
 class MaterialManager;
-class Node;
+class SceneNode;
 class VisualItem;
 
-class NodeManager: public treejuce::Object
+class SceneNodeManager: public treejuce::Object
 {
 public:
-    NodeManager() = delete;
-    NodeManager(GeometryManager* geo_mgr, MaterialManager* mat_mgr);
+    SceneNodeManager() = delete;
+    SceneNodeManager(GeometryManager* geo_mgr, MaterialManager* mat_mgr);
 
-    JUCE_DECLARE_NON_COPYABLE(NodeManager);
-    JUCE_DECLARE_NON_MOVABLE(NodeManager);
+    JUCE_DECLARE_NON_COPYABLE(SceneNodeManager);
+    JUCE_DECLARE_NON_MOVABLE(SceneNodeManager);
 
-    virtual ~NodeManager();
+    virtual ~SceneNodeManager();
 
     treejuce::Result add_nodes(const treejuce::var& data);
 
@@ -44,10 +44,10 @@ public:
      * @return If has node object with name, return node object; otherwise
      *         return nullptr.
      */
-    Node* get_node(const treejuce::String& name);
+    SceneNode* get_node(const treejuce::String& name);
 
     treejuce::Result build_visual_item(const treejuce::var& data, VisualItem* visual_item);
-    treejuce::Result build_node(const treejuce::var& data, Node* node);
+    treejuce::Result build_node(const treejuce::var& data, SceneNode* node);
 
 private:
     struct Impl;
@@ -56,4 +56,4 @@ private:
 
 TREEFACE_NAMESPACE_END
 
-#endif // TREEFACE_NODE_MANAGER_H
+#endif // TREEFACE_SCENE_NODE_MANAGER_H

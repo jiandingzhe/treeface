@@ -10,7 +10,7 @@ class Result;
 TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
-class Node;
+class SceneNode;
 
 class SceneQuery: public treejuce::Object
 {
@@ -21,15 +21,15 @@ public:
 
     virtual ~SceneQuery();
 
-    treejuce::Result traverse(Node* root) NOEXCEPT;
+    treejuce::Result traverse(SceneNode* root) NOEXCEPT;
 
 protected:
     virtual treejuce::Result traverse_begin() NOEXCEPT = 0;
-    virtual treejuce::Result traverse_one_node(Node* node) NOEXCEPT = 0;
+    virtual treejuce::Result traverse_one_node(SceneNode* node) NOEXCEPT = 0;
     virtual treejuce::Result traverse_end() NOEXCEPT = 0;
 
 private:
-    treejuce::Result recur_part(Node* node) NOEXCEPT;
+    treejuce::Result recur_part(SceneNode* node) NOEXCEPT;
 };
 
 TREEFACE_NAMESPACE_END

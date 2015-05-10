@@ -5,8 +5,8 @@
 #include "treeface/scene/geometrymanager.h"
 #include "treeface/scene/scenegraphmaterial.h"
 #include "treeface/scene/materialmanager.h"
-#include "treeface/scene/node.h"
-#include "treeface/scene/nodemanager.h"
+#include "treeface/scene/scenenode.h"
+#include "treeface/scene/scenenodemanager.h"
 #include "treeface/scene/visualitem.h"
 
 #include "treeface/packagemanager.h"
@@ -67,13 +67,13 @@ void TestFramework::content()
 
     Holder<MaterialManager> mat_mgr = new MaterialManager();
     Holder<GeometryManager> geo_mgr = new GeometryManager();
-    Holder<NodeManager> node_mgr = new NodeManager(geo_mgr, mat_mgr);
+    Holder<SceneNodeManager> node_mgr = new SceneNodeManager(geo_mgr, mat_mgr);
 
     pkg_mgr->add_package(File("../examples/resource.zip"), PackageManager::KEEP_EXISTING);
 
     OK(node_mgr->add_nodes(String("nodes.json")));
-    Node* node_a = node_mgr->get_node("a");
-    Node* node_b = node_mgr->get_node("b");
+    SceneNode* node_a = node_mgr->get_node("a");
+    SceneNode* node_b = node_mgr->get_node("b");
     OK(node_a != nullptr);
     OK(node_b != nullptr);
 
@@ -104,10 +104,10 @@ void TestFramework::content()
     // node A children
     IS(node_a->get_num_children(), 2);
 
-    Node* unamed_node = nullptr;
+    SceneNode* unamed_node = nullptr;
     bool b_got = false;
     for (int i = 0; i < node_a->get_num_children(); i++){
-        Node* tmp = node_a->get_child_at(i);
+        SceneNode* tmp = node_a->get_child_at(i);
         if (tmp == node_b)
             b_got = true;
         else

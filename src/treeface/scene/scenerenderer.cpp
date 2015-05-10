@@ -6,7 +6,7 @@
 
 #include "treeface/scene/geometry.h"
 #include "treeface/scene/scenegraphmaterial.h"
-#include "treeface/scene/node.h"
+#include "treeface/scene/scenenode.h"
 #include "treeface/scene/visualitem.h"
 
 #include "treeface/private/material_private.h"
@@ -20,7 +20,7 @@ using namespace treejuce;
 
 TREEFACE_NAMESPACE_BEGIN
 
-typedef HashMultiMap<VisualItem*, Node*> TransformedItems;
+typedef HashMultiMap<VisualItem*, SceneNode*> TransformedItems;
 typedef HashMap<SceneGraphMaterial*, TransformedItems*> SceneCollection;
 
 struct SceneRenderer::Impl
@@ -47,7 +47,7 @@ SceneRenderer::~SceneRenderer()
     }
 }
 
-void SceneRenderer::render(const treeface::Mat4f& matrix_proj, Node* root_node)
+void SceneRenderer::render(const treeface::Mat4f& matrix_proj, SceneNode* root_node)
 {
     traverse(root_node);
 
@@ -83,7 +83,7 @@ void SceneRenderer::render(const treeface::Mat4f& matrix_proj, Node* root_node)
             geom->get_buffer()->use();
 
             // traverse transform
-            ArrayRef<Node*> item_nodes = it_items.getValues();
+            ArrayRef<SceneNode*> item_nodes = it_items.getValues();
 
             for (int i = 0; i < item_nodes.size(); i++)
             {
@@ -109,7 +109,7 @@ treejuce::Result SceneRenderer::traverse_begin() NOEXCEPT
     return Result::ok();
 }
 
-treejuce::Result SceneRenderer::traverse_one_node(Node* node) NOEXCEPT
+treejuce::Result SceneRenderer::traverse_one_node(SceneNode* node) NOEXCEPT
 {
     for (int i = 0; i < node->get_num_visual_items(); i++)
     {

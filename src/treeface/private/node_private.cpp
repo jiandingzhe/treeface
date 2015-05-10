@@ -2,7 +2,7 @@
 
 TREEFACE_NAMESPACE_BEGIN
 
-void Node::Impl::update_trans_descendent()
+void SceneNode::Impl::update_trans_descendent()
 {
     trans_inv = trans;
     trans_inv.inverse();
@@ -14,7 +14,7 @@ void Node::Impl::update_trans_descendent()
     update_global_descendent();
 }
 
-void Node::Impl::update_global_descendent()
+void SceneNode::Impl::update_global_descendent()
 {
     if (parent)
     {

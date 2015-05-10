@@ -1,4 +1,4 @@
-#include "treeface/scene/node.h"
+#include "treeface/scene/scenenode.h"
 #include "treeface/scene/visualitem.h"
 
 #include "treeface/private/node_private.h"
@@ -7,22 +7,22 @@ using namespace treejuce;
 
 TREEFACE_NAMESPACE_BEGIN
 
-Node::Node(): m_impl(new Impl())
+SceneNode::SceneNode(): m_impl(new Impl())
 {
 }
 
-Node::~Node()
+SceneNode::~SceneNode()
 {
     if (m_impl)
         delete m_impl;
 }
 
-const Mat4f& Node::get_transform() NOEXCEPT
+const Mat4f& SceneNode::get_transform() NOEXCEPT
 {
     return m_impl->trans;
 }
 
-const Mat4f& Node::get_global_transform() NOEXCEPT
+const Mat4f& SceneNode::get_global_transform() NOEXCEPT
 {
     if (m_impl->trans_dirty)
         m_impl->update_trans_descendent();
@@ -32,7 +32,7 @@ const Mat4f& Node::get_global_transform() NOEXCEPT
     return m_impl->trans_global;
 }
 
-const Mat4f& Node::get_normal_transform() NOEXCEPT
+const Mat4f& SceneNode::get_normal_transform() NOEXCEPT
 {
     if (m_impl->trans_dirty)
         m_impl->update_trans_descendent();
@@ -42,7 +42,7 @@ const Mat4f& Node::get_normal_transform() NOEXCEPT
     return m_impl->trans_normal;
 }
 
-const Mat4f& Node::get_global_normal_transform() NOEXCEPT
+const Mat4f& SceneNode::get_global_normal_transform() NOEXCEPT
 {
     if (m_impl->trans_dirty)
         m_impl->update_trans_descendent();
@@ -52,23 +52,23 @@ const Mat4f& Node::get_global_normal_transform() NOEXCEPT
     return m_impl->trans_normal_global;
 }
 
-void Node::set_transform(const Mat4f& value) NOEXCEPT
+void SceneNode::set_transform(const Mat4f& value) NOEXCEPT
 {
     m_impl->trans_dirty = true;
     m_impl->trans = value;
 }
 
-bool Node::add_visual_item(VisualItem* obj)
+bool SceneNode::add_visual_item(VisualItem* obj)
 {
     return m_impl->visual_items.add(obj);
 }
 
-bool Node::has_visual_item(VisualItem* obj) const NOEXCEPT
+bool SceneNode::has_visual_item(VisualItem* obj) const NOEXCEPT
 {
     return m_impl->visual_items.contains(obj);
 }
 
-bool Node::remove_visual_item(VisualItem* obj)
+bool SceneNode::remove_visual_item(VisualItem* obj)
 {
     if (m_impl->visual_items.contains(obj))
     {
@@ -81,17 +81,17 @@ bool Node::remove_visual_item(VisualItem* obj)
     }
 }
 
-int Node::get_num_visual_items() const NOEXCEPT
+int SceneNode::get_num_visual_items() const NOEXCEPT
 {
     return m_impl->visual_items.size();
 }
 
-VisualItem* Node::get_visual_item_at(int idx) NOEXCEPT
+VisualItem* SceneNode::get_visual_item_at(int idx) NOEXCEPT
 {
     return m_impl->visual_items.getReference(idx);
 }
 
-bool Node::add_child(Node* child)
+bool SceneNode::add_child(SceneNode* child)
 {
     if (child->m_impl->parent)
         return false;
@@ -106,12 +106,12 @@ bool Node::add_child(Node* child)
     return true;
 }
 
-bool Node::has_child(Node* child) const NOEXCEPT
+bool SceneNode::has_child(SceneNode* child) const NOEXCEPT
 {
     return m_impl->child_nodes.contains(child);
 }
 
-bool Node::remove_child(Node* child) NOEXCEPT
+bool SceneNode::remove_child(SceneNode* child) NOEXCEPT
 {
     if (m_impl->child_nodes.contains(child))
     {
@@ -126,17 +126,17 @@ bool Node::remove_child(Node* child) NOEXCEPT
     }
 }
 
-int Node::get_num_children() const NOEXCEPT
+int SceneNode::get_num_children() const NOEXCEPT
 {
     return m_impl->child_nodes.size();
 }
 
-Node* Node::get_child_at(int idx) NOEXCEPT
+SceneNode* SceneNode::get_child_at(int idx) NOEXCEPT
 {
     return m_impl->child_nodes.getReference(idx);
 }
 
-Node* Node::get_parent() NOEXCEPT
+SceneNode* SceneNode::get_parent() NOEXCEPT
 {
     return m_impl->parent;
 }

@@ -1,7 +1,7 @@
 #ifndef TREEFACE_NODE_PRIVATE_H
 #define TREEFACE_NODE_PRIVATE_H
 
-#include "treeface/scene/node.h"
+#include "treeface/scene/scenenode.h"
 #include "treeface/math/mat4.h"
 
 #include <treejuce/Holder.h>
@@ -9,7 +9,7 @@
 
 TREEFACE_NAMESPACE_BEGIN
 
-struct Node::Impl
+struct SceneNode::Impl
 {
     Mat4f trans;
 
@@ -21,8 +21,8 @@ struct Node::Impl
 
     bool trans_dirty = true;
     bool global_dirty = true;
-    treejuce::SortedSet<treejuce::Holder<Node> > child_nodes;
-    Node* parent = nullptr;
+    treejuce::SortedSet<treejuce::Holder<SceneNode> > child_nodes;
+    SceneNode* parent = nullptr;
 
     treejuce::SortedSet<treejuce::Holder<VisualItem> > visual_items;
 

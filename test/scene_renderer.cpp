@@ -8,8 +8,8 @@
 #include "treeface/scene/geometry.h"
 #include "treeface/scene/geometrymanager.h"
 #include "treeface/scene/material.h"
-#include "treeface/scene/node.h"
-#include "treeface/scene/nodemanager.h"
+#include "treeface/scene/scenenode.h"
+#include "treeface/scene/scenenodemanager.h"
 #include "treeface/scene/scenegraphmaterial.h"
 #include "treeface/scene/scenerenderer.h"
 #include "treeface/scene/materialmanager.h"
@@ -68,10 +68,10 @@ void build_up_sdl(SDL_Window** window, SDL_GLContext* context)
 
 Holder<GeometryManager> geo_mgr;
 Holder<MaterialManager> mat_mgr;
-Holder<NodeManager> node_mgr;
+Holder<SceneNodeManager> node_mgr;
 PackageManager* pkg_mgr = nullptr;
 
-Holder<Node> root_node;
+Holder<SceneNode> root_node;
 
 void build_up_gl()
 {
@@ -79,7 +79,7 @@ void build_up_gl()
 
     geo_mgr = new GeometryManager();
     mat_mgr = new MaterialManager();
-    node_mgr = new NodeManager(geo_mgr, mat_mgr);
+    node_mgr = new SceneNodeManager(geo_mgr, mat_mgr);
     pkg_mgr = PackageManager::getInstance();
 
 

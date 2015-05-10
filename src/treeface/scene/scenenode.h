@@ -1,5 +1,5 @@
-#ifndef TREEFACE_NODE_H
-#define TREEFACE_NODE_H
+#ifndef TREEFACE_SCENE_NODE_H
+#define TREEFACE_SCENE_NODE_H
 
 #include "treeface/common.h"
 
@@ -14,24 +14,24 @@ class var;
 TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
-class NodeManager;
+class SceneNodeManager;
 class VisualItem;
 
-class Node: public treejuce::Object
+class SceneNode: public treejuce::Object
 {
-    friend class NodeManager;
+    friend class SceneNodeManager;
 
 public:
-    Node();
+    SceneNode();
 
-    JUCE_DECLARE_NON_COPYABLE(Node);
+    JUCE_DECLARE_NON_COPYABLE(SceneNode);
 
-    Node(Node&& other): m_impl(other.m_impl)
+    SceneNode(SceneNode&& other): m_impl(other.m_impl)
     {
         other.m_impl = nullptr;
     }
 
-    Node& operator = (Node&& other)
+    SceneNode& operator = (SceneNode&& other)
     {
         jassert(m_impl == nullptr);
         m_impl = other.m_impl;
@@ -39,7 +39,7 @@ public:
         return *this;
     }
 
-    virtual ~Node();
+    virtual ~SceneNode();
 
     const Mat4f& get_transform() NOEXCEPT;
     const Mat4f& get_global_transform() NOEXCEPT;
@@ -54,13 +54,13 @@ public:
     int get_num_visual_items() const NOEXCEPT;
     VisualItem* get_visual_item_at(int idx) NOEXCEPT;
 
-    bool add_child(Node* child);
-    bool has_child(Node* child) const NOEXCEPT;
-    bool remove_child(Node* child) NOEXCEPT;
+    bool add_child(SceneNode* child);
+    bool has_child(SceneNode* child) const NOEXCEPT;
+    bool remove_child(SceneNode* child) NOEXCEPT;
     int get_num_children() const NOEXCEPT;
-    Node* get_child_at(int idx) NOEXCEPT;
+    SceneNode* get_child_at(int idx) NOEXCEPT;
 
-    Node* get_parent() NOEXCEPT;
+    SceneNode* get_parent() NOEXCEPT;
 private:
     struct Impl;
     Impl* m_impl = nullptr;
@@ -68,4 +68,4 @@ private:
 
 TREEFACE_NAMESPACE_END
 
-#endif // TREEFACE_NODE_H
+#endif // TREEFACE_SCENE_NODE_H

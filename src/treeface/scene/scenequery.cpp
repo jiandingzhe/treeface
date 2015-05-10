@@ -1,6 +1,6 @@
 #include "treeface/scene/scenequery.h"
 
-#include "treeface/scene/node.h"
+#include "treeface/scene/scenenode.h"
 
 #include <treejuce/Result.h>
 
@@ -16,7 +16,7 @@ SceneQuery::~SceneQuery()
 {
 }
 
-treejuce::Result SceneQuery::traverse(Node* root) NOEXCEPT
+treejuce::Result SceneQuery::traverse(SceneNode* root) NOEXCEPT
 {
     Result begin_re = traverse_begin();
     if (!begin_re)
@@ -33,7 +33,7 @@ treejuce::Result SceneQuery::traverse(Node* root) NOEXCEPT
     return Result::ok();
 }
 
-treejuce::Result SceneQuery::recur_part(Node* node) NOEXCEPT
+treejuce::Result SceneQuery::recur_part(SceneNode* node) NOEXCEPT
 {
     Result one_node_re = traverse_one_node(node);
     if (!one_node_re)
@@ -41,7 +41,7 @@ treejuce::Result SceneQuery::recur_part(Node* node) NOEXCEPT
 
     for (int i = 0; i < node->get_num_children(); i++)
     {
-        Node* child = node->get_child_at(i);
+        SceneNode* child = node->get_child_at(i);
         Result child_re = recur_part(child);
         if (!child_re)
             return child_re;
