@@ -6,6 +6,9 @@
 
 TREEFACE_NAMESPACE_BEGIN
 
+/**
+ * @brief helper class to get type at compile time from OpenGL type enums.
+ */
 template<GLenum GL_TYPE_ENUM_VALUE>
 struct GLTypeHelper
 {};

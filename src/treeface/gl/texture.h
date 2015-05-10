@@ -34,28 +34,38 @@ public:
     JUCE_DECLARE_NON_MOVABLE(Texture);
 
     /**
-     * Set image data and set to only using single mipmap level.
-     *
-     * Mipmap base level and max level will be automatically set to zero.
+     * @brief Set image data.
      *
      * @param image: the image to be set
      * @param internal_fmt: device-side image format
-     * @param gen_mipmap: if set to true, will automatically generate a series
-     *        of mipmaps using GLU; otherwise only use single image.
+     * @param gen_mipmap: if set to true, a series of mipmaps will be generated
+     *        using GLU; otherwise only use single level of texture, and set
+     *        mipmap base and max levels to zero.
+     *
+     * @return ok if success, otherwise false.
      */
     treejuce::Result set_image_data(ImageRef image, GLint internal_fmt, bool gen_mipmap) NOEXCEPT;
 
     /**
-     * Specify image data for all mipmap levels.
+     * @brief Specify image data for all mipmap levels explicitly.
      *
      * Mipmap base level and max level will be automatically adjusted. But you
      * still need to manually modify filter_min to those mipmap-enabled modes.
      *
      * @param images: images to be set for all mipmap levels
      * @param internal_fmt: device-side image format
+     *
+     * @return ok if success, otherwise false.
      */
     treejuce::Result set_image_data(treejuce::ArrayRef<ImageRef> images, GLint internal_fmt) NOEXCEPT;
 
+    /**
+     * @brief build texture from JSON data
+     *
+     * @param texture_root_node
+     *
+     * @return ok if success, otherwise false.
+     */
     treejuce::Result build(const treejuce::var& texture_root_node);
 
     inline float get_min_lod() const NOEXCEPT
@@ -130,6 +140,12 @@ public:
         }
     }
 
+    /**
+     * @brief bind texture
+     *
+     * If any cached texture parameter is modified, they will be uploaded to the
+     * device.
+     */
     inline void use() NOEXCEPT
     {
         glBindTexture(GL_TEXTURE_2D, m_texture);
@@ -147,6 +163,9 @@ public:
         }
     }
 
+    /**
+     * @brief bind zero
+     */
     static inline void unuse() NOEXCEPT
     {
         glBindTexture(GL_TEXTURE_2D, 0);

@@ -7,6 +7,13 @@
 
 TREEFACE_NAMESPACE_BEGIN
 
+/**
+ * @brief The ImageRef struct holds image metadata for OpenGL.
+ *
+ * These information is enough for the image to be used as textures. The raw
+ * data is not owned by ImageRef, and will be kept untouched when ImageRef is
+ * destroyed.
+ */
 struct ImageRef
 {
     GLenum format;
