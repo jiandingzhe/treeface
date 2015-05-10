@@ -51,6 +51,9 @@ treejuce::Result VertexArray::build(const VertexIndexBuffer* buffer,
                                     const VertexTemplate& vertex_info,
                                     const Program* program)
 {
+    if (!program->usable())
+        return Result::fail("VertexArray: attempt to connect with unbuilt program object");
+
     glBindVertexArray(m_array);
     glBindBuffer(GL_ARRAY_BUFFER, buffer->m_buffer_vtx);
 
@@ -73,6 +76,9 @@ treejuce::Result VertexArray::build_one(const VertexIndexBuffer* buffer,
                                         GLsizei stride,
                                         const Program* program)
 {
+    if (!program->usable())
+        return Result::fail("VertexArray: attempt to connect with unbuilt program object");
+
     glBindVertexArray(m_array);
     glBindBuffer(GL_ARRAY_BUFFER, buffer->m_buffer_vtx);
 
