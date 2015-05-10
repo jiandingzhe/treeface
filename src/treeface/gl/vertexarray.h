@@ -14,8 +14,8 @@
 
 TREEFACE_NAMESPACE_BEGIN
 
-struct VertexIndexBuffer;
-struct Program;
+class VertexIndexBuffer;
+class Program;
 
 class VertexTemplate;
 

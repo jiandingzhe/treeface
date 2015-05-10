@@ -14,7 +14,7 @@ TREEFACE_NAMESPACE_BEGIN
 
 class SceneGraphMaterial;
 class Geometry;
-class VertexArray;
+struct VertexArray;
 
 class VisualItem: public treejuce::Object
 {

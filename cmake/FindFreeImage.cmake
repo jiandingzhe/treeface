@@ -20,7 +20,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
             ${FreeImage_SEARCH_PREFIX}/${CMAKE_INSTALL_LIBDIR}
             ${FreeImage_SEARCH_PREFIX}/lib
         )
-    elseif(FreeImage_SEARCH_32BIT_64BIT 64)
+    elseif(FreeImage_SEARCH_32BIT_64BIT EQUAL 64)
         set(freeimage_inc_hint
             ${FreeImage_SEARCH_PREFIX}/Dist/x64
             ${FreeImage_SEARCH_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}

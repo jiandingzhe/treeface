@@ -18,8 +18,8 @@ TREEFACE_NAMESPACE_BEGIN
 
 class Material;
 class Uniform;
-class VertexArray;
-class VertexAttrib;
+struct VertexArray;
+struct VertexAttrib;
 
 /**
  * @brief The Program class represents a GLSL program with vertex shader and
@@ -39,7 +39,7 @@ class VertexAttrib;
 class Program: public treejuce::Object
 {
     friend class Material;
-    friend class VertexArray;
+    friend struct VertexArray;
 
 public:
     /**

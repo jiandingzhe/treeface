@@ -2,6 +2,7 @@
 #define TREEFACE_IMAGE_H
 
 #include "treeface/common.h"
+#include "treeface/gl/imageref.h"
 
 #include <treejuce/Object.h>
 
@@ -14,7 +15,6 @@ class Result;
 TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
-class ImageRef;
 
 treejuce::Result convert_fi_image_info_to_gl(FIBITMAP* fi_img, GLenum& gl_format, GLenum& gl_type);
 

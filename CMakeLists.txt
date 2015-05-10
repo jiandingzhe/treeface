@@ -52,7 +52,7 @@ message(STATUS "SDL2: ${SDL2_FOUND}")
 message(STATUS "  inc ${SDL2_INCLUDE_DIR}")
 message(STATUS "  lib ${SDL2_LIBRARY}")
 
-find_package(ZIP REQUIRED)
+find_package(ZIP)
 message(STATUS "ZIP: ${ZIP_FOUND}")
 message(STATUS "  bin: ${Zip_EXECUTABLE}")
 

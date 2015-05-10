@@ -200,7 +200,7 @@ void VertexTemplate::set_value_at(void* vertex, int i_elem, const treejuce::var&
     case GL_UNSIGNED_INT:
     case GL_UNSIGNED_INT_8_8_8_8: // TODO should we support composite type?
     case GL_UNSIGNED_INT_10_10_10_2:
-        *((GLuint*)value_p)   = int64(value); break;
+        *((GLuint*)value_p)   = int(value); break;
     case GL_FLOAT:
         *((GLfloat*)value_p)  = float(value); break;
     case GL_DOUBLE:

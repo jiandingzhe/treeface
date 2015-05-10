@@ -21,7 +21,7 @@ TREEFACE_JUCE_NAMESPACE_END
 class TestFramework;
 
 TREEFACE_NAMESPACE_BEGIN
-class VertexArray;
+struct VertexArray;
 class Geometry;
 
 /**
@@ -37,7 +37,7 @@ class Geometry;
  */
 class VertexIndexBuffer: public treejuce::Object
 {
-    friend class VertexArray;
+    friend struct VertexArray;
     friend class Geometry;
     friend class ::TestFramework;
 

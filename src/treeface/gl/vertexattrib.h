@@ -13,14 +13,14 @@ TREEFACE_NAMESPACE_BEGIN
 
 struct VertexAttrib
 {
-    VertexAttrib(const treejuce::String& name, GLsizei n_elem, GLenum type)
+    VertexAttrib(const treejuce::String& name, treejuce::int32 n_elem, GLenum type)
         : name(name)
         , n_elem(n_elem)
         , type(type)
     {
     }
 
-    inline size_t get_elem_offset(treejuce::uint32 index) const NOEXCEPT
+    inline size_t get_elem_offset(treejuce::int32 index) const NOEXCEPT
     {
         jassert(index < n_elem);
         return index * size_of_gl_type(type);
@@ -32,7 +32,7 @@ struct VertexAttrib
     }
 
     treejuce::String name;
-    GLsizei n_elem;
+    treejuce::int32 n_elem;
     GLenum type;
 };
 

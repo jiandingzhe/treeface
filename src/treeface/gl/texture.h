@@ -2,6 +2,7 @@
 #define TREEFACE_GL_TEXTURE_H
 
 #include "treeface/common.h"
+#include "treeface/gl/imageref.h"
 
 #include <treejuce/ArrayRef.h>
 #include <treejuce/MathsFunctions.h>
@@ -15,8 +16,6 @@ class var;
 TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
-
-class ImageRef;
 
 extern const GLenum TEXTURE_UNITS[32];
 
