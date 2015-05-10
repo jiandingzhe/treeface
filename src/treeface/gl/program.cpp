@@ -372,6 +372,8 @@ treejuce::Result Program::build(const char* src_vert_raw, const char* src_frag_r
         m_impl->uni_idx_by_name.set(uni_name, i_uni);
     }
 
+    compiled_and_linked = true;
+
     return treejuce::Result::ok();
 }
 
