@@ -1,0 +1,12 @@
+{
+    "program": ["common_vertex.glsl", "frag_one_tex.glsl"],
+    "type": "scene_graph",
+    "textures":
+    [
+        {
+            "name": "tex",
+            "image": "moon.jpg",
+            "internal_format": "rgb"
+        }
+    ]
+}

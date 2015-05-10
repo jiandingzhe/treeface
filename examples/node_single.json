@@ -1,0 +1,10 @@
+{
+    "id": "a",
+    "visual_items":
+    [
+        {
+            "material": "material_vert_color.json",
+            "geometry": "geom_colored.json"
+        }
+    ]
+}

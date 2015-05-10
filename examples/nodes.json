@@ -1,0 +1,50 @@
+{
+    "id": "a",
+    "children":
+    [
+        {
+            "transform":
+            [
+                0.2, 0, 0, 0,
+                0, 0.2, 0, 0,
+                0, 0, 0.2, 0,
+                0.5, 0, 0, 1
+            ],
+            "visual_items":
+            [
+                {
+                    "material": "material1.json",
+                    "geometry": "geom_simple.json"
+                }
+            ]
+        },
+        {
+            "id": "b",
+            "transform":
+            [
+                0.2, 0, 0, 0,
+                0, 0.2, 0, 0,
+                0, 0, 0.2, 0,
+                -0.5, 0.5, 0, 1
+            ],
+            "visual_items":
+            [
+                {
+                    "material": "material2.json",
+                    "geometry": "geom_cube.json"
+                },
+                {
+                    "material": "material1.json",
+                    "geometry": "geom_colored.json"
+                }
+            ]
+        }
+    ],
+    "visual_items":
+    [
+        {
+            "material": "material_vert_color.json",
+            "geometry": "geom_colored.json"
+        }
+    ]
+}
