@@ -51,6 +51,7 @@ function(ZIP_FILES OUTPUT_FILE)
     string(REPLACE "/" "___" zip_target ${output_file_use})
     add_custom_target(ZIP_TARGET_${zip_target} ALL
         DEPENDS ${output_file_use}
+        SOURCES ${input_files}
     )
 endfunction()
 
