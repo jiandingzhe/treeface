@@ -83,7 +83,7 @@ void TestFramework::content()
         IS(mat2->get_ref_count(), 1);
 
         IS(mat2->get_num_textures(), 2);
-        OK(img_mgr->image_is_cached("moonbump.pfm"));
+        OK(img_mgr->image_is_cached("earth.png"));
     }
 
     // suppress valgrind warnings
