@@ -214,7 +214,7 @@ Uniform::Uniform(const treejuce::String& name, GLsizei n_elem, GLenum type)
         uploader = upload_int;
         break;
     default:
-        die("unsupported program uniform type: " + gl_type_to_string(type));
+        die("unsupported program uniform type: %s", gl_type_to_string(type).toRawUTF8());
     }
 
     if (size > sizeof(void*))
@@ -320,7 +320,7 @@ treejuce::Result Program::build(const char* src_vert_raw, const char* src_frag_r
     int n_attr = -1;
     glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTES, &n_attr);
     if (n_attr == -1)
-        die("failed to get attribute number in program " + String(m_program));
+        die("failed to get attribute number in program %u", m_program);
     DBG("vertex attribute amount: "+String(n_attr));
 
     for (int i_attr = 0; i_attr < n_attr; i_attr++)
@@ -335,10 +335,10 @@ treejuce::Result Program::build(const char* src_vert_raw, const char* src_frag_r
         DBG("  attribute "+String(i_attr)+": name "+String(attr_name)+", type "+gl_type_to_string(attr_type)+", size "+String(attr_size));
 
         if (attr_name_len == -1)
-            die("failed to get info for attribute " + String(i_attr));
+            die("failed to get info for attribute %d", i_attr);
 
         if (attr_name_len >= 255)
-            die("attribute " + String(i_attr) + " name is too long");
+            die("attribute %d name is too long", i_attr);
 
         m_impl->attr_info.add({treejuce::String(attr_name), attr_size, attr_type});
         m_impl->attr_idx_by_name.set(treejuce::String(attr_name), i_attr);

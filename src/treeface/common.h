@@ -11,14 +11,10 @@
 #define TREEFACE_NAMESPACE_BEGIN namespace treeface {
 #define TREEFACE_NAMESPACE_END }
 
-TREEFACE_JUCE_NAMESPACE_BEGIN
-class StringRef;
-TREEFACE_JUCE_NAMESPACE_END
-
 TREEFACE_NAMESPACE_BEGIN
 
-void die(treejuce::StringRef format, ...);
-void warn(treejuce::StringRef format, ...);
+void die(const char* format, ...);
+void warn(const char* format, ...);
 
 TREEFACE_NAMESPACE_END
 

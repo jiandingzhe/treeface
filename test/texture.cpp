@@ -161,7 +161,7 @@ void build_up_gl()
     Result texture_re = texture->set_image_data(img_texture1, GL_RGBA, false);
     if (!texture_re)
     {
-        die("texture image failed: "+texture_re.getErrorMessage());
+        die("texture image failed: %s", texture_re.getErrorMessage().toRawUTF8());
     }
     texture->set_min_filter(GL_NEAREST);
     texture->set_mag_filter(GL_NEAREST);

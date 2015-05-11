@@ -155,7 +155,7 @@ treejuce::Result MaterialManager::build_material(const treejuce::var& data, tree
         src_frag = String(_src_addition_screen_space_) + (const char*)src_frag_raw.getData();
         break;
     default:
-        die("unsupported material type "+to_string(mat_type));
+        die("unsupported material type %s", to_string(mat_type).toRawUTF8());
     }
 
     // create and build shader program
