@@ -60,15 +60,19 @@ void TestFramework::content()
         IS(re.get_y(), 8);
         IS(re.get_z(), 10);
         IS(re.get_w(), 12);
+        IS(b.get_x(), 1);
+        IS(b.get_y(), 2);
+        IS(b.get_z(), 3);
+        IS(b.get_w(), 4);
     }
 
     {
         OK("operator +");
         Vec4f re = b + c;
-        IS(re.get_x(), 11);
-        IS(re.get_y(), 14);
-        IS(re.get_z(), 17);
-        IS(re.get_w(), 20);
+        IS(re.get_x(), 6);
+        IS(re.get_y(), 8);
+        IS(re.get_z(), 10);
+        IS(re.get_w(), 12);
     }
 
     {
