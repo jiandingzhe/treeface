@@ -76,20 +76,20 @@ void TestFramework::content()
     OK(node_a != nullptr);
     OK(node_b != nullptr);
 
-    OK(mat_mgr->material_is_cached("material_plain.json"));
     OK(mat_mgr->material_is_cached("material1.json"));
+    OK(mat_mgr->material_is_cached("material2.json"));
     OK(mat_mgr->material_is_cached("material_vert_color.json"));
 
     OK(geo_mgr->geometry_is_cached("geom_cube.json"));
     OK(geo_mgr->geometry_is_cached("geom_colored.json"));
     OK(geo_mgr->geometry_is_cached("geom_simple.json"));
 
-    Material* material_plain = nullptr;
     Material* material1 = nullptr;
+    Material* material2 = nullptr;
     Material* material_vert_color = nullptr;
 
-    OK(mat_mgr->get_material("material_plain.json", &material_plain));
     OK(mat_mgr->get_material("material1.json", &material1));
+    OK(mat_mgr->get_material("material2.json", &material2));
     OK(mat_mgr->get_material("material_vert_color.json", &material_vert_color));
 
     Geometry* geom_cube = nullptr;
@@ -129,7 +129,7 @@ void TestFramework::content()
 
     VisualItem* visual_unamed = unamed_node->get_visual_item_at(0);
     IS(visual_unamed->get_geometry(), geom_simple);
-    IS(visual_unamed->get_material(), material_plain);
+    IS(visual_unamed->get_material(), material1);
 
     // contents of node B
     IS(node_b->get_num_children(), 0);
@@ -141,7 +141,7 @@ void TestFramework::content()
     if (visual_b1->get_geometry() == geom_cube)
     {
         IS(visual_b1->get_geometry(), geom_cube);
-        IS(visual_b1->get_material(), material_plain);
+        IS(visual_b1->get_material(), material2);
 
         IS(visual_b2->get_geometry(), geom_colored);
         IS(visual_b2->get_material(), material1);
@@ -152,7 +152,7 @@ void TestFramework::content()
         IS(visual_b1->get_material(), material1);
 
         IS(visual_b2->get_geometry(), geom_cube);
-        IS(visual_b2->get_material(), material_plain);
+        IS(visual_b2->get_material(), material2);
     }
 
     SDL_GL_DeleteContext(context);
