@@ -52,10 +52,9 @@ message(STATUS "SDL2: ${SDL2_FOUND}")
 message(STATUS "  inc ${SDL2_INCLUDE_DIR}")
 message(STATUS "  lib ${SDL2_LIBRARY}")
 
-find_package(ZIP)
-message(STATUS "ZIP: ${ZIP_FOUND}")
-message(STATUS "  bin: ${Zip_EXECUTABLE}")
-
+find_package(COMPRESSOR)
+message(STATUS "compressor: ${COMPRESSOR_FOUND}")
+message(STATUS "  bin: ${COMPRESSOR_EXECUTABLE}")
 
 #
 # set compiler options
@@ -79,11 +78,11 @@ include_directories(
     ${SDL2_INCLUDE_DIR}
 )
 
-if(ZIP_FOUND)
+if(COMPRESSOR_FOUND)
     add_subdirectory(examples)
 endif()
 
-if(SDL2_FOUND AND ZIP_FOUND)
+if(SDL2_FOUND AND COMPRESSOR_FOUND)
     add_subdirectory(test)
     add_subdirectory(t)
 endif()
