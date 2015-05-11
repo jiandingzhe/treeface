@@ -12,6 +12,10 @@ MaterialType from_string<MaterialType>(const treejuce::String& string)
     else if (string.compareIgnoreCase("screen_space") == 0) return MATERIAL_SCREEN_SPACE;
     else
         die("invalid material type string representation: %s", string.toRawUTF8());
+
+    // to suppress some compiler warnings
+    // actually useless
+    return MATERIAL_RAW;
 }
 
 template<>
@@ -79,6 +83,10 @@ FREE_IMAGE_FORMAT from_string<FREE_IMAGE_FORMAT>(const treejuce::String& string)
     else if (string.compareIgnoreCase("raw") == 0)    return FIF_RAW;
     else
         die("invalid FreeImage format string representation: %s", string.toRawUTF8());
+
+    // to suppress some compiler warnings
+    // actually useless
+    return FIF_UNKNOWN;
 }
 
 template<>
@@ -195,6 +203,10 @@ FREE_IMAGE_COLOR_TYPE from_string<FREE_IMAGE_COLOR_TYPE>(const treejuce::String&
     else if (string.compareIgnoreCase("cmyk") == 0)       return FIC_CMYK;
     else
         die("invalid FreeImage color type string representation: %s", string.toRawUTF8());
+
+    // to suppress some compiler warnings
+    // actually useless
+    return FIC_RGBALPHA;
 }
 
 template<>
@@ -279,6 +291,10 @@ GLenum gl_internal_format_from_string(const treejuce::String& string)
     else if (string.compareIgnoreCase("rgba32ui") == 0)          return GL_RGBA32UI;
 
     else die("invalid GL internal format string representation: %s", string.toRawUTF8());
+
+    // to suppress some compiler warnings
+    // actually useless
+    return 0;
 }
 
 treejuce::String gl_internal_format_to_string(GLenum arg)
@@ -350,6 +366,10 @@ treejuce::String gl_internal_format_to_string(GLenum arg)
     default:
         die("invalid GL internal color enum: %d", arg);
     }
+
+    // to suppress some compiler warnings
+    // actually useless
+    return "";
 }
 
 GLenum gl_type_from_string(const treejuce::String& str)
@@ -397,6 +417,10 @@ GLenum gl_type_from_string(const treejuce::String& str)
     else if (str.compareIgnoreCase("unsigned_int_sampler_cube") == 0)     return GL_UNSIGNED_INT_SAMPLER_CUBE    ;
     else if (str.compareIgnoreCase("unsigned_int_sampler_2d_array") == 0) return GL_UNSIGNED_INT_SAMPLER_2D_ARRAY;
     else die("invalid GL type string representation: %s", str.toRawUTF8());
+
+    // to suppress some compiler warnings
+    // actually useless
+    return 0;
 }
 
 treejuce::String gl_type_to_string(GLenum arg)
@@ -448,6 +472,10 @@ treejuce::String gl_type_to_string(GLenum arg)
     default:
         die("invalid GL type enum: %x", arg);
     }
+
+    // to suppress some compiler warnings
+    // actually useless
+    return "";
 }
 
 GLenum gl_primitive_from_string(const treejuce::String& str)
@@ -461,6 +489,10 @@ GLenum gl_primitive_from_string(const treejuce::String& str)
     else if (str.compareIgnoreCase("triangle_fan"  ) == 0) return GL_TRIANGLE_FAN  ;
     else
         die("invalid GL primitive string representation: %s", str.toRawUTF8());
+
+    // to suppress some compiler warnings
+    // actually useless
+    return 0;
 }
 
 treejuce::String gl_primitive_to_string(GLenum arg)
@@ -477,6 +509,10 @@ treejuce::String gl_primitive_to_string(GLenum arg)
     default:
         die("invalid GL primitive enum: %x", arg);
     }
+
+    // to suppress some compiler warnings
+    // actually useless
+    return "";
 }
 
 GLenum gl_tex_wrap_from_string(const treejuce::String& str)
@@ -489,6 +525,10 @@ GLenum gl_tex_wrap_from_string(const treejuce::String& str)
         return GL_REPEAT;
     else
         die("invalid GL texture wrap string representation: %s", str.toRawUTF8());
+
+    // to suppress some compiler warnings
+    // actually useless
+    return 0;
 }
 
 treejuce::String gl_tex_wrap_to_string(GLenum arg)
@@ -501,6 +541,10 @@ treejuce::String gl_tex_wrap_to_string(GLenum arg)
     default:
         die("invalid GL texture wrap enum: %x", arg);
     }
+
+    // to suppress some compiler warnings
+    // actually useless
+    return "";
 }
 
 

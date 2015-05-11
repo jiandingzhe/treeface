@@ -65,6 +65,10 @@ int size_of_gl_type(GLenum type)
     default:
         die("attempt to get type size using unknown/unsupported enum: %x", type);
     }
+
+    // to suppress some compiler warnings
+    // actually useless
+    return 0;
 }
 
 TREEFACE_NAMESPACE_END
