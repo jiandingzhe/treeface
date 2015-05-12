@@ -1,7 +1,9 @@
 #ifndef TREEFACE_GL_TYPE_H
 #define TREEFACE_GL_TYPE_H
 
+#define GLEW_STATIC
 #include <GL/glew.h>
+
 #include "treeface/common.h"
 
 TREEFACE_NAMESPACE_BEGIN

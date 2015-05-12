@@ -7,6 +7,7 @@
 #include <treejuce/IntTypes.h>
 #include <treejuce/Object.h>
 
+#define GLEW_STATIC
 #include <GL/glew.h>
 
 TREEFACE_JUCE_NAMESPACE_BEGIN

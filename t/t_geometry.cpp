@@ -1,5 +1,8 @@
 #include "TestFramework.h"
 
+#define GLEW_STATIC
+#include <GL/glew.h>
+
 #include "treeface/scene/geometrymanager.h"
 #include "treeface/packagemanager.h"
 
@@ -12,7 +15,6 @@
 #include <treejuce/MemoryBlock.h>
 
 #include <SDL.h>
-#include <GL/glew.h>
 
 using namespace treeface;
 using namespace treejuce;

@@ -18,6 +18,7 @@
 #include <treejuce/Variant.h>
 #include <treejuce/StringRef.h>
 
+#define GLEW_STATIC
 #include <GL/glew.h>
 
 #include <cstdlib>

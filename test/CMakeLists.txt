@@ -21,13 +21,6 @@ target_link_libraries(texture
     ${OPENGL_glu_LIBRARY}
 )
 
-if(MSVC AND TREEFACE_OS STREQUAL "WINDOWS")
-    set_target_properties(interact interact_wrap texture
-        PROPERTIES
-        WIN32_EXECUTABLE 0
-    )
-endif()
-
 add_executable(freeimage_format freeimage_format.cpp)
 target_link_libraries(freeimage_format
     treeface
@@ -61,3 +54,10 @@ target_link_libraries(scene_renderer
     ${OPENGL_gl_LIBRARY}
     ${OPENGL_glu_LIBRARY}
 )
+
+if(TREEFACE_OS STREQUAL "WINDOWS")
+    set_target_properties(interact interact_wrap texture geometry_and_material scene_renderer json_traverse freeimage_format
+        PROPERTIES
+        WIN32_EXECUTABLE 0
+    )
+endif()

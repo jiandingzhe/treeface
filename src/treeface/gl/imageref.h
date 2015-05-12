@@ -3,6 +3,7 @@
 
 #include "treeface/common.h"
 
+#define GLEW_STATIC
 #include <GL/glew.h>
 
 TREEFACE_NAMESPACE_BEGIN

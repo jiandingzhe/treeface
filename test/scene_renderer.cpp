@@ -152,6 +152,7 @@ void main_loop(SDL_Window* window)
     }
 }
 
+#undef main
 int main(int argc, char** argv)
 {
     SDL_Window* window = nullptr;

@@ -10,7 +10,8 @@
 #include <treejuce/Result.h>
 #include <treejuce/String.h>
 
-#include "GL/glew.h"
+#define GLEW_STATIC
+#include <GL/glew.h>
 
 TREEFACE_NAMESPACE_BEGIN
 

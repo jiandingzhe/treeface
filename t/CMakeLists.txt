@@ -102,6 +102,8 @@ target_link_libraries(t_geometry
     ${TREEJUCE_LIBRARIES}
     ${SDL2_LIBRARY}
     ${GLEW_LIBRARY}
+    ${OPENGL_gl_LIBRARY}
+    ${OPENGL_glu_LIBRARY}
 )
 
 add_executable(t_node_manager t_node_manager.cpp)
@@ -110,8 +112,8 @@ target_link_libraries(t_node_manager
     TestFramework
     ${TREEJUCE_LIBRARIES}
     ${SDL2_LIBRARY}
+    ${GLEW_LIBRARY}
     ${OPENGL_gl_LIBRARY}
     ${OPENGL_glu_LIBRARY}
     ${FreeImage_LIBRARIES}
-    ${GLEW_LIBRARY}
 )

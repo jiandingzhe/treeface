@@ -4,6 +4,7 @@
 #include "treeface/material.h"
 #include "treeface/math/mat4.h"
 
+#define GLEW_STATIC
 #include <GL/glew.h>
 
 TREEFACE_NAMESPACE_BEGIN

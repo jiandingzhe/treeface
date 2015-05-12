@@ -352,6 +352,7 @@ template<typename T, int SZ = sizeof(T)*4>
 bool operator == (const Vec4<T>& a, const Vec4<T>& b)
 {
     die("vec4 == not implemented");
+    return false;
 }
 
 /**
@@ -361,6 +362,7 @@ template<typename T, int SZ = sizeof(T)*4>
 bool operator != (const Vec4<T>& a, const Vec4<T>& b)
 {
     die("vec4 != not implemented");
+    return false;
 }
 
 typedef Vec4<float> Vec4f;
