@@ -426,7 +426,8 @@ int main(int argc, char** argv)
         renderer.render();
 
         SDL_GL_SwapWindow(window);
-        SDL_Delay(20);
+        SDL_Delay(500);
+        break;
     }
 
     SDL_GL_DeleteContext(context);
