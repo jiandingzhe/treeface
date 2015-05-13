@@ -448,10 +448,10 @@ void on_mouse_motion(SDL_MouseMotionEvent& e)
 
     if (pressed_widgets.size())
     {
-        printf("move %lu widgets\n", pressed_widgets.size());
+        //printf("move %lu widgets\n", pressed_widgets.size());
         for (Widget* widget : pressed_widgets)
         {
-            printf("  move widget %p: %f, %f\n", widget, xrel, yrel);
+            //printf("  move widget %p: %f, %f\n", widget, xrel, yrel);
             widget->move(xrel, yrel);
         }
     }
@@ -513,10 +513,10 @@ int main(int argc, char** argv)
 
     vector<Widget*> widgets;
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 1; i++)
     {
         float x = -1 + 2 * float(i)/10;
-        for (int j = 0; j < 10; j++)
+        for (int j = 0; j < 1; j++)
         {
             float y = -1 + 2 * float(j) / 10;
             Widget* widget = new Widget(x, y, 0.15f, 0.1f);

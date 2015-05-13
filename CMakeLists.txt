@@ -69,9 +69,9 @@ else()
     endif()
 endif()
 
-if(TREEFACE_OS STREQUAL "WINDOWS")
-    add_definitions(-DJUCE_DLL)
-endif()
+#if(TREEFACE_OS STREQUAL "WINDOWS")
+#    add_definitions(-DJUCE_DLL)
+#endif()
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/src

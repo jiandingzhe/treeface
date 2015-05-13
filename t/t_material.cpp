@@ -50,6 +50,7 @@ void build_up_sdl(SDL_Window** window, SDL_GLContext* context)
             exit(1);
         }
     }
+    printf("glew inited\n");
 }
 
 void TestFramework::content()
@@ -63,9 +64,11 @@ void TestFramework::content()
 
     Holder<MaterialManager> mat_mgr = new MaterialManager();
 
-    pkg_mgr->add_package(File("../examples/resource.zip"), PackageManager::KEEP_EXISTING);
+    printf("add zip file to package manager\n");
+    pkg_mgr->add_package(File::getCurrentWorkingDirectory().getChildFile("../examples/resource.zip"), PackageManager::KEEP_EXISTING);
 
     // material 1
+    printf("load material 1\n");
     {
         Material* mat1 = nullptr;
         OK(mat_mgr->get_material("material1.json", &mat1));
