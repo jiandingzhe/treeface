@@ -361,6 +361,8 @@ treejuce::Result Program::build(const char* src_vert_raw, const char* src_frag_r
                            &uni_name_len, &uni_size, &uni_type, uni_name);
 
         DBG("  uniform "+String(i_uni)+": name "+String(uni_name)+", type "+gl_type_to_string(uni_type)+", size "+String(uni_size));
+		GLint uni_loc = glGetUniformLocation(m_program, uni_name);
+		printf("  uniform %d %s location by gl API: %d\n", i_uni, uni_name, uni_loc);
 
         if (uni_name_len == -1)
             die("failed to get info for uniform %d", i_uni);

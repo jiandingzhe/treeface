@@ -69,7 +69,7 @@ if(NOT TREEJUCE_LIBRARIES)
             ADVANCED 1
     )
     message(${treejuce_main_lib})
-    set(TREEJUCE_LIBRARIES ${treejuce_dep_libs} ${treejuce_main_lib} CACHE STRING "" FORCE)
+    set(TREEJUCE_LIBRARIES ${treejuce_main_lib} ${treejuce_dep_libs} CACHE STRING "" FORCE)
     message("for user: ${TREEJUCE_LIBRARIES}")
 endif()
 

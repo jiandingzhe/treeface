@@ -132,6 +132,8 @@ struct ShaderProgram
         attr_color = glGetAttribLocation(program, "in_color");
         uni_matrix = glGetUniformLocation(program, "matrix");
         uni_active = glGetUniformLocation(program, "is_active");
+		printf("uniform matrix: %d\n", uni_matrix);
+		printf("uniform is_active: %d\n", uni_active);
     }
 
     void _do_compile(GLuint shader, const char* src)

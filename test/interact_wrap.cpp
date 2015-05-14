@@ -81,6 +81,19 @@ const char* src_fragment =
         "  gl_FragColor = frag_color;\n"
         "}\n";
 
+void show_matrix(Mat4f& mat)
+{
+	printf("%f %f %f %f\n"
+		   "%f %f %f %f\n"
+		   "%f %f %f %f\n"
+		   "%f %f %f %f\n",
+		   mat.get<0, 0>(), mat.get<0, 1>(), mat.get<0, 2>(), mat.get<0, 3>(),
+		   mat.get<1, 0>(), mat.get<1, 1>(), mat.get<1, 2>(), mat.get<1, 3>(),
+		   mat.get<2, 0>(), mat.get<2, 1>(), mat.get<2, 2>(), mat.get<2, 3>(),
+		   mat.get<3, 0>(), mat.get<3, 1>(), mat.get<3, 2>(), mat.get<3, 3>()
+		   );
+}
+
 struct Widget
 {
     Widget(float x, float y, float width, float height)
@@ -94,6 +107,9 @@ struct Widget
         simd_set_one<1, float>(trans.data[1], height);
         simd_set_one<0, float>(trans.data[3], x);
         simd_set_one<1, float>(trans.data[3], y);
+		
+		printf("after construction\n");
+		show_matrix(trans);
     }
 
     void set_position(float x, float y)
@@ -225,13 +241,20 @@ struct WidgetRenderer
 
                 i_matrix    = program->get_uniform_index("matrix");
                 i_is_active = program->get_uniform_index("is_active");
+                printf("uniform matrix: %d\n", i_matrix);
+                printf("uniform is_active: %d\n", i_is_active);
             }
 
-//            program->instant_set_uniform(i_is_active, widget->is_active);
-//            program->instant_set_uniform(i_matrix, widget->trans);
-            program->set_uniform(i_matrix, widget->trans);
-            program->set_uniform(i_is_active, widget->is_active);
+
+//            program->set_uniform(i_matrix, widget->trans);
+//            program->set_uniform(i_is_active, widget->is_active);
             program->use();
+            //program->instant_set_uniform(i_is_active, widget->is_active);
+			program->instant_set_uniform(i_is_active, 1);
+			printf("before set uniform\n");
+			show_matrix(widget->trans);
+            program->instant_set_uniform(i_matrix, widget->trans);
+
 
             widget->array.use();
             widget->geom_buffer->use();
@@ -368,6 +391,9 @@ int main(int argc, char** argv)
     geom_buffer_rect->set_host_data(ArrayRef<const ColoredPoint>(vertex_rect.data(), vertex_rect.size()),
                                     ArrayRef<const uint16>(index_rect.data(), index_rect.size())
                                     );
+    geom_buffer_rect->use();
+    geom_buffer_rect->unuse();
+
     Logger::writeToLog("geometry vertex: "+String(geom_buffer_rect->get_vertex_buffer_id())+", index: "+String(geom_buffer_rect->get_index_buffer_id()));
 
     vector<Widget*> widgets;

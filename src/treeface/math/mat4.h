@@ -101,7 +101,7 @@ struct Mat4
      * @return value on specified row and column
      */
     template<int row, int col>
-    T get()
+    T get() const
     {
         return treejuce::simd_get_one<row, T>(data[col]);
     }
