@@ -83,9 +83,9 @@ void build_up_gl()
     pkg_mgr = PackageManager::getInstance();
 
 
-    String pkg_file_name("../examples/resource.zip");
-    Logger::writeToLog("load package from file " + pkg_file_name);
-    pkg_mgr->add_package(File(pkg_file_name), PackageManager::USE_NEWER);
+    File pkg_file = File::getCurrentWorkingDirectory().getChildFile("../examples/resource.zip");
+    Logger::writeToLog("load package from file " + pkg_file.getFullPathName());
+    pkg_mgr->add_package(pkg_file, PackageManager::USE_NEWER);
 
     // parse node hierarchy
     MemoryBlock node_hie_src;
