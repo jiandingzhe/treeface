@@ -127,9 +127,11 @@ struct Widget
 
     void move(float dx, float dy)
     {
+        printf("%p Widget::move %f %f\n", this, dx, dy);
         bound.x += dx;
         bound.y += dy;
 
+        printf("%p Widget::move going to perform simd add\n");
         trans.data[3] = simd_add<float>(trans.data[3], simd_set<float, 16>(dx, dy, 0, 0));
     }
 
@@ -320,12 +322,13 @@ void on_mouse_motion(SDL_MouseMotionEvent& e)
 
     if (pressed_widgets.size())
     {
-//        printf("move %lu widgets\n", pressed_widgets.size());
+        printf("iterate %lu pressed widgets\n", pressed_widgets.size());
         for (Widget* widget : pressed_widgets)
         {
-//            printf("  move widget %p: %f, %f\n", widget, xrel, yrel);
+            printf("  move widget %p: %f, %f\n", widget, xrel, yrel);
             widget->move(xrel, yrel);
         }
+        printf("iteration done\n");
     }
 }
 
