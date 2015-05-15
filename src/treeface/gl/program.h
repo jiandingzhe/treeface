@@ -2,6 +2,7 @@
 #define TREEFACE_GL_PROGRAM_H
 
 #include "treeface/gl/sampler.h"
+#include "treeface/gl/vertexattrib.h"
 
 #include "treeface/common.h"
 #include "treeface/math.h"
@@ -18,9 +19,18 @@
 TREEFACE_NAMESPACE_BEGIN
 
 class Material;
-class Uniform;
 struct VertexArray;
-struct VertexAttrib;
+
+struct UniformInfo: public VertexAttrib
+{
+    UniformInfo(const treejuce::String& name, treejuce::int32 n_elem, GLenum type, GLint location)
+        : VertexAttrib(name, n_elem, type)
+        , location(location)
+    {
+    }
+
+    GLint location = -1;
+};
 
 /**
  * @brief The Program class represents a GLSL program with vertex shader and
@@ -85,19 +95,12 @@ public:
         glUseProgram(0);
     }
 
-    void instant_set_uniform(GLint uni, GLint value) const NOEXCEPT;
-    void instant_set_uniform(GLint uni, GLuint value) const NOEXCEPT;
-    void instant_set_uniform(GLint uni, GLfloat value) const NOEXCEPT;
-    void instant_set_uniform(GLint uni, const Sampler& sampler) const NOEXCEPT;
-    void instant_set_uniform(GLint uni, const Vec4f& value) const NOEXCEPT;
-    void instant_set_uniform(GLint uni, const Mat4f& value) const NOEXCEPT;
-
-    void set_uniform(GLint i_uni, GLint value) NOEXCEPT;
-    void set_uniform(GLint i_uni, GLuint value) NOEXCEPT;
-    void set_uniform(GLint i_uni, float value) NOEXCEPT;
-    void set_uniform(GLint i_uni, const Sampler& value) NOEXCEPT;
-    void set_uniform(GLint i_uni, const Vec4f& value) NOEXCEPT;
-    void set_uniform(GLint i_uni, const Mat4f& value) NOEXCEPT;
+    void instant_set_uniform(GLint uni_loc, GLint value) const NOEXCEPT;
+    void instant_set_uniform(GLint uni_loc, GLuint value) const NOEXCEPT;
+    void instant_set_uniform(GLint uni_loc, GLfloat value) const NOEXCEPT;
+    void instant_set_uniform(GLint uni_loc, const Sampler& sampler) const NOEXCEPT;
+    void instant_set_uniform(GLint uni_loc, const Vec4f& value) const NOEXCEPT;
+    void instant_set_uniform(GLint uni_loc, const Mat4f& value) const NOEXCEPT;
 
     /**
      * @brief get vertex attribute index by name
@@ -117,18 +120,29 @@ public:
     /**
      * @brief get uniform index by name
      * @param name: uniform name
-     * @return uniform index. -1 will be returned if the name does not exist
-     * in program.
+     * @return uniform index. -1 will be returned if name not exist.
      */
     int get_uniform_index(const treejuce::String& name) const NOEXCEPT;
+
+    /**
+     * @brief get uniform index by location
+     * @param uni_loc: uniform location
+     * @return uniform index. -1 will be returned if location not exist.
+     */
+    int get_uniform_index(const GLint uni_loc) const NOEXCEPT;
 
     /**
      * @brief get uniform info by index
      * @param i_attr: uniform index
      * @return uniform information
      */
-    const VertexAttrib& get_uniform_info(int i_uni) const NOEXCEPT;
+    const UniformInfo& get_uniform_info(int i_uni) const NOEXCEPT;
 
+    /**
+     *
+     *
+     */
+    GLint get_uniform_location(const treejuce::String& name) const NOEXCEPT;
 protected:
     struct Impl;
 

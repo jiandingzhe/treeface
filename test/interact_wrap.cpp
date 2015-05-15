@@ -18,11 +18,12 @@
 
 #include <vector>
 #include <set>
-#include <map>
 
+#include <treejuce/ArrayRef.h>
 #include <treejuce/BasicNativeHeaders.h>
 #include <treejuce/Holder.h>
 #include <treejuce/Logger.h>
+#include <treejuce/HashMultiMap.h>
 
 using namespace std;
 using namespace treeface;
@@ -217,58 +218,42 @@ struct WidgetRenderer
 {
     void add_widget(Widget* widget)
     {
-        widgets_by_program.insert({widget->program, widget});
+        widgets_by_program.insert(widget->program, widget);
     }
 
     void render()
     {
-        Program* prev_program = nullptr;
-        GLint i_matrix = -1;
-        GLint i_is_active = -1;
-        for (pair<Program*, Widget*> kv : widgets_by_program)
+        HashMultiMap<Program*, Widget*>::Iterator it_program_widgets(widgets_by_program);
+        while (it_program_widgets.next())
         {
-            Program* program = kv.first;
-            Widget* widget = kv.second;
+            Program* program = it_program_widgets.getKey();
+            ArrayRef<Widget*> widgets = it_program_widgets.getValues();
 
-            if (program != prev_program)
+            program->use();
+
+            GLint loc_matrix = program->get_uniform_location("matrix");
+            GLint loc_is_active = program->get_uniform_location("is_active");
+
+            for (int i = 0; i < widgets.size(); i++)
             {
-                if (prev_program)
-                    prev_program->unuse();
+                Widget* widget = widgets[i];
+                program->instant_set_uniform(loc_is_active, widget->is_active);
+                program->instant_set_uniform(loc_matrix, widget->trans);
 
-                prev_program = program;
+                widget->array.use();
+                widget->geom_buffer->use();
 
-//                program->use();
+                widget->geom_buffer->draw(GL_TRIANGLES);
 
-                i_matrix    = program->get_uniform_index("matrix");
-                i_is_active = program->get_uniform_index("is_active");
-                printf("uniform matrix: %d\n", i_matrix);
-                printf("uniform is_active: %d\n", i_is_active);
+                widget->array.unuse();
+                widget->geom_buffer->unuse();
             }
 
-
-//            program->set_uniform(i_matrix, widget->trans);
-//            program->set_uniform(i_is_active, widget->is_active);
-            program->use();
-            //program->instant_set_uniform(i_is_active, widget->is_active);
-			program->instant_set_uniform(i_is_active, 1);
-			printf("before set uniform\n");
-			show_matrix(widget->trans);
-            program->instant_set_uniform(i_matrix, widget->trans);
-
-
-            widget->array.use();
-            widget->geom_buffer->use();
-
-            widget->geom_buffer->draw(GL_TRIANGLES);
-
-            widget->array.unuse();
-            widget->geom_buffer->unuse();
+            program->unuse();
         }
-
-        prev_program->unuse();
     }
 
-    multimap<Program*, Widget*> widgets_by_program;
+    HashMultiMap<Program*, Widget*> widgets_by_program;
 };
 
 vector<ColoredPoint> vertex_rect = {
@@ -313,15 +298,20 @@ void on_mouse_motion(SDL_MouseMotionEvent& e)
     float x = float(e.x) / float(window_w) * 2 - 1;
     float y = -(float(e.y) / float(window_h) * 2 - 1);
 
-    for (const pair<Program*, Widget*>& value : renderer.widgets_by_program)
+    HashMultiMap<Program*, Widget*>::Iterator it_program_widgets(renderer.widgets_by_program);
+    while (it_program_widgets.next())
     {
-        if (is_inside_rect(x, y, value.second->bound))
+        ArrayRef<Widget*> widgets = it_program_widgets.getValues();
+        for (int i = 0; i < widgets.size(); i++)
         {
-            value.second->is_active = true;
-        }
-        else
-        {
-            value.second->is_active = false;
+            if (is_inside_rect(x, y, widgets[i]->bound))
+            {
+                widgets[i]->is_active = true;
+            }
+            else
+            {
+                widgets[i]->is_active = false;
+            }
         }
     }
 
@@ -330,10 +320,10 @@ void on_mouse_motion(SDL_MouseMotionEvent& e)
 
     if (pressed_widgets.size())
     {
-        printf("move %lu widgets\n", pressed_widgets.size());
+//        printf("move %lu widgets\n", pressed_widgets.size());
         for (Widget* widget : pressed_widgets)
         {
-            printf("  move widget %p: %f, %f\n", widget, xrel, yrel);
+//            printf("  move widget %p: %f, %f\n", widget, xrel, yrel);
             widget->move(xrel, yrel);
         }
     }
@@ -347,13 +337,19 @@ void on_mouse_down(SDL_MouseButtonEvent& e)
         float y = -(float(e.y) / float(window_h) * 2 - 1);
         printf("press at %f %f: %d\n", x, y, e.state);
 
-        for (const pair<Program*, Widget*>& value : renderer.widgets_by_program)
+        HashMultiMap<Program*, Widget*>::Iterator it_program_widgets(renderer.widgets_by_program);
+        while (it_program_widgets.next())
         {
-            if (is_inside_rect(x, y, value.second->bound))
+            ArrayRef<Widget*> widgets = it_program_widgets.getValues();
+            for (int i = 0; i < widgets.size(); i++)
             {
-                printf("  widget %p\n", value.second);
-                value.second->is_pressed = true;
-                pressed_widgets.insert(value.second);
+                Widget* widget = widgets[i];
+                if (is_inside_rect(x, y, widget->bound))
+                {
+                    printf("  widget %p\n", widget);
+                    widget->is_pressed = true;
+                    pressed_widgets.insert(widget);
+                }
             }
         }
         printf("%lu widgets pressed\n", pressed_widgets.size());
@@ -452,8 +448,7 @@ int main(int argc, char** argv)
         renderer.render();
 
         SDL_GL_SwapWindow(window);
-        SDL_Delay(500);
-        break;
+        SDL_Delay(20);
     }
 
     SDL_GL_DeleteContext(context);

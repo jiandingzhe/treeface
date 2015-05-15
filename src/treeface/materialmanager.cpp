@@ -172,13 +172,27 @@ treejuce::Result MaterialManager::build_material(const treejuce::var& data, tree
     //
     if (mat_type == MATERIAL_SCENE_GRAPH)
     {
-        SceneGraphMaterial* sgmat = dynamic_cast<SceneGraphMaterial*>(mat.get());
-        sgmat->m_uni_trans        = mat->m_program->get_uniform_index("matrix_model_view");
-        sgmat->m_uni_norm_trans   = mat->m_program->get_uniform_index("matrix_normal");
-        sgmat->m_uni_proj_trans   = mat->m_program->get_uniform_index("matrix_project");
-        sgmat->m_uni_light_direct = mat->m_program->get_uniform_index("main_light_direction");
-        sgmat->m_uni_light_color  = mat->m_program->get_uniform_index("main_light_color");
+        // scene material defined uniforms
+        const Program* prog = mat->m_program;
+        int i_mat_model_view       = prog->get_uniform_index("matrix_model_view");
+        int i_mat_normal           = prog->get_uniform_index("matrix_normal");
+        int i_mat_project          = prog->get_uniform_index("matrix_project");
+        int i_main_light_direction = prog->get_uniform_index("main_light_direction");
+        int i_main_light_color     = prog->get_uniform_index("main_light_color");
 
+        SceneGraphMaterial* sgmat = dynamic_cast<SceneGraphMaterial*>(mat.get());
+        if (i_mat_model_view >= 0)
+            sgmat->m_uni_trans        = prog->get_uniform_info(i_mat_model_view).location;
+        if (i_mat_normal >= 0)
+            sgmat->m_uni_norm_trans   = prog->get_uniform_info(i_mat_normal).location;
+        if (i_mat_project >= 0)
+            sgmat->m_uni_proj_trans   = prog->get_uniform_info(i_mat_project).location;
+        if (i_main_light_direction >= 0)
+            sgmat->m_uni_light_direct = prog->get_uniform_info(i_main_light_direction).location;
+        if (i_main_light_color >= 0)
+            sgmat->m_uni_light_color  = prog->get_uniform_info(i_main_light_color).location;
+
+        // scene properties
         if (data_kv.contains(KEY_PROJ_SHADOW))
             sgmat->m_project_shadow = bool(data_kv[KEY_PROJ_SHADOW]);
         if (data_kv.contains(KEY_RECV_SHADOW))

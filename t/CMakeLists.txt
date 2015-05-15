@@ -7,6 +7,17 @@ target_link_libraries(t_vec4
     ${TREEJUCE_LIBRARIES}
 )
 
+add_executable(t_sdl2_leak t_sdl2_leak.cpp)
+target_link_libraries(t_sdl2_leak
+    treeface
+    ${SDL2_LIBRARY}
+    ${GLEW_LIBRARY}
+    ${OPENGL_gl_LIBRARY}
+    ${OPENGL_glu_LIBRARY}
+    TestFramework
+    ${TREEJUCE_LIBRARIES}
+)
+
 add_executable(t_quat t_quat.cpp)
 target_link_libraries(t_quat
     treeface
