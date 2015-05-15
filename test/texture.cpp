@@ -149,7 +149,7 @@ void build_up_gl()
         if (!re)
             die("%s", re.getErrorMessage().toRawUTF8());
     }
-    program_simple_uni = program_simple->get_uniform_index("matrix");
+    program_simple_uni = program_simple->get_uniform_location("matrix");
     if (program_simple_uni == -1)
         die("failed to get uniform");
 
@@ -189,7 +189,7 @@ void build_up_gl()
 
 void main_loop(SDL_Window* window)
 {
-    int uni_tex = program_tex->get_uniform_index("tex_sampler");
+    int uni_tex = program_tex->get_uniform_location("tex_sampler");
     Logger::outputDebugString("set to texture uniform: " + String(uni_tex));
 
     glActiveTexture(GL_TEXTURE0);
@@ -235,6 +235,8 @@ void main_loop(SDL_Window* window)
         // NOTE: the program must be used AFTER textures,
         //       otherwise it will FUCK YOU SILENTLY!!!
         //
+		
+		// the complex one with texture
         printf("  use program\n");
         program_tex->use();
         printf("  set sampler %u to uniform %d\n", 0 , uni_tex);
@@ -250,6 +252,7 @@ void main_loop(SDL_Window* window)
         vertex_array_tex->unuse();
         buffer->unuse();
 
+		// the simple one with plain color
         vertex_array_simple->use();
         buffer->use();
         printf("  use program 2\n");
