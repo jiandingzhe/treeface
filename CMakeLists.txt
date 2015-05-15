@@ -23,6 +23,21 @@ else()
 	message(FATAL_ERROR "unsupported target OS: ${CMAKE_SYSTEM_NAME}")
 endif()
 
+# decide default OpenGL version by OS name
+if(TREEFACE_OS STREQUAL "WINDOWS")
+	set(TREEFACE_GL_VERSION "3.3" 	 CACHE STRING "")
+elseif(TREEFACE_OS STREQUAL "LINUX")
+	set(TREEFACE_GL_VERSION "ES 3.0" CACHE STRING "")
+else()
+	message(FATAL_ERROR "don't know how to decide OpenGl version for OS ${TREEFACE_OS}")
+endif()
+
+set_property(
+	CACHE TREEFACE_GL_VERSION
+	PROPERTY
+		HELPSTRING "OpenGL version, such as 3.0|3.4|4.0|ES 3.0|ES 3.1, etc.."
+)
+
 #
 # find prerequisite libraries
 #

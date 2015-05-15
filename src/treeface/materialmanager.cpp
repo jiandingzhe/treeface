@@ -1,5 +1,6 @@
 #include "treeface/materialmanager.h"
 
+#include "treeface/config.h"
 #include "treeface/enums.h"
 #include "treeface/material.h"
 #include "treeface/packagemanager.h"
@@ -20,6 +21,15 @@
 #include <treejuce/JSON.h>
 #include <treejuce/String.h>
 
+#if defined TREEFACE_GL_3_0
+#	error "TODO what should be it?"
+#elif defined TREEFACE_GL_3_3
+#	define TREEFACE_GLSL_VERSION_DEF "#version 330\n"
+#elif defined TREEFACE_GL_ES_3_0
+#	define TREEFACE_GLSL_VERSION_DEF "#version 300 es\n"
+#else
+#	error "unknown OpenGL version macro"
+#endif
 
 using namespace treejuce;
 
@@ -49,15 +59,15 @@ MaterialManager::~MaterialManager()
 #define KEY_TEXTURE      "textures"
 
 const char* _src_addition_raw_ =
-        "#version 300 es\n"
+        TREEFACE_GLSL_VERSION_DEF
         ;
 
 const char* _src_addition_screen_space_ =
-        "#version 300 es\n"
+        TREEFACE_GLSL_VERSION_DEF
         ;
 
 const char* _src_addition_scene_graph_ =
-        "#version 300 es\n"
+        TREEFACE_GLSL_VERSION_DEF
         "uniform highp mat4 matrix_model_view;\n"
         "uniform highp mat4 matrix_project;\n"
         "uniform highp mat4 matrix_normal;\n"
