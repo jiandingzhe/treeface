@@ -68,7 +68,6 @@ void Material::use() NOEXCEPT
         TextureLayer& curr_layer = m_impl->layers.getReference(i_layer);
 
         glActiveTexture(GL_TEXTURE0 + i_layer);
-        glBindSampler(i_layer, i_layer);
         curr_layer.gl_texture->use();
     }
 
@@ -79,10 +78,7 @@ void Material::use() NOEXCEPT
     for (int i_layer = 0; i_layer < m_impl->layers.size(); i_layer++)
     {
         TextureLayer& curr_layer = m_impl->layers.getReference(i_layer);
-        if (curr_layer.program_uniform_idx >= 0)
-        {
-            m_program->instant_set_uniform(curr_layer.program_uniform_idx, i_layer);
-        }
+		m_program->instant_set_uniform(curr_layer.program_uniform_loc, i_layer);
     }
 }
 

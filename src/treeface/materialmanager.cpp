@@ -191,16 +191,11 @@ treejuce::Result MaterialManager::build_material(const treejuce::var& data, tree
         int i_main_light_color     = prog->get_uniform_index("main_light_color");
 
         SceneGraphMaterial* sgmat = dynamic_cast<SceneGraphMaterial*>(mat.get());
-        if (i_mat_model_view >= 0)
-            sgmat->m_uni_trans        = prog->get_uniform_info(i_mat_model_view).location;
-        if (i_mat_normal >= 0)
-            sgmat->m_uni_norm_trans   = prog->get_uniform_info(i_mat_normal).location;
-        if (i_mat_project >= 0)
-            sgmat->m_uni_proj_trans   = prog->get_uniform_info(i_mat_project).location;
-        if (i_main_light_direction >= 0)
-            sgmat->m_uni_light_direct = prog->get_uniform_info(i_main_light_direction).location;
-        if (i_main_light_color >= 0)
-            sgmat->m_uni_light_color  = prog->get_uniform_info(i_main_light_color).location;
+		sgmat->m_uni_trans        = prog->get_uniform_location("matrix_model_view");
+		sgmat->m_uni_norm_trans   = prog->get_uniform_location("matrix_normal");
+		sgmat->m_uni_proj_trans   = prog->get_uniform_location("matrix_project");
+		sgmat->m_uni_light_direct = prog->get_uniform_location("main_light_direction");
+		sgmat->m_uni_light_color  = prog->get_uniform_location("main_light_color");
 
         // scene properties
         if (data_kv.contains(KEY_PROJ_SHADOW))
@@ -237,7 +232,7 @@ treejuce::Result MaterialManager::build_material(const treejuce::var& data, tree
             // create texture layer
             // the "name" property should has been checked inside build method of Texture object
             String tex_name = tex_node.getProperty(Identifier("name"), var::null).toString();
-            int uni_idx = mat->m_program->get_uniform_index(tex_name);
+            int uni_idx = mat->m_program->get_uniform_location(tex_name);
 
             if (uni_idx >= 0)
                 mat->m_impl->layers.add({tex_name, tex_obj, sampler_obj, uni_idx});

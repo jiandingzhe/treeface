@@ -17,7 +17,7 @@ struct TextureLayer
     treejuce::String name;
     treejuce::Holder<Texture> gl_texture;
     treejuce::Holder<Sampler> gl_sampler;
-    GLint program_uniform_idx;
+    GLint program_uniform_loc;
 };
 
 struct Material::Impl
