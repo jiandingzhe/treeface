@@ -269,7 +269,8 @@ void Program::instant_set_uniform(GLint uni_loc, GLuint value) const NOEXCEPT
     jassert(i_uni >= 0);
     const UniformInfo& uni_info = m_impl->uni_store.getReference(i_uni);
     jassert(uni_info.n_elem == 1);
-    jassert(uni_info.type == GL_UNSIGNED_INT);
+    jassert(uni_info.type == GL_UNSIGNED_INT ||
+			uni_info.type == GL_BOOL);
 #endif
     glUniform1ui(uni_loc, value);
 }
@@ -282,7 +283,8 @@ void Program::instant_set_uniform(GLint uni_loc, GLfloat value) const NOEXCEPT
     jassert(i_uni >= 0);
     const UniformInfo& uni_info = m_impl->uni_store.getReference(i_uni);
     jassert(uni_info.n_elem == 1);
-    jassert(uni_info.type == GL_FLOAT);
+    jassert(uni_info.type == GL_FLOAT ||
+			uni_info.type == GL_BOOL);
 #endif
     glUniform1f(uni_loc, value);
 }
