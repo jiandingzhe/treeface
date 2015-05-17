@@ -16,6 +16,8 @@
 #include "treeface/gl/vertexattrib.h"
 #include "treeface/gl/vertextemplate.h"
 
+#include "treeface/nedbase.h"
+
 #include <vector>
 #include <set>
 
@@ -95,7 +97,7 @@ void show_matrix(Mat4f& mat)
 		   );
 }
 
-struct Widget
+struct Widget: public NedBase
 {
     Widget(float x, float y, float width, float height)
     {
@@ -127,11 +129,9 @@ struct Widget
 
     void move(float dx, float dy)
     {
-        printf("%p Widget::move %f %f\n", this, dx, dy);
         bound.x += dx;
         bound.y += dy;
 
-        printf("%p Widget::move going to perform simd add\n", this);
         trans.data[3] = simd_add<float>(trans.data[3], simd_set<float, 16>(dx, dy, 0, 0));
     }
 
@@ -322,13 +322,10 @@ void on_mouse_motion(SDL_MouseMotionEvent& e)
 
     if (pressed_widgets.size())
     {
-        printf("iterate %lu pressed widgets\n", pressed_widgets.size());
         for (Widget* widget : pressed_widgets)
         {
-            printf("  move widget %p: %f, %f\n", widget, xrel, yrel);
             widget->move(xrel, yrel);
         }
-        printf("iteration done\n");
     }
 }
 
