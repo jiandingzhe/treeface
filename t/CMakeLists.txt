@@ -128,3 +128,10 @@ target_link_libraries(t_node_manager
     ${OPENGL_glu_LIBRARY}
     ${FreeImage_LIBRARIES}
 )
+
+add_executable(t_ned_object t_ned_object.cpp)
+target_link_libraries(t_ned_object
+    treeface
+    TestFramework
+    ${TREEJUCE_LIBRARIES}
+)

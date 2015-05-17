@@ -3,13 +3,14 @@
 
 #include "treeface/scene/scenenode.h"
 #include "treeface/math/mat4.h"
+#include "treeface/nedbase.h"
 
 #include <treejuce/Holder.h>
 #include <treejuce/SortedSet.h>
 
 TREEFACE_NAMESPACE_BEGIN
 
-struct SceneNode::Impl
+struct SceneNode::Impl: public NedBase
 {
     Mat4f trans;
 

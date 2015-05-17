@@ -3,9 +3,10 @@
 
 #include <cmath>
 
-#include "treeface/common.h"
-#include "treejuce/PlatformDefs.h"
-#include "treejuce/SIMD.h"
+#include "treeface/nedbase.h"
+
+#include <treejuce/PlatformDefs.h>
+#include <treejuce/SIMD.h>
 
 TREEFACE_NAMESPACE_BEGIN
 
@@ -17,7 +18,7 @@ TREEFACE_NAMESPACE_BEGIN
  * transmitted to GL server side buffers or program attributes.
  */
 template<typename T, int SZ = sizeof(T)*4>
-struct Vec4
+struct Vec4: public NedBase
 {
     typedef treejuce::SIMDType<SZ> DataType;
 

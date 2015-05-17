@@ -131,7 +131,7 @@ struct Widget
         bound.x += dx;
         bound.y += dy;
 
-        printf("%p Widget::move going to perform simd add\n");
+        printf("%p Widget::move going to perform simd add\n", this);
         trans.data[3] = simd_add<float>(trans.data[3], simd_set<float, 16>(dx, dy, 0, 0));
     }
 

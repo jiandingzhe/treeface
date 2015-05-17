@@ -2,7 +2,11 @@
 
 #include <stdio.h>
 
+using namespace treejuce;
+
 TREEFACE_NAMESPACE_BEGIN
+
+static_assert( sizeof(Mat4f) == sizeof(float)*16 , "size of Mat4f is not 16*float");
 
 template<>
 float Mat4<float>::determinant() const NOEXCEPT

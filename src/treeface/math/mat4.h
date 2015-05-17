@@ -1,6 +1,8 @@
 #ifndef TREEFACE_MAT4_H
 #define TREEFACE_MAT4_H
 
+#include "treeface/nedbase.h"
+
 #include "treeface/math/matutils.h"
 #include "treeface/math/vec4.h"
 #include "treeface/math/quat.h"
@@ -8,7 +10,7 @@
 TREEFACE_NAMESPACE_BEGIN
 
 template<typename T, int SZ = sizeof(T) * 4>
-struct Mat4
+struct Mat4: public NedBase
 {
     typedef treejuce::SIMDType<SZ> DataType;
 
