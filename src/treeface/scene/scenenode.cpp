@@ -1,5 +1,5 @@
 #include "treeface/scene/scenenode.h"
-#include "treeface/scene/visualitem.h"
+#include "treeface/scene/visualobject.h"
 
 #include "treeface/private/node_private.h"
 
@@ -58,21 +58,11 @@ void SceneNode::set_transform(const Mat4f& value) NOEXCEPT
     m_impl->trans = value;
 }
 
-bool SceneNode::add_visual_item(VisualItem* obj)
+bool SceneNode::add_item(SceneItem* obj)
 {
-    return m_impl->visual_items.add(obj);
-}
-
-bool SceneNode::has_visual_item(VisualItem* obj) const NOEXCEPT
-{
-    return m_impl->visual_items.contains(obj);
-}
-
-bool SceneNode::remove_visual_item(VisualItem* obj)
-{
-    if (m_impl->visual_items.contains(obj))
+    if (m_impl->items.add(obj))
     {
-        m_impl->visual_items.removeValue(obj);
+        obj->m_node = this;
         return true;
     }
     else
@@ -81,14 +71,33 @@ bool SceneNode::remove_visual_item(VisualItem* obj)
     }
 }
 
-int SceneNode::get_num_visual_items() const NOEXCEPT
+bool SceneNode::has_item(SceneItem* obj) const NOEXCEPT
 {
-    return m_impl->visual_items.size();
+    return m_impl->items.contains(obj);
 }
 
-VisualItem* SceneNode::get_visual_item_at(int idx) NOEXCEPT
+bool SceneNode::remove_item(SceneItem* obj)
 {
-    return m_impl->visual_items.getReference(idx);
+    if (m_impl->items.contains(obj))
+    {
+        m_impl->items.removeValue(obj);
+        obj->m_node = nullptr;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+int SceneNode::get_num_items() const NOEXCEPT
+{
+    return m_impl->items.size();
+}
+
+SceneItem* SceneNode::get_item_at(int idx) NOEXCEPT
+{
+    return m_impl->items.getReference(idx).get();
 }
 
 bool SceneNode::add_child(SceneNode* child)

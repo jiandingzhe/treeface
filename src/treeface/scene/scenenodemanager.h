@@ -15,7 +15,7 @@ TREEFACE_NAMESPACE_BEGIN
 class GeometryManager;
 class MaterialManager;
 class SceneNode;
-class VisualItem;
+class VisualObject;
 
 class SceneNodeManager: public treejuce::Object
 {
@@ -46,7 +46,7 @@ public:
      */
     SceneNode* get_node(const treejuce::String& name);
 
-    treejuce::Result build_visual_item(const treejuce::var& data, VisualItem* visual_item);
+    treejuce::Result build_visual_item(const treejuce::var& data, VisualObject* visual_item);
     treejuce::Result build_node(const treejuce::var& data, SceneNode* node);
 
 private:

@@ -1,4 +1,4 @@
-#include "treeface/scene/visualitem.h"
+#include "treeface/scene/visualobject.h"
 
 #include "treeface/scene/geometry.h"
 #include "treeface/scene/scenegraphmaterial.h"
@@ -17,25 +17,25 @@ using namespace treejuce;
 
 TREEFACE_NAMESPACE_BEGIN
 
-struct VisualItem::Impl
+struct VisualObject::Impl
 {
     Holder<SceneGraphMaterial> material = nullptr;
     Holder<Geometry> geometry = nullptr;
     Holder<VertexArray> vertex_array = nullptr;
 };
 
-VisualItem::VisualItem(): m_impl(new Impl())
+VisualObject::VisualObject(): m_impl(new Impl())
 {
 }
 
-VisualItem::~VisualItem()
+VisualObject::~VisualObject()
 {
     if (m_impl)
         delete m_impl;
 }
 
 
-treejuce::Result VisualItem::build(Geometry* geom, SceneGraphMaterial* mat) NOEXCEPT
+treejuce::Result VisualObject::build(Geometry* geom, SceneGraphMaterial* mat) NOEXCEPT
 {
     m_impl->geometry = geom;
     m_impl->material = mat;
@@ -44,17 +44,17 @@ treejuce::Result VisualItem::build(Geometry* geom, SceneGraphMaterial* mat) NOEX
     return m_impl->vertex_array->build(geom->get_buffer(), geom->get_vertex_template(), mat->get_program());
 }
 
-SceneGraphMaterial* VisualItem::get_material() NOEXCEPT
+SceneGraphMaterial* VisualObject::get_material() NOEXCEPT
 {
     return m_impl->material;
 }
 
-Geometry* VisualItem::get_geometry() NOEXCEPT
+Geometry* VisualObject::get_geometry() NOEXCEPT
 {
     return m_impl->geometry;
 }
 
-VertexArray* VisualItem::get_vertex_array() NOEXCEPT
+VertexArray* VisualObject::get_vertex_array() NOEXCEPT
 {
     return m_impl->vertex_array;
 }

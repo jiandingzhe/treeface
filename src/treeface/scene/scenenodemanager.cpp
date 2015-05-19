@@ -4,7 +4,7 @@
 #include "treeface/scene/geometrymanager.h"
 #include "treeface/scene/scenegraphmaterial.h"
 #include "treeface/scene/scenenode.h"
-#include "treeface/scene/visualitem.h"
+#include "treeface/scene/visualobject.h"
 
 #include "treeface/gl/vertexarray.h"
 
@@ -101,7 +101,7 @@ Result _validate_visual_item_(const treejuce::NamedValueSet& kv)
     return validator->validate(kv);
 }
 
-treejuce::Result SceneNodeManager::build_visual_item(const var &data, VisualItem *visual_item)
+treejuce::Result SceneNodeManager::build_visual_item(const var &data, VisualObject *visual_item)
 {
     // validate node
     if (!data.isObject())
@@ -187,11 +187,12 @@ treejuce::Result SceneNodeManager::build_node(const treejuce::var& data, SceneNo
         const Array<var>* visual_array = data_kv[KEY_VISUAL].getArray();
         for (int i = 0; i < visual_array->size(); i++)
         {
-            VisualItem* item = new VisualItem();
+            // TODO: may be not a VisualObject
+            VisualObject* item = new VisualObject();
             Result re = build_visual_item(visual_array->getReference(i), item);
             if (!re)
                 return re;
-            node->m_impl->visual_items.add(item);
+            node->add_item(item);
         }
     }
 

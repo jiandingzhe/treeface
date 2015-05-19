@@ -7,7 +7,7 @@
 #include "treeface/scene/geometry.h"
 #include "treeface/scene/scenegraphmaterial.h"
 #include "treeface/scene/scenenode.h"
-#include "treeface/scene/visualitem.h"
+#include "treeface/scene/visualobject.h"
 
 #include "treeface/private/material_private.h"
 
@@ -20,7 +20,7 @@ using namespace treejuce;
 
 TREEFACE_NAMESPACE_BEGIN
 
-typedef HashMultiMap<VisualItem*, SceneNode*> TransformedItems;
+typedef HashMultiMap<VisualObject*, SceneNode*> TransformedItems;
 typedef HashMap<SceneGraphMaterial*, TransformedItems*> SceneCollection;
 
 struct SceneRenderer::Impl
@@ -76,7 +76,7 @@ void SceneRenderer::render(const treeface::Mat4f& matrix_proj, SceneNode* root_n
 
         while (it_items.next())
         {
-            VisualItem* item = it_items.getKey();
+            VisualObject* item = it_items.getKey();
             Geometry* geom = item->get_geometry();
 
             item->get_vertex_array()->use();
@@ -111,9 +111,13 @@ treejuce::Result SceneRenderer::traverse_begin() NOEXCEPT
 
 treejuce::Result SceneRenderer::traverse_one_node(SceneNode* node) NOEXCEPT
 {
-    for (int i = 0; i < node->get_num_visual_items(); i++)
+    for (int i = 0; i < node->get_num_items(); i++)
     {
-        VisualItem* item = node->get_visual_item_at(i);
+        VisualObject* item = dynamic_cast<VisualObject*>(node->get_item_at(i));
+
+        if (!item)
+            continue;
+
         SceneGraphMaterial* mat = item->get_material();
 
         if (!m_impl->obj_by_material_transform.contains(mat))

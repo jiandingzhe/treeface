@@ -25,7 +25,7 @@ struct SceneNode::Impl: public NedBase
     treejuce::SortedSet<treejuce::Holder<SceneNode> > child_nodes;
     SceneNode* parent = nullptr;
 
-    treejuce::SortedSet<treejuce::Holder<VisualItem> > visual_items;
+    treejuce::SortedSet<treejuce::Holder<SceneItem> > items;
 
     void update_trans_descendent();
     void update_global_descendent();

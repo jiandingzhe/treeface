@@ -8,7 +8,7 @@
 #include "treeface/scene/scenegraphmaterial.h"
 #include "treeface/scene/scenenode.h"
 #include "treeface/scene/scenenodemanager.h"
-#include "treeface/scene/visualitem.h"
+#include "treeface/scene/visualobject.h"
 
 #include <treejuce/File.h>
 #include <treejuce/Holder.h>
@@ -118,26 +118,26 @@ void TestFramework::content()
     OK(unamed_node);
 
     // node A visual item
-    IS(node_a->get_num_visual_items(), 1);
+    IS(node_a->get_num_items(), 1);
 
-    VisualItem* visual_a = node_a->get_visual_item_at(0);
+    VisualObject* visual_a = dynamic_cast<VisualObject*>(node_a->get_item_at(0));
     IS(visual_a->get_geometry(), geom_colored);
     IS(static_cast<Material*>(visual_a->get_material()), material_vert_color);
 
     // contents of unamed node
     IS(unamed_node->get_num_children(), 0);
-    IS(unamed_node->get_num_visual_items(), 1);
+    IS(unamed_node->get_num_items(), 1);
 
-    VisualItem* visual_unamed = unamed_node->get_visual_item_at(0);
+    VisualObject* visual_unamed = dynamic_cast<VisualObject*>(unamed_node->get_item_at(0));
     IS(visual_unamed->get_geometry(), geom_simple);
     IS(visual_unamed->get_material(), material1);
 
     // contents of node B
     IS(node_b->get_num_children(), 0);
-    IS(node_b->get_num_visual_items(), 2);
+    IS(node_b->get_num_items(), 2);
 
-    VisualItem* visual_b1 = node_b->get_visual_item_at(0);
-    VisualItem* visual_b2 = node_b->get_visual_item_at(1);
+    VisualObject* visual_b1 = dynamic_cast<VisualObject*>(node_b->get_item_at(0));
+    VisualObject* visual_b2 = dynamic_cast<VisualObject*>(node_b->get_item_at(1));
 
     if (visual_b1->get_geometry() == geom_cube)
     {

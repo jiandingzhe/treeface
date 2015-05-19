@@ -15,7 +15,7 @@ TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
 class SceneNodeManager;
-class VisualItem;
+class SceneItem;
 
 class SceneNode: public treejuce::Object
 {
@@ -48,11 +48,11 @@ public:
 
     void set_transform(const Mat4f& value) NOEXCEPT;
 
-    bool add_visual_item(VisualItem* obj);
-    bool has_visual_item(VisualItem* obj) const NOEXCEPT;
-    bool remove_visual_item(VisualItem* obj);
-    int get_num_visual_items() const NOEXCEPT;
-    VisualItem* get_visual_item_at(int idx) NOEXCEPT;
+    bool add_item(SceneItem* obj);
+    bool has_item(SceneItem* obj) const NOEXCEPT;
+    bool remove_item(SceneItem* obj);
+    int get_num_items() const NOEXCEPT;
+    SceneItem* get_item_at(int idx) NOEXCEPT;
 
     bool add_child(SceneNode* child);
     bool has_child(SceneNode* child) const NOEXCEPT;
