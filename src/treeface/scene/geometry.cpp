@@ -17,6 +17,7 @@
 #include <treejuce/NamedValueSet.h>
 #include <treejuce/Result.h>
 #include <treejuce/ScopedLock.h>
+#include <treejuce/Singleton.h>
 #include <treejuce/Variant.h>
 
 using namespace treejuce;
@@ -47,19 +48,21 @@ Geometry::~Geometry()
 #define KEY_IDX  "indices"
 #define KEY_PRIM "primitive"
 
-Result _validate_root_kv_(const NamedValueSet& kv)
+class GeometryPropertyValidator: public PropertyValidator
 {
-    static PropertyValidator* validator = nullptr;
-    if (!validator)
+public:
+    GeometryPropertyValidator()
     {
-        validator = new PropertyValidator();
-        validator->add_item(KEY_ATTR, PropertyValidator::ITEM_ARRAY, true);
-        validator->add_item(KEY_VTX, PropertyValidator::ITEM_ARRAY, true);
-        validator->add_item(KEY_IDX, PropertyValidator::ITEM_ARRAY, true);
-        validator->add_item(KEY_PRIM, PropertyValidator::ITEM_SCALAR, true);
+        add_item(KEY_ATTR, PropertyValidator::ITEM_ARRAY, true);
+        add_item(KEY_VTX, PropertyValidator::ITEM_ARRAY, true);
+        add_item(KEY_IDX, PropertyValidator::ITEM_ARRAY, true);
+        add_item(KEY_PRIM, PropertyValidator::ITEM_SCALAR, true);
     }
-    return validator->validate(kv);
-}
+
+    juce_DeclareSingleton(GeometryPropertyValidator, false)
+};
+juce_ImplementSingleton(GeometryPropertyValidator)
+
 
 treejuce::Result Geometry::build(const treejuce::var& geom_root_node) NOEXCEPT
 {
@@ -68,7 +71,7 @@ treejuce::Result Geometry::build(const treejuce::var& geom_root_node) NOEXCEPT
 
     const NamedValueSet& geom_root_kv = geom_root_node.getDynamicObject()->getProperties();
     {
-        Result re = _validate_root_kv_(geom_root_kv);
+        Result re = GeometryPropertyValidator::getInstance()->validate(geom_root_kv);
         if (!re)
             return Result::fail("geometry JSON node is invalid: " + re.getErrorMessage());
     }

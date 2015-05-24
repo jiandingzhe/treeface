@@ -19,16 +19,17 @@
 #include <treejuce/Holder.h>
 #include <treejuce/MemoryBlock.h>
 #include <treejuce/JSON.h>
+#include <treejuce/Singleton.h>
 #include <treejuce/String.h>
 
 #if defined TREEFACE_GL_3_0
-#	error "TODO what should be it?"
+#   error "TODO what should be it?"
 #elif defined TREEFACE_GL_3_3
-#	define TREEFACE_GLSL_VERSION_DEF "#version 330\n"
+#   define TREEFACE_GLSL_VERSION_DEF "#version 330\n"
 #elif defined TREEFACE_GL_ES_3_0
-#	define TREEFACE_GLSL_VERSION_DEF "#version 300 es\n"
+#   define TREEFACE_GLSL_VERSION_DEF "#version 300 es\n"
 #else
-#	error "unknown OpenGL version macro"
+#   error "unknown OpenGL version macro"
 #endif
 
 using namespace treejuce;
@@ -71,27 +72,29 @@ const char* _src_addition_scene_graph_ =
         "uniform highp mat4 matrix_model_view;\n"
         "uniform highp mat4 matrix_project;\n"
         "uniform highp mat4 matrix_normal;\n"
-        "uniform lowp vec3 main_light_direction;\n"
-        "uniform lowp vec3 main_light_color;\n"
+        "uniform lowp vec4 global_light_direction;\n"
+        "uniform lowp vec4 global_light_color;\n"
         "\n"
         ;
 
-Result _validate_(const NamedValueSet& kv)
+class MaterialPropertyValidator: public PropertyValidator
 {
-    static PropertyValidator* validator = nullptr;
-    if (!validator)
+public:
+    MaterialPropertyValidator()
     {
-        validator = new PropertyValidator();
-        validator->add_item(KEY_PROGRAM, PropertyValidator::ITEM_ARRAY, true);
-        validator->add_item(KEY_TYPE, PropertyValidator::ITEM_SCALAR, true);
-        validator->add_item(KEY_PROJ_SHADOW, PropertyValidator::ITEM_SCALAR, false);
-        validator->add_item(KEY_RECV_SHADOW, PropertyValidator::ITEM_SCALAR, false);
-        validator->add_item(KEY_TRANSLUSCENT, PropertyValidator::ITEM_SCALAR, false);
-        validator->add_item(KEY_TEXTURE, PropertyValidator::ITEM_ARRAY, false);
+        add_item(KEY_PROGRAM, PropertyValidator::ITEM_ARRAY, true);
+        add_item(KEY_TYPE, PropertyValidator::ITEM_SCALAR, true);
+        add_item(KEY_PROJ_SHADOW, PropertyValidator::ITEM_SCALAR, false);
+        add_item(KEY_RECV_SHADOW, PropertyValidator::ITEM_SCALAR, false);
+        add_item(KEY_TRANSLUSCENT, PropertyValidator::ITEM_SCALAR, false);
+        add_item(KEY_TEXTURE, PropertyValidator::ITEM_ARRAY, false);
     }
 
-    return validator->validate(kv);
-}
+    virtual ~MaterialPropertyValidator() {}
+
+    juce_DeclareSingleton(MaterialPropertyValidator, false)
+};
+juce_ImplementSingleton(MaterialPropertyValidator)
 
 treejuce::Result MaterialManager::build_material(const treejuce::var& data, treejuce::Holder<Material>& mat)
 {
@@ -102,11 +105,10 @@ treejuce::Result MaterialManager::build_material(const treejuce::var& data, tree
 
     NamedValueSet& data_kv = data.getDynamicObject()->getProperties();
     {
-        Result re = _validate_(data_kv);
+        Result re = MaterialPropertyValidator::getInstance()->validate(data_kv);
         if (!re)
             return re;
     }
-
 
     //
     // material type
@@ -194,8 +196,8 @@ treejuce::Result MaterialManager::build_material(const treejuce::var& data, tree
 		sgmat->m_uni_trans        = prog->get_uniform_location("matrix_model_view");
 		sgmat->m_uni_norm_trans   = prog->get_uniform_location("matrix_normal");
 		sgmat->m_uni_proj_trans   = prog->get_uniform_location("matrix_project");
-		sgmat->m_uni_light_direct = prog->get_uniform_location("main_light_direction");
-		sgmat->m_uni_light_color  = prog->get_uniform_location("main_light_color");
+                sgmat->m_uni_light_direct = prog->get_uniform_location("global_light_direction");
+                sgmat->m_uni_light_color  = prog->get_uniform_location("global_light_color");
 
         // scene properties
         if (data_kv.contains(KEY_PROJ_SHADOW))

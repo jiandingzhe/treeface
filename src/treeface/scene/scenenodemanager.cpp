@@ -22,6 +22,7 @@
 #include <treejuce/MemoryBlock.h>
 #include <treejuce/NamedValueSet.h>
 #include <treejuce/Result.h>
+#include <treejuce/Singleton.h>
 #include <treejuce/Variant.h>
 
 using namespace treejuce;
@@ -88,18 +89,22 @@ SceneNode* SceneNodeManager::get_node(const treejuce::String& name)
 
 #define KEY_VISUAL_MAT "material"
 #define KEY_VISUAL_GEO "geometry"
-Result _validate_visual_item_(const treejuce::NamedValueSet& kv)
+
+class VisualItemPropertyValidator: public PropertyValidator
 {
-    static PropertyValidator* validator = nullptr;
-    if (!validator)
+public:
+    VisualItemPropertyValidator()
     {
-        validator = new PropertyValidator();
-        validator->add_item(KEY_VISUAL_MAT, PropertyValidator::ITEM_SCALAR, true);
-        validator->add_item(KEY_VISUAL_GEO, PropertyValidator::ITEM_SCALAR, true);
+        add_item(KEY_VISUAL_MAT, PropertyValidator::ITEM_SCALAR, true);
+        add_item(KEY_VISUAL_GEO, PropertyValidator::ITEM_SCALAR, true);
     }
 
-    return validator->validate(kv);
-}
+    virtual ~VisualItemPropertyValidator() {}
+
+    juce_DeclareSingleton(VisualItemPropertyValidator, false)
+};
+juce_ImplementSingleton(VisualItemPropertyValidator)
+
 
 treejuce::Result SceneNodeManager::build_visual_item(const var &data, VisualObject *visual_item)
 {
@@ -109,7 +114,7 @@ treejuce::Result SceneNodeManager::build_visual_item(const var &data, VisualObje
 
     const NamedValueSet& data_kv = data.getDynamicObject()->getProperties();
     {
-        Result re = _validate_visual_item_(data_kv);
+        Result re = VisualItemPropertyValidator::getInstance()->validate(data_kv);
         if (!re)
             return re;
     }
@@ -136,19 +141,23 @@ treejuce::Result SceneNodeManager::build_visual_item(const var &data, VisualObje
 #define KEY_CHILD  "children"
 #define KEY_VISUAL "visual_items"
 
-Result _validate_node_(const NamedValueSet& kv)
+class SceneNodePropertyValidator: public PropertyValidator
 {
-    static PropertyValidator* validator = nullptr;
-    if (!validator)
+public:
+    SceneNodePropertyValidator()
     {
-        validator = new PropertyValidator();
-        validator->add_item(KEY_ID,     PropertyValidator::ITEM_SCALAR, false);
-        validator->add_item(KEY_TRANS,  PropertyValidator::ITEM_ARRAY,  false);
-        validator->add_item(KEY_CHILD,  PropertyValidator::ITEM_ARRAY,  false);
-        validator->add_item(KEY_VISUAL, PropertyValidator::ITEM_ARRAY,  false);
+        add_item(KEY_ID,     PropertyValidator::ITEM_SCALAR, false);
+        add_item(KEY_TRANS,  PropertyValidator::ITEM_ARRAY,  false);
+        add_item(KEY_CHILD,  PropertyValidator::ITEM_ARRAY,  false);
+        add_item(KEY_VISUAL, PropertyValidator::ITEM_ARRAY,  false);
     }
-    return validator->validate(kv);
-}
+
+    virtual ~SceneNodePropertyValidator() {}
+
+    juce_DeclareSingleton(SceneNodePropertyValidator, false)
+};
+juce_ImplementSingleton(SceneNodePropertyValidator)
+
 
 treejuce::Result SceneNodeManager::build_node(const treejuce::var& data, SceneNode* node)
 {
@@ -157,7 +166,7 @@ treejuce::Result SceneNodeManager::build_node(const treejuce::var& data, SceneNo
 
     const NamedValueSet& data_kv = data.getDynamicObject()->getProperties();
     {
-        Result re = _validate_node_(data_kv);
+        Result re = SceneNodePropertyValidator::getInstance()->validate(data_kv);
         if (!re)
             return Result::fail("node data validation failed:\n" + re.getErrorMessage());
     }
