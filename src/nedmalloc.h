@@ -97,16 +97,22 @@ Define to enable the usage of &lt;type_traits&gt;. Automatically defined if __cp
 indicates a C++0x compiler, otherwise you'll need to set it yourself.
 */
 
-#if __cplusplus > 199711L || defined(HAVE_CPP0X) /* Do we have C++0x? */
-#undef HAVE_CPP0XRVALUEREFS
+// fixed definition by Xi Yang
 #define HAVE_CPP0XRVALUEREFS 1
-#undef HAVE_CPP0XVARIADICTEMPLATES
 #define HAVE_CPP0XVARIADICTEMPLATES 1
-#undef HAVE_CPP0XSTATICASSERT
 #define HAVE_CPP0XSTATICASSERT 1
-#undef HAVE_CPP0XTYPETRAITS
 #define HAVE_CPP0XTYPETRAITS 1
-#endif
+
+//#if __cplusplus > 199711L || defined(HAVE_CPP0X) /* Do we have C++0x? */
+//#undef HAVE_CPP0XRVALUEREFS
+//#define HAVE_CPP0XRVALUEREFS 1
+//#undef HAVE_CPP0XVARIADICTEMPLATES
+//#define HAVE_CPP0XVARIADICTEMPLATES 1
+//#undef HAVE_CPP0XSTATICASSERT
+//#define HAVE_CPP0XSTATICASSERT 1
+//#undef HAVE_CPP0XTYPETRAITS
+//#define HAVE_CPP0XTYPETRAITS 1
+//#endif
 
 #include <stddef.h>   /* for size_t */
 
