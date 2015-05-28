@@ -12,7 +12,7 @@
 #include "treeface/misc/propertyvalidator.h"
 #include "treeface/misc/stringcast.h"
 
-#include "treeface/private/material_private.h"
+#include "treeface/guts/material_guts.h"
 
 #include <treejuce/DynamicObject.h>
 #include <treejuce/HashMap.h>

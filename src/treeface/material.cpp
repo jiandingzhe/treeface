@@ -6,7 +6,7 @@
 #include "treeface/gl/imageref.h"
 #include "treeface/gl/program.h"
 
-#include "treeface/private/material_private.h"
+#include "treeface/guts/material_guts.h"
 
 #include "treeface/packagemanager.h"
 #include "treeface/misc/stringcast.h"

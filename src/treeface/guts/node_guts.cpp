@@ -1,4 +1,4 @@
-#include "treeface/private/node_private.h"
+#include "treeface/guts/node_guts.h"
 
 TREEFACE_NAMESPACE_BEGIN
 
