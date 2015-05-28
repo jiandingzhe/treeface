@@ -1,3 +1,5 @@
+#ifndef TREEFACE_SCENE_ITEM_H
+#define TREEFACE_SCENE_ITEM_H
 #include "treeface/common.h"
 
 #include <treejuce/Object.h>
@@ -28,3 +30,5 @@ protected:
 };
 
 TREEFACE_NAMESPACE_END
+
+#endif // TREEFACE_SCENE_ITEM_H
