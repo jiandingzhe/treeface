@@ -10,7 +10,7 @@
 
 #include "treeface/misc/propertyvalidator.h"
 
-#include "treeface/private/node_private.h"
+#include "treeface/guts/node_guts.h"
 
 #include "treeface/materialmanager.h"
 #include "treeface/packagemanager.h"
@@ -50,20 +50,31 @@ SceneNodeManager::~SceneNodeManager()
         delete m_impl;
 }
 
-treejuce::Result SceneNodeManager::add_nodes(const treejuce::var& data)
+treejuce::Result SceneNodeManager::add_nodes(const treejuce::var& data, SceneNode** root_pp)
 {
     SceneNode* root_node = new SceneNode();
+    *root_pp = root_node;
     return build_node(data, root_node);
 }
 
-treejuce::Result SceneNodeManager::add_nodes(const treejuce::String& data_name)
+treejuce::Result SceneNodeManager::add_nodes(const treejuce::var& data, treejuce::Holder<SceneNode>& root_node)
 {
+    SceneNode* _root_node = nullptr;
+    Result re = add_nodes(data, &_root_node);
+    root_node = _root_node;
+    return re;
+}
+
+treejuce::Result SceneNodeManager::add_nodes(const treejuce::String& data_name, SceneNode** root_pp)
+{
+    // fetch JSON source by name
     MemoryBlock json_src;
     Result item_re = PackageManager::getInstance()->get_item_data(data_name, json_src);
     if (!item_re)
         return Result::fail("NodeManager: failed to get nodes:\n" +
                             item_re.getErrorMessage());
 
+    // parse JSON
     var data;
     Result json_re = JSON::parse((char*)json_src.getData(), data);
     if (!json_re)
@@ -74,7 +85,15 @@ treejuce::Result SceneNodeManager::add_nodes(const treejuce::String& data_name)
                             String("==== end of JSON source ====\n")
                             );
 
-    return add_nodes(data);
+    return add_nodes(data, root_pp);
+}
+
+treejuce::Result SceneNodeManager::add_nodes(const treejuce::String& data_name, treejuce::Holder<SceneNode>& root_node)
+{
+    SceneNode* _root_node = nullptr;
+    Result re = add_nodes(data_name, &_root_node);
+    root_node = _root_node;
+    return re;
 }
 
 SceneNode* SceneNodeManager::get_node(const treejuce::String& name)
@@ -139,7 +158,7 @@ treejuce::Result SceneNodeManager::build_visual_item(const var &data, VisualObje
 #define KEY_ID     "id"
 #define KEY_TRANS  "transform"
 #define KEY_CHILD  "children"
-#define KEY_VISUAL "visual_items"
+#define KEY_VISUAL "visual"
 
 class SceneNodePropertyValidator: public PropertyValidator
 {
@@ -178,7 +197,7 @@ treejuce::Result SceneNodeManager::build_node(const treejuce::var& data, SceneNo
     {
         const Array<var>* trans_array = data_kv[KEY_TRANS].getArray();
         if (trans_array->size() != 16)
-            return Result::fail("transform is not an array of 16 numbers");
+            return Result::fail("transform is not an array of 16 numbers: " + String(trans_array->size()));
 
         Mat4f mat(float(trans_array->getReference(0)), float(trans_array->getReference(1)), float(trans_array->getReference(2)), float(trans_array->getReference(3)),
                   float(trans_array->getReference(4)), float(trans_array->getReference(5)), float(trans_array->getReference(6)), float(trans_array->getReference(7)),

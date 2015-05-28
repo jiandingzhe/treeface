@@ -7,6 +7,8 @@
 
 TREEFACE_NAMESPACE_BEGIN
 
+class Scene;
+
 class SceneRenderer: public SceneQuery
 {
 public:
@@ -16,7 +18,9 @@ public:
     JUCE_DECLARE_NON_COPYABLE(SceneRenderer);
     JUCE_DECLARE_NON_MOVABLE(SceneRenderer);
 
-    void render(const treeface::Mat4f& matrix_proj, SceneNode* root_node);
+    void render(const Mat4f& matrix_proj,
+                const Mat4f& matrix_view,
+                Scene* scene);
 
 protected:
     virtual treejuce::Result traverse_begin() NOEXCEPT;

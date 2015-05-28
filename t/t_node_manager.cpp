@@ -69,12 +69,14 @@ void TestFramework::content()
     Holder<GeometryManager> geo_mgr = new GeometryManager();
     Holder<SceneNodeManager> node_mgr = new SceneNodeManager(geo_mgr, mat_mgr);
 
-    pkg_mgr->add_package(File("../examples/resource.zip"), PackageManager::KEEP_EXISTING);
+    pkg_mgr->add_package(File::getCurrentWorkingDirectory().getChildFile("../examples/resource.zip"), PackageManager::KEEP_EXISTING);
 
-    OK(node_mgr->add_nodes(String("nodes.json")));
+    Holder<SceneNode> root_node;
+    OK(node_mgr->add_nodes(String("nodes.json"), root_node));
     SceneNode* node_a = node_mgr->get_node("a");
     SceneNode* node_b = node_mgr->get_node("b");
     OK(node_a != nullptr);
+    IS(root_node.get(), node_a);
     OK(node_b != nullptr);
 
     OK(mat_mgr->material_is_cached("material1.json"));

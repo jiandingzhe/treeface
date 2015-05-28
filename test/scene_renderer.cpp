@@ -9,6 +9,7 @@
 
 #include "treeface/scene/geometry.h"
 #include "treeface/scene/geometrymanager.h"
+#include "treeface/scene/scene.h"
 #include "treeface/scene/scenenode.h"
 #include "treeface/scene/scenenodemanager.h"
 #include "treeface/scene/scenegraphmaterial.h"
@@ -71,7 +72,7 @@ Holder<MaterialManager> mat_mgr;
 Holder<SceneNodeManager> node_mgr;
 PackageManager* pkg_mgr = nullptr;
 
-Holder<SceneNode> root_node;
+Holder<Scene> scene;
 
 void build_up_gl()
 {
@@ -102,13 +103,16 @@ void build_up_gl()
             die("%s", re.getErrorMessage().toRawUTF8());
     }
 
+    Holder<SceneNode> builded_nodes;
     {
-        Result re = node_mgr->add_nodes(json_root_node);
+        Result re = node_mgr->add_nodes(json_root_node, builded_nodes);
         if (!re)
             die("%s", re.getErrorMessage().toRawUTF8());
     }
 
-    root_node = node_mgr->get_node("a");
+    // create scene
+    scene = new Scene();
+    scene->get_root_node()->add_child(builded_nodes);
 }
 
 
@@ -143,8 +147,7 @@ void main_loop(SDL_Window* window)
 
         if (should_exit) break;
 
-        renderer->render(Mat4f(), root_node);
-
+        renderer->render(Mat4f(), Mat4f(), scene);
 
         // finalize
         SDL_GL_SwapWindow(window);

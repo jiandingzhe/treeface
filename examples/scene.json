@@ -1,0 +1,63 @@
+{
+    "global_light_direction": [0.707106781, 0.707106781, 0, 0],
+    "global_light_color": [1, 0.5, 0.5, 1],
+    "global_light_ambient": 0.2,
+    "global_light_diffuse": 1,
+    "global_light_specular": 0.3,
+    "nodes":
+    [
+        {
+            "id": "a",
+            "transform": [1,   0,   0,   0,
+                          0,   1,   0,   0,
+                          0,   0,   1,   0,
+                          0.5, 0.5, 0.1, 1],
+            "children":
+            [
+                {
+                    "id": "b",
+                    "transform": [1,   0,   0,   0,
+                                  0,   0.5, 0,   0,
+                                  0,   0,   1,   0,
+                                  0,   0,   1,   1],
+                    "visual":
+                    [
+                        {
+                            "material": "material_vert_color.json",
+                            "geometry": "geom_colored.json"
+                        }
+                    ]
+                },
+                {
+                    "id": "c",
+                    "transform": [0.5, 0,   0,   0,
+                                  0,   1,   0,   0,
+                                  0,   0,   1,   0,
+                                  0,   0,   0,   1],
+                    "visual":
+                    [
+                        {
+                            "geometry": "geom_cube.json",
+                            "material": "material2.json"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "d",
+            "transform": [0.5, 0,   0,   0,
+                          0,   2,   0,   0,
+                          0,   0,   1,   0,
+                          0,   0,   0,   1],
+            "visual":
+            [
+                {
+                    "geometry": "geom_colored.json",
+                    "material": "material1.json"
+                }
+            ]
+        }
+
+    ]
+}

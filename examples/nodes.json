@@ -10,7 +10,7 @@
                 0, 0, 0.2, 0,
                 0.5, 0, 0, 1
             ],
-            "visual_items":
+            "visual":
             [
                 {
                     "material": "material1.json",
@@ -27,7 +27,7 @@
                 0, 0, 0.2, 0,
                 -0.5, 0.5, 0, 1
             ],
-            "visual_items":
+            "visual":
             [
                 {
                     "material": "material2.json",
@@ -40,7 +40,7 @@
             ]
         }
     ],
-    "visual_items":
+    "visual":
     [
         {
             "material": "material_vert_color.json",

@@ -129,6 +129,18 @@ target_link_libraries(t_node_manager
     ${FreeImage_LIBRARIES}
 )
 
+add_executable(t_scene t_scene.cpp)
+target_link_libraries(t_scene
+    treeface
+    TestFramework
+    ${TREEJUCE_LIBRARIES}
+    ${SDL2_LIBRARY}
+    ${GLEW_LIBRARY}
+    ${OPENGL_gl_LIBRARY}
+    ${OPENGL_glu_LIBRARY}
+    ${FreeImage_LIBRARIES}
+)
+
 add_executable(t_ned_object t_ned_object.cpp)
 target_link_libraries(t_ned_object
     treeface

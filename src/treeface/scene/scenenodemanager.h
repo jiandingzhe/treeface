@@ -3,6 +3,7 @@
 
 #include "treeface/common.h"
 
+#include <treejuce/Holder.h>
 #include <treejuce/Object.h>
 #include <treejuce/Result.h>
 
@@ -28,7 +29,8 @@ public:
 
     virtual ~SceneNodeManager();
 
-    treejuce::Result add_nodes(const treejuce::var& data);
+    treejuce::Result add_nodes(const treejuce::var& data, SceneNode** root_node_pp);
+    treejuce::Result add_nodes(const treejuce::var& data, treejuce::Holder<SceneNode>& root_node);
 
     /**
      * @brief
@@ -36,7 +38,8 @@ public:
      * @return
      * @see add_nodes(const treejuce::var& data)
      */
-    treejuce::Result add_nodes(const treejuce::String& data_name);
+    treejuce::Result add_nodes(const treejuce::String& data_name, SceneNode** root_node_pp);
+    treejuce::Result add_nodes(const treejuce::String& data_name, treejuce::Holder<SceneNode>& root_node);
 
     /**
      * @brief get named node object
@@ -46,6 +49,7 @@ public:
      */
     SceneNode* get_node(const treejuce::String& name);
 
+protected:
     treejuce::Result build_visual_item(const treejuce::var& data, VisualObject* visual_item);
     treejuce::Result build_node(const treejuce::var& data, SceneNode* node);
 

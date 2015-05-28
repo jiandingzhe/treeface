@@ -1,7 +1,7 @@
 #include "treeface/scene/scenenode.h"
 #include "treeface/scene/visualobject.h"
 
-#include "treeface/private/node_private.h"
+#include "treeface/guts/node_guts.h"
 
 using namespace treejuce;
 

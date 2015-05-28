@@ -9,7 +9,8 @@
 #include "treeface/scene/scenenode.h"
 #include "treeface/scene/visualobject.h"
 
-#include "treeface/private/material_private.h"
+#include "treeface/guts/material_guts.h"
+#include "treeface/guts/scene_guts.h"
 
 #include <treejuce/HashMap.h>
 #include <treejuce/HashMultiMap.h>
@@ -47,10 +48,11 @@ SceneRenderer::~SceneRenderer()
     }
 }
 
-void SceneRenderer::render(const treeface::Mat4f& matrix_proj, SceneNode* root_node)
+void SceneRenderer::render(const Mat4f& matrix_proj,
+                           const Mat4f& matrix_view,
+                           Scene* scene)
 {
-    traverse(root_node);
-
+    traverse(scene->m_guts->root_node);
 
     SceneCollection::Iterator it_scene(m_impl->obj_by_material_transform);
 
