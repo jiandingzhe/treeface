@@ -3,6 +3,7 @@
 #include <treejuce/File.h>
 #include <treejuce/HashMap.h>
 #include <treejuce/HashSet.h>
+#include <treejuce/Holder.h>
 #include <treejuce/InputStream.h>
 #include <treejuce/MemoryBlock.h>
 #include <treejuce/MemoryInputStream.h>
@@ -23,7 +24,7 @@ struct PackageEntryPoint
 
 struct PackageManager::Impl
 {
-    treejuce::HashSet<treejuce::ZipFile*> m_packages;
+    treejuce::HashSet<Holder<ZipFile>> m_packages;
     treejuce::HashMap<treejuce::String, PackageEntryPoint> m_name_pkg_map;
 };
 
@@ -34,9 +35,12 @@ void PackageManager::add_package(treejuce::ZipFile* pkg, PackageItemConflictPoli
     if (!m_impl->m_packages.insert(pkg))
         return;
 
+    printf("add package %p, has %d entries\n", pkg, pkg->getNumEntries());
+
     for (int index = 0; index < pkg->getNumEntries(); index++)
     {
         const ZipFile::ZipEntry* entry = pkg->getEntry(index);
+        printf("  entry %s\n", entry->filename.toRawUTF8());
 
         if (m_impl->m_name_pkg_map.contains(entry->filename))
         {
@@ -129,13 +133,8 @@ PackageManager::PackageManager(): m_impl(new Impl())
 
 PackageManager::~PackageManager()
 {
-    HashSet<ZipFile*>::Iterator it(m_impl->m_packages);
-    while (it.next())
-    {
-        delete it.get();
-    }
-
-    delete m_impl;
+    if (m_impl)
+        delete m_impl;
 }
 
 TREEFACE_NAMESPACE_END

@@ -1,6 +1,0 @@
-#ifndef TREEFACE_WIDGET_H
-#define TREEFACE_WIDGET_H
-
-
-
-#endif // TREEFACE_WIDGET_H

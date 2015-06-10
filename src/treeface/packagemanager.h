@@ -8,6 +8,8 @@
 
 #include "treeface/common.h"
 
+class TestFramework;
+
 TREEFACE_JUCE_NAMESPACE_BEGIN
 class File;
 class InputStream;
@@ -20,6 +22,7 @@ TREEFACE_NAMESPACE_BEGIN
 
 class PackageManager
 {
+    friend class ::TestFramework;
 public:
     typedef enum
     {
