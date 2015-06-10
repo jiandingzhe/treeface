@@ -1,5 +1,6 @@
 #include "TestFramework.h"
 
+#include "treeface/scene/geometry.h"
 #include "treeface/scene/geometrymanager.h"
 #include "treeface/scene/scene.h"
 #include "treeface/scene/scenegraphmaterial.h"
@@ -73,10 +74,10 @@ void TestFramework::content()
     OK(geo_mgr->geometry_is_cached("geom_colored.json"));
     OK(geo_mgr->geometry_is_cached("geom_cube.json"));
 
-    Geometry* geo_colored = nullptr;
-    Geometry* geo_cube = nullptr;
-    OK(geo_mgr->get_geometry("geom_colored.json", &geo_colored));
-    OK(geo_mgr->get_geometry("geom_cube.json", &geo_cube));
+    Holder<Geometry> geo_colored = nullptr;
+    Holder<Geometry> geo_cube = nullptr;
+    OK(geo_mgr->get_geometry("geom_colored.json", geo_colored));
+    OK(geo_mgr->get_geometry("geom_cube.json", geo_cube));
 
     OK(mat_mgr->material_is_cached("material1.json"));
     OK(mat_mgr->material_is_cached("material2.json"));
@@ -179,9 +180,9 @@ void TestFramework::content()
     OK(item_c);
     OK(item_d);
 
-    IS(item_b->get_geometry(), geo_colored);
-    IS(item_c->get_geometry(), geo_cube);
-    IS(item_d->get_geometry(), geo_colored);
+    IS(item_b->get_geometry(), geo_colored.get());
+    IS(item_c->get_geometry(), geo_cube.get());
+    IS(item_d->get_geometry(), geo_colored.get());
 
     IS(item_b->get_material(), dynamic_cast<SceneGraphMaterial*>(mat_vert_color));
     IS(item_c->get_material(), dynamic_cast<SceneGraphMaterial*>(mat2));

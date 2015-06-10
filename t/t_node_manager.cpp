@@ -4,6 +4,7 @@
 #include "treeface/materialmanager.h"
 #include "treeface/packagemanager.h"
 
+#include "treeface/scene/geometry.h"
 #include "treeface/scene/geometrymanager.h"
 #include "treeface/scene/scenegraphmaterial.h"
 #include "treeface/scene/scenenode.h"
@@ -95,13 +96,13 @@ void TestFramework::content()
     OK(mat_mgr->get_material("material2.json", &material2));
     OK(mat_mgr->get_material("material_vert_color.json", &material_vert_color));
 
-    Geometry* geom_cube = nullptr;
-    Geometry* geom_colored = nullptr;
-    Geometry* geom_simple = nullptr;
+    Holder<Geometry> geom_cube;
+    Holder<Geometry> geom_colored;
+    Holder<Geometry> geom_simple;
 
-    OK(geo_mgr->get_geometry("geom_cube.json", &geom_cube));
-    OK(geo_mgr->get_geometry("geom_colored.json", &geom_colored));
-    OK(geo_mgr->get_geometry("geom_simple.json", &geom_simple));
+    OK(geo_mgr->get_geometry("geom_cube.json",    geom_cube));
+    OK(geo_mgr->get_geometry("geom_colored.json", geom_colored));
+    OK(geo_mgr->get_geometry("geom_simple.json",  geom_simple));
 
     // node A children
     IS(node_a->get_num_children(), 2);
@@ -123,7 +124,7 @@ void TestFramework::content()
     IS(node_a->get_num_items(), 1);
 
     VisualObject* visual_a = dynamic_cast<VisualObject*>(node_a->get_item_at(0));
-    IS(visual_a->get_geometry(), geom_colored);
+    IS(visual_a->get_geometry(), geom_colored.get());
     IS(static_cast<Material*>(visual_a->get_material()), material_vert_color);
 
     // contents of unamed node
@@ -131,7 +132,7 @@ void TestFramework::content()
     IS(unamed_node->get_num_items(), 1);
 
     VisualObject* visual_unamed = dynamic_cast<VisualObject*>(unamed_node->get_item_at(0));
-    IS(visual_unamed->get_geometry(), geom_simple);
+    IS(visual_unamed->get_geometry(), geom_simple.get());
     IS(visual_unamed->get_material(), material1);
 
     // contents of node B
@@ -143,18 +144,18 @@ void TestFramework::content()
 
     if (visual_b1->get_geometry() == geom_cube)
     {
-        IS(visual_b1->get_geometry(), geom_cube);
+        IS(visual_b1->get_geometry(), geom_cube.get());
         IS(visual_b1->get_material(), material2);
 
-        IS(visual_b2->get_geometry(), geom_colored);
+        IS(visual_b2->get_geometry(), geom_colored.get());
         IS(visual_b2->get_material(), material1);
     }
     else
     {
-        IS(visual_b1->get_geometry(), geom_colored);
+        IS(visual_b1->get_geometry(), geom_colored.get());
         IS(visual_b1->get_material(), material1);
 
-        IS(visual_b2->get_geometry(), geom_cube);
+        IS(visual_b2->get_geometry(), geom_cube.get());
         IS(visual_b2->get_material(), material2);
     }
 

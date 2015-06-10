@@ -146,8 +146,8 @@ treejuce::Result SceneNodeManager::build_visual_item(const var &data, VisualObje
         return Result::fail("failed to build visual item:\n" + mat_re.getErrorMessage());
 
     String name_geom = data_kv[KEY_VISUAL_GEO].toString();
-    Geometry* geom = nullptr;
-    Result geom_re = m_impl->geo_mgr->get_geometry(name_geom, &geom);
+    Holder<Geometry> geom;
+    Result geom_re = m_impl->geo_mgr->get_geometry(name_geom, geom);
     if (!geom_re)
         return Result::fail("failed to build visual item:\n" + geom_re.getErrorMessage());
 

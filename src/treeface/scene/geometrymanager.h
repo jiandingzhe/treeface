@@ -23,8 +23,6 @@ public:
 
     virtual ~GeometryManager();
 
-    treejuce::Result get_geometry(const treejuce::String& name, Geometry** result);
-
     treejuce::Result get_geometry(const treejuce::String& name, treejuce::Holder<Geometry>& result);
 
     bool geometry_is_cached(const treejuce::String& name) const NOEXCEPT;

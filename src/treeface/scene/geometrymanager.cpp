@@ -30,11 +30,11 @@ GeometryManager::~GeometryManager()
         delete m_impl;
 }
 
-treejuce::Result GeometryManager::get_geometry(const treejuce::String& name, Geometry** result)
+treejuce::Result GeometryManager::get_geometry(const treejuce::String& name, Holder<Geometry>& result)
 {
     if (m_impl->items.contains(name))
     {
-        *result = m_impl->items[name].get();
+        result = m_impl->items[name];
         return Result::ok();
     }
 
@@ -44,7 +44,7 @@ treejuce::Result GeometryManager::get_geometry(const treejuce::String& name, Geo
 
     if (!item_re)
     {
-        *result = nullptr;
+        result = nullptr;
         return Result::fail("failed to get geometry data:\n" +
                             item_re.getErrorMessage());
     }
@@ -55,7 +55,7 @@ treejuce::Result GeometryManager::get_geometry(const treejuce::String& name, Geo
 
     if (!json_re)
     {
-        *result = nullptr;
+        result = nullptr;
         return Result::fail(String("failed to parse geometry JSON content for \"") + name + String("\":\n") +
                             json_re.getErrorMessage() + String("\n") +
                             String((const char*)data.getData())
@@ -63,29 +63,20 @@ treejuce::Result GeometryManager::get_geometry(const treejuce::String& name, Geo
     }
 
     // create geometry object
-    Holder<Geometry> geom = new Geometry();
-    Result geom_re = geom->build(geom_root_node);
+    result = new Geometry();
+    Result geom_re = result->build(geom_root_node);
 
     if (!geom_re)
     {
-        *result = nullptr;
+        result = nullptr;
         return Result::fail(String("failed to build geometry using JSON content for \"") + name + String("\":\n") +
                             geom_re.getErrorMessage() + String("\n") +
                             String((const char*)data.getData())
                             );
     }
 
-    *result = geom.get();
-    m_impl->items.set(name, geom);
+    m_impl->items.set(name, result);
     return Result::ok();
-}
-
-treejuce::Result GeometryManager::get_geometry(const treejuce::String& name, treejuce::Holder<Geometry>& result)
-{
-    Geometry* geom = nullptr;
-    Result re = get_geometry(name, &geom);
-    result = geom;
-    return re;
 }
 
 bool GeometryManager::geometry_is_cached(const treejuce::String& name) const NOEXCEPT

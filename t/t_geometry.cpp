@@ -58,9 +58,10 @@ void TestFramework::content()
     Holder<GeometryManager> geom_mgr = new GeometryManager();
 
     pkg_mgr->add_package(File("../examples/resource.zip"), PackageManager::KEEP_EXISTING);
+    OK(pkg_mgr->has_resource("geom_colored.json"));
 
-    Geometry* geom = nullptr;
-    OK(geom_mgr->get_geometry("geom_colored.json", &geom));
+    Holder<Geometry> geom;
+    OK(geom_mgr->get_geometry("geom_colored.json", geom));
 
     IS(geom->get_primitive(), GL_TRIANGLES);
 
