@@ -103,9 +103,11 @@ void TestFramework::content()
     IS_EPSILON(l_direction.get_z(), 0);
     IS_EPSILON(l_direction.get_w(), 0);
 
-    IS_EPSILON(scene->get_global_light_ambient(), 0.2);
-    IS_EPSILON(scene->get_global_light_diffuse(), 1);
-    IS_EPSILON(scene->get_global_light_specular(), 0.3);
+    const Vec4f& l_ambient = scene->get_global_light_ambient();
+    IS_EPSILON(l_ambient.get_x(), 0.3);
+    IS_EPSILON(l_ambient.get_y(), 0.2);
+    IS_EPSILON(l_ambient.get_z(), 0.2);
+    IS_EPSILON(l_ambient.get_w(), 1);
 
     // node hierarchy
     SceneNode* root_node = scene->get_root_node();

@@ -51,8 +51,6 @@ Scene::~Scene()
 #define KEY_GLOBAL_LIGHT_DIRECTION "global_light_direction"
 #define KEY_GLOBAL_LIGHT_COLOR     "global_light_color"
 #define KEY_GLOBAL_LIGHT_AMB       "global_light_ambient"
-#define KEY_GLOBAL_LIGHT_DIF       "global_light_diffuse"
-#define KEY_GLOBAL_LIGHT_SPC       "global_light_specular"
 #define KEY_NODES                  "nodes"
 
 class ScenePropertyValidator: public PropertyValidator
@@ -62,9 +60,7 @@ public:
     {
         add_item(KEY_GLOBAL_LIGHT_DIRECTION, PropertyValidator::ITEM_ARRAY, false);
         add_item(KEY_GLOBAL_LIGHT_COLOR, PropertyValidator::ITEM_ARRAY, false);
-        add_item(KEY_GLOBAL_LIGHT_AMB, PropertyValidator::ITEM_SCALAR, false);
-        add_item(KEY_GLOBAL_LIGHT_DIF, PropertyValidator::ITEM_SCALAR, false);
-        add_item(KEY_GLOBAL_LIGHT_SPC, PropertyValidator::ITEM_SCALAR, false);
+        add_item(KEY_GLOBAL_LIGHT_AMB, PropertyValidator::ITEM_ARRAY, false);
         add_item(KEY_NODES, PropertyValidator::ITEM_ARRAY, true);
     }
 
@@ -155,13 +151,16 @@ treejuce::Result Scene::build(const treejuce::var& root) NOEXCEPT
 
     // global light intensities
     if (root_kv.contains(KEY_GLOBAL_LIGHT_AMB))
-        m_guts->global_light_ambient = float(root_kv[KEY_GLOBAL_LIGHT_AMB]);
-
-    if (root_kv.contains(KEY_GLOBAL_LIGHT_DIF))
-        m_guts->global_light_diffuse = float(root_kv[KEY_GLOBAL_LIGHT_DIF]);
-
-    if (root_kv.contains(KEY_GLOBAL_LIGHT_SPC))
-        m_guts->global_light_specular = float(root_kv[KEY_GLOBAL_LIGHT_SPC]);
+    {
+        Array<var>* values = root_kv[KEY_GLOBAL_LIGHT_AMB].getArray();
+        if (values->size() != 4)
+            return Result::fail("Scene: global light ambient is not an array of 4 values");
+        m_guts->global_light_ambient.set(float(values->getReference(0)),
+                                       float(values->getReference(1)),
+                                       float(values->getReference(2)),
+                                       float(values->getReference(3))
+                                       );
+    }
 
     // scene graph
     Array<var>* scenenode_nodes = root_kv[KEY_NODES].getArray();
@@ -210,19 +209,9 @@ const Vec4f& Scene::get_global_light_direction() const NOEXCEPT
     return m_guts->global_light_direction;
 }
 
-float Scene::get_global_light_ambient() const NOEXCEPT
+const Vec4f& Scene::get_global_light_ambient() const NOEXCEPT
 {
     return m_guts->global_light_ambient;
-}
-
-float Scene::get_global_light_diffuse() const NOEXCEPT
-{
-    return m_guts->global_light_diffuse;
-}
-
-float Scene::get_global_light_specular() const NOEXCEPT
-{
-    return m_guts->global_light_specular;
 }
 
 TREEFACE_NAMESPACE_END

@@ -16,9 +16,7 @@ struct Scene::Guts: public NedBase
 
     Vec4f global_light_direction{0.577350269, 0.577350269, 0.577350269, 0};
     Vec4f global_light_color{1, 1, 1, 1};
-    float global_light_ambient = 1;
-    float global_light_diffuse = 1;
-    float global_light_specular = 1;
+    Vec4f global_light_ambient{0, 0, 0, 1};
 };
 
 TREEFACE_NAMESPACE_END

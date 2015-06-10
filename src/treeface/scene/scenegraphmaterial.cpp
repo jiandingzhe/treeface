@@ -34,13 +34,11 @@ void SceneGraphMaterial::instant_set_matrix_norm(const Mat4f& mat) const NOEXCEP
     m_program->instant_set_uniform(m_uni_norm, mat);
 }
 
-void SceneGraphMaterial::instant_set_light(const Vec4f& direction, const Vec4f& color, float amb, float dfs, float spc) const NOEXCEPT
+void SceneGraphMaterial::instant_set_light(const Vec4f& direction, const Vec4f& color, const Vec4f& ambient) const NOEXCEPT
 {
     m_program->instant_set_uniform(m_uni_light_direct, direction);
     m_program->instant_set_uniform(m_uni_light_color, color);
-    m_program->instant_set_uniform(m_uni_light_amb, amb);
-    m_program->instant_set_uniform(m_uni_light_dfs, dfs);
-    m_program->instant_set_uniform(m_uni_light_spc, spc);
+    m_program->instant_set_uniform(m_uni_light_ambient, ambient);
 }
 
 TREEFACE_NAMESPACE_END

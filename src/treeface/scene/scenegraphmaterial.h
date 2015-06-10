@@ -22,7 +22,7 @@ public:
     void instant_set_matrix_proj(const Mat4f& mat) const NOEXCEPT;
     void instant_set_matrix_model_view_proj(const Mat4f& mat) const NOEXCEPT;
     void instant_set_matrix_norm(const Mat4f& mat) const NOEXCEPT;
-    void instant_set_light(const Vec4f& direction, const Vec4f& color, float amb, float dif, float spe) const NOEXCEPT;
+    void instant_set_light(const Vec4f& direction, const Vec4f& color, const Vec4f& ambient) const NOEXCEPT;
 
     JUCE_DECLARE_NON_COPYABLE(SceneGraphMaterial);
     JUCE_DECLARE_NON_MOVABLE(SceneGraphMaterial);
@@ -37,9 +37,7 @@ protected:
     GLint m_uni_norm = -1;
     GLint m_uni_light_direct = -1;
     GLint m_uni_light_color = -1;
-    GLint m_uni_light_amb = -1;
-    GLint m_uni_light_dfs = -1;
-    GLint m_uni_light_spc = -1;
+    GLint m_uni_light_ambient = -1;
 };
 
 TREEFACE_NAMESPACE_END

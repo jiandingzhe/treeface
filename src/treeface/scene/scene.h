@@ -58,9 +58,7 @@ public:
 
     const Vec4f& get_global_light_color() const NOEXCEPT;
     const Vec4f& get_global_light_direction() const NOEXCEPT;
-    float get_global_light_ambient() const NOEXCEPT;
-    float get_global_light_diffuse() const NOEXCEPT;
-    float get_global_light_specular() const NOEXCEPT;
+    const Vec4f& get_global_light_ambient() const NOEXCEPT;
 
     void render() NOEXCEPT;
 

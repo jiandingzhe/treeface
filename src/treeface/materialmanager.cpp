@@ -73,11 +73,9 @@ const char* _src_addition_scene_graph_ =
         "uniform highp mat4 matrix_project;\n"
         "uniform highp mat4 matrix_model_view_project;\n"
         "uniform highp mat4 matrix_normal;\n"
-        "uniform lowp vec4 global_light_direction;\n"
-        "uniform lowp vec4 global_light_color;\n"
-        "uniform lowp float global_light_ambient;\n"
-        "uniform lowp float global_light_diffuse;\n"
-        "uniform lowp float global_light_specular;\n"
+        "uniform mediump vec4 global_light_direction;\n"
+        "uniform mediump vec4 global_light_color;\n"
+        "uniform mediump vec4 global_light_ambient;\n"
         "\n"
         ;
 
@@ -198,9 +196,7 @@ treejuce::Result MaterialManager::build_material(const treejuce::var& data, tree
         sgmat->m_uni_norm            = prog->get_uniform_location("matrix_normal");
         sgmat->m_uni_light_direct    = prog->get_uniform_location("global_light_direction");
         sgmat->m_uni_light_color     = prog->get_uniform_location("global_light_color");
-        sgmat->m_uni_light_amb       = prog->get_uniform_location("global_light_ambient");
-        sgmat->m_uni_light_dfs       = prog->get_uniform_location("global_light_diffuse");
-        sgmat->m_uni_light_spc       = prog->get_uniform_location("global_light_specular");
+        sgmat->m_uni_light_ambient   = prog->get_uniform_location("global_light_ambient");
 
         // scene properties
         if (data_kv.contains(KEY_PROJ_SHADOW))
