@@ -32,24 +32,21 @@ const Mat4f& SceneNode::get_global_transform() NOEXCEPT
     return m_impl->trans_global;
 }
 
-const Mat4f& SceneNode::get_normal_transform() NOEXCEPT
+const Mat4f& SceneNode::get_transform_inv() NOEXCEPT
 {
     if (m_impl->trans_dirty)
         m_impl->update_trans_descendent();
-    else if (m_impl->global_dirty)
-        m_impl->update_global_descendent();
-
-    return m_impl->trans_normal;
+    return m_impl->trans_inv;
 }
 
-const Mat4f& SceneNode::get_global_normal_transform() NOEXCEPT
+const Mat4f& SceneNode::get_global_transform_inv() NOEXCEPT
 {
     if (m_impl->trans_dirty)
         m_impl->update_trans_descendent();
     else if (m_impl->global_dirty)
         m_impl->update_global_descendent();
 
-    return m_impl->trans_normal_global;
+    return m_impl->trans_global_inv;
 }
 
 void SceneNode::set_transform(const Mat4f& value) NOEXCEPT

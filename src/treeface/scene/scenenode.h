@@ -43,8 +43,8 @@ public:
 
     const Mat4f& get_transform() NOEXCEPT;
     const Mat4f& get_global_transform() NOEXCEPT;
-    const Mat4f& get_normal_transform() NOEXCEPT;
-    const Mat4f& get_global_normal_transform() NOEXCEPT;
+    const Mat4f& get_transform_inv() NOEXCEPT;
+    const Mat4f& get_global_transform_inv() NOEXCEPT;
 
     void set_transform(const Mat4f& value) NOEXCEPT;
 

@@ -13,12 +13,10 @@ TREEFACE_NAMESPACE_BEGIN
 struct SceneNode::Impl: public NedBase
 {
     Mat4f trans;
-
     Mat4f trans_inv;
+
     Mat4f trans_global;
     Mat4f trans_global_inv;
-    Mat4f trans_normal;
-    Mat4f trans_normal_global;
 
     bool trans_dirty = true;
     bool global_dirty = true;

@@ -96,7 +96,7 @@ void SceneRenderer::render(const Mat4f& matrix_proj,
 
                 prog->instant_set_uniform(mat->m_uni_model_view, mat_model_view);
                 prog->instant_set_uniform(mat->m_uni_model_view_proj, mat_model_view_proj);
-                prog->instant_set_uniform(mat->m_uni_norm, item_nodes[i]->get_global_normal_transform());
+                prog->instant_set_uniform(mat->m_uni_norm, mat_model_view.get_normal_matrix());
 
 
                 // do draw
