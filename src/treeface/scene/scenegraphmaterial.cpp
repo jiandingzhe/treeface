@@ -2,6 +2,8 @@
 
 #include "treeface/gl/program.h"
 
+#include "treeface/guts/material_guts.h"
+
 TREEFACE_NAMESPACE_BEGIN
 
 SceneGraphMaterial::SceneGraphMaterial()
@@ -12,27 +14,33 @@ SceneGraphMaterial::~SceneGraphMaterial()
 {
 }
 
-void SceneGraphMaterial::instant_set_transform(const Mat4f& trans_position, const Mat4f& trans_normal) const NOEXCEPT
+void SceneGraphMaterial::instant_set_matrix_model_view(const Mat4f& mat) const NOEXCEPT
 {
-    if (m_uni_trans >= 0)
-        m_program->instant_set_uniform(m_uni_trans, trans_position);
-
-    if (m_uni_norm_trans >= 0)
-        m_program->instant_set_uniform(m_uni_norm_trans, trans_normal);
+    m_program->instant_set_uniform(m_uni_model_view, mat);
 }
 
-void SceneGraphMaterial::instant_set_projection(const Mat4f& value) const NOEXCEPT
+void SceneGraphMaterial::instant_set_matrix_proj(const Mat4f& mat) const NOEXCEPT
 {
-    if (m_uni_proj_trans >= 0)
-        m_program->instant_set_uniform(m_uni_proj_trans, value);
+    m_program->instant_set_uniform(m_uni_proj, mat);
 }
 
-void SceneGraphMaterial::instant_set_light(const Vec4f& light_direct, const Vec4f& light_color) const NOEXCEPT
+void SceneGraphMaterial::instant_set_matrix_model_view_proj(const Mat4f& mat) const NOEXCEPT
 {
-    if (m_uni_light_direct >= 0)
-        m_program->instant_set_uniform(m_uni_light_direct, light_direct);
-    if (m_uni_light_color >= 0)
-        m_program->instant_set_uniform(m_uni_light_color, light_color);
+    m_program->instant_set_uniform(m_uni_model_view_proj, mat);
+}
+
+void SceneGraphMaterial::instant_set_matrix_norm(const Mat4f& mat) const NOEXCEPT
+{
+    m_program->instant_set_uniform(m_uni_norm, mat);
+}
+
+void SceneGraphMaterial::instant_set_light(const Vec4f& direction, const Vec4f& color, float amb, float dfs, float spc) const NOEXCEPT
+{
+    m_program->instant_set_uniform(m_uni_light_direct, direction);
+    m_program->instant_set_uniform(m_uni_light_color, color);
+    m_program->instant_set_uniform(m_uni_light_amb, amb);
+    m_program->instant_set_uniform(m_uni_light_dfs, dfs);
+    m_program->instant_set_uniform(m_uni_light_spc, spc);
 }
 
 TREEFACE_NAMESPACE_END

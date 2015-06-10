@@ -56,6 +56,8 @@ void SceneRenderer::render(const Mat4f& matrix_proj,
 
     SceneCollection::Iterator it_scene(m_impl->obj_by_material_transform);
 
+    Vec4f light_direct_in_view = matrix_view * scene->get_global_light_direction();
+
     while (it_scene.next())
     {
         SceneGraphMaterial* mat = it_scene.getKey();
@@ -64,14 +66,12 @@ void SceneRenderer::render(const Mat4f& matrix_proj,
         // set common uniforms defined by treeface
         Program* prog = mat->get_program();
 
-        int uni_proj  = mat->m_uni_proj_trans;
-        int uni_trans = mat->m_uni_trans;
-        int uni_norm  = mat->m_uni_norm_trans;
+        prog->instant_set_uniform(mat->m_uni_proj, matrix_proj);
 
-        if (uni_proj >= 0)
-            prog->instant_set_uniform(uni_proj, matrix_proj);
-
-        // TODO set light uniforms
+        // set light uniforms
+        prog->instant_set_uniform(mat->m_uni_light_direct, light_direct_in_view);
+        prog->instant_set_uniform(mat->m_uni_light_color, scene->get_global_light_color());
+        // TODO set light intensities
 
         // traverse items and transforms
         TransformedItems::Iterator it_items(*it_scene.getValue());
@@ -89,11 +89,17 @@ void SceneRenderer::render(const Mat4f& matrix_proj,
 
             for (int i = 0; i < item_nodes.size(); i++)
             {
-                if (uni_trans >= 0)
-                    prog->instant_set_uniform(uni_trans, item_nodes[i]->get_global_transform());
-                if (uni_norm >= 0)
-                    prog->instant_set_uniform(uni_norm, item_nodes[i]->get_global_normal_transform());
+                // set transform uniform
+                const Mat4f& mat_model = item_nodes[i]->get_global_transform();
+                const Mat4f mat_model_view = matrix_view * mat_model;
+                const Mat4f mat_model_view_proj = matrix_proj * mat_model_view;
 
+                prog->instant_set_uniform(mat->m_uni_model_view, mat_model_view);
+                prog->instant_set_uniform(mat->m_uni_model_view_proj, mat_model_view_proj);
+                prog->instant_set_uniform(mat->m_uni_norm, item_nodes[i]->get_global_normal_transform());
+
+
+                // do draw
                 geom->get_buffer()->draw(geom->get_primitive());
             }
 

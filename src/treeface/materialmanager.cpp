@@ -71,9 +71,13 @@ const char* _src_addition_scene_graph_ =
         TREEFACE_GLSL_VERSION_DEF
         "uniform highp mat4 matrix_model_view;\n"
         "uniform highp mat4 matrix_project;\n"
+        "uniform highp mat4 matrix_model_view_project;\n"
         "uniform highp mat4 matrix_normal;\n"
         "uniform lowp vec4 global_light_direction;\n"
         "uniform lowp vec4 global_light_color;\n"
+        "uniform lowp float global_light_ambient;\n"
+        "uniform lowp float global_light_diffuse;\n"
+        "uniform lowp float global_light_specular;\n"
         "\n"
         ;
 
@@ -186,18 +190,17 @@ treejuce::Result MaterialManager::build_material(const treejuce::var& data, tree
     {
         // scene material defined uniforms
         const Program* prog = mat->m_program;
-        int i_mat_model_view       = prog->get_uniform_index("matrix_model_view");
-        int i_mat_normal           = prog->get_uniform_index("matrix_normal");
-        int i_mat_project          = prog->get_uniform_index("matrix_project");
-        int i_main_light_direction = prog->get_uniform_index("main_light_direction");
-        int i_main_light_color     = prog->get_uniform_index("main_light_color");
 
         SceneGraphMaterial* sgmat = dynamic_cast<SceneGraphMaterial*>(mat.get());
-		sgmat->m_uni_trans        = prog->get_uniform_location("matrix_model_view");
-		sgmat->m_uni_norm_trans   = prog->get_uniform_location("matrix_normal");
-		sgmat->m_uni_proj_trans   = prog->get_uniform_location("matrix_project");
-                sgmat->m_uni_light_direct = prog->get_uniform_location("global_light_direction");
-                sgmat->m_uni_light_color  = prog->get_uniform_location("global_light_color");
+        sgmat->m_uni_model_view      = prog->get_uniform_location("matrix_model_view");
+        sgmat->m_uni_proj            = prog->get_uniform_location("matrix_project");
+        sgmat->m_uni_model_view_proj = prog->get_uniform_location("matrix_model_view_project");
+        sgmat->m_uni_norm            = prog->get_uniform_location("matrix_normal");
+        sgmat->m_uni_light_direct    = prog->get_uniform_location("global_light_direction");
+        sgmat->m_uni_light_color     = prog->get_uniform_location("global_light_color");
+        sgmat->m_uni_light_amb       = prog->get_uniform_location("global_light_ambient");
+        sgmat->m_uni_light_dfs       = prog->get_uniform_location("global_light_diffuse");
+        sgmat->m_uni_light_spc       = prog->get_uniform_location("global_light_specular");
 
         // scene properties
         if (data_kv.contains(KEY_PROJ_SHADOW))
