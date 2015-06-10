@@ -186,30 +186,39 @@ void main_loop(SDL_Window* window)
         model_view_mat.set_rotate(rot);
 
         // draw A
-        mat_a->use();
-        mat_a->instant_set_transform(model_view_mat, Mat4f());
+        {
+            mat_a->use();
 
-        vao_a->use();
-        geo_a->get_buffer()->use();
+            mat_a->instant_set_matrix_model_view(model_view_mat);
+            mat_a->instant_set_matrix_proj(Mat4f());
+            mat_a->instant_set_matrix_model_view_proj(model_view_mat);
 
-        geo_a->get_buffer()->draw(geo_a->get_primitive());
+            vao_a->use();
+            geo_a->get_buffer()->use();
 
-        mat_a->unuse();
-        vao_a->unuse();
-        geo_a->get_buffer()->unuse();
+            geo_a->get_buffer()->draw(geo_a->get_primitive());
+
+            mat_a->unuse();
+            vao_a->unuse();
+            geo_a->get_buffer()->unuse();
+        }
 
         // draw B
-        mat_b->use();
-        mat_b->instant_set_transform(scale_3x, Mat4f());
+        {
+            mat_b->use();
+            mat_b->instant_set_matrix_model_view(scale_3x);
+            mat_b->instant_set_matrix_proj(Mat4f());
+            mat_b->instant_set_matrix_model_view_proj(scale_3x);
 
-        vao_b->use();
-        geo_b->get_buffer()->use();
+            vao_b->use();
+            geo_b->get_buffer()->use();
 
-        geo_b->get_buffer()->draw(geo_b->get_primitive());
+            geo_b->get_buffer()->draw(geo_b->get_primitive());
 
-        mat_b->unuse();
-        vao_b->unuse();
-        geo_b->get_buffer()->unuse();
+            mat_b->unuse();
+            vao_b->unuse();
+            geo_b->get_buffer()->unuse();
+        }
 
         // finalize
         SDL_GL_SwapWindow(window);
