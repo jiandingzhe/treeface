@@ -26,6 +26,7 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+// Xi Yang: set DEBUG by force
 #ifdef NDEBUG
 #   define DEBUG 0
 #else
@@ -85,30 +86,30 @@ DEALINGS IN THE SOFTWARE.
 
 #include "nedmalloc.h"
 #include <errno.h>
+
 #ifdef HAVE_VALGRIND
-#include <valgrind/valgrind.h>
-#include <valgrind/memcheck.h>
+#   include <valgrind/valgrind.h>
+#   include <valgrind/memcheck.h>
 #endif
-#if defined(WIN32)
- #include <malloc.h>
+
+#if defined(TREEJUCE_OS_WINDOWS)
+#   include <malloc.h>
 #else
- #if defined(__cplusplus)
+#   if defined(__cplusplus)
 extern "C"
- #else
+#   else
 extern
- #endif
- #if defined(__linux__) || defined(__FreeBSD__)
+#   endif
+#   if defined(TREEJUCE_OS_LINUX) || defined(__FreeBSD__)
 /* Sadly we can't include <malloc.h> as it causes a redefinition error */
 size_t malloc_usable_size(void *);
- #elif defined(__APPLE__)
-  #if TARGET_OS_IPHONE
-   #include <malloc/malloc.h>
-  #else
-   #include <malloc.h>
-  #endif
- #else
-  #error Do not know what to do here
- #endif
+#   elif defined(TREEJUCE_OS_IOS)
+#       include <malloc/malloc.h>
+#   elif defined(TREEJUCE_OS_OSX)
+#       include <malloc.h>
+#   else
+#       error Do not know what to do here
+#   endif
 #endif
 
 #if USE_ALLOCATOR==1
@@ -250,7 +251,7 @@ extern void *userpage_realloc(void *mem, size_t oldsize, size_t newsize, int fla
 #define NM_FLAGS_MASK (M2_FLAGS_MASK&~M2_ZERO_MEMORY)
 
 #if USE_LOCKS
-#ifdef WIN32
+#ifdef TREEJUCE_OS_WINDOWS
  #define TLSVAR			DWORD
  #define TLSALLOC(k)	(*(k)=TlsAlloc(), TLS_OUT_OF_INDEXES==*(k))
  #define TLSFREE(k)		(!TlsFree(k))
@@ -514,7 +515,7 @@ static NEDMALLOCNOALIASATTR mstate nedblkmstate(void *RESTRICT mem) THROWSPEC
 		return 0;
 #elif USE_ALLOCATOR==1
 #ifdef ENABLE_FAST_HEAP_DETECTION
-#ifdef WIN32
+#ifdef TREEJUCE_OS_WINDOWS
 		/*  On Windows for RELEASE both x86 and x64 the NT heap precedes each block with an eight byte header
 			which looks like:
 				normal: 4 bytes of size, 4 bytes of [char < 64, char < 64, char < 64 bit 0 always set, char random ]
@@ -565,7 +566,7 @@ static NEDMALLOCNOALIASATTR mstate nedblkmstate(void *RESTRICT mem) THROWSPEC
 				return fm;
 		}
 #else /* ENABLE_FAST_HEAP_DETECTION */
-#ifdef WIN32
+#ifdef TREEJUCE_OS_WINDOWS
 #ifdef _MSC_VER
 		__try
 #else
@@ -619,7 +620,7 @@ static NEDMALLOCNOALIASATTR mstate nedblkmstate(void *RESTRICT mem) THROWSPEC
 					return fm;
 			}
 		}
-#ifdef WIN32
+#ifdef TREEJUCE_OS_WINDOWS
 #ifdef _MSC_VER
 		__except(1) { }
 #endif
@@ -685,7 +686,7 @@ NEDMALLOCNOALIASATTR size_t nedmalloc_footprint() THROWSPEC																		{ r
 NEDMALLOCNOALIASATTR NEDMALLOCPTRATTR void **nedindependent_calloc(size_t elemsno, size_t elemsize, void **chunks) THROWSPEC	{ return nedpindependent_calloc((nedpool *) 0, elemsno, elemsize, chunks); }
 NEDMALLOCNOALIASATTR NEDMALLOCPTRATTR void **nedindependent_comalloc(size_t elems, size_t *sizes, void **chunks) THROWSPEC		{ return nedpindependent_comalloc((nedpool *) 0, elems, sizes, chunks); }
 
-#ifdef WIN32
+#ifdef TREEJUCE_OS_WINDOWS
 typedef unsigned __int64 timeCount;
 static timeCount GetTimestamp()
 {
@@ -829,7 +830,7 @@ static nedpool syspool;
 
 #if ENABLE_LOGGING
 #if NEDMALLOC_STACKBACKTRACEDEPTH
-#if defined(WIN32) && defined(_MSC_VER)
+#if defined(TREEJUCE_OS_WINDOWS) && defined(_MSC_VER)
 #define COPY_STRING(d, s, maxlen) { size_t len=strlen(s); len=(len>maxlen) ? maxlen-1 : len; memcpy(d, s, len); d[len]=0; }
 
 #pragma optimize("g", off)

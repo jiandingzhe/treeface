@@ -29,6 +29,9 @@ DEALINGS IN THE SOFTWARE.
 #ifndef NEDMALLOC_H
 #define NEDMALLOC_H
 
+// Xi Yang: use platform macros defined in treejuce
+#include <treejuce/Config.h>
+
 /*! \file nedmalloc.h
 \brief Defines the functionality provided by nedalloc.
 */
@@ -126,7 +129,7 @@ nedmalloc.dll.
  */
 #ifndef NEDMALLOCEXTSPEC
  #ifdef NEDMALLOC_DLL_EXPORTS
-  #ifdef WIN32
+  #ifdef TREEJUCE_OS_WINDOWS
    #define NEDMALLOCEXTSPEC extern __declspec(dllexport)
   #elif defined(__GNUC__)
    #define NEDMALLOCEXTSPEC extern __attribute__ ((visibility("default")))
@@ -234,7 +237,7 @@ Always turns on ENABLE_TOLERANT_NEDMALLOC.
  #ifndef ENABLE_TOLERANT_NEDMALLOC
   #define ENABLE_TOLERANT_NEDMALLOC 1
  #endif
- #ifndef WIN32	/* We have a dedicated patcher for Windows */
+ #ifndef TREEJUCE_OS_WINDOWS	/* We have a dedicated patcher for Windows */
   #define nedmalloc               malloc
   #define nedmalloc2              malloc2
   #define nedcalloc               calloc
