@@ -25,19 +25,7 @@ public:
     SceneNode();
 
     JUCE_DECLARE_NON_COPYABLE(SceneNode);
-
-    SceneNode(SceneNode&& other): m_impl(other.m_impl)
-    {
-        other.m_impl = nullptr;
-    }
-
-    SceneNode& operator = (SceneNode&& other)
-    {
-        jassert(m_impl == nullptr);
-        m_impl = other.m_impl;
-        other.m_impl = nullptr;
-        return *this;
-    }
+    JUCE_DECLARE_NON_MOVABLE(SceneNode);
 
     virtual ~SceneNode();
 
