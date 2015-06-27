@@ -103,9 +103,20 @@ struct Mat4: public NedBase
      * @return value on specified row and column
      */
     template<int row, int col>
-    T get() const
+    T get() const NOEXCEPT
     {
         return treejuce::simd_get_one<row, T>(data[col]);
+    }
+
+    void set(T col0_0, T col0_1, T col0_2, T col0_3,
+             T col1_0, T col1_1, T col1_2, T col1_3,
+             T col2_0, T col2_1, T col2_2, T col2_3,
+             T col3_0, T col3_1, T col3_2, T col3_3) NOEXCEPT
+    {
+        data[0] = treejuce::simd_set<T, SZ>(col0_0, col0_1, col0_2, col0_3);
+        data[1] = treejuce::simd_set<T, SZ>(col1_0, col1_1, col1_2, col1_3);
+        data[2] = treejuce::simd_set<T, SZ>(col2_0, col2_1, col2_2, col2_3);
+        data[3] = treejuce::simd_set<T, SZ>(col3_0, col3_1, col3_2, col3_3);
     }
 
     /**
