@@ -204,14 +204,44 @@ const Vec4f& Scene::get_global_light_color() const NOEXCEPT
     return m_guts->global_light_color;
 }
 
+void Scene::set_global_light_color(float r, float g, float b, float a) NOEXCEPT
+{
+    m_guts->global_light_color.set(r, g, b, a);
+}
+
+void Scene::set_global_light_color(const Vec4f& value) NOEXCEPT
+{
+    m_guts->global_light_color = value;
+}
+
 const Vec4f& Scene::get_global_light_direction() const NOEXCEPT
 {
     return m_guts->global_light_direction;
 }
 
+void Scene::set_global_light_direction(float x, float y, float z) NOEXCEPT
+{
+    m_guts->global_light_direction.set(x, y, z, 0);
+}
+
+void Scene::set_global_light_direction(const Vec4f& value) NOEXCEPT
+{
+    m_guts->global_light_direction = value;
+}
+
 const Vec4f& Scene::get_global_light_ambient() const NOEXCEPT
 {
     return m_guts->global_light_ambient;
+}
+
+void Scene::set_global_light_ambient(float r, float g, float b, float a) NOEXCEPT
+{
+    m_guts->global_light_ambient.set(r, g, b, a);
+}
+
+void Scene::set_global_light_ambient(const Vec4f& value) NOEXCEPT
+{
+    m_guts->global_light_ambient = value;
 }
 
 TREEFACE_NAMESPACE_END

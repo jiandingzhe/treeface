@@ -57,10 +57,16 @@ public:
     MaterialManager* get_material_manager() NOEXCEPT;
 
     const Vec4f& get_global_light_color() const NOEXCEPT;
-    const Vec4f& get_global_light_direction() const NOEXCEPT;
-    const Vec4f& get_global_light_ambient() const NOEXCEPT;
+    void set_global_light_color(float r, float g, float b, float a) NOEXCEPT;
+    void set_global_light_color(const Vec4f& value) NOEXCEPT;
 
-    void render() NOEXCEPT;
+    const Vec4f& get_global_light_direction() const NOEXCEPT;
+    void set_global_light_direction(float x, float y, float z) NOEXCEPT;
+    void set_global_light_direction(const Vec4f& value) NOEXCEPT;
+
+    const Vec4f& get_global_light_ambient() const NOEXCEPT;
+    void set_global_light_ambient(float r, float g, float b, float a) NOEXCEPT;
+    void set_global_light_ambient(const Vec4f& value) NOEXCEPT;
 
 private:
     struct Guts;
