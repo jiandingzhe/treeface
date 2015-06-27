@@ -5,15 +5,17 @@ using namespace treejuce;
 
 TREEFACE_NAMESPACE_BEGIN
 
-Widget::Widget()
-    : m_guts(new Guts())
+Widget::Widget() NOEXCEPT
+    : m_guts(new (std::nothrow) Guts())
 {
+    m_guts->scene_node = new (std::nothrow) SceneNode();
 }
 
-Widget::Widget(const treejuce::String& name)
-    : m_guts(new Guts())
+
+Widget::Widget(SceneNode *node) NOEXCEPT
+    : m_guts(new (std::nothrow) Guts())
 {
-    m_guts->name = name;
+    m_guts->scene_node = node;
 }
 
 Widget::~Widget()
@@ -34,7 +36,10 @@ bool Widget::add_child(Widget* child) NOEXCEPT
     m_guts->children.add(child);
     child->m_guts->parent = this;
 
-    // TODO scene graph hierarchy
+    // scene graph hierarchy
+    if (!m_guts->scene_node->add_child(child->m_guts->scene_node))
+        die("failed to add child %p scene node %p into parent %p scene node %p",
+            child, child->m_guts->scene_node.get(), this, m_guts->scene_node.get());
 
     // update parent ability cache
     Guts::RespWidgetMap parent_data;
@@ -60,7 +65,10 @@ bool Widget::remove_child(Widget* child) NOEXCEPT
     m_guts->children.remove(i_child);
     child->m_guts->parent = nullptr;
 
-    // TODO scene graph hierarchy
+    // scene graph hierarchy
+    if (!m_guts->scene_node->remove_child(child->m_guts->scene_node))
+        die("failed to remove child %p scene node %p from parent %p scene node %p",
+            child, child->m_guts->scene_node.get(), this, m_guts->scene_node.get());
 
     // clear parent ability cache in removed children
     child->m_guts->recur_clear_resp_parent_cache();
@@ -79,6 +87,11 @@ bool Widget::has_child(Widget *child) const NOEXCEPT
 Widget* Widget::get_parent() NOEXCEPT
 {
     return m_guts->parent;
+}
+
+SceneNode* Widget::get_scene_node() NOEXCEPT
+{
+    return m_guts->scene_node;
 }
 
 bool Widget::add_event_listener(const treejuce::String& event_name, EventFunc func, void* data) NOEXCEPT

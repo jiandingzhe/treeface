@@ -15,6 +15,7 @@ TREEFACE_JUCE_NAMESPACE_END
 
 TREEFACE_NAMESPACE_BEGIN
 
+class SceneNode;
 class Widget;
 
 typedef bool (*EventFunc)(Widget* emitter, Widget* listener, void* data);
@@ -24,8 +25,8 @@ class Widget: public treejuce::Object
     friend class ::TestFramework;
 
 public:
-    Widget();
-    Widget(const treejuce::String& name);
+    Widget() NOEXCEPT;
+    Widget(treeface::SceneNode* node) NOEXCEPT;
     virtual ~Widget();
 
     bool add_child(Widget* child) NOEXCEPT;
@@ -33,6 +34,7 @@ public:
     bool has_child(Widget* child) const NOEXCEPT;
 
     Widget* get_parent() NOEXCEPT;
+    SceneNode* get_scene_node() NOEXCEPT;
 
     bool add_event_listener(const treejuce::String& event_name, EventFunc func, void* data) NOEXCEPT;
     bool remove_event_listener(const treejuce::String& event_name);

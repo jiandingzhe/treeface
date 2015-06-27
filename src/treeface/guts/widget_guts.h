@@ -3,6 +3,8 @@
 
 #include "treeface/ui/widget.h"
 
+#include "treeface/scene/scenenode.h"
+
 #include <treejuce/HashMap.h>
 #include <treejuce/Holder.h>
 #include <treejuce/SortedSet.h>
@@ -28,6 +30,8 @@ struct Widget::Guts
     treejuce::String name;
     treejuce::Array<treejuce::Holder<Widget> > children;
     Widget* parent = nullptr;
+
+    treejuce::Holder<SceneNode> scene_node;
 
     bool resp_children_ok = false;
     bool resp_parents_ok = false;

@@ -62,12 +62,12 @@ bool callback4baz2(Widget* emitter, Widget* listener, void* data)
 void TestFramework::content()
 {
     // create objects
-    Holder<Widget> w1 = new Widget("w1");
-    Holder<Widget> w2 = new Widget("w2");
-    Holder<Widget> w3 = new Widget("w3");
-    Holder<Widget> w4 = new Widget("w4");
-    Holder<Widget> w5 = new Widget("w5");
-    Holder<Widget> w6 = new Widget("w6");
+    Holder<Widget> w1 = new Widget();
+    Holder<Widget> w2 = new Widget();
+    Holder<Widget> w3 = new Widget();
+    Holder<Widget> w4 = new Widget();
+    Holder<Widget> w5 = new Widget();
+    Holder<Widget> w6 = new Widget();
 
     OK(w1.get());
     OK(w2.get());
@@ -82,6 +82,13 @@ void TestFramework::content()
     Widget::Guts* gut4 = w4->m_guts;
     Widget::Guts* gut5 = w5->m_guts;
     Widget::Guts* gut6 = w6->m_guts;
+
+    gut1->name = "w1";
+    gut2->name = "w2";
+    gut3->name = "w3";
+    gut4->name = "w4";
+    gut5->name = "w5";
+    gut6->name = "w6";
 
     // add events
     OK(w1->add_event_listener("foo", callback1foo, nullptr));
@@ -105,6 +112,8 @@ void TestFramework::content()
 
     IS(w2->m_guts->parent, w1.get());
     OK(w1->has_child(w2));
+    OK(gut1->scene_node->has_child(gut2->scene_node));
+    IS(gut2->scene_node->get_parent(), gut1->scene_node.get());
 
     OK(w1->any_child_can_handle("foo"));
     OK(w2->any_parent_can_handle("foo"));
