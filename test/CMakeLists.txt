@@ -55,8 +55,26 @@ target_link_libraries(scene_renderer
     ${OPENGL_glu_LIBRARY}
 )
 
+add_executable(scene_global_light scene_global_light.cpp)
+target_link_libraries(scene_global_light
+    treeface
+    ${TREEJUCE_LIBRARIES}
+    ${FreeImage_LIBRARIES}
+    ${SDL2_LIBRARY}
+    ${GLEW_LIBRARY}
+    ${OPENGL_gl_LIBRARY}
+    ${OPENGL_glu_LIBRARY}
+)
+
+add_executable(sdl_event sdl_event.cpp)
+target_link_libraries(sdl_event
+    ${SDL2_LIBRARY}
+    ${GLEW_LIBRARY}
+    ${OPENGL_gl_LIBRARY}
+)
+
 if(TREEFACE_OS STREQUAL "WINDOWS")
-    set_target_properties(interact interact_wrap texture geometry_and_material scene_renderer json_traverse freeimage_format
+    set_target_properties(interact interact_wrap texture geometry_and_material scene_renderer scene_global_light json_traverse freeimage_format sdl_event
         PROPERTIES
         WIN32_EXECUTABLE 0
     )
