@@ -71,6 +71,7 @@ void SceneRenderer::render(const Mat4f& matrix_proj,
         // set light uniforms
         prog->instant_set_uniform(mat->m_uni_light_direct, light_direct_in_view);
         prog->instant_set_uniform(mat->m_uni_light_color, scene->get_global_light_color());
+        prog->instant_set_uniform(mat->m_uni_light_ambient, scene->get_global_light_ambient());
         // TODO set light intensities
 
         // traverse items and transforms
