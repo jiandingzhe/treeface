@@ -40,6 +40,9 @@ add_library(treeface STATIC
     ${treeface_src_files}
 )
 
+#
+# utilities
+#
 
-
-
+add_executable(gen_iter_sphere gen_iter_sphere.cpp)
+target_link_libraries(gen_iter_sphere treeface ${TREEJUCE_LIBRARIES})
