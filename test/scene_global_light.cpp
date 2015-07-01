@@ -92,30 +92,56 @@ void build_up_gl()
     // create scene
     scene = new Scene(geo_mgr, mat_mgr);
     scene->set_global_light_ambient(0.2, 0.2, 0.2, 1);
+    scene->set_global_light_direction(1, 1, -0.5);
 
     Holder<Geometry> geom;
+    Holder<Geometry> geom_back;
     {
-        Result re = geo_mgr->get_geometry("geom_color_norm.json", geom);
+        Result re = geo_mgr->get_geometry("geom_sphere2.json", geom);
+        if (!re)
+            die("%s", re.getErrorMessage().toRawUTF8());
+    }
+    {
+        Result re = geo_mgr->get_geometry("geom_simple.json", geom_back);
         if (!re)
             die("%s", re.getErrorMessage().toRawUTF8());
     }
 
     Holder<Material> mat;
+    Holder<Material> mat_back;
     {
         Result re = mat_mgr->get_material("material_color_light.json", mat);
+        if (!re)
+            die("%s", re.getErrorMessage().toRawUTF8());
+    }
+    {
+        Result re = mat_mgr->get_material("material_plain.json", mat_back);
         if (!re)
             die("%s", re.getErrorMessage().toRawUTF8());
     }
 
     VisualObject* item = new VisualObject();
     {
-        Result re = item->build(geom, dynamic_cast<SceneGraphMaterial*>(mat.get()));
+        SceneGraphMaterial* mat_sg = dynamic_cast<SceneGraphMaterial*>(mat.get());
+        printf("build object %p with geometry %p and material %p\n", item, geom.get(), mat_sg);
+        Result re = item->build(geom, mat_sg);
         if (!re)
             die("%s", re.getErrorMessage().toRawUTF8());
     }
     SceneNode* node = new SceneNode();
     node->add_item(item);
     scene->get_root_node()->add_child(node);
+
+    VisualObject* item_back = new VisualObject();
+    {
+        SceneGraphMaterial* mat_sg = dynamic_cast<SceneGraphMaterial*>(mat_back.get());
+        printf("build background object %p with geometry %p and material %p\n", item_back, geom_back.get(), mat_sg);
+        Result re = item_back->build(geom_back, mat_sg);
+        printf("  get material: %p\n", item_back->get_material());
+        if (!re)
+            die("%s", re.getErrorMessage().toRawUTF8());
+    }
+    scene->get_root_node()->add_item(item_back);
 }
 
 
@@ -127,6 +153,12 @@ void main_loop(SDL_Window* window)
 
     float angle = 0;
     Mat4f mat;
+
+    Mat4f view;
+    view.set_scale(0.5, 0.5, 0.5);
+
+    Mat4f proj;
+    proj.set_perspective(TREEFACE_PI_4, 1, 0.01, 1);
 
     while (1)
     {
@@ -155,9 +187,10 @@ void main_loop(SDL_Window* window)
 
         mat.set_rotate(Quatf(angle, Vec4f(1,-1,0,0)));
         node->set_transform(mat);
-        renderer->render(Mat4f(), Mat4f(), scene);
+        renderer->render(proj, view, scene);
 
         // finalize
+        glFinish();
         SDL_GL_SwapWindow(window);
         SDL_Delay(50);
         angle += 0.1;

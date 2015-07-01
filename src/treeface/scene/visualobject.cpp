@@ -37,6 +37,11 @@ VisualObject::~VisualObject()
 
 treejuce::Result VisualObject::build(Geometry* geom, SceneGraphMaterial* mat) NOEXCEPT
 {
+    if (!geom)
+        return Result::fail("geometry is null while building visual object");
+    if (!mat)
+        return Result::fail("material is null while building visual object");
+
     m_impl->geometry = geom;
     m_impl->material = mat;
     m_impl->vertex_array = new VertexArray();

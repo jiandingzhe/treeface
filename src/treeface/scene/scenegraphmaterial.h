@@ -24,6 +24,21 @@ public:
     void instant_set_matrix_norm(const Mat4f& mat) const NOEXCEPT;
     void instant_set_light(const Vec4f& direction, const Vec4f& color, const Vec4f& ambient) const NOEXCEPT;
 
+    bool is_translucent() const NOEXCEPT
+    {
+        return m_translucent;
+    }
+
+    bool project_shadow() const NOEXCEPT
+    {
+        return m_project_shadow;
+    }
+
+    bool receive_shadow() const NOEXCEPT
+    {
+        return m_receive_shadow;
+    }
+
     JUCE_DECLARE_NON_COPYABLE(SceneGraphMaterial);
     JUCE_DECLARE_NON_MOVABLE(SceneGraphMaterial);
 

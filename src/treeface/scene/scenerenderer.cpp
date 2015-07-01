@@ -24,9 +24,51 @@ TREEFACE_NAMESPACE_BEGIN
 typedef HashMultiMap<VisualObject*, SceneNode*> TransformedItems;
 typedef HashMap<SceneGraphMaterial*, TransformedItems*> SceneCollection;
 
+struct ItemCombination
+{
+    SceneGraphMaterial* mat;
+    VisualObject* item;
+    SceneNode* trans;
+};
+
+struct ItemCombinationSorter
+{
+    int compareElements(ItemCombination a, ItemCombination b) const NOEXCEPT
+    {
+        // opaque items should go front
+        if (a.mat->is_translucent())
+        {
+            if (!b.mat->is_translucent())
+                return 1;
+        }
+        else
+        {
+            if (b.mat->is_translucent())
+                return -1;
+        }
+
+        if (a.mat < b.mat)
+            return -1;
+        else if (a.mat > b.mat)
+            return 1;
+
+        if (a.item < b.item)
+            return -1;
+        else if (a.item > b.item)
+            return 1;
+
+        if (a.trans < b.trans)
+            return -1;
+        else if (a.trans > b.trans)
+            return 1;
+
+        return 0;
+    }
+};
+
 struct SceneRenderer::Impl
 {
-    SceneCollection obj_by_material_transform;
+    Array<ItemCombination> combs;
 };
 
 SceneRenderer::SceneRenderer()
@@ -37,15 +79,7 @@ SceneRenderer::SceneRenderer()
 SceneRenderer::~SceneRenderer()
 {
     if (m_impl)
-    {
-        SceneCollection::Iterator it(m_impl->obj_by_material_transform);
-        while (it.next())
-        {
-            delete it.getValue();
-        }
-
         delete m_impl;
-    }
 }
 
 void SceneRenderer::render(const Mat4f& matrix_proj,
@@ -54,85 +88,79 @@ void SceneRenderer::render(const Mat4f& matrix_proj,
 {
     traverse(scene->m_guts->root_node);
 
-    SceneCollection::Iterator it_scene(m_impl->obj_by_material_transform);
+    ItemCombinationSorter sorter;
+    m_impl->combs.sort(sorter);
 
+    // light direction in model-view coordinate
     Vec4f light_direct_in_view = matrix_view * scene->get_global_light_direction();
 
-    while (it_scene.next())
+    // traverse scene items
+    SceneGraphMaterial* prev_mat = nullptr;
+    VisualObject* prev_item = nullptr;
+
+    for (int i = 0; i < m_impl->combs.size(); i++)
     {
-        SceneGraphMaterial* mat = it_scene.getKey();
-        mat->use();
+        ItemCombination comb = m_impl->combs[i];
+        Program* prog = comb.mat->get_program();
+        Geometry* geom = comb.item->get_geometry();
 
-        // set common uniforms defined by treeface
-        Program* prog = mat->get_program();
-
-        prog->instant_set_uniform(mat->m_uni_proj, matrix_proj);
-
-        // set light uniforms
-        prog->instant_set_uniform(mat->m_uni_light_direct, light_direct_in_view);
-        prog->instant_set_uniform(mat->m_uni_light_color, scene->get_global_light_color());
-        prog->instant_set_uniform(mat->m_uni_light_ambient, scene->get_global_light_ambient());
-        // TODO set light intensities
-
-        // traverse items and transforms
-        TransformedItems::Iterator it_items(*it_scene.getValue());
-
-        while (it_items.next())
+        if (comb.mat != prev_mat)
         {
-            VisualObject* item = it_items.getKey();
-            Geometry* geom = item->get_geometry();
+            prev_mat = comb.mat;
+            comb.mat->use();
 
-            item->get_vertex_array()->use();
-            geom->get_buffer()->use();
-
-            // traverse transform
-            ArrayRef<SceneNode*> item_nodes = it_items.getValues();
-
-            for (int i = 0; i < item_nodes.size(); i++)
-            {
-                // set transform uniform
-                const Mat4f& mat_model = item_nodes[i]->get_global_transform();
-                const Mat4f mat_model_view = matrix_view * mat_model;
-                const Mat4f mat_model_view_proj = matrix_proj * mat_model_view;
-
-                prog->instant_set_uniform(mat->m_uni_model_view, mat_model_view);
-                prog->instant_set_uniform(mat->m_uni_model_view_proj, mat_model_view_proj);
-                prog->instant_set_uniform(mat->m_uni_norm, mat_model_view.get_normal_matrix());
-
-
-                // do draw
-                geom->get_buffer()->draw(geom->get_primitive());
-            }
-
-            VertexArray::unuse();
-            VertexIndexBuffer::unuse();
+            prog->instant_set_uniform(comb.mat->m_uni_proj,          matrix_proj);
+            prog->instant_set_uniform(comb.mat->m_uni_light_direct,  light_direct_in_view);
+            prog->instant_set_uniform(comb.mat->m_uni_light_color,   scene->get_global_light_color());
+            prog->instant_set_uniform(comb.mat->m_uni_light_ambient, scene->get_global_light_ambient());
         }
 
-        Program::unuse();
+        if (comb.item != prev_item)
+        {
+            prev_item = comb.item;
+
+            comb.item->get_vertex_array()->use();
+            geom->get_buffer()->use();
+        }
+
+        const Mat4f& mat_model = comb.trans->get_global_transform();
+        const Mat4f mat_model_view = matrix_view * mat_model;
+        const Mat4f mat_model_view_proj = matrix_proj * mat_model_view;
+
+        prog->instant_set_uniform(comb.mat->m_uni_model_view, mat_model_view);
+        prog->instant_set_uniform(comb.mat->m_uni_model_view_proj, mat_model_view_proj);
+        prog->instant_set_uniform(comb.mat->m_uni_norm, mat_model_view.get_normal_matrix());
+
+        // do draw
+        geom->get_buffer()->draw(geom->get_primitive());
     }
+
+    VertexArray::unuse();
+    VertexIndexBuffer::unuse();
+    Program::unuse();
 }
 
 treejuce::Result SceneRenderer::traverse_begin() NOEXCEPT
 {
-    m_impl->obj_by_material_transform.clear();
+    m_impl->combs.clear();
     return Result::ok();
 }
 
 treejuce::Result SceneRenderer::traverse_one_node(SceneNode* node) NOEXCEPT
 {
+    jassert(node != nullptr);
     for (int i = 0; i < node->get_num_items(); i++)
     {
         VisualObject* item = dynamic_cast<VisualObject*>(node->get_item_at(i));
+        jassert(item != nullptr);
 
         if (!item)
             continue;
 
         SceneGraphMaterial* mat = item->get_material();
+        jassert(mat != nullptr);
 
-        if (!m_impl->obj_by_material_transform.contains(mat))
-            m_impl->obj_by_material_transform.set(mat, new TransformedItems());
-
-        m_impl->obj_by_material_transform[mat]->insert(item, node);
+        m_impl->combs.add({mat, item, node});
     }
     return Result::ok();
 }

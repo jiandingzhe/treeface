@@ -222,11 +222,13 @@ const Vec4f& Scene::get_global_light_direction() const NOEXCEPT
 void Scene::set_global_light_direction(float x, float y, float z) NOEXCEPT
 {
     m_guts->global_light_direction.set(x, y, z, 0);
+    m_guts->global_light_direction.normalize();
 }
 
 void Scene::set_global_light_direction(const Vec4f& value) NOEXCEPT
 {
     m_guts->global_light_direction = value;
+    m_guts->global_light_direction.normalize();
 }
 
 const Vec4f& Scene::get_global_light_ambient() const NOEXCEPT

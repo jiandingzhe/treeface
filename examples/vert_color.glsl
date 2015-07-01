@@ -5,6 +5,6 @@ out mediump vec4 vert_frag_color;
 
 void main()
 {
-    gl_Position = matrix_model_view * position;
+    gl_Position = matrix_model_view_project * position;
     vert_frag_color = color;
 }
