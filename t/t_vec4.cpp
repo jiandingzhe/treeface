@@ -126,6 +126,13 @@ void TestFramework::content()
     IS(v3.get_z(), 1);
     IS(v3.get_w(), 0);
 
+    {
+        OK("normalize");
+        Vec4f v(1,2,3,4);
+        v.normalize();
+        IS_EPSILON(v.length(), 1.0f);
+    }
+
     Vec4f v4 = v2 ^ v3;
     IS(v4.get_x(), 1);
     IS(v4.get_y(), 0);
