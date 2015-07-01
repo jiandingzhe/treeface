@@ -209,6 +209,11 @@ struct Mat4: public NedBase
     }
 
     /**
+     * @brief
+     */
+    void set_perspective(float vertical_angle, float ratio, float near, float far) NOEXCEPT;
+
+    /**
      * @brief inverse this matrix
      * @return the determinant before inverse
      */

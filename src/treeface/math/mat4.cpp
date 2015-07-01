@@ -56,6 +56,30 @@ float Mat4<float>::determinant() const NOEXCEPT
 }
 
 template<>
+void Mat4<float>::set_perspective(float vertical_angle, float ratio, float near, float far) NOEXCEPT
+{
+    if (ratio == 0.0f || near == far)
+        return;
+
+    float sine = std::sin(vertical_angle);
+    if (sine == 0.0f)
+        return;
+
+    float cotan = std::cos(vertical_angle) / sine;
+    float depth = far - near;
+
+    float xx = cotan / ratio;
+    float yy = cotan;
+    float zz = -(near + far) / depth;
+    float zw = -2.0f * near * far / depth;
+
+    set(xx, 0, 0,  0,
+        0, yy, 0,  0,
+        0, 0, zz, -1,
+        0, 0, zw,  1);
+}
+
+template<>
 void Mat4<float>::set_rotate(const Quat<float>& value) NOEXCEPT
 {
 #define _MAT4_FLOAT_ROTATE_OP_ treejuce::simd_add<float>(tmp_unit, treejuce::simd_mul<float>(tmp_mul, treejuce::simd_add<float>(treejuce::simd_mul<float>(tmp_a, tmp_b),treejuce::simd_xor<float>(treejuce::simd_mul<float>(tmp_c, tmp_d), tmp_sign_mask))))
