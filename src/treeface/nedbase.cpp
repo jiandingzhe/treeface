@@ -12,7 +12,7 @@ void* NedBase::operator new(std::size_t size)
     return ptr;
 }
 
-void* NedBase::operator new(std::size_t size, const std::nothrow_t& nothrow_value) throw()
+void* NedBase::operator new(std::size_t size, const std::nothrow_t& nothrow_value) NOEXCEPT
 {
     void* ptr = nedalloc::nedmalloc2(size, 32);
     return ptr;
