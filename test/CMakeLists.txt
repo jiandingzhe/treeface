@@ -73,6 +73,16 @@ target_link_libraries(sdl_event
     ${OPENGL_gl_LIBRARY}
 )
 
+add_executable(sdl_keyboard_scancode sdl_keyboard_scancode.cpp)
+target_link_libraries(sdl_keyboard_scancode
+    ${SDL2_LIBRARY}
+)
+
+add_executable(sdl_text sdl_text.cpp)
+target_link_libraries(sdl_text
+    ${SDL2_LIBRARY}
+)
+
 if(TREEFACE_OS STREQUAL "WINDOWS")
     set_target_properties(interact interact_wrap texture geometry_and_material scene_renderer scene_global_light json_traverse freeimage_format sdl_event
         PROPERTIES
