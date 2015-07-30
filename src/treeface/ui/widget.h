@@ -2,6 +2,7 @@
 #define TREEFACE_WIDGET_H
 
 #include "treeface/common.h"
+#include "treeface/ui/event.h"
 
 #include <treejuce/ArrayRef.h>
 #include <treejuce/Object.h>
@@ -18,7 +19,7 @@ TREEFACE_NAMESPACE_BEGIN
 class SceneNode;
 class Widget;
 
-typedef bool (*EventFunc)(Widget* emitter, Widget* listener, void* data);
+typedef bool (*EventFunc)(Widget* emitter, Widget* listener, const Event& event);
 
 class Widget: public treejuce::Object
 {

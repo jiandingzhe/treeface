@@ -33,10 +33,7 @@ file(GLOB treeface_src_files
     "treeface/*/*.cpp"
 )
 
-set(nedmalloc_src_files nedmalloc.h nedmalloc.cpp malloc.c.h)
-
 add_library(treeface STATIC
-    ${nedmalloc_src_files}
     ${treeface_src_files}
 )
 

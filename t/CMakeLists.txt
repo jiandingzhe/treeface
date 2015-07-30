@@ -141,13 +141,6 @@ target_link_libraries(t_scene
     ${FreeImage_LIBRARIES}
 )
 
-add_executable(t_ned_object t_ned_object.cpp)
-target_link_libraries(t_ned_object
-    treeface
-    TestFramework
-    ${TREEJUCE_LIBRARIES}
-)
-
 add_executable(t_widget_hierarchy t_widget_hierarchy.cpp)
 target_link_libraries(t_widget_hierarchy
     treeface

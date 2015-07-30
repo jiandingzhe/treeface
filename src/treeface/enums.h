@@ -1,18 +1,40 @@
 #ifndef TREEFACE_ENUMS_H
 #define TREEFACE_ENUMS_H
 
+#include "treeface/common.h"
+
+TREEFACE_NAMESPACE_BEGIN
+
 typedef enum
 {
-    MATERIAL_RAW,
-    MATERIAL_SCENE_GRAPH,
-    MATERIAL_SCREEN_SPACE,
+    MATERIAL_RAW = 0,
+    MATERIAL_SCENE_GRAPH = 1,
+    MATERIAL_SCREEN_SPACE = 2,
+    MATERIAL_LINE_STROKE = 3,
 } MaterialType;
 
 typedef enum
 {
-    MOUSE_BUTTON_LEFT,
-    MOUSE_BUTTON_MIDDLE,
-    MOUSE_BUTTON_RIGHT,
+    EVENT_USER = 0,
+    EVENT_KEYBOARD = 1,
+    EVENT_MOUSE_BUTTON = 2,
+    EVENT_MOUSE_MOTION = 3,
+    EVENT_MOUSE_WHEEL = 4,
+} EventType;
+
+typedef enum
+{
+    MOUSE_BUTTON_LEFT = 1,
+    MOUSE_BUTTON_MIDDLE = 1 << 1,
+    MOUSE_BUTTON_RIGHT = 1 << 2,
 } MouseButton;
+
+typedef enum
+{
+    BUTTON_DOWN = 1,
+    BUTTON_UP = 0,
+} ButtonUpDown;
+
+TREEFACE_NAMESPACE_END
 
 #endif // TREEFACE_ENUMS_H

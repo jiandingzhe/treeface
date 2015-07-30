@@ -12,49 +12,49 @@ using namespace treejuce;
 using namespace std;
 
 bool callback1foo_flag = false;
-bool callback1foo(Widget* emitter, Widget* listener, void* data)
+bool callback1foo(Widget* emitter, Widget* listener, const Event& e)
 {
-    printf("callback1foo %p => %p with %p\n", emitter, listener, data);
+    printf("callback1foo %p => %p with %p\n", emitter, listener, e.user_data);
     callback1foo_flag = true;
     return false;
 }
 
 bool callback1bar_flag = false;
-bool callback1bar(Widget* emitter, Widget* listener, void* data)
+bool callback1bar(Widget* emitter, Widget* listener, const Event& e)
 {
-    printf("callback1bar_flag %p => %p with %p\n", emitter, listener, data);
+    printf("callback1bar_flag %p => %p with %p\n", emitter, listener, e.user_data);
     callback1bar_flag = true;
     return false;
 }
 
 bool callback2foo_flag = false;
-bool callback2foo(Widget* emitter, Widget* listener, void* data)
+bool callback2foo(Widget* emitter, Widget* listener, const Event& e)
 {
-    printf("callback2foo %p => %p with %p\n", emitter, listener, data);
+    printf("callback2foo %p => %p with %p\n", emitter, listener, e.user_data);
     callback2foo_flag = true;
     return false;
 }
 
 bool callback2aaa_flag = false;
-bool callback2aaa(Widget* emitter, Widget* listener, void* data)
+bool callback2aaa(Widget* emitter, Widget* listener, const Event& e)
 {
-    printf("callback2aaa %p => %p with %p\n", emitter, listener, data);
+    printf("callback2aaa %p => %p with %p\n", emitter, listener, e.user_data);
     callback2aaa_flag = true;
     return false;
 }
 
 bool callback4baz1_flag = false;
-bool callback4baz1(Widget* emitter, Widget* listener, void* data)
+bool callback4baz1(Widget* emitter, Widget* listener, const Event& e)
 {
-    printf("callback4baz1 %p => %p with %p\n", emitter, listener, data);
+    printf("callback4baz1 %p => %p with %p\n", emitter, listener, e.user_data);
     callback4baz1_flag = true;
     return false;
 }
 
 bool callback4baz2_flag = false;
-bool callback4baz2(Widget* emitter, Widget* listener, void* data)
+bool callback4baz2(Widget* emitter, Widget* listener, const Event& e)
 {
-    printf("callback4baz2 %p => %p with %p\n", emitter, listener, data);
+    printf("callback4baz2 %p => %p with %p\n", emitter, listener, e.user_data);
     callback4baz2_flag = true;
     return false;
 }
