@@ -10,16 +10,16 @@
 #include "treeface/materialmanager.h"
 #include "treeface/packagemanager.h"
 
-#include <treejuce/File.h>
-#include <treejuce/Result.h>
-#include <treejuce/StringRef.h>
+#include <treecore/File.h>
+#include <treecore/Result.h>
+#include <treecore/StringRef.h>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <SDL.h>
 
 using namespace treeface;
-using namespace treejuce;
+using namespace treecore;
 
 int window_w = 400;
 int window_h = 400;

@@ -1,16 +1,16 @@
 #include "treeface/common.h"
 
-#include <treejuce/Logger.h>
-#include <treejuce/String.h>
-#include <treejuce/StringRef.h>
+#include <treecore/Logger.h>
+#include <treecore/String.h>
+#include <treecore/StringRef.h>
 
 #include <cstdarg>
 #include <cstdio>
 
 using namespace std;
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 void die(const char* format, ...)
 {
@@ -38,4 +38,4 @@ void warn(const char* format, ...)
     Logger::writeToLog("WARN: " + String(buffer)+"\n");
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

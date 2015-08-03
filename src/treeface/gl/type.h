@@ -6,7 +6,7 @@
 
 #include "treeface/common.h"
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 /**
  * @brief helper class to get type at compile time from OpenGL type enums.
@@ -72,6 +72,6 @@ struct GLTypeHelper<GL_DOUBLE>
 int size_of_gl_type(GLenum type);
 
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_GL_TYPE_H

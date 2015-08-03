@@ -1,36 +1,36 @@
 #include "treeface/packagemanager.h"
 
-#include <treejuce/File.h>
-#include <treejuce/HashMap.h>
-#include <treejuce/HashSet.h>
-#include <treejuce/Holder.h>
-#include <treejuce/InputStream.h>
-#include <treejuce/MemoryBlock.h>
-#include <treejuce/MemoryInputStream.h>
-#include <treejuce/Result.h>
-#include <treejuce/StringRef.h>
-#include <treejuce/ZipFile.h>
+#include <treecore/File.h>
+#include <treecore/HashMap.h>
+#include <treecore/HashSet.h>
+#include <treecore/Holder.h>
+#include <treecore/InputStream.h>
+#include <treecore/MemoryBlock.h>
+#include <treecore/MemoryInputStream.h>
+#include <treecore/Result.h>
+#include <treecore/StringRef.h>
+#include <treecore/ZipFile.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 struct PackageEntryPoint
 {
-    treejuce::ZipFile* package;
+    treecore::ZipFile* package;
     int entry_index;
-    treejuce::Time time;
+    treecore::Time time;
 };
 
 struct PackageManager::Impl
 {
-    treejuce::HashSet<Holder<ZipFile>> m_packages;
-    treejuce::HashMap<treejuce::String, PackageEntryPoint> m_name_pkg_map;
+    treecore::HashSet<Holder<ZipFile>> m_packages;
+    treecore::HashMap<treecore::String, PackageEntryPoint> m_name_pkg_map;
 };
 
 juce_ImplementSingleton(PackageManager)
 
-void PackageManager::add_package(treejuce::ZipFile* pkg, PackageItemConflictPolicy pol)
+void PackageManager::add_package(treecore::ZipFile* pkg, PackageItemConflictPolicy pol)
 {
     if (!m_impl->m_packages.insert(pkg))
         return;
@@ -81,13 +81,13 @@ void PackageManager::add_package(const void* zip_data, size_t zip_data_size, Pac
     add_package(pkg, pol);
 }
 
-void PackageManager::add_package(const treejuce::File& zip_file, PackageItemConflictPolicy pol)
+void PackageManager::add_package(const treecore::File& zip_file, PackageItemConflictPolicy pol)
 {
     ZipFile* pkg = new ZipFile(zip_file);
     add_package(pkg, pol);
 }
 
-treejuce::InputStream* PackageManager::get_item_stream(const treejuce::String& name)
+treecore::InputStream* PackageManager::get_item_stream(const treecore::String& name)
 {
     if (m_impl->m_name_pkg_map.contains(name))
     {
@@ -100,8 +100,8 @@ treejuce::InputStream* PackageManager::get_item_stream(const treejuce::String& n
     }
 }
 
-treejuce::Result PackageManager::get_item_data(const treejuce::String& name,
-                                               treejuce::MemoryBlock& data)
+treecore::Result PackageManager::get_item_data(const treecore::String& name,
+                                               treecore::MemoryBlock& data)
 {
     InputStream* stream = get_item_stream(name);
     if (!stream)
@@ -122,7 +122,7 @@ treejuce::Result PackageManager::get_item_data(const treejuce::String& name,
     return Result::ok();
 }
 
-bool PackageManager::has_resource(const treejuce::String& name) const NOEXCEPT
+bool PackageManager::has_resource(const treecore::String& name) const NOEXCEPT
 {
     return m_impl->m_name_pkg_map.contains(name);
 }
@@ -137,4 +137,4 @@ PackageManager::~PackageManager()
         delete m_impl;
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

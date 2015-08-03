@@ -1,9 +1,9 @@
 #include "treeface/guts/face_guts.h"
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 
 
 
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

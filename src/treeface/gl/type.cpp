@@ -1,8 +1,8 @@
 #include "treeface/gl/type.h"
 
-#include <treejuce/StringRef.h>
+#include <treecore/StringRef.h>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 int size_of_gl_type(GLenum type)
 {
@@ -71,4 +71,4 @@ int size_of_gl_type(GLenum type)
     return 0;
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

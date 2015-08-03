@@ -4,14 +4,14 @@
 #include "treeface/common.h"
 #include "treeface/gl/vertexattrib.h"
 
-#include <treejuce/IntTypes.h>
+#include <treecore/IntTypes.h>
 
-TREEFACE_JUCE_NAMESPACE_BEGIN
+namespace treecore {
 class var;
 class Result;
-TREEFACE_JUCE_NAMESPACE_END
+} // namespace treecore
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 /**
  * @brief The VertexTemplate class holds vertex attribute meta data for vertex
@@ -68,7 +68,7 @@ public:
      *
      * @return ok if success, fail if any error occurred.
      */
-    treejuce::Result add_attribs(const treejuce::var& list_node);
+    treecore::Result add_attribs(const treecore::var& list_node);
 
     /**
      * @brief get the byte size of a single vertex
@@ -185,13 +185,13 @@ public:
      * @param i_elem: the element index.
      * @param value: the value to be set.
      */
-    void set_value_at(void* vertex, int i_elem, const treejuce::var& value) NOEXCEPT;
+    void set_value_at(void* vertex, int i_elem, const treecore::var& value) NOEXCEPT;
 
 protected:
     struct Impl;
     Impl* m_impl = nullptr;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_VERTEX_TEMPLATE_H

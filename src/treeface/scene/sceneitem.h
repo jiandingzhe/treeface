@@ -2,13 +2,13 @@
 #define TREEFACE_SCENE_ITEM_H
 #include "treeface/common.h"
 
-#include <treejuce/Object.h>
+#include <treecore/Object.h>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 class SceneNode;
 
-class SceneItem: public treejuce::Object
+class SceneItem: public treecore::Object
 {
     friend class SceneNode;
 
@@ -29,6 +29,6 @@ protected:
     SceneNode* m_node = nullptr;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_SCENE_ITEM_H

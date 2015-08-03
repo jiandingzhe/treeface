@@ -1,11 +1,11 @@
 #include "treeface/misc/stringcast.h"
 
-#include <treejuce/StringRef.h>
+#include <treecore/StringRef.h>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 template<>
-MaterialType from_string<MaterialType>(const treejuce::String& string)
+MaterialType from_string<MaterialType>(const treecore::String& string)
 {
     if (string.compareIgnoreCase("raw") == 0)               return MATERIAL_RAW;
     else if (string.compareIgnoreCase("scene_graph") == 0)  return MATERIAL_SCENE_GRAPH;
@@ -19,7 +19,7 @@ MaterialType from_string<MaterialType>(const treejuce::String& string)
 }
 
 template<>
-treejuce::String to_string<MaterialType>(MaterialType value)
+treecore::String to_string<MaterialType>(MaterialType value)
 {
     switch (value)
     {
@@ -32,7 +32,7 @@ treejuce::String to_string<MaterialType>(MaterialType value)
 }
 
 template<>
-FREE_IMAGE_FORMAT from_string<FREE_IMAGE_FORMAT>(const treejuce::String& string)
+FREE_IMAGE_FORMAT from_string<FREE_IMAGE_FORMAT>(const treecore::String& string)
 {
     if (string.compareIgnoreCase("unknown") == 0)     return FIF_UNKNOWN;
     else if (string.compareIgnoreCase("bmp") == 0)    return FIF_BMP;
@@ -90,7 +90,7 @@ FREE_IMAGE_FORMAT from_string<FREE_IMAGE_FORMAT>(const treejuce::String& string)
 }
 
 template<>
-treejuce::String to_string<FREE_IMAGE_FORMAT>(FREE_IMAGE_FORMAT arg)
+treecore::String to_string<FREE_IMAGE_FORMAT>(FREE_IMAGE_FORMAT arg)
 {
     switch (arg)
     {
@@ -137,7 +137,7 @@ treejuce::String to_string<FREE_IMAGE_FORMAT>(FREE_IMAGE_FORMAT arg)
 }
 
 template<>
-FREE_IMAGE_TYPE from_string<FREE_IMAGE_TYPE>(const treejuce::String& string)
+FREE_IMAGE_TYPE from_string<FREE_IMAGE_TYPE>(const treecore::String& string)
 {
     if (string.compareIgnoreCase("unknown") == 0)
         return FIT_UNKNOWN;
@@ -170,7 +170,7 @@ FREE_IMAGE_TYPE from_string<FREE_IMAGE_TYPE>(const treejuce::String& string)
 }
 
 template<>
-treejuce::String to_string<FREE_IMAGE_TYPE>(FREE_IMAGE_TYPE arg)
+treecore::String to_string<FREE_IMAGE_TYPE>(FREE_IMAGE_TYPE arg)
 {
     switch(arg)
     {
@@ -192,7 +192,7 @@ treejuce::String to_string<FREE_IMAGE_TYPE>(FREE_IMAGE_TYPE arg)
 }
 
 template<>
-FREE_IMAGE_COLOR_TYPE from_string<FREE_IMAGE_COLOR_TYPE>(const treejuce::String& string)
+FREE_IMAGE_COLOR_TYPE from_string<FREE_IMAGE_COLOR_TYPE>(const treecore::String& string)
 {
     if      (string.compareIgnoreCase("miniswhite") == 0) return FIC_MINISWHITE;
     else if (string.compareIgnoreCase("minisblack") == 0) return FIC_MINISBLACK;
@@ -210,7 +210,7 @@ FREE_IMAGE_COLOR_TYPE from_string<FREE_IMAGE_COLOR_TYPE>(const treejuce::String&
 }
 
 template<>
-treejuce::String to_string<FREE_IMAGE_COLOR_TYPE>(FREE_IMAGE_COLOR_TYPE arg)
+treecore::String to_string<FREE_IMAGE_COLOR_TYPE>(FREE_IMAGE_COLOR_TYPE arg)
 {
     switch (arg)
     {
@@ -225,7 +225,7 @@ treejuce::String to_string<FREE_IMAGE_COLOR_TYPE>(FREE_IMAGE_COLOR_TYPE arg)
     }
 }
 
-GLenum gl_internal_format_from_string(const treejuce::String& string)
+GLenum gl_internal_format_from_string(const treecore::String& string)
 {
     if      (string.compareIgnoreCase("alpha") == 0)             return GL_ALPHA;
     else if (string.compareIgnoreCase("blue") == 0)              return GL_BLUE;
@@ -297,7 +297,7 @@ GLenum gl_internal_format_from_string(const treejuce::String& string)
     return 0;
 }
 
-treejuce::String gl_internal_format_to_string(GLenum arg)
+treecore::String gl_internal_format_to_string(GLenum arg)
 {
     switch(arg)
     {
@@ -372,7 +372,7 @@ treejuce::String gl_internal_format_to_string(GLenum arg)
     return "";
 }
 
-GLenum gl_type_from_string(const treejuce::String& str)
+GLenum gl_type_from_string(const treecore::String& str)
 {
     if (str.compareIgnoreCase("float") == 0)                              return GL_FLOAT                        ;
     else if (str.compareIgnoreCase("byte") == 0)                          return GL_BYTE                         ;
@@ -423,7 +423,7 @@ GLenum gl_type_from_string(const treejuce::String& str)
     return 0;
 }
 
-treejuce::String gl_type_to_string(GLenum arg)
+treecore::String gl_type_to_string(GLenum arg)
 {// TODO short?
     switch (arg)
     {
@@ -478,7 +478,7 @@ treejuce::String gl_type_to_string(GLenum arg)
     return "";
 }
 
-GLenum gl_primitive_from_string(const treejuce::String& str)
+GLenum gl_primitive_from_string(const treecore::String& str)
 {
     if      (str.compareIgnoreCase("points"        ) == 0) return GL_POINTS        ;
     else if (str.compareIgnoreCase("lines"         ) == 0) return GL_LINES         ;
@@ -495,7 +495,7 @@ GLenum gl_primitive_from_string(const treejuce::String& str)
     return 0;
 }
 
-treejuce::String gl_primitive_to_string(GLenum arg)
+treecore::String gl_primitive_to_string(GLenum arg)
 {
     switch (arg)
     {
@@ -515,7 +515,7 @@ treejuce::String gl_primitive_to_string(GLenum arg)
     return "";
 }
 
-GLenum gl_tex_wrap_from_string(const treejuce::String& str)
+GLenum gl_tex_wrap_from_string(const treecore::String& str)
 {
     if (str.compareIgnoreCase("clamp_to_edge") == 0)
         return GL_CLAMP_TO_EDGE;
@@ -531,7 +531,7 @@ GLenum gl_tex_wrap_from_string(const treejuce::String& str)
     return 0;
 }
 
-treejuce::String gl_tex_wrap_to_string(GLenum arg)
+treecore::String gl_tex_wrap_to_string(GLenum arg)
 {
     switch (arg)
     {
@@ -548,4 +548,4 @@ treejuce::String gl_tex_wrap_to_string(GLenum arg)
 }
 
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

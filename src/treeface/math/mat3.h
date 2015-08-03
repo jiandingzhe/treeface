@@ -5,7 +5,7 @@
 #include "treeface/common.h"
 #include "treeface/math/matutils.h"
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 template<typename T>
 struct Mat3
@@ -69,9 +69,9 @@ struct Mat3
 
     T determinant() NOEXCEPT
     {
-        return det3x3<T>(treejuce::simd_set<float,16>(data[0], data[1], data[2], 0),
-                         treejuce::simd_set<float,16>(data[3], data[4], data[5], 0),
-                         treejuce::simd_set<float,16>(data[6], data[7], data[8], 0));
+        return det3x3<T>(treecore::simd_set<float,16>(data[0], data[1], data[2], 0),
+                         treecore::simd_set<float,16>(data[3], data[4], data[5], 0),
+                         treecore::simd_set<float,16>(data[6], data[7], data[8], 0));
     }
 
     T data[9];
@@ -80,6 +80,6 @@ struct Mat3
 typedef Mat3<float> Mat3f;
 
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_MAT3_H

@@ -36,10 +36,12 @@ file(GLOB treeface_src_files
 add_library(treeface STATIC
     ${treeface_src_files}
 )
+target_use_treecore(treeface)
 
 #
 # utilities
 #
 
 add_executable(gen_iter_sphere gen_iter_sphere.cpp)
-target_link_libraries(gen_iter_sphere treeface ${TREEJUCE_LIBRARIES})
+target_link_libraries(gen_iter_sphere treeface)
+target_use_treecore(gen_iter_sphere)

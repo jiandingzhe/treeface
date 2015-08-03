@@ -8,12 +8,12 @@
 
 #include <SDL.h>
 
-#include <treejuce/Logger.h>
-#include <treejuce/StringRef.h>
+#include <treecore/Logger.h>
+#include <treecore/StringRef.h>
 
 using namespace std;
 using namespace treeface;
-using namespace treejuce;
+using namespace treecore;
 
 int window_w = 400;
 int window_h = 400;

@@ -1,14 +1,14 @@
 #include "treeface/misc/propertyvalidator.h"
 
-#include <treejuce/Array.h>
-#include <treejuce/HashMap.h>
-#include <treejuce/Identifier.h>
-#include <treejuce/String.h>
-#include <treejuce/Variant.h>
+#include <treecore/Array.h>
+#include <treecore/HashMap.h>
+#include <treecore/Identifier.h>
+#include <treecore/String.h>
+#include <treecore/Variant.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 struct PropertyValidator::Impl
 {
@@ -28,7 +28,7 @@ PropertyValidator::~PropertyValidator()
         delete m_impl;
 }
 
-void PropertyValidator::add_item(const treejuce::String& key, treejuce::uint32 type, bool required)
+void PropertyValidator::add_item(const treecore::String& key, treecore::uint32 type, bool required)
 {
     if (m_impl->key_types.contains(key))
         return;
@@ -39,7 +39,7 @@ void PropertyValidator::add_item(const treejuce::String& key, treejuce::uint32 t
         m_impl->required_keys.add(Identifier(key));
 }
 
-treejuce::Result PropertyValidator::validate(const treejuce::NamedValueSet& kv) const NOEXCEPT
+treecore::Result PropertyValidator::validate(const treecore::NamedValueSet& kv) const NOEXCEPT
 {
     // check if all required keys exist
     for (int i = 0; i < m_impl->required_keys.size(); i++)
@@ -85,4 +85,4 @@ treejuce::Result PropertyValidator::validate(const treejuce::NamedValueSet& kv) 
     return Result::ok();
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

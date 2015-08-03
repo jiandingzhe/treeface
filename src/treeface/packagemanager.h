@@ -1,24 +1,24 @@
 #ifndef TREEFACE_PACKAGE_MANAGER_H
 #define TREEFACE_PACKAGE_MANAGER_H
 
-#include <treejuce/MathsFunctions.h>
-#include <treejuce/Singleton.h>
-#include <treejuce/String.h>
-#include <treejuce/Time.h>
+#include <treecore/MathsFunctions.h>
+#include <treecore/Singleton.h>
+#include <treecore/String.h>
+#include <treecore/Time.h>
 
 #include "treeface/common.h"
 
 class TestFramework;
 
-TREEFACE_JUCE_NAMESPACE_BEGIN
+namespace treecore {
 class File;
 class InputStream;
 class Result;
 class ZipFile;
 class MemoryBlock;
-TREEFACE_JUCE_NAMESPACE_END
+} // namespace treecore
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 class PackageManager
 {
@@ -46,7 +46,7 @@ public:
      * @param pol: how to act when the name of an item in the newly added
      *        package already exists in the resource manager.
      */
-    void add_package(treejuce::ZipFile* pkg, PackageItemConflictPolicy pol);
+    void add_package(treecore::ZipFile* pkg, PackageItemConflictPolicy pol);
 
     /**
      * @brief add a zip package by specifying zip data in memory.
@@ -63,7 +63,7 @@ public:
      * @param pol: how to act when the name of an item in the newly added
      *        package already exists in the resource manager.
      */
-    void add_package(const treejuce::File& zip_file, PackageItemConflictPolicy pol);
+    void add_package(const treecore::File& zip_file, PackageItemConflictPolicy pol);
 
     /**
      * @brief get a stream which can used for reading an item
@@ -71,7 +71,7 @@ public:
      * @return a stream from which data can be accessed. User is resposible for
      *         delete the stream object when it is no longer needed.
      */
-    treejuce::InputStream* get_item_stream(const treejuce::String& name);
+    treecore::InputStream* get_item_stream(const treecore::String& name);
 
     /**
      * @brief get the raw data of an item
@@ -83,10 +83,10 @@ public:
      *              data size + 1, be careful with that.
      * @return ok if success, otherwise fail.
      */
-    treejuce::Result get_item_data(const treejuce::String& name,
-                                   treejuce::MemoryBlock& data);
+    treecore::Result get_item_data(const treecore::String& name,
+                                   treecore::MemoryBlock& data);
 
-    bool has_resource(const treejuce::String& name) const NOEXCEPT;
+    bool has_resource(const treecore::String& name) const NOEXCEPT;
 
 protected:
     PackageManager();
@@ -97,6 +97,6 @@ protected:
     Impl* m_impl = nullptr;
 }; // class ResourceManage
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_PACKAGE_MANAGER_H

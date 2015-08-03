@@ -8,22 +8,22 @@
 
 #include "treeface/misc/propertyvalidator.h"
 
-#include "treeface/nedbase.h"
+#include <treecore/AlignedMalloc.h>
 #include "treeface/imagemanager.h"
 #include "treeface/materialmanager.h"
 #include "treeface/packagemanager.h"
 
-#include <treejuce/DynamicObject.h>
-#include <treejuce/Holder.h>
-#include <treejuce/JSON.h>
-#include <treejuce/MemoryBlock.h>
-#include <treejuce/NamedValueSet.h>
-#include <treejuce/Result.h>
-#include <treejuce/Variant.h>
+#include <treecore/DynamicObject.h>
+#include <treecore/Holder.h>
+#include <treecore/JSON.h>
+#include <treecore/MemoryBlock.h>
+#include <treecore/NamedValueSet.h>
+#include <treecore/Result.h>
+#include <treecore/Variant.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 Scene::Scene()
     : m_guts(new Guts())
@@ -71,7 +71,7 @@ public:
 
 juce_ImplementSingleton(ScenePropertyValidator)
 
-treejuce::Result Scene::build(const treejuce::String& name) NOEXCEPT
+treecore::Result Scene::build(const treecore::String& name) NOEXCEPT
 {
     // get JSON source
     MemoryBlock json_src;
@@ -103,7 +103,7 @@ treejuce::Result Scene::build(const treejuce::String& name) NOEXCEPT
     return Result::ok();
 }
 
-treejuce::Result Scene::build(const treejuce::var& root) NOEXCEPT
+treecore::Result Scene::build(const treecore::var& root) NOEXCEPT
 {
     //
     // validate root node
@@ -184,7 +184,7 @@ SceneNode* Scene::get_root_node() NOEXCEPT
     return m_guts->root_node.get();
 }
 
-SceneNode* Scene::get_node(const treejuce::String& name) NOEXCEPT
+SceneNode* Scene::get_node(const treecore::String& name) NOEXCEPT
 {
     return m_guts->node_mgr->get_node(name);
 }
@@ -246,4 +246,4 @@ void Scene::set_global_light_ambient(const Vec4f& value) NOEXCEPT
     m_guts->global_light_ambient = value;
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

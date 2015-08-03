@@ -5,7 +5,7 @@
 
 #include "treeface/math/mat4.h"
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 class Scene;
 
@@ -23,15 +23,15 @@ public:
                 Scene* scene);
 
 protected:
-    virtual treejuce::Result traverse_begin() NOEXCEPT;
-    virtual treejuce::Result traverse_one_node(SceneNode* node) NOEXCEPT;
-    virtual treejuce::Result traverse_end() NOEXCEPT;
+    virtual treecore::Result traverse_begin() NOEXCEPT;
+    virtual treecore::Result traverse_one_node(SceneNode* node) NOEXCEPT;
+    virtual treecore::Result traverse_end() NOEXCEPT;
 
 private:
     struct Impl;
     Impl* m_impl = nullptr;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_SCENE_RENDERER_H

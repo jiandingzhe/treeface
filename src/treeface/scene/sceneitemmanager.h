@@ -3,7 +3,7 @@
 
 #include "treeface/common.h"
 
-#include <treejuce/Object.h>
+#include <treecore/Object.h>
 
 
 

@@ -1,13 +1,15 @@
 #include "treeface/math/vec4.h"
 
-#include <treejuce/Array.h>
+#include <treecore/Array.h>
 #include <cstdio>
 #include <cmath>
 
 using namespace treeface;
-using namespace treejuce;
+using namespace treecore;
 using std::printf;
 using std::abs;
+
+typedef Array<Vec4f, 16> VecArray;
 
 int id_seed = 0;
 
@@ -26,7 +28,7 @@ void write_one(const Vec4f& p)
            );
 }
 
-void write_result(const Array<Vec4f>& result)
+void write_result(const VecArray& result)
 {
     printf("{\n");
     printf("    \"primitive\": \"triangles\",\n");
@@ -68,7 +70,7 @@ void write_result(const Array<Vec4f>& result)
 }
 
 
-void iter(const Vec4f& p1, const Vec4f& p2, const Vec4f& p3, Array<Vec4f>& result, int n_iter)
+void iter(const Vec4f& p1, const Vec4f& p2, const Vec4f& p3, VecArray& result, int n_iter)
 {
     if (n_iter == 0)
     {
@@ -111,7 +113,7 @@ int main(int argc, char** argv)
     Vec4f p3(-1, 0, 0, 0);
     Vec4f p4(0, -1, 0, 0);
 
-    Array<Vec4f> result;
+    VecArray result;
     iter(p_top, p1, p2, result, n_iter);
     iter(p_top, p2, p3, result, n_iter);
     iter(p_top, p3, p4, result, n_iter);

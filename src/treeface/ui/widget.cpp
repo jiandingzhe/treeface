@@ -1,9 +1,9 @@
 #include "treeface/ui/widget.h"
 #include "treeface/guts/widget_guts.h"
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 Widget::Widget() NOEXCEPT
     : m_guts(new (std::nothrow) Guts())
@@ -94,7 +94,7 @@ SceneNode* Widget::get_scene_node() NOEXCEPT
     return m_guts->scene_node;
 }
 
-bool Widget::add_event_listener(const treejuce::String& event_name, EventFunc func, void* data) NOEXCEPT
+bool Widget::add_event_listener(const treecore::String& event_name, EventFunc func, void* data) NOEXCEPT
 {
     // store callback and user data
     EventArray* curr_handlers = nullptr;
@@ -131,7 +131,7 @@ bool Widget::add_event_listener(const treejuce::String& event_name, EventFunc fu
     return true;
 }
 
-bool Widget::remove_event_listener(const treejuce::String& event_name)
+bool Widget::remove_event_listener(const treecore::String& event_name)
 {
     if (!m_guts->abilities.contains(event_name))
         return false;
@@ -149,7 +149,7 @@ bool Widget::remove_event_listener(const treejuce::String& event_name)
     return true;
 }
 
-bool Widget::remove_event_listener(const treejuce::String& event_name, EventFunc func)
+bool Widget::remove_event_listener(const treecore::String& event_name, EventFunc func)
 {
     if (!m_guts->abilities.contains(event_name))
         return false;
@@ -186,12 +186,12 @@ bool Widget::remove_event_listener(const treejuce::String& event_name, EventFunc
     return true;
 }
 
-bool Widget::can_handle(const treejuce::String& event_name) const NOEXCEPT
+bool Widget::can_handle(const treecore::String& event_name) const NOEXCEPT
 {
     return m_guts->abilities.contains(event_name);
 }
 
-bool Widget::has_handler(const treejuce::String& event_name, EventFunc func) const NOEXCEPT
+bool Widget::has_handler(const treecore::String& event_name, EventFunc func) const NOEXCEPT
 {
     if (m_guts->abilities.contains(event_name))
     {
@@ -211,16 +211,16 @@ bool Widget::has_handler(const treejuce::String& event_name, EventFunc func) con
     }
 }
 
-bool Widget::any_child_can_handle(const treejuce::String& event_name) const NOEXCEPT
+bool Widget::any_child_can_handle(const treecore::String& event_name) const NOEXCEPT
 {
     m_guts->ensure_resp_child_cache();
     return m_guts->resp_children.contains(event_name);
 }
 
-bool Widget::any_parent_can_handle(const treejuce::String& event_name) const NOEXCEPT
+bool Widget::any_parent_can_handle(const treecore::String& event_name) const NOEXCEPT
 {
     m_guts->ensure_resp_parent_cache();
     return m_guts->resp_parents.contains(event_name);
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

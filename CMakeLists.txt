@@ -7,44 +7,24 @@ set(TREEFACE_VERSION_PATCH 0)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-# unify processor name
-if(CMAKE_SYSTEM_PROCESSOR STREQUAL "AMD64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-	set(TREEFACE_CPU "X86_64")
-else()
-	message(FATAL_ERROR "unsupported processor: ${CMAKE_SYSTEM_PROCESSOR}")
-endif()
-
-# unify os name
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-	set(TREEFACE_OS "WINDOWS")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	set(TREEFACE_OS "LINUX")
-else()
-	message(FATAL_ERROR "unsupported target OS: ${CMAKE_SYSTEM_NAME}")
-endif()
-
 # decide default OpenGL version by OS name
-if(TREEFACE_OS STREQUAL "WINDOWS")
-	set(TREEFACE_GL_VERSION "3.3" 	 CACHE STRING "")
-elseif(TREEFACE_OS STREQUAL "LINUX")
-	set(TREEFACE_GL_VERSION "ES 3.0" CACHE STRING "")
+if(WIN32)
+    set(TREEFACE_GL_VERSION "3.3"    CACHE STRING "")
+elseif(UNIX)
+    set(TREEFACE_GL_VERSION "ES 3.0" CACHE STRING "")
 else()
-	message(FATAL_ERROR "don't know how to decide OpenGl version for OS ${TREEFACE_OS}")
+    message(FATAL_ERROR "don't know how to decide OpenGl version for OS ${TREEFACE_OS}")
 endif()
 
-set_property(
-	CACHE TREEFACE_GL_VERSION
-	PROPERTY
-		HELPSTRING "OpenGL version, such as 3.0|3.4|4.0|ES 3.0|ES 3.1, etc.."
-)
+set_property(CACHE TREEFACE_GL_VERSION PROPERTY HELPSTRING "OpenGL version, such as 3.0|3.4|4.0|ES 3.0|ES 3.1, etc..")
 
 #
 # find prerequisite libraries
 #
-find_package(TREEJUCE REQUIRED)
-message(STATUS "treejuce: ${TREEJUCE_FOUND}")
-message(STATUS "  lib ${TREEJUCE_LIBRARIES}")
-message(STATUS "  inc ${TREEJUCE_INCLUDE_DIR}")
+find_package(TreeCore REQUIRED)
+message(STATUS "treecore: ${TREECORE_FOUND}")
+message(STATUS "  lib ${TREECORE_LIBRARIES}")
+message(STATUS "  inc ${TREECORE_INCLUDE_DIR}")
 
 find_package(OpenGL REQUIRED)
 message(STATUS "GL: ${OPENGL_FOUND}")
@@ -92,7 +72,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_BINARY_DIR}/src
     ${GLEW_INCLUDE_DIR}
-    ${TREEJUCE_INCLUDE_DIR}
     ${FreeImage_INCLUDE_DIR}
     ${SDL2_INCLUDE_DIR}
 )

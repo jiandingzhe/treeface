@@ -2,11 +2,11 @@
 
 #include "treeface/scene/scenenode.h"
 
-#include <treejuce/Result.h>
+#include <treecore/Result.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 SceneQuery::SceneQuery()
 {
@@ -16,7 +16,7 @@ SceneQuery::~SceneQuery()
 {
 }
 
-treejuce::Result SceneQuery::traverse(SceneNode* root) NOEXCEPT
+treecore::Result SceneQuery::traverse(SceneNode* root) NOEXCEPT
 {
     Result begin_re = traverse_begin();
     if (!begin_re)
@@ -33,7 +33,7 @@ treejuce::Result SceneQuery::traverse(SceneNode* root) NOEXCEPT
     return Result::ok();
 }
 
-treejuce::Result SceneQuery::recur_part(SceneNode* node) NOEXCEPT
+treecore::Result SceneQuery::recur_part(SceneNode* node) NOEXCEPT
 {
     Result one_node_re = traverse_one_node(node);
     if (!one_node_re)
@@ -50,4 +50,4 @@ treejuce::Result SceneQuery::recur_part(SceneNode* node) NOEXCEPT
     return Result::ok();
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

@@ -12,14 +12,14 @@
 #include "treeface/guts/material_guts.h"
 #include "treeface/guts/scene_guts.h"
 
-#include <treejuce/HashMap.h>
-#include <treejuce/HashMultiMap.h>
-#include <treejuce/Result.h>
-#include <treejuce/ScopedPointer.h>
+#include <treecore/HashMap.h>
+#include <treecore/HashMultiMap.h>
+#include <treecore/Result.h>
+#include <treecore/ScopedPointer.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 typedef HashMultiMap<VisualObject*, SceneNode*> TransformedItems;
 typedef HashMap<SceneGraphMaterial*, TransformedItems*> SceneCollection;
@@ -140,13 +140,13 @@ void SceneRenderer::render(const Mat4f& matrix_proj,
     Program::unuse();
 }
 
-treejuce::Result SceneRenderer::traverse_begin() NOEXCEPT
+treecore::Result SceneRenderer::traverse_begin() NOEXCEPT
 {
     m_impl->combs.clear();
     return Result::ok();
 }
 
-treejuce::Result SceneRenderer::traverse_one_node(SceneNode* node) NOEXCEPT
+treecore::Result SceneRenderer::traverse_one_node(SceneNode* node) NOEXCEPT
 {
     jassert(node != nullptr);
     for (int i = 0; i < node->get_num_items(); i++)
@@ -165,9 +165,9 @@ treejuce::Result SceneRenderer::traverse_one_node(SceneNode* node) NOEXCEPT
     return Result::ok();
 }
 
-treejuce::Result SceneRenderer::traverse_end() NOEXCEPT
+treecore::Result SceneRenderer::traverse_end() NOEXCEPT
 {
     return Result::ok();
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

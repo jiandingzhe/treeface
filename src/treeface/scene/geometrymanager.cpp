@@ -3,17 +3,17 @@
 
 #include "treeface/scene/geometry.h"
 
-#include <treejuce/HashMap.h>
-#include <treejuce/Holder.h>
-#include <treejuce/JSON.h>
-#include <treejuce/MemoryBlock.h>
-#include <treejuce/Result.h>
-#include <treejuce/ScopedPointer.h>
-#include <treejuce/String.h>
+#include <treecore/HashMap.h>
+#include <treecore/Holder.h>
+#include <treecore/JSON.h>
+#include <treecore/MemoryBlock.h>
+#include <treecore/Result.h>
+#include <treecore/ScopedPointer.h>
+#include <treecore/String.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 struct GeometryManager::Impl
 {
@@ -30,7 +30,7 @@ GeometryManager::~GeometryManager()
         delete m_impl;
 }
 
-treejuce::Result GeometryManager::get_geometry(const treejuce::String& name, Holder<Geometry>& result)
+treecore::Result GeometryManager::get_geometry(const treecore::String& name, Holder<Geometry>& result)
 {
     if (m_impl->items.contains(name))
     {
@@ -79,12 +79,12 @@ treejuce::Result GeometryManager::get_geometry(const treejuce::String& name, Hol
     return Result::ok();
 }
 
-bool GeometryManager::geometry_is_cached(const treejuce::String& name) const NOEXCEPT
+bool GeometryManager::geometry_is_cached(const treecore::String& name) const NOEXCEPT
 {
     return m_impl->items.contains(name);
 }
 
-bool GeometryManager::release_geometry_hold(const treejuce::String& name)
+bool GeometryManager::release_geometry_hold(const treecore::String& name)
 {
     if (m_impl->items.contains(name))
     {
@@ -97,4 +97,4 @@ bool GeometryManager::release_geometry_hold(const treejuce::String& name)
     }
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

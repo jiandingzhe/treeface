@@ -7,15 +7,15 @@
 
 #include "treeface/misc/propertyvalidator.h"
 
-#include <treejuce/DynamicObject.h>
-#include <treejuce/Holder.h>
-#include <treejuce/NamedValueSet.h>
-#include <treejuce/Result.h>
-#include <treejuce/Variant.h>
+#include <treecore/DynamicObject.h>
+#include <treecore/Holder.h>
+#include <treecore/NamedValueSet.h>
+#include <treecore/Result.h>
+#include <treecore/Variant.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 struct VisualObject::Impl
 {
@@ -35,7 +35,7 @@ VisualObject::~VisualObject()
 }
 
 
-treejuce::Result VisualObject::build(Geometry* geom, SceneGraphMaterial* mat) NOEXCEPT
+treecore::Result VisualObject::build(Geometry* geom, SceneGraphMaterial* mat) NOEXCEPT
 {
     if (!geom)
         return Result::fail("geometry is null while building visual object");
@@ -64,4 +64,4 @@ VertexArray* VisualObject::get_vertex_array() NOEXCEPT
     return m_impl->vertex_array;
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

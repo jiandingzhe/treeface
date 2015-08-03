@@ -3,7 +3,7 @@
 
 #include "treeface/common.h"
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 typedef enum
 {
@@ -35,6 +35,6 @@ typedef enum
     BUTTON_UP = 0,
 } ButtonUpDown;
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_ENUMS_H

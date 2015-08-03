@@ -4,24 +4,24 @@
 #include "treeface/common.h"
 #include "treeface/ui/event.h"
 
-#include <treejuce/ArrayRef.h>
-#include <treejuce/Object.h>
+#include <treecore/ArrayRef.h>
+#include <treecore/Object.h>
 
 class TestFramework;
 
-TREEFACE_JUCE_NAMESPACE_BEGIN
+namespace treecore {
 class String;
 class Result;
-TREEFACE_JUCE_NAMESPACE_END
+} // namespace treecore
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 class SceneNode;
 class Widget;
 
 typedef bool (*EventFunc)(Widget* emitter, Widget* listener, const Event& event);
 
-class Widget: public treejuce::Object
+class Widget: public treecore::Object
 {
     friend class ::TestFramework;
 
@@ -37,14 +37,14 @@ public:
     Widget* get_parent() NOEXCEPT;
     SceneNode* get_scene_node() NOEXCEPT;
 
-    bool add_event_listener(const treejuce::String& event_name, EventFunc func, void* data) NOEXCEPT;
-    bool remove_event_listener(const treejuce::String& event_name);
-    bool remove_event_listener(const treejuce::String& event_name, EventFunc func);
+    bool add_event_listener(const treecore::String& event_name, EventFunc func, void* data) NOEXCEPT;
+    bool remove_event_listener(const treecore::String& event_name);
+    bool remove_event_listener(const treecore::String& event_name, EventFunc func);
 
-    bool can_handle(const treejuce::String& event_name) const NOEXCEPT;
-    bool has_handler(const treejuce::String& event_name, EventFunc func) const NOEXCEPT;
-    bool any_child_can_handle(const treejuce::String& event_name) const NOEXCEPT;
-    bool any_parent_can_handle(const treejuce::String& event_name) const NOEXCEPT;
+    bool can_handle(const treecore::String& event_name) const NOEXCEPT;
+    bool has_handler(const treecore::String& event_name, EventFunc func) const NOEXCEPT;
+    bool any_child_can_handle(const treecore::String& event_name) const NOEXCEPT;
+    bool any_parent_can_handle(const treecore::String& event_name) const NOEXCEPT;
 
 protected:
 
@@ -53,6 +53,6 @@ protected:
     Guts* m_guts;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_WIDGET_H

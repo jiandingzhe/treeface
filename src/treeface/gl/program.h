@@ -7,23 +7,23 @@
 #include "treeface/common.h"
 #include "treeface/math.h"
 
-#include <treejuce/Array.h>
-#include <treejuce/HashMap.h>
-#include <treejuce/Object.h>
-#include <treejuce/Result.h>
-#include <treejuce/String.h>
+#include <treecore/Array.h>
+#include <treecore/HashMap.h>
+#include <treecore/Object.h>
+#include <treecore/Result.h>
+#include <treecore/String.h>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 class Material;
 struct VertexArray;
 
 struct UniformInfo: public VertexAttrib
 {
-    UniformInfo(const treejuce::String& name, treejuce::int32 n_elem, GLenum type, GLint location)
+    UniformInfo(const treecore::String& name, treecore::int32 n_elem, GLenum type, GLint location)
         : VertexAttrib(name, n_elem, type)
         , location(location)
     {
@@ -47,7 +47,7 @@ struct UniformInfo: public VertexAttrib
  * The cached set_uniform() methods seems totally useless, and it will probably
  * be deprecated in future.
  */
-class Program: public treejuce::Object
+class Program: public treecore::Object
 {
     friend class Material;
     friend struct VertexArray;
@@ -75,7 +75,7 @@ public:
      * @param src_frag: source code of fragment shader
      * @return ok if success, fail if any compilation and link error occurred.
      */
-    treejuce::Result build(const char* src_vert, const char* src_frag);
+    treecore::Result build(const char* src_vert, const char* src_frag);
 
     inline bool usable() const NOEXCEPT
     {
@@ -108,7 +108,7 @@ public:
      * @return attribute index. -1 will be returned if the name does not exist
      * in program.
      */
-    int get_attribute_index(const treejuce::String& name) const NOEXCEPT;
+    int get_attribute_index(const treecore::String& name) const NOEXCEPT;
 
     /**
      * @brief get vertex attribute info by index
@@ -122,7 +122,7 @@ public:
      * @param name: uniform name
      * @return uniform index. -1 will be returned if name not exist.
      */
-    int get_uniform_index(const treejuce::String& name) const NOEXCEPT;
+    int get_uniform_index(const treecore::String& name) const NOEXCEPT;
 
     /**
      * @brief get uniform index by location
@@ -142,12 +142,12 @@ public:
      *
      *
      */
-    GLint get_uniform_location(const treejuce::String& name) const NOEXCEPT;
+    GLint get_uniform_location(const treecore::String& name) const NOEXCEPT;
 protected:
     struct Impl;
 
-    treejuce::Result fetch_shader_error_log(GLuint shader);
-    treejuce::Result fetch_program_error_log();
+    treecore::Result fetch_shader_error_log(GLuint shader);
+    treecore::Result fetch_program_error_log();
 
     unsigned int m_program = 0;
     unsigned int m_shader_vert = 0;
@@ -159,6 +159,6 @@ protected:
 };
 
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_GL_PROGRAM_H

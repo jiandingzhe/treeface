@@ -4,22 +4,22 @@
 #include "treeface/common.h"
 #include "treeface/gl/imageref.h"
 
-#include <treejuce/Object.h>
+#include <treecore/Object.h>
 
 #include <FreeImage.h>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-TREEFACE_JUCE_NAMESPACE_BEGIN
+namespace treecore {
 class Result;
-TREEFACE_JUCE_NAMESPACE_END
+} // namespace treecore
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
-treejuce::Result convert_fi_image_info_to_gl(FIBITMAP* fi_img, GLenum& gl_format, GLenum& gl_type);
+treecore::Result convert_fi_image_info_to_gl(FIBITMAP* fi_img, GLenum& gl_format, GLenum& gl_type);
 
-class Image: public treejuce::Object
+class Image: public treecore::Object
 {
 public:
     Image();
@@ -70,6 +70,6 @@ protected:
     FIBITMAP* m_fi_img = nullptr;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_IMAGE_H

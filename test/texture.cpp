@@ -3,11 +3,11 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-#include <treejuce/Holder.h>
-#include <treejuce/Logger.h>
-#include <treejuce/MathsFunctions.h>
-#include <treejuce/Result.h>
-#include <treejuce/StringRef.h>
+#include <treecore/Holder.h>
+#include <treecore/Logger.h>
+#include <treecore/MathsFunctions.h>
+#include <treecore/Result.h>
+#include <treecore/StringRef.h>
 
 #include "treeface/gl/imageref.h"
 #include "treeface/gl/program.h"
@@ -18,7 +18,7 @@
 #include "treeface/gl/vertexindexbuffer.h"
 #include "treeface/gl/vertextemplate.h"
 
-using namespace treejuce;
+using namespace treecore;
 using namespace treeface;
 
 const float data_vertices[] = {

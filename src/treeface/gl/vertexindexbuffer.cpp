@@ -1,10 +1,10 @@
 #include "treeface/gl/vertexindexbuffer.h"
 
-#include <treejuce/StringRef.h>
+#include <treecore/StringRef.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 VertexIndexBuffer::VertexIndexBuffer()
 {
@@ -33,10 +33,10 @@ void VertexIndexBuffer::upload_data() const NOEXCEPT
                  GL_STATIC_DRAW);
 
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof(treejuce::uint16) * m_data_idx.size(),
+                 sizeof(treecore::uint16) * m_data_idx.size(),
                  m_data_idx.getRawDataConstPointer(),
                  GL_STATIC_DRAW);
 }
 
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

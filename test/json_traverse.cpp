@@ -1,10 +1,10 @@
-#include <treejuce/JSON.h>
-#include <treejuce/Array.h>
-#include <treejuce/DynamicObject.h>
-#include <treejuce/Result.h>
-#include <treejuce/Variant.h>
+#include <treecore/JSON.h>
+#include <treecore/Array.h>
+#include <treecore/DynamicObject.h>
+#include <treecore/Result.h>
+#include <treecore/Variant.h>
 
-using namespace treejuce;
+using namespace treecore;
 
 const char* src =
         "{"

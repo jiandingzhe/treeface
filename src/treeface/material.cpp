@@ -11,15 +11,15 @@
 #include "treeface/packagemanager.h"
 #include "treeface/misc/stringcast.h"
 
-#include <treejuce/Logger.h>
-#include <treejuce/Object.h>
-#include <treejuce/Result.h>
-#include <treejuce/String.h>
-#include <treejuce/StringRef.h>
+#include <treecore/Logger.h>
+#include <treecore/Object.h>
+#include <treecore/Result.h>
+#include <treecore/String.h>
+#include <treecore/StringRef.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 Material::Material(): m_impl(new Impl())
 {
@@ -41,7 +41,7 @@ int32 Material::get_num_textures() const NOEXCEPT
     return m_impl->layers.size();
 }
 
-Texture* Material::get_texture(treejuce::int32 layer_idx) NOEXCEPT
+Texture* Material::get_texture(treecore::int32 layer_idx) NOEXCEPT
 {
     if (layer_idx >= m_impl->layers.size())
         return nullptr;
@@ -49,7 +49,7 @@ Texture* Material::get_texture(treejuce::int32 layer_idx) NOEXCEPT
         return m_impl->layers[layer_idx].gl_texture.get();
 }
 
-Texture* Material::get_texture(treejuce::StringRef name) NOEXCEPT
+Texture* Material::get_texture(treecore::StringRef name) NOEXCEPT
 {
     for (int i = 0; i < m_impl->layers.size(); i++)
     {
@@ -98,4 +98,4 @@ void Material::unuse() NOEXCEPT
 }
 
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

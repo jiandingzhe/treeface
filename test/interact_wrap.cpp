@@ -16,20 +16,20 @@
 #include "treeface/gl/vertexattrib.h"
 #include "treeface/gl/vertextemplate.h"
 
-#include "treeface/nedbase.h"
+#include <treecore/AlignedMalloc.h>
 
 #include <vector>
 #include <set>
 
-#include <treejuce/ArrayRef.h>
-#include <treejuce/BasicNativeHeaders.h>
-#include <treejuce/Holder.h>
-#include <treejuce/Logger.h>
-#include <treejuce/HashMultiMap.h>
+#include <treecore/ArrayRef.h>
+#include <treecore/BasicNativeHeaders.h>
+#include <treecore/Holder.h>
+#include <treecore/Logger.h>
+#include <treecore/HashMultiMap.h>
 
 using namespace std;
 using namespace treeface;
-using namespace treejuce;
+using namespace treecore;
 
 struct BBox
 {
@@ -97,7 +97,7 @@ void show_matrix(Mat4f& mat)
 		   );
 }
 
-struct Widget: public NedBase
+struct Widget: public treecore::AlignedMalloc<16>
 {
     Widget(float x, float y, float width, float height)
     {

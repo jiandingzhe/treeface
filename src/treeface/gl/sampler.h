@@ -6,13 +6,13 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-#include <treejuce/Object.h>
-#include <treejuce/PlatformDefs.h>
-#include <treejuce/Result.h>
+#include <treecore/Object.h>
+#include <treecore/PlatformDefs.h>
+#include <treecore/Result.h>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
-struct Sampler: public treejuce::Object
+struct Sampler: public treecore::Object
 {
     Sampler();
     virtual ~Sampler();
@@ -35,6 +35,6 @@ struct Sampler: public treejuce::Object
 };
 
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_GL_SAMPLER_H

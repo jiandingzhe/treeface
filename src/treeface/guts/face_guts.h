@@ -3,21 +3,21 @@
 
 #include "treeface/face.h"
 #include "treeface/math.h"
-#include "treeface/nedbase.h"
 
 #include "treeface/ui/widget.h"
 #include "treeface/scene/scene.h"
 
-#include <treejuce/Holder.h>
+#include <treecore/AlignedMalloc.h>
+#include <treecore/Holder.h>
 
 #include <cmath>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
-struct Face::Guts: public NedBase
+struct Face::Guts: public treecore::AlignedMalloc<16>
 {
-    treejuce::uint32 width;
-    treejuce::uint32 height;
+    treecore::uint32 width;
+    treecore::uint32 height;
 
     float project_depth = 2;
     float project_dist = std::nanf("");
@@ -28,10 +28,10 @@ struct Face::Guts: public NedBase
     bool matrix_frust_dirty = true;
     bool matrix_ortho_dirty = true;
 
-    treejuce::Holder<Widget> root_widget_frust;
-    treejuce::Holder<Widget> root_widget_ortho;
-    treejuce::Holder<Scene> scene_frust;
-    treejuce::Holder<Scene> scene_ortho;
+    treecore::Holder<Widget> root_widget_frust;
+    treecore::Holder<Widget> root_widget_ortho;
+    treecore::Holder<Scene> scene_frust;
+    treecore::Holder<Scene> scene_ortho;
 
     Mat4f matrix_view;
     Mat4f matrix_frust;
@@ -81,6 +81,6 @@ struct Face::Guts: public NedBase
     }
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif

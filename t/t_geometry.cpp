@@ -10,14 +10,14 @@
 
 #include "treeface/scene/geometry.h"
 
-#include <treejuce/File.h>
-#include <treejuce/StringRef.h>
-#include <treejuce/MemoryBlock.h>
+#include <treecore/File.h>
+#include <treecore/StringRef.h>
+#include <treecore/MemoryBlock.h>
 
 #include <SDL.h>
 
 using namespace treeface;
-using namespace treejuce;
+using namespace treecore;
 
 int window_w = 400;
 int window_h = 400;

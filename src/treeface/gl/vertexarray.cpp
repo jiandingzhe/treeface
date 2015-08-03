@@ -4,14 +4,14 @@
 #include "treeface/gl/vertexindexbuffer.h"
 #include "treeface/gl/vertextemplate.h"
 
-#include <treejuce/ArrayRef.h>
-#include <treejuce/Logger.h>
-#include <treejuce/StringArray.h>
-#include <treejuce/StringRef.h>
+#include <treecore/ArrayRef.h>
+#include <treecore/Logger.h>
+#include <treecore/StringArray.h>
+#include <treecore/StringRef.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 VertexArray::VertexArray()
 {
@@ -43,11 +43,11 @@ void _build_one_(HostVertexAttrib attr,
     }
     else
     {
-        treejuce::Logger::writeToLog("ignore attibute \""+attr.name+"\" which do not exist in program");
+        treecore::Logger::writeToLog("ignore attibute \""+attr.name+"\" which do not exist in program");
     }
 }
 
-treejuce::Result VertexArray::build(const VertexIndexBuffer* buffer,
+treecore::Result VertexArray::build(const VertexIndexBuffer* buffer,
                                     const VertexTemplate& vertex_info,
                                     const Program* program)
 {
@@ -71,7 +71,7 @@ treejuce::Result VertexArray::build(const VertexIndexBuffer* buffer,
     return Result::ok();
 }
 
-treejuce::Result VertexArray::build_one(const VertexIndexBuffer* buffer,
+treecore::Result VertexArray::build_one(const VertexIndexBuffer* buffer,
                                         HostVertexAttrib attrib,
                                         GLsizei stride,
                                         const Program* program)
@@ -91,4 +91,4 @@ treejuce::Result VertexArray::build_one(const VertexIndexBuffer* buffer,
 }
 
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

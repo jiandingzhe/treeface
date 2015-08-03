@@ -4,7 +4,7 @@
 #include <math.h>
 
 using namespace treeface;
-using namespace treejuce;
+using namespace treecore;
 
 template <typename T>
 inline T DET3X3(T a, T b, T c, T d, T e, T f, T g, T h, T i)

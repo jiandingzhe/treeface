@@ -3,12 +3,12 @@
 #include "treeface/packagemanager.h"
 #include "treeface/imagemanager.h"
 
-#include <treejuce/File.h>
+#include <treecore/File.h>
 
 #include "TestFramework.h"
 
 using namespace treeface;
-using namespace treejuce;
+using namespace treecore;
 
 void TestFramework::content()
 {

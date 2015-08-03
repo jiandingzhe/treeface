@@ -5,12 +5,12 @@
 
 #include "treeface/scene/scenenode.h"
 
-#include <treejuce/HashMap.h>
-#include <treejuce/Holder.h>
-#include <treejuce/SortedSet.h>
-#include <treejuce/String.h>
+#include <treecore/HashMap.h>
+#include <treecore/Holder.h>
+#include <treecore/SortedSet.h>
+#include <treecore/String.h>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 
 struct EventClosure
@@ -19,19 +19,19 @@ struct EventClosure
     void* data;
 };
 
-typedef treejuce::Array<EventClosure> EventArray;
-typedef treejuce::HashMap<treejuce::String, treejuce::Holder<EventArray> > EventMap;
+typedef treecore::Array<EventClosure> EventArray;
+typedef treecore::HashMap<treecore::String, treecore::Holder<EventArray> > EventMap;
 
 struct Widget::Guts
 {
-    typedef treejuce::Array<Widget::Guts*> WidgetRawArray;
-    typedef treejuce::HashMap<treejuce::String, treejuce::Holder<WidgetRawArray> > RespWidgetMap;
+    typedef treecore::Array<Widget::Guts*> WidgetRawArray;
+    typedef treecore::HashMap<treecore::String, treecore::Holder<WidgetRawArray> > RespWidgetMap;
 
-    treejuce::String name;
-    treejuce::Array<treejuce::Holder<Widget> > children;
+    treecore::String name;
+    treecore::Array<treecore::Holder<Widget> > children;
     Widget* parent = nullptr;
 
-    treejuce::Holder<SceneNode> scene_node;
+    treecore::Holder<SceneNode> scene_node;
 
     bool resp_children_ok = false;
     bool resp_parents_ok = false;
@@ -55,9 +55,9 @@ struct Widget::Guts
     // then update all parent's
     void recur_build_resp_child_cache() NOEXCEPT;
 
-    void recur_remove_resp_parent(const treejuce::String& ev_name, Guts* to_be_removed) NOEXCEPT;
+    void recur_remove_resp_parent(const treecore::String& ev_name, Guts* to_be_removed) NOEXCEPT;
 
-    void recur_remove_resp_child(const treejuce::String& ev_name, Guts* to_be_removed) NOEXCEPT;
+    void recur_remove_resp_child(const treecore::String& ev_name, Guts* to_be_removed) NOEXCEPT;
 
     // If this widget's resp-parent is up to date, prepend-update it, otherwise
     // build it. Then do this on all children.
@@ -87,6 +87,6 @@ struct Widget::Guts
     }
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif

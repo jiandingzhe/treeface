@@ -5,19 +5,19 @@
 
 #include "treeface/math.h"
 
-#include <treejuce/ArrayRef.h>
-#include <treejuce/Object.h>
+#include <treecore/ArrayRef.h>
+#include <treecore/Object.h>
 
-TREEFACE_JUCE_NAMESPACE_BEGIN
+namespace treecore {
 class Result;
 class var;
-TREEFACE_JUCE_NAMESPACE_END
+} // namespace treecore
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 class SceneNodeManager;
 class SceneItem;
 
-class SceneNode: public treejuce::Object
+class SceneNode: public treecore::Object
 {
     friend class SceneNodeManager;
 
@@ -54,6 +54,6 @@ private:
     Impl* m_impl = nullptr;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_SCENE_NODE_H

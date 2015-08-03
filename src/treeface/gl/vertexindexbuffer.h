@@ -5,23 +5,23 @@
 
 #include "treeface/gl/vertexattrib.h"
 
-#include <treejuce/Array.h>
-#include <treejuce/ArrayRef.h>
-#include <treejuce/IntTypes.h>
-#include <treejuce/MemoryBlock.h>
-#include <treejuce/Object.h>
+#include <treecore/Array.h>
+#include <treecore/ArrayRef.h>
+#include <treecore/IntTypes.h>
+#include <treecore/MemoryBlock.h>
+#include <treecore/Object.h>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-TREEFACE_JUCE_NAMESPACE_BEGIN
+namespace treecore {
 class Result;
 class var;
-TREEFACE_JUCE_NAMESPACE_END
+} // namespace treecore
 
 class TestFramework;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 struct VertexArray;
 class Geometry;
 
@@ -36,7 +36,7 @@ class Geometry;
  * This class also has host-side data buffers, and automatically synchronize
  * them between host and device when they are modified.
  */
-class VertexIndexBuffer: public treejuce::Object
+class VertexIndexBuffer: public treecore::Object
 {
     friend struct VertexArray;
     friend class Geometry;
@@ -79,11 +79,11 @@ public:
      * @brief set host-side data, mark data dirty.
      */
     template<typename VTX_T>
-    inline void set_host_data(treejuce::ArrayRef<VTX_T> data_vtx, treejuce::ArrayRef<const treejuce::uint16> data_idx) NOEXCEPT
+    inline void set_host_data(treecore::ArrayRef<VTX_T> data_vtx, treecore::ArrayRef<const treecore::uint16> data_idx) NOEXCEPT
     {
         m_data_vtx.replaceWith(data_vtx.get_const_data(), sizeof(VTX_T) * data_vtx.size());
         m_data_idx.resize(data_idx.size());
-        memcpy(m_data_idx.getRawDataPointer(), data_idx.get_const_data(), data_idx.size() * sizeof(treejuce::uint16));
+        memcpy(m_data_idx.getRawDataPointer(), data_idx.get_const_data(), data_idx.size() * sizeof(treecore::uint16));
         m_data_changed = true;
     }
 
@@ -125,12 +125,12 @@ protected:
     void upload_data() const NOEXCEPT;
 
     bool m_data_changed = false;
-    treejuce::MemoryBlock m_data_vtx;
-    treejuce::Array<treejuce::uint16> m_data_idx;
+    treecore::MemoryBlock m_data_vtx;
+    treecore::Array<treecore::uint16> m_data_idx;
     GLuint m_buffer_vtx = 0;
     GLuint m_buffer_idx = 0;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_GL_VERTEX_INDEX_BUFFER_H

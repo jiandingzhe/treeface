@@ -4,7 +4,7 @@
 
 #include "treeface/guts/material_guts.h"
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 SceneGraphMaterial::SceneGraphMaterial()
 {
@@ -41,4 +41,4 @@ void SceneGraphMaterial::instant_set_light(const Vec4f& direction, const Vec4f& 
     m_program->instant_set_uniform(m_uni_light_ambient, ambient);
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

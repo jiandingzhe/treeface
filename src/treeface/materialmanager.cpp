@@ -14,13 +14,13 @@
 
 #include "treeface/guts/material_guts.h"
 
-#include <treejuce/DynamicObject.h>
-#include <treejuce/HashMap.h>
-#include <treejuce/Holder.h>
-#include <treejuce/MemoryBlock.h>
-#include <treejuce/JSON.h>
-#include <treejuce/Singleton.h>
-#include <treejuce/String.h>
+#include <treecore/DynamicObject.h>
+#include <treecore/HashMap.h>
+#include <treecore/Holder.h>
+#include <treecore/MemoryBlock.h>
+#include <treecore/JSON.h>
+#include <treecore/Singleton.h>
+#include <treecore/String.h>
 
 #if defined TREEFACE_GL_3_0
 #   error "TODO what should be it?"
@@ -32,9 +32,9 @@
 #   error "unknown OpenGL version macro"
 #endif
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 struct MaterialManager::Impl
 {
@@ -98,7 +98,7 @@ public:
 };
 juce_ImplementSingleton(MaterialPropertyValidator)
 
-treejuce::Result MaterialManager::build_material(const treejuce::var& data, treejuce::Holder<Material>& mat)
+treecore::Result MaterialManager::build_material(const treecore::var& data, treecore::Holder<Material>& mat)
 {
     if (!data.isObject())
     {
@@ -294,7 +294,7 @@ Result MaterialManager::get_material(const String& name, Holder<Material>& mat)
     return Result::ok();
 }
 
-treejuce::Result MaterialManager::get_material(const treejuce::String& name, Material** mat_pp)
+treecore::Result MaterialManager::get_material(const treecore::String& name, Material** mat_pp)
 {
     Holder<Material> mat;
     Result re = get_material(name, mat);
@@ -302,12 +302,12 @@ treejuce::Result MaterialManager::get_material(const treejuce::String& name, Mat
     return re;
 }
 
-bool MaterialManager::material_is_cached(const treejuce::String& name)
+bool MaterialManager::material_is_cached(const treecore::String& name)
 {
     return m_impl->materials.contains(name);
 }
 
-bool MaterialManager::release_material_hold(const treejuce::String& name)
+bool MaterialManager::release_material_hold(const treecore::String& name)
 {
     if (m_impl->materials.contains(name))
     {
@@ -320,4 +320,4 @@ bool MaterialManager::release_material_hold(const treejuce::String& name)
     }
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

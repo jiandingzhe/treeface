@@ -1,8 +1,8 @@
 #include "treeface/guts/widget_guts.h"
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 void Widget::Guts::fetch_this_and_parent_ability(RespWidgetMap& result) NOEXCEPT
 {
@@ -76,7 +76,7 @@ void Widget::Guts::recur_build_resp_child_cache() NOEXCEPT
         parent->m_guts->recur_build_resp_child_cache();
 }
 
-void Widget::Guts::recur_remove_resp_parent(const treejuce::String& ev_name, Guts* to_be_removed) NOEXCEPT
+void Widget::Guts::recur_remove_resp_parent(const treecore::String& ev_name, Guts* to_be_removed) NOEXCEPT
 {
     if (resp_parents_ok)
     {
@@ -92,7 +92,7 @@ void Widget::Guts::recur_remove_resp_parent(const treejuce::String& ev_name, Gut
     }
 }
 
-void Widget::Guts::recur_remove_resp_child(const treejuce::String& ev_name, Guts* to_be_removed) NOEXCEPT
+void Widget::Guts::recur_remove_resp_child(const treecore::String& ev_name, Guts* to_be_removed) NOEXCEPT
 {
     if (resp_children_ok)
     {
@@ -231,4 +231,4 @@ void Widget::Guts::prepend_update_resp_parent_cache(const RespWidgetMap& prefix_
     }
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

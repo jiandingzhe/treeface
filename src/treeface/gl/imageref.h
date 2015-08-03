@@ -6,7 +6,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 /**
  * @brief The ImageRef struct holds image metadata for OpenGL.
@@ -24,6 +24,6 @@ struct ImageRef
     void* data;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_GL_IMAGE_REF_H

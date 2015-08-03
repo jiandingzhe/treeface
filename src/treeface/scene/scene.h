@@ -4,15 +4,15 @@
 #include "treeface/common.h"
 #include "treeface/math/vec4.h"
 
-#include <treejuce/Object.h>
-#include <treejuce/Holder.h>
+#include <treecore/Object.h>
+#include <treecore/Holder.h>
 
-TREEFACE_JUCE_NAMESPACE_BEGIN
+namespace treecore {
 class Result;
 class var;
-TREEFACE_JUCE_NAMESPACE_END
+} // namespace treecore
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 class GeometryManager;
 class MaterialManager;
@@ -20,7 +20,7 @@ class SceneNode;
 class SceneNodeManager;
 class SceneRenderer;
 
-class Scene: public treejuce::Object
+class Scene: public treecore::Object
 {
     friend class SceneRenderer;
 public:
@@ -32,8 +32,8 @@ public:
 
     virtual ~Scene();
 
-    treejuce::Result build(const treejuce::String& name) NOEXCEPT;
-    treejuce::Result build(const treejuce::var& root) NOEXCEPT;
+    treecore::Result build(const treecore::String& name) NOEXCEPT;
+    treecore::Result build(const treecore::var& root) NOEXCEPT;
 
     /**
      * @brief get the root of the scene hierarchy
@@ -51,7 +51,7 @@ public:
      * @return If has node object with name, return node object; otherwise
      *         return nullptr.
      */
-    SceneNode* get_node(const treejuce::String& name) NOEXCEPT;
+    SceneNode* get_node(const treecore::String& name) NOEXCEPT;
 
     GeometryManager* get_geometry_manager() NOEXCEPT;
     MaterialManager* get_material_manager() NOEXCEPT;
@@ -73,6 +73,6 @@ private:
     Guts* m_guts = nullptr;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_SCENE_H

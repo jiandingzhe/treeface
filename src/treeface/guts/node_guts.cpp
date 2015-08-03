@@ -1,6 +1,6 @@
 #include "treeface/guts/node_guts.h"
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 void SceneNode::Impl::update_trans_descendent()
 {
@@ -29,4 +29,4 @@ void SceneNode::Impl::update_global_descendent()
     global_dirty = false;
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

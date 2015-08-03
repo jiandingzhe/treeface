@@ -6,25 +6,25 @@
 
 #include "treeface/material.h"
 
-#include <treejuce/Array.h>
-#include <treejuce/Holder.h>
-#include <treejuce/String.h>
+#include <treecore/Array.h>
+#include <treecore/Holder.h>
+#include <treecore/String.h>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 struct TextureLayer
 {
-    treejuce::String name;
-    treejuce::Holder<Texture> gl_texture;
-    treejuce::Holder<Sampler> gl_sampler;
+    treecore::String name;
+    treecore::Holder<Texture> gl_texture;
+    treecore::Holder<Sampler> gl_sampler;
     GLint program_uniform_loc;
 };
 
 struct Material::Impl
 {
-    treejuce::Array<TextureLayer> layers;
+    treecore::Array<TextureLayer> layers;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_MATERIAL_PRIVATE_H

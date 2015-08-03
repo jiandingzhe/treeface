@@ -5,15 +5,15 @@
 
 #include "treeface/gl/vertexattrib.h"
 
-#include <treejuce/ArrayRef.h>
-#include <treejuce/Object.h>
-#include <treejuce/Result.h>
-#include <treejuce/String.h>
+#include <treecore/ArrayRef.h>
+#include <treecore/Object.h>
+#include <treecore/Result.h>
+#include <treecore/String.h>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 class VertexIndexBuffer;
 class Program;
@@ -25,7 +25,7 @@ class VertexTemplate;
  *
  * It is a bridge between vertex buffer data and program vertex attributes.
  */
-struct VertexArray: public treejuce::Object
+struct VertexArray: public treecore::Object
 {
     /**
      * @brief create an empty VertexArray object. OpenGL VAO ID will be
@@ -55,7 +55,7 @@ struct VertexArray: public treejuce::Object
      *
      * @return ok if success, fail if any error occurred.
      */
-    treejuce::Result build(const VertexIndexBuffer* buffer,
+    treecore::Result build(const VertexIndexBuffer* buffer,
                            const VertexTemplate& vertex_info,
                            const Program* program);
 
@@ -72,7 +72,7 @@ struct VertexArray: public treejuce::Object
      *
      * @return ok if success, fail if any error occurred.
      */
-    treejuce::Result build_one(const VertexIndexBuffer* buffer,
+    treecore::Result build_one(const VertexIndexBuffer* buffer,
                                HostVertexAttrib attrib,
                                GLsizei stride,
                                const Program* program);
@@ -99,6 +99,6 @@ struct VertexArray: public treejuce::Object
     GLuint m_array = 0;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_GL_VERTEX_ARRAY_H

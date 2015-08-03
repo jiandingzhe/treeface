@@ -23,14 +23,14 @@
 #include "treeface/math/mat4.h"
 #include "treeface/math/quat.h"
 
-#include <treejuce/File.h>
-#include <treejuce/Holder.h>
-#include <treejuce/JSON.h>
-#include <treejuce/StringRef.h>
-#include <treejuce/Variant.h>
+#include <treecore/File.h>
+#include <treecore/Holder.h>
+#include <treecore/JSON.h>
+#include <treecore/StringRef.h>
+#include <treecore/Variant.h>
 
 using namespace treeface;
-using namespace treejuce;
+using namespace treecore;
 
 int window_w = 400;
 int window_h = 400;

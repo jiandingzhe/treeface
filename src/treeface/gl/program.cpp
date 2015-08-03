@@ -4,25 +4,25 @@
 
 #include "treeface/misc/stringcast.h"
 
-#include <treejuce/Logger.h>
-#include <treejuce/StringRef.h>
+#include <treecore/Logger.h>
+#include <treecore/StringRef.h>
 
 #include <cstdio>
 
 using namespace std;
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 
 struct Program::Impl
 {
-    treejuce::Array<VertexAttrib>    attr_info;
-    treejuce::HashMap<String, int32> attr_idx_by_name;
+    treecore::Array<VertexAttrib>    attr_info;
+    treecore::HashMap<String, int32> attr_idx_by_name;
 
-    treejuce::Array<UniformInfo>     uni_store;
-    treejuce::HashMap<String, int32> uni_idx_by_name; // name => index
-    treejuce::HashMap<GLint,  int32> uni_idx_by_loc;  // location => index
+    treecore::Array<UniformInfo>     uni_store;
+    treecore::HashMap<String, int32> uni_idx_by_name; // name => index
+    treecore::HashMap<GLint,  int32> uni_idx_by_loc;  // location => index
 };
 
 Program::Program(): m_impl(new Impl())
@@ -55,7 +55,7 @@ Program::~Program()
         delete m_impl;
 }
 
-treejuce::Result Program::build(const char* src_vert_raw, const char* src_frag_raw)
+treecore::Result Program::build(const char* src_vert_raw, const char* src_frag_raw)
 {
     DBG("build program");
     if (compiled_and_linked)
@@ -66,7 +66,7 @@ treejuce::Result Program::build(const char* src_vert_raw, const char* src_frag_r
         glShaderSource(m_shader_vert, 1, &src_vert_raw, nullptr);
         glCompileShader(m_shader_vert);
 
-        treejuce::Result re = fetch_shader_error_log(m_shader_vert);
+        treecore::Result re = fetch_shader_error_log(m_shader_vert);
         if (!re)
             return Result::fail("failed to compile vertex shader:\n" +
                                 re.getErrorMessage() + "\n" +
@@ -81,7 +81,7 @@ treejuce::Result Program::build(const char* src_vert_raw, const char* src_frag_r
         glShaderSource(m_shader_frag, 1, &src_frag_raw, nullptr);
         glCompileShader(m_shader_frag);
 
-        treejuce::Result re = fetch_shader_error_log(m_shader_frag);
+        treecore::Result re = fetch_shader_error_log(m_shader_frag);
         if (!re)
             return Result::fail("failed to compile fragment shader:\n" +
                                 re.getErrorMessage() + "\n" +
@@ -96,7 +96,7 @@ treejuce::Result Program::build(const char* src_vert_raw, const char* src_frag_r
     glLinkProgram(m_program);
 
     {
-        treejuce::Result re = fetch_program_error_log();
+        treecore::Result re = fetch_program_error_log();
         if (!re)
             return Result::fail("failed to link shader:\n" +
                                 re.getErrorMessage() + "\n");
@@ -126,8 +126,8 @@ treejuce::Result Program::build(const char* src_vert_raw, const char* src_frag_r
         if (attr_name_len >= 255)
             die("attribute %d name is too long", i_attr);
 
-        m_impl->attr_info.add({treejuce::String(attr_name), attr_size, attr_type});
-        m_impl->attr_idx_by_name.set(treejuce::String(attr_name), i_attr);
+        m_impl->attr_info.add({treecore::String(attr_name), attr_size, attr_type});
+        m_impl->attr_idx_by_name.set(treecore::String(attr_name), i_attr);
     }
 
     // extract program uniforms
@@ -168,7 +168,7 @@ treejuce::Result Program::build(const char* src_vert_raw, const char* src_frag_r
 
     compiled_and_linked = true;
 
-    return treejuce::Result::ok();
+    return treecore::Result::ok();
 }
 
 void Program::use() NOEXCEPT
@@ -176,7 +176,7 @@ void Program::use() NOEXCEPT
     glUseProgram(m_program);
 }
 
-treejuce::Result Program::fetch_shader_error_log(GLuint shader)
+treecore::Result Program::fetch_shader_error_log(GLuint shader)
 {
     GLint result = -1;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
@@ -195,7 +195,7 @@ treejuce::Result Program::fetch_shader_error_log(GLuint shader)
             GLsizei written = 0;
             glGetShaderInfoLog(shader, log_len, &written, log);
 
-            treejuce::Result re = treejuce::Result::fail(log);
+            treecore::Result re = treecore::Result::fail(log);
             free(log);
             return re;
         }
@@ -205,10 +205,10 @@ treejuce::Result Program::fetch_shader_error_log(GLuint shader)
         }
     }
 
-    return treejuce::Result::ok();
+    return treecore::Result::ok();
 }
 
-treejuce::Result Program::fetch_program_error_log()
+treecore::Result Program::fetch_program_error_log()
 {
     GLint result = -1;
     glGetProgramiv(m_program, GL_LINK_STATUS, &result);
@@ -227,7 +227,7 @@ treejuce::Result Program::fetch_program_error_log()
             GLsizei written = 0;
             glGetProgramInfoLog(m_program, log_len, &written, log);
 
-            treejuce::Result re = treejuce::Result::fail(log);
+            treecore::Result re = treecore::Result::fail(log);
             free(log);
             return re;
         }
@@ -237,7 +237,7 @@ treejuce::Result Program::fetch_program_error_log()
         }
     }
 
-    return treejuce::Result::ok();
+    return treecore::Result::ok();
 }
 
 void Program::instant_set_uniform(GLint uni_loc, GLint value) const NOEXCEPT
@@ -334,7 +334,7 @@ void Program::instant_set_uniform(GLint uni_loc, const Mat4f& value) const NOEXC
     glUniformMatrix4fv(uni_loc, 1, false, (const float*) &value);
 }
 
-int Program::get_attribute_index(const treejuce::String& name) const NOEXCEPT
+int Program::get_attribute_index(const treecore::String& name) const NOEXCEPT
 {
     if (m_impl->attr_idx_by_name.contains(name))
         return m_impl->attr_idx_by_name[name];
@@ -347,7 +347,7 @@ const VertexAttrib& Program::get_attribute_info(int i_attr) const NOEXCEPT
     return m_impl->attr_info.getReference(i_attr);
 }
 
-int Program::get_uniform_index(const treejuce::String& name) const NOEXCEPT
+int Program::get_uniform_index(const treecore::String& name) const NOEXCEPT
 {
     if (m_impl->uni_idx_by_name.contains(name))
         return m_impl->uni_idx_by_name[name];
@@ -368,7 +368,7 @@ const UniformInfo& Program::get_uniform_info(int i_uni) const NOEXCEPT
     return m_impl->uni_store.getReference(i_uni);
 }
 
-GLint Program::get_uniform_location(const treejuce::String& name) const NOEXCEPT
+GLint Program::get_uniform_location(const treecore::String& name) const NOEXCEPT
 {
     if (m_impl->uni_idx_by_name.contains(name))
     {
@@ -381,4 +381,4 @@ GLint Program::get_uniform_location(const treejuce::String& name) const NOEXCEPT
     }
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

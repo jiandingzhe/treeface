@@ -3,14 +3,14 @@
 
 #include "treeface/scene/sceneitem.h"
 
-#include <treejuce/Object.h>
+#include <treecore/Object.h>
 
-TREEFACE_JUCE_NAMESPACE_BEGIN
+namespace treecore {
 class Result;
 class var;
-TREEFACE_JUCE_NAMESPACE_END
+} // namespace treecore
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 class SceneGraphMaterial;
 class Geometry;
@@ -25,7 +25,7 @@ public:
     JUCE_DECLARE_NON_COPYABLE(VisualObject);
     JUCE_DECLARE_NON_MOVABLE(VisualObject);
 
-    treejuce::Result build(Geometry* geom, SceneGraphMaterial* mat) NOEXCEPT;
+    treecore::Result build(Geometry* geom, SceneGraphMaterial* mat) NOEXCEPT;
 
     SceneGraphMaterial* get_material() NOEXCEPT;
     Geometry* get_geometry() NOEXCEPT;
@@ -36,6 +36,6 @@ protected:
     Impl* m_impl = nullptr;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_VISUAL_OBJECT_H

@@ -3,25 +3,25 @@
 
 #include "treeface/common.h"
 
-#include <treejuce/Array.h>
-#include <treejuce/IntTypes.h>
-#include <treejuce/Object.h>
+#include <treecore/Array.h>
+#include <treecore/IntTypes.h>
+#include <treecore/Object.h>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-TREEFACE_JUCE_NAMESPACE_BEGIN
+namespace treecore {
 class MemoryBlock;
 class Result;
 class var;
-TREEFACE_JUCE_NAMESPACE_END
+} // namespace treecore
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 class VertexIndexBuffer;
 class VertexTemplate;
 
-class Geometry: public treejuce::Object
+class Geometry: public treecore::Object
 {
 public:
     /**
@@ -37,7 +37,7 @@ public:
      * @brief set data.
      */
     // NOTE: this is not thread-safe
-    treejuce::Result build(const treejuce::var& geom_root_node) NOEXCEPT;
+    treecore::Result build(const treecore::var& geom_root_node) NOEXCEPT;
 
     /**
      * @brief check if data is modified and is out of sync with server side
@@ -62,6 +62,6 @@ protected:
     Impl* m_impl = nullptr;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_GEOMETRY_H

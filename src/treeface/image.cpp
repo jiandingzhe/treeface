@@ -3,13 +3,13 @@
 
 #include "treeface/gl/imageref.h"
 
-#include <treejuce/IntTypes.h>
-#include <treejuce/Result.h>
-#include <treejuce/StringRef.h>
+#include <treecore/IntTypes.h>
+#include <treecore/Result.h>
+#include <treecore/StringRef.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 Result convert_fi_image_info_to_gl(FIBITMAP* fi_img, GLenum& gl_format, GLenum& gl_type)
 {
@@ -256,4 +256,4 @@ ImageRef Image::get_image_ref() const NOEXCEPT
         return {0, 0, 0, 0, nullptr};
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

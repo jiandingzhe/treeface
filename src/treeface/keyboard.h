@@ -3,7 +3,7 @@
 
 #include "treeface/common.h"
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 typedef enum
 {
@@ -146,6 +146,6 @@ typedef enum
     KEY_BUTTON_NUMPAD_PERIOD = 0x80,
 } KeyButton;
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_KEYBOARD_H

@@ -5,14 +5,14 @@
 
 #include <FreeImage.h>
 
-#include <treejuce/HashMap.h>
-#include <treejuce/Holder.h>
-#include <treejuce/MemoryBlock.h>
-#include <treejuce/ScopedPointer.h>
+#include <treecore/HashMap.h>
+#include <treecore/Holder.h>
+#include <treecore/MemoryBlock.h>
+#include <treecore/ScopedPointer.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 juce_ImplementSingleton(ImageManager);
 
@@ -90,4 +90,4 @@ bool ImageManager::release_image_hold(const String& name)
     }
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

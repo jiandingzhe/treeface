@@ -1,10 +1,10 @@
 #include "TestFramework.h"
 
-#include <treejuce/Logger.h>
-#include <treejuce/Result.h>
-#include <treejuce/String.h>
+#include <treecore/Logger.h>
+#include <treecore/Result.h>
+#include <treecore/String.h>
 
-using namespace treejuce;
+using namespace treecore;
 
 TestFramework::TestFramework(): n_planned(0), n_got(0), n_fail(0)
 {
@@ -52,7 +52,7 @@ void TestFramework::ok(bool value, const char *desc)
     }
 }
 
-void TestFramework::ok(const treejuce::Result& result, const char* desc)
+void TestFramework::ok(const treecore::Result& result, const char* desc)
 {
     n_got++;
     if (result)

@@ -4,26 +4,26 @@
 #include "treeface/common.h"
 #include "treeface/gl/imageref.h"
 
-#include <treejuce/ArrayRef.h>
-#include <treejuce/MathsFunctions.h>
-#include <treejuce/Object.h>
-#include <treejuce/Result.h>
+#include <treecore/ArrayRef.h>
+#include <treecore/MathsFunctions.h>
+#include <treecore/Object.h>
+#include <treecore/Result.h>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-TREEFACE_JUCE_NAMESPACE_BEGIN
+namespace treecore {
 class var;
-TREEFACE_JUCE_NAMESPACE_END
+} // namespace treecore
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 extern const GLenum TEXTURE_UNITS[32];
 
 /**
  * @brief wrapper for OpenGL 2D texture
  */
-class Texture: public treejuce::Object
+class Texture: public treecore::Object
 {
 public:
     Texture();
@@ -44,7 +44,7 @@ public:
      *
      * @return ok if success, otherwise false.
      */
-    treejuce::Result set_image_data(ImageRef image, GLint internal_fmt, bool gen_mipmap) NOEXCEPT;
+    treecore::Result set_image_data(ImageRef image, GLint internal_fmt, bool gen_mipmap) NOEXCEPT;
 
     /**
      * @brief Specify image data for all mipmap levels explicitly.
@@ -57,7 +57,7 @@ public:
      *
      * @return ok if success, otherwise false.
      */
-    treejuce::Result set_image_data(treejuce::ArrayRef<ImageRef> images, GLint internal_fmt) NOEXCEPT;
+    treecore::Result set_image_data(treecore::ArrayRef<ImageRef> images, GLint internal_fmt) NOEXCEPT;
 
     /**
      * @brief build texture from JSON data
@@ -66,7 +66,7 @@ public:
      *
      * @return ok if success, otherwise false.
      */
-    treejuce::Result build(const treejuce::var& texture_root_node);
+    treecore::Result build(const treecore::var& texture_root_node);
 
     inline float get_min_lod() const NOEXCEPT
     { return m_min_lod; }
@@ -186,6 +186,6 @@ protected:
     GLenum m_mag_filter = GL_NEAREST;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_GL_TEXTURE_H

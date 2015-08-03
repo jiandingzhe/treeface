@@ -15,19 +15,19 @@
 #include "treeface/materialmanager.h"
 #include "treeface/packagemanager.h"
 
-#include <treejuce/CriticalSection.h>
-#include <treejuce/DynamicObject.h>
-#include <treejuce/HashMap.h>
-#include <treejuce/JSON.h>
-#include <treejuce/MemoryBlock.h>
-#include <treejuce/NamedValueSet.h>
-#include <treejuce/Result.h>
-#include <treejuce/Singleton.h>
-#include <treejuce/Variant.h>
+#include <treecore/CriticalSection.h>
+#include <treecore/DynamicObject.h>
+#include <treecore/HashMap.h>
+#include <treecore/JSON.h>
+#include <treecore/MemoryBlock.h>
+#include <treecore/NamedValueSet.h>
+#include <treecore/Result.h>
+#include <treecore/Singleton.h>
+#include <treecore/Variant.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 struct SceneNodeManager::Impl
 {
@@ -50,14 +50,14 @@ SceneNodeManager::~SceneNodeManager()
         delete m_impl;
 }
 
-treejuce::Result SceneNodeManager::add_nodes(const treejuce::var& data, SceneNode** root_pp)
+treecore::Result SceneNodeManager::add_nodes(const treecore::var& data, SceneNode** root_pp)
 {
     SceneNode* root_node = new SceneNode();
     *root_pp = root_node;
     return build_node(data, root_node);
 }
 
-treejuce::Result SceneNodeManager::add_nodes(const treejuce::var& data, treejuce::Holder<SceneNode>& root_node)
+treecore::Result SceneNodeManager::add_nodes(const treecore::var& data, treecore::Holder<SceneNode>& root_node)
 {
     SceneNode* _root_node = nullptr;
     Result re = add_nodes(data, &_root_node);
@@ -65,7 +65,7 @@ treejuce::Result SceneNodeManager::add_nodes(const treejuce::var& data, treejuce
     return re;
 }
 
-treejuce::Result SceneNodeManager::add_nodes(const treejuce::String& data_name, SceneNode** root_pp)
+treecore::Result SceneNodeManager::add_nodes(const treecore::String& data_name, SceneNode** root_pp)
 {
     // fetch JSON source by name
     MemoryBlock json_src;
@@ -88,7 +88,7 @@ treejuce::Result SceneNodeManager::add_nodes(const treejuce::String& data_name, 
     return add_nodes(data, root_pp);
 }
 
-treejuce::Result SceneNodeManager::add_nodes(const treejuce::String& data_name, treejuce::Holder<SceneNode>& root_node)
+treecore::Result SceneNodeManager::add_nodes(const treecore::String& data_name, treecore::Holder<SceneNode>& root_node)
 {
     SceneNode* _root_node = nullptr;
     Result re = add_nodes(data_name, &_root_node);
@@ -96,7 +96,7 @@ treejuce::Result SceneNodeManager::add_nodes(const treejuce::String& data_name, 
     return re;
 }
 
-SceneNode* SceneNodeManager::get_node(const treejuce::String& name)
+SceneNode* SceneNodeManager::get_node(const treecore::String& name)
 {
     if (m_impl->nodes.contains(name))
     {
@@ -125,7 +125,7 @@ public:
 juce_ImplementSingleton(VisualItemPropertyValidator)
 
 
-treejuce::Result SceneNodeManager::build_visual_item(const var &data, VisualObject *visual_item)
+treecore::Result SceneNodeManager::build_visual_item(const var &data, VisualObject *visual_item)
 {
     // validate node
     if (!data.isObject())
@@ -178,7 +178,7 @@ public:
 juce_ImplementSingleton(SceneNodePropertyValidator)
 
 
-treejuce::Result SceneNodeManager::build_node(const treejuce::var& data, SceneNode* node)
+treecore::Result SceneNodeManager::build_node(const treecore::var& data, SceneNode* node)
 {
     if (!data.isObject())
         return Result::fail("root node for Node is not KV");
@@ -254,4 +254,4 @@ treejuce::Result SceneNodeManager::build_node(const treejuce::var& data, SceneNo
     return Result::ok();
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

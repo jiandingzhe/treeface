@@ -3,24 +3,24 @@
 
 #include "treeface/common.h"
 
-#include <treejuce/Holder.h>
-#include <treejuce/IntTypes.h>
-#include <treejuce/Object.h>
+#include <treecore/Holder.h>
+#include <treecore/IntTypes.h>
+#include <treecore/Object.h>
 
-TREEFACE_JUCE_NAMESPACE_BEGIN
+namespace treecore {
 class Result;
 class StringRef;
 class var;
-TREEFACE_JUCE_NAMESPACE_END
+} // namespace treecore
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 class MaterialManager;
 class Program;
 class SceneRenderer;
 class Texture;
 
-class Material: public treejuce::Object
+class Material: public treecore::Object
 {
     friend class MaterialManager;
     friend class SceneRenderer;
@@ -31,9 +31,9 @@ public:
     virtual ~Material();
 
     Program* get_program() NOEXCEPT;
-    treejuce::int32 get_num_textures() const NOEXCEPT;
-    Texture* get_texture(treejuce::int32 layer_idx) NOEXCEPT;
-    Texture* get_texture(treejuce::StringRef name) NOEXCEPT;
+    treecore::int32 get_num_textures() const NOEXCEPT;
+    Texture* get_texture(treecore::int32 layer_idx) NOEXCEPT;
+    Texture* get_texture(treecore::StringRef name) NOEXCEPT;
 
     void use() NOEXCEPT;
     void unuse() NOEXCEPT;
@@ -42,7 +42,7 @@ public:
     JUCE_DECLARE_NON_MOVABLE(Material);
 
 protected:
-    treejuce::Holder<Program> m_program;
+    treecore::Holder<Program> m_program;
 
 private:
     struct Impl;
@@ -50,6 +50,6 @@ private:
     Impl* m_impl = nullptr;
 }; // class Material
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_MATERIAL_H

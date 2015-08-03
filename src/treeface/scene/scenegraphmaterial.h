@@ -7,7 +7,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 class SceneGraphMaterial: public Material
 {
@@ -55,6 +55,6 @@ protected:
     GLint m_uni_light_ambient = -1;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_SCENE_GRAPH_MATERIAL_H

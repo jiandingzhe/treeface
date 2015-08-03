@@ -3,14 +3,14 @@
 
 #include "treeface/common.h"
 
-#include <treejuce/IntTypes.h>
-#include <treejuce/NamedValueSet.h>
-#include <treejuce/Object.h>
-#include <treejuce/Result.h>
+#include <treecore/IntTypes.h>
+#include <treecore/NamedValueSet.h>
+#include <treecore/Object.h>
+#include <treecore/Result.h>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
-class PropertyValidator: public treejuce::Object
+class PropertyValidator: public treecore::Object
 {
 public:
     typedef enum
@@ -23,15 +23,15 @@ public:
     PropertyValidator();
     virtual ~PropertyValidator();
 
-    void add_item(const treejuce::String& key, treejuce::uint32 type, bool required);
+    void add_item(const treecore::String& key, treecore::uint32 type, bool required);
 
-    treejuce::Result validate(const treejuce::NamedValueSet& kv) const NOEXCEPT;
+    treecore::Result validate(const treecore::NamedValueSet& kv) const NOEXCEPT;
 
 private:
     struct Impl;
     Impl* m_impl;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_PROPERTY_VALIDATOR

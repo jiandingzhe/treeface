@@ -5,23 +5,23 @@
 
 #include "treeface/gl/type.h"
 
-#include <treejuce/String.h>
+#include <treecore/String.h>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 struct VertexAttrib
 {
-    VertexAttrib(const treejuce::String& name, treejuce::int32 n_elem, GLenum type)
+    VertexAttrib(const treecore::String& name, treecore::int32 n_elem, GLenum type)
         : name(name)
         , n_elem(n_elem)
         , type(type)
     {
     }
 
-    inline size_t get_elem_offset(treejuce::int32 index) const NOEXCEPT
+    inline size_t get_elem_offset(treecore::int32 index) const NOEXCEPT
     {
         jassert(index < n_elem);
         return index * size_of_gl_type(type);
@@ -32,8 +32,8 @@ struct VertexAttrib
         return n_elem * size_of_gl_type(type);
     }
 
-    treejuce::String name;
-    treejuce::int32 n_elem;
+    treecore::String name;
+    treecore::int32 n_elem;
     GLenum type;
 };
 
@@ -46,7 +46,7 @@ struct HostVertexAttrib: VertexAttrib
     {
     }
 
-    HostVertexAttrib(const treejuce::String& name, GLsizei n_elem, GLenum type, GLsizei offset, bool normalize)
+    HostVertexAttrib(const treecore::String& name, GLsizei n_elem, GLenum type, GLsizei offset, bool normalize)
         : VertexAttrib(name, n_elem, type)
         , offset(offset)
         , normalize(normalize)
@@ -57,6 +57,6 @@ struct HostVertexAttrib: VertexAttrib
     bool normalize;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_VERTEX_ATTRIB_H

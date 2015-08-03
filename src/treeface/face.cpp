@@ -4,9 +4,9 @@
 #include "treeface/scene/geometrymanager.h"
 #include "treeface/materialmanager.h"
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 Face::Face(uint32 width, uint32 height) NOEXCEPT
     : m_guts(new (std::nothrow) Guts())
@@ -24,12 +24,12 @@ Face::Face(uint32 width, uint32 height) NOEXCEPT
     m_guts->root_widget_ortho = new Widget(m_guts->scene_ortho->get_root_node());
 }
 
-treejuce::uint32 Face::get_width() const NOEXCEPT
+treecore::uint32 Face::get_width() const NOEXCEPT
 {
     return m_guts->width;
 }
 
-void Face::set_width(treejuce::uint32 value) NOEXCEPT
+void Face::set_width(treecore::uint32 value) NOEXCEPT
 {
     m_guts->width = value;
     m_guts->matrix_view_dirty = true;
@@ -38,12 +38,12 @@ void Face::set_width(treejuce::uint32 value) NOEXCEPT
     m_guts->project_dist_dirty = true;
 }
 
-treejuce::uint32 Face::get_height() const NOEXCEPT
+treecore::uint32 Face::get_height() const NOEXCEPT
 {
     return m_guts->height;
 }
 
-void Face::set_height(treejuce::uint32 value) NOEXCEPT
+void Face::set_height(treecore::uint32 value) NOEXCEPT
 {
     m_guts->height = value;
     m_guts->matrix_view_dirty = true;
@@ -104,4 +104,4 @@ Scene* Face::get_scene_ortho() NOEXCEPT
     return m_guts->scene_ortho;
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

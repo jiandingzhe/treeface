@@ -1,8 +1,8 @@
 #include "TestFramework.h"
-#include "treejuce/Object.h"
-#include "treejuce/Holder.h"
+#include "treecore/Object.h"
+#include "treecore/Holder.h"
 
-using namespace treejuce;
+using namespace treecore;
 
 class TestType: public Object
 {

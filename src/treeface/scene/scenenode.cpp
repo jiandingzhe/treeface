@@ -3,9 +3,9 @@
 
 #include "treeface/guts/node_guts.h"
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 SceneNode::SceneNode(): m_impl(new Impl())
 {
@@ -147,4 +147,4 @@ SceneNode* SceneNode::get_parent() NOEXCEPT
     return m_impl->parent;
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

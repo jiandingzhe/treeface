@@ -3,12 +3,12 @@
 #include "treeface/ui/widget.h"
 #include "treeface/guts/widget_guts.h"
 
-#include <treejuce/Holder.h>
+#include <treecore/Holder.h>
 
 #include <cstdio>
 
 using namespace treeface;
-using namespace treejuce;
+using namespace treecore;
 using namespace std;
 
 bool callback1foo_flag = false;

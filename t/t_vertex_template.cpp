@@ -3,12 +3,12 @@
 #include "treeface/gl/vertexattrib.h"
 #include "treeface/gl/vertextemplate.h"
 
-#include <treejuce/Array.h>
-#include <treejuce/ArrayRef.h>
-#include <treejuce/Variant.h>
+#include <treecore/Array.h>
+#include <treecore/ArrayRef.h>
+#include <treecore/Variant.h>
 
 using namespace treeface;
-using namespace treejuce;
+using namespace treecore;
 
 void TestFramework::content()
 {

@@ -9,10 +9,10 @@
 #include <set>
 #include <map>
 
-#include "treejuce/Config.h"
-#include "treejuce/BasicNativeHeaders.h"
+#include "treecore/Config.h"
+#include "treecore/BasicNativeHeaders.h"
 
-#if defined TREEJUCE_COMPILER_MSVC && defined TREEFACE_OS_WINDOWS
+#if defined TREECORE_COMPILER_MSVC && defined TREECORE_OS_WINDOWS
 #  include <wincon.h>
 #endif
 

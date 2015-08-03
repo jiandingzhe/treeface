@@ -3,11 +3,11 @@
 
 #include "treeface/common.h"
 
-#include <treejuce/Result.h>
-#include <treejuce/Singleton.h>
-#include <treejuce/String.h>
+#include <treecore/Result.h>
+#include <treecore/Singleton.h>
+#include <treecore/String.h>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 class Image;
 
@@ -18,9 +18,9 @@ public:
     JUCE_DECLARE_NON_MOVABLE(ImageManager);
     juce_DeclareSingleton(ImageManager, false);
 
-    treejuce::Result get_image(const treejuce::String& name, Image** img);
-    bool image_is_cached(const treejuce::String& name) const;
-    bool release_image_hold(const treejuce::String& name);
+    treecore::Result get_image(const treecore::String& name, Image** img);
+    bool image_is_cached(const treecore::String& name) const;
+    bool release_image_hold(const treecore::String& name);
 
 protected:
     struct Impl;
@@ -31,6 +31,6 @@ protected:
     Impl* m_impl = nullptr;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_IMAGE_MANAGER_H

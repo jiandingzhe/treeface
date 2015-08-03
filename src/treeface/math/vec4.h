@@ -2,13 +2,12 @@
 #define TREEFACE_VEC4_H
 
 #include <cmath>
+#include "treeface/common.h"
+#include <treecore/AlignedMalloc.h>
+#include <treecore/PlatformDefs.h>
+#include <treecore/SIMD.h>
 
-#include "treeface/nedbase.h"
-
-#include <treejuce/PlatformDefs.h>
-#include <treejuce/SIMD.h>
-
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 
 /**
@@ -18,22 +17,22 @@ TREEFACE_NAMESPACE_BEGIN
  * transmitted to GL server side buffers or program attributes.
  */
 template<typename T, int SZ = sizeof(T)*4>
-struct Vec4: public NedBase
+struct Vec4: public treecore::AlignedMalloc<sizeof(T)*4>
 {
-    typedef treejuce::SIMDType<SZ> DataType;
+    typedef treecore::SIMDType<SZ> DataType;
 
     /**
      * @brief default constructor
      *
      * values are initialized as zero point
      */
-    Vec4(): data(treejuce::simd_set<T, SZ>(0, 0, 0, 1)) {}
+    Vec4(): data(treecore::simd_set<T, SZ>(0, 0, 0, 1)) {}
 
     /**
      * @brief constructor with values specified
      * @param value: a SIMDType containing x, y, z and w
      */
-    Vec4(const treejuce::SIMDType<SZ>& value): data(value) {}
+    Vec4(const treecore::SIMDType<SZ>& value): data(value) {}
 
     /**
      * @brief copy constructor
@@ -48,13 +47,13 @@ struct Vec4: public NedBase
      * @param z
      * @param w
      */
-    Vec4(T x, T y, T z, T w): data(treejuce::simd_set<T, SZ> (x, y, z, w)) {}
+    Vec4(T x, T y, T z, T w): data(treecore::simd_set<T, SZ> (x, y, z, w)) {}
 
     /**
      * @brief constructor with values specified
      * @param values: an array storing x, y, z and w
      */
-    Vec4(const T* values): data(treejuce::simd_set<T, SZ>(values)) {}
+    Vec4(const T* values): data(treecore::simd_set<T, SZ>(values)) {}
 
     /**
      * @brief assignment operator
@@ -76,7 +75,7 @@ struct Vec4: public NedBase
      */
     void set(float x, float y, float z, float w)
     {
-        data = treejuce::simd_set<T, SZ> (x, y, z, w);
+        data = treecore::simd_set<T, SZ> (x, y, z, w);
     }
 
     /**
@@ -85,7 +84,7 @@ struct Vec4: public NedBase
      */
     void set(const float* values)
     {
-        data = treejuce::simd_set<T, SZ> (values);
+        data = treecore::simd_set<T, SZ> (values);
     }
 
     /**
@@ -103,7 +102,7 @@ struct Vec4: public NedBase
      */
     T get_x() const
     {
-        return treejuce::simd_get_one<0, float>(data);
+        return treecore::simd_get_one<0, float>(data);
     }
 
     /**
@@ -112,7 +111,7 @@ struct Vec4: public NedBase
      */
     T get_y() const
     {
-        return treejuce::simd_get_one<1, float>(data);
+        return treecore::simd_get_one<1, float>(data);
     }
 
     /**
@@ -121,7 +120,7 @@ struct Vec4: public NedBase
      */
     T get_z() const
     {
-        return treejuce::simd_get_one<2, float>(data);
+        return treecore::simd_get_one<2, float>(data);
     }
 
     /**
@@ -130,7 +129,7 @@ struct Vec4: public NedBase
      */
     T get_w() const
     {
-        return treejuce::simd_get_one<3, float>(data);
+        return treecore::simd_get_one<3, float>(data);
     }
 
     /**
@@ -139,7 +138,7 @@ struct Vec4: public NedBase
      */
     void set_x(T value)
     {
-        treejuce::simd_set_one<0>(data, value);
+        treecore::simd_set_one<0>(data, value);
     }
 
     /**
@@ -148,7 +147,7 @@ struct Vec4: public NedBase
      */
     void set_y(T value)
     {
-        treejuce::simd_set_one<1>(data, value);
+        treecore::simd_set_one<1>(data, value);
     }
 
     /**
@@ -157,7 +156,7 @@ struct Vec4: public NedBase
      */
     void set_z(T value)
     {
-        treejuce::simd_set_one<2>(data, value);
+        treecore::simd_set_one<2>(data, value);
     }
 
     /**
@@ -166,7 +165,7 @@ struct Vec4: public NedBase
      */
     void set_w(T value)
     {
-        treejuce::simd_set_one<3>(data, value);
+        treecore::simd_set_one<3>(data, value);
     }
 
     /**
@@ -176,7 +175,7 @@ struct Vec4: public NedBase
      */
     Vec4& operator += (const Vec4& other)
     {
-        data = treejuce::simd_add<T>(data, other.data);
+        data = treecore::simd_add<T>(data, other.data);
         return *this;
     }
 
@@ -187,7 +186,7 @@ struct Vec4: public NedBase
      */
     Vec4& operator -= (const Vec4& other)
     {
-        data = treejuce::simd_sub<T>(data, other.data);
+        data = treecore::simd_sub<T>(data, other.data);
         return *this;
     }
 
@@ -198,8 +197,8 @@ struct Vec4: public NedBase
      */
     Vec4& operator *= (T value)
     {
-        treejuce::SIMDType<SZ> tmp = treejuce::simd_set<T, SZ> (value);
-        data = treejuce::simd_mul<T>(data, tmp);
+        treecore::SIMDType<SZ> tmp = treecore::simd_set<T, SZ> (value);
+        data = treecore::simd_mul<T>(data, tmp);
         return *this;
     }
 
@@ -210,8 +209,8 @@ struct Vec4: public NedBase
      */
     Vec4& operator /= (float value)
     {
-        treejuce::SIMDType<SZ> tmp = treejuce::simd_set<T, SZ>(value);
-        data = treejuce::simd_div<T>(data, tmp);
+        treecore::SIMDType<SZ> tmp = treecore::simd_set<T, SZ>(value);
+        data = treecore::simd_div<T>(data, tmp);
         return *this;
     }
 
@@ -222,7 +221,7 @@ struct Vec4: public NedBase
     T normalize()
     {
         T len = length();
-        data = treejuce::simd_div<T>(data, treejuce::simd_set<T, SZ>(len, len, len, len));
+        data = treecore::simd_div<T>(data, treecore::simd_set<T, SZ>(len, len, len, len));
         return len;
     }
 
@@ -241,7 +240,7 @@ struct Vec4: public NedBase
      */
     T length2() const
     {
-        return treejuce::simd_sum<T, SZ>(treejuce::simd_mul<T, SZ>(data, data));
+        return treecore::simd_sum<T, SZ>(treecore::simd_mul<T, SZ>(data, data));
     }
 
     /**
@@ -263,7 +262,7 @@ struct Vec4: public NedBase
 template<typename T, int SZ = sizeof(T)*4>
 Vec4<T> operator + (const Vec4<T>& a, const Vec4<T>& b)
 {
-    return Vec4<T>( treejuce::simd_add<T, SZ>(a.data, b.data) );
+    return Vec4<T>( treecore::simd_add<T, SZ>(a.data, b.data) );
 }
 
 /**
@@ -276,7 +275,7 @@ Vec4<T> operator + (const Vec4<T>& a, const Vec4<T>& b)
 template<typename T, int SZ = sizeof(T)*4>
 Vec4<T> operator - (const Vec4<T>& a, const Vec4<T>& b)
 {
-    return Vec4<T>( treejuce::simd_sub<T, SZ>(a.data, b.data) );
+    return Vec4<T>( treecore::simd_sub<T, SZ>(a.data, b.data) );
 }
 
 /**
@@ -289,8 +288,8 @@ Vec4<T> operator - (const Vec4<T>& a, const Vec4<T>& b)
 template<typename T, int SZ = sizeof(T)*4>
 Vec4<T> operator * (const Vec4<T>& a, T b)
 {
-    treejuce::SIMDType<SZ> tmp = treejuce::simd_set<T, SZ> (b);
-    return Vec4<T>(treejuce::simd_mul<T, SZ>(a.data, tmp));
+    treecore::SIMDType<SZ> tmp = treecore::simd_set<T, SZ> (b);
+    return Vec4<T>(treecore::simd_mul<T, SZ>(a.data, tmp));
 }
 
 /**
@@ -303,8 +302,8 @@ Vec4<T> operator * (const Vec4<T>& a, T b)
 template<typename T, int SZ = sizeof(T)*4>
 Vec4<T> operator / (const Vec4<T>& a, T b)
 {
-    treejuce::SIMDType<16> tmp = treejuce::simd_set<T, 16> (b);
-    return Vec4<T>(treejuce::simd_div<T, SZ>(a.data, tmp));
+    treecore::SIMDType<16> tmp = treecore::simd_set<T, 16> (b);
+    return Vec4<T>(treecore::simd_div<T, SZ>(a.data, tmp));
 }
 
 /**
@@ -317,8 +316,8 @@ Vec4<T> operator / (const Vec4<T>& a, T b)
 template<typename T, int SZ = sizeof(T)*4>
 T operator * (const Vec4<T>& a, const Vec4<T>& b)
 {
-    treejuce::SIMDType<16> tmp = treejuce::simd_mul<T>(a.data, b.data);
-    return treejuce::simd_sum<T, SZ>(tmp);
+    treecore::SIMDType<16> tmp = treecore::simd_mul<T>(a.data, b.data);
+    return treecore::simd_sum<T, SZ>(tmp);
 }
 
 /**
@@ -334,15 +333,15 @@ Vec4<T> operator ^ (const Vec4<T>& a, const Vec4<T>& b)
 // Res.ele[1] = A.ele[2] * B.ele[0] - A.ele[0] * B.ele[2];
 // Res.ele[2] = A.ele[0] * B.ele[1] - A.ele[1] * B.ele[0];
 // Res.ele[3] = 0.0f;
-    treejuce::SIMDType<SZ> v1 = treejuce::simd_shuffle<1, 2, 0, 0>(a.data);
-    treejuce::SIMDType<SZ> v2 = treejuce::simd_shuffle<2, 0, 1, 0>(b.data);
+    treecore::SIMDType<SZ> v1 = treecore::simd_shuffle<1, 2, 0, 0>(a.data);
+    treecore::SIMDType<SZ> v2 = treecore::simd_shuffle<2, 0, 1, 0>(b.data);
 
-    treejuce::SIMDType<SZ> v3 = treejuce::simd_shuffle<2, 0, 1, 0>(a.data);
-    treejuce::SIMDType<SZ> v4 = treejuce::simd_shuffle<1, 2, 0, 0>(b.data);
+    treecore::SIMDType<SZ> v3 = treecore::simd_shuffle<2, 0, 1, 0>(a.data);
+    treecore::SIMDType<SZ> v4 = treecore::simd_shuffle<1, 2, 0, 0>(b.data);
 
-    treejuce::SIMDType<SZ> re = treejuce::simd_sub<T>(treejuce::simd_mul<T>(v1, v2),
-                                               treejuce::simd_mul<T>(v3, v4));
-    treejuce::simd_set_one<3, T>(re, 0);
+    treecore::SIMDType<SZ> re = treecore::simd_sub<T>(treecore::simd_mul<T>(v1, v2),
+                                               treecore::simd_mul<T>(v3, v4));
+    treecore::simd_set_one<3, T>(re, 0);
     return Vec4<T>(re);
 }
 
@@ -369,6 +368,6 @@ bool operator != (const Vec4<T>& a, const Vec4<T>& b)
 typedef Vec4<float> Vec4f;
 typedef Vec4<std::int32_t> Vec4i;
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_VEC4_H

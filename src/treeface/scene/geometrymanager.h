@@ -3,17 +3,17 @@
 
 #include "treeface/common.h"
 
-#include <treejuce/Holder.h>
-#include <treejuce/Object.h>
-#include <treejuce/String.h>
-#include <treejuce/Result.h>
+#include <treecore/Holder.h>
+#include <treecore/Object.h>
+#include <treecore/String.h>
+#include <treecore/Result.h>
 
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 class Geometry;
 
-class GeometryManager: public treejuce::Object
+class GeometryManager: public treecore::Object
 {
 public:
     GeometryManager();
@@ -23,10 +23,10 @@ public:
 
     virtual ~GeometryManager();
 
-    treejuce::Result get_geometry(const treejuce::String& name, treejuce::Holder<Geometry>& result);
+    treecore::Result get_geometry(const treecore::String& name, treecore::Holder<Geometry>& result);
 
-    bool geometry_is_cached(const treejuce::String& name) const NOEXCEPT;
-    bool release_geometry_hold(const treejuce::String& name);
+    bool geometry_is_cached(const treecore::String& name) const NOEXCEPT;
+    bool release_geometry_hold(const treecore::String& name);
 
 private:
     struct Impl;
@@ -34,6 +34,6 @@ private:
     Impl* m_impl;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_GEOMETRY_MANAGER_H

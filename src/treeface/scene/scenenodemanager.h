@@ -3,22 +3,22 @@
 
 #include "treeface/common.h"
 
-#include <treejuce/Holder.h>
-#include <treejuce/Object.h>
-#include <treejuce/Result.h>
+#include <treecore/Holder.h>
+#include <treecore/Object.h>
+#include <treecore/Result.h>
 
-TREEFACE_JUCE_NAMESPACE_BEGIN
+namespace treecore {
 class String;
 class var;
-TREEFACE_JUCE_NAMESPACE_END
+} // namespace treecore
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 class GeometryManager;
 class MaterialManager;
 class SceneNode;
 class VisualObject;
 
-class SceneNodeManager: public treejuce::Object
+class SceneNodeManager: public treecore::Object
 {
 public:
     SceneNodeManager() = delete;
@@ -29,17 +29,17 @@ public:
 
     virtual ~SceneNodeManager();
 
-    treejuce::Result add_nodes(const treejuce::var& data, SceneNode** root_node_pp);
-    treejuce::Result add_nodes(const treejuce::var& data, treejuce::Holder<SceneNode>& root_node);
+    treecore::Result add_nodes(const treecore::var& data, SceneNode** root_node_pp);
+    treecore::Result add_nodes(const treecore::var& data, treecore::Holder<SceneNode>& root_node);
 
     /**
      * @brief
      * @param data_name
      * @return
-     * @see add_nodes(const treejuce::var& data)
+     * @see add_nodes(const treecore::var& data)
      */
-    treejuce::Result add_nodes(const treejuce::String& data_name, SceneNode** root_node_pp);
-    treejuce::Result add_nodes(const treejuce::String& data_name, treejuce::Holder<SceneNode>& root_node);
+    treecore::Result add_nodes(const treecore::String& data_name, SceneNode** root_node_pp);
+    treecore::Result add_nodes(const treecore::String& data_name, treecore::Holder<SceneNode>& root_node);
 
     /**
      * @brief get named node object
@@ -47,17 +47,17 @@ public:
      * @return If has node object with name, return node object; otherwise
      *         return nullptr.
      */
-    SceneNode* get_node(const treejuce::String& name);
+    SceneNode* get_node(const treecore::String& name);
 
 protected:
-    treejuce::Result build_visual_item(const treejuce::var& data, VisualObject* visual_item);
-    treejuce::Result build_node(const treejuce::var& data, SceneNode* node);
+    treecore::Result build_visual_item(const treecore::var& data, VisualObject* visual_item);
+    treecore::Result build_node(const treecore::var& data, SceneNode* node);
 
 private:
     struct Impl;
     Impl* m_impl = nullptr;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_SCENE_NODE_MANAGER_H

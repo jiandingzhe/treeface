@@ -5,17 +5,17 @@
 #include "treeface/misc/propertyvalidator.h"
 #include "treeface/misc/stringcast.h"
 
-#include <treejuce/DynamicObject.h>
-#include <treejuce/Logger.h>
-#include <treejuce/HashSet.h>
-#include <treejuce/NamedValueSet.h>
-#include <treejuce/String.h>
-#include <treejuce/StringRef.h>
-#include <treejuce/Variant.h>
+#include <treecore/DynamicObject.h>
+#include <treecore/Logger.h>
+#include <treecore/HashSet.h>
+#include <treecore/NamedValueSet.h>
+#include <treecore/String.h>
+#include <treecore/StringRef.h>
+#include <treecore/Variant.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 const GLenum TEXTURE_UNITS[32] = {
     GL_TEXTURE0,
@@ -65,7 +65,7 @@ Texture::~Texture()
         glDeleteTextures(1, &m_texture);
 }
 
-treejuce::Result Texture::set_image_data(ImageRef image, GLint internal_fmt, bool gen_mipmap) NOEXCEPT
+treecore::Result Texture::set_image_data(ImageRef image, GLint internal_fmt, bool gen_mipmap) NOEXCEPT
 {
     glBindTexture(GL_TEXTURE_2D, m_texture);
 
@@ -100,25 +100,25 @@ treejuce::Result Texture::set_image_data(ImageRef image, GLint internal_fmt, boo
 
     if (err == GL_NO_ERROR)
     {
-        return treejuce::Result::ok();
+        return treecore::Result::ok();
     }
     else
     {
         switch(err)
         {
         case GL_INVALID_ENUM:
-            return treejuce::Result::fail("texture failed with \"invalid enum\"");
+            return treecore::Result::fail("texture failed with \"invalid enum\"");
         case GL_INVALID_VALUE:
-            return treejuce::Result::fail("texture failed with \"invalid value\"");
+            return treecore::Result::fail("texture failed with \"invalid value\"");
         case GL_INVALID_OPERATION:
-            return treejuce::Result::fail("texture failed with \"invalid operation\"");
+            return treecore::Result::fail("texture failed with \"invalid operation\"");
         default:
-            return treejuce::Result::fail("texture failed with other error type: "+String(err));
+            return treecore::Result::fail("texture failed with other error type: "+String(err));
         }
     }
 }
 
-treejuce::Result Texture::set_image_data(treejuce::ArrayRef<ImageRef> images, GLint internal_fmt) NOEXCEPT
+treecore::Result Texture::set_image_data(treecore::ArrayRef<ImageRef> images, GLint internal_fmt) NOEXCEPT
 {
     glBindTexture(GL_TEXTURE_2D, m_texture);
 
@@ -145,19 +145,19 @@ treejuce::Result Texture::set_image_data(treejuce::ArrayRef<ImageRef> images, GL
             switch(err)
             {
             case GL_INVALID_ENUM:
-                return treejuce::Result::fail("texture failed with \"invalid enum\" while setting mipmap level "+String(level));
+                return treecore::Result::fail("texture failed with \"invalid enum\" while setting mipmap level "+String(level));
             case GL_INVALID_VALUE:
-                return treejuce::Result::fail("texture failed with \"invalid value\" while setting mipmap level "+String(level));
+                return treecore::Result::fail("texture failed with \"invalid value\" while setting mipmap level "+String(level));
             case GL_INVALID_OPERATION:
-                return treejuce::Result::fail("texture failed with \"invalid operation\" while setting mipmap level "+String(level));
+                return treecore::Result::fail("texture failed with \"invalid operation\" while setting mipmap level "+String(level));
             default:
-                return treejuce::Result::fail("texture failed with other error type: "+String(err)+" while setting mipmap level "+String(level));
+                return treecore::Result::fail("texture failed with other error type: "+String(err)+" while setting mipmap level "+String(level));
             }
         }
     }
 
     glBindTexture(GL_TEXTURE_2D, 0);
-    return treejuce::Result::ok();
+    return treecore::Result::ok();
 }
 
 #define KEY_IMG           "image"
@@ -189,7 +189,7 @@ Result _validate_keys_(NamedValueSet& kv)
     return validator->validate(kv);
 }
 
-Result Texture::build(const treejuce::var& tex_node)
+Result Texture::build(const treecore::var& tex_node)
 {
     if (!tex_node.isObject())
         return Result::fail("texture node is not KV");
@@ -315,4 +315,4 @@ Result Texture::build(const treejuce::var& tex_node)
     return Result::ok();
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

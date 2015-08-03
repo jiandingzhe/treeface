@@ -3,16 +3,16 @@
 
 #include "treeface/common.h"
 
-#include <treejuce/Object.h>
+#include <treecore/Object.h>
 
-TREEFACE_JUCE_NAMESPACE_BEGIN
+namespace treecore {
 class Result;
-TREEFACE_JUCE_NAMESPACE_END
+} // namespace treecore
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 class SceneNode;
 
-class SceneQuery: public treejuce::Object
+class SceneQuery: public treecore::Object
 {
 public:
     SceneQuery();
@@ -21,17 +21,17 @@ public:
 
     virtual ~SceneQuery();
 
-    treejuce::Result traverse(SceneNode* root) NOEXCEPT;
+    treecore::Result traverse(SceneNode* root) NOEXCEPT;
 
 protected:
-    virtual treejuce::Result traverse_begin() NOEXCEPT = 0;
-    virtual treejuce::Result traverse_one_node(SceneNode* node) NOEXCEPT = 0;
-    virtual treejuce::Result traverse_end() NOEXCEPT = 0;
+    virtual treecore::Result traverse_begin() NOEXCEPT = 0;
+    virtual treecore::Result traverse_one_node(SceneNode* node) NOEXCEPT = 0;
+    virtual treecore::Result traverse_end() NOEXCEPT = 0;
 
 private:
-    treejuce::Result recur_part(SceneNode* node) NOEXCEPT;
+    treecore::Result recur_part(SceneNode* node) NOEXCEPT;
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_SCENE_QUERY_H

@@ -1,16 +1,16 @@
 #include "TestFramework.h"
 #include "treeface/misc/propertyvalidator.h"
 
-#include <treejuce/Array.h>
-#include <treejuce/Holder.h>
-#include <treejuce/Identifier.h>
-#include <treejuce/NamedValueSet.h>
-#include <treejuce/Object.h>
-#include <treejuce/String.h>
-#include <treejuce/Variant.h>
+#include <treecore/Array.h>
+#include <treecore/Holder.h>
+#include <treecore/Identifier.h>
+#include <treecore/NamedValueSet.h>
+#include <treecore/Object.h>
+#include <treecore/String.h>
+#include <treecore/Variant.h>
 
 using namespace treeface;
-using namespace treejuce;
+using namespace treecore;
 
 void TestFramework::content()
 {

@@ -1,10 +1,10 @@
 #include "treeface/gl/sampler.h"
 
-#include <treejuce/StringRef.h>
+#include <treecore/StringRef.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 Sampler::Sampler()
 {
@@ -19,4 +19,4 @@ Sampler::~Sampler()
         glDeleteSamplers(1, &m_sampler);
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

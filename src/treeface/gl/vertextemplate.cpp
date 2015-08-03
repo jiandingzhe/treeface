@@ -4,21 +4,21 @@
 #include "treeface/misc/propertyvalidator.h"
 #include "treeface/misc/stringcast.h"
 
-#include <treejuce/Array.h>
-#include <treejuce/DynamicObject.h>
-#include <treejuce/NamedValueSet.h>
-#include <treejuce/Result.h>
-#include <treejuce/Variant.h>
+#include <treecore/Array.h>
+#include <treecore/DynamicObject.h>
+#include <treecore/NamedValueSet.h>
+#include <treecore/Result.h>
+#include <treecore/Variant.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 struct VertexTemplate::Impl
 {
-    treejuce::Array<HostVertexAttrib> attrs;
-    treejuce::Array<size_t> elem_offsets;
-    treejuce::Array<int> elem_attr_index;
+    treecore::Array<HostVertexAttrib> attrs;
+    treecore::Array<size_t> elem_offsets;
+    treecore::Array<int> elem_attr_index;
     uint32 size = 0;
 };
 
@@ -26,7 +26,7 @@ VertexTemplate::VertexTemplate(): m_impl(new Impl())
 {
 }
 
-//VertexTemplate::VertexTemplate(treejuce::ArrayRef<const VertexAttrib> attrs)
+//VertexTemplate::VertexTemplate(treecore::ArrayRef<const VertexAttrib> attrs)
 //    : m_impl(new Impl())
 //{
 //    m_impl->attrs.addArray(attrs.get_const_data(), attrs.size());
@@ -92,7 +92,7 @@ Result _validate_attr_kv_(const NamedValueSet& kv)
     return validator->validate(kv);
 }
 
-treejuce::Result VertexTemplate::add_attribs(const treejuce::var& list_node)
+treecore::Result VertexTemplate::add_attribs(const treecore::var& list_node)
 {
     if (!list_node.isArray())
         return Result::fail("node is not an array");
@@ -175,7 +175,7 @@ const HostVertexAttrib& VertexTemplate::get_elem_attrib(int i_elem) const NOEXCE
     return m_impl->attrs.getReference(i_attr);
 }
 
-void VertexTemplate::set_value_at(void* vertex, int i_elem, const treejuce::var& value) NOEXCEPT
+void VertexTemplate::set_value_at(void* vertex, int i_elem, const treecore::var& value) NOEXCEPT
 {
     size_t offset = get_elem_offset(i_elem);
     char* value_p = (char*) vertex;
@@ -210,4 +210,4 @@ void VertexTemplate::set_value_at(void* vertex, int i_elem, const treejuce::var&
     }
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface

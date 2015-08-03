@@ -6,43 +6,43 @@
 
 #include "treeface/keyboard.h"
 
-#include <treejuce/IntTypes.h>
+#include <treecore/IntTypes.h>
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 struct KeyboardEvent
 {
     ButtonUpDown button_action;
     KeyButton button;
-    treejuce::uint16 modifier;
+    treecore::uint16 modifier;
 };
 
 struct MouseButtonEvent
 {
     ButtonUpDown button_action;
     MouseButton button;
-    treejuce::int32 x;
-    treejuce::int32 y;
-    treejuce::uint16 combo;
+    treecore::int32 x;
+    treecore::int32 y;
+    treecore::uint16 combo;
 };
 
 struct MouseMotionEvent
 {
-    treejuce::int32 x;
-    treejuce::int32 y;
-    treejuce::int32 dx;
-    treejuce::int32 dy;
+    treecore::int32 x;
+    treecore::int32 y;
+    treecore::int32 dx;
+    treecore::int32 dy;
 };
 
 struct MouseWheelEvent
 {
-    treejuce::int32 x;
-    treejuce::int32 y;
+    treecore::int32 x;
+    treecore::int32 y;
 };
 
 struct Event
 {
-    treejuce::uint32 timestamp;
+    treecore::uint32 timestamp;
     void* user_data;
     union
     {
@@ -53,6 +53,6 @@ struct Event
     };
 };
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
 
 #endif // TREEFACE_EVENT_H

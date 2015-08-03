@@ -9,20 +9,20 @@
 
 #include "treeface/misc/stringcast.h"
 
-#include <treejuce/Array.h>
-#include <treejuce/CriticalSection.h>
-#include <treejuce/DynamicObject.h>
-#include <treejuce/HashSet.h>
-#include <treejuce/Holder.h>
-#include <treejuce/NamedValueSet.h>
-#include <treejuce/Result.h>
-#include <treejuce/ScopedLock.h>
-#include <treejuce/Singleton.h>
-#include <treejuce/Variant.h>
+#include <treecore/Array.h>
+#include <treecore/CriticalSection.h>
+#include <treecore/DynamicObject.h>
+#include <treecore/HashSet.h>
+#include <treecore/Holder.h>
+#include <treecore/NamedValueSet.h>
+#include <treecore/Result.h>
+#include <treecore/ScopedLock.h>
+#include <treecore/Singleton.h>
+#include <treecore/Variant.h>
 
-using namespace treejuce;
+using namespace treecore;
 
-TREEFACE_NAMESPACE_BEGIN
+namespace treeface {
 
 struct Geometry::Impl
 {
@@ -64,7 +64,7 @@ public:
 juce_ImplementSingleton(GeometryPropertyValidator)
 
 
-treejuce::Result Geometry::build(const treejuce::var& geom_root_node) NOEXCEPT
+treecore::Result Geometry::build(const treecore::var& geom_root_node) NOEXCEPT
 {
     if (!geom_root_node.isObject())
         return Result::fail("geometry root node is not a object");
@@ -172,4 +172,4 @@ const VertexTemplate& Geometry::get_vertex_template() const NOEXCEPT
     return m_impl->vtx_template;
 }
 
-TREEFACE_NAMESPACE_END
+} // namespace treeface
