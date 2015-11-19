@@ -20,7 +20,7 @@
 #include "treeface/math/quat.h"
 
 #include <treecore/File.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/StringRef.h>
 
 using namespace treeface;
@@ -61,21 +61,21 @@ void build_up_sdl(SDL_Window** window, SDL_GLContext* context)
     }
 }
 
-Holder<GeometryManager> geo_mgr;
-Holder<MaterialManager> mat_mgr;
+RefCountHolder<GeometryManager> geo_mgr;
+RefCountHolder<MaterialManager> mat_mgr;
 PackageManager* pkg_mgr = nullptr;
-Holder<VertexArray> vao_a = nullptr;
-Holder<VertexArray> vao_b = nullptr;
+RefCountHolder<VertexArray> vao_a = nullptr;
+RefCountHolder<VertexArray> vao_b = nullptr;
 
 String name_geo_a("geom_cube.json");
 String name_geo_b("geom_colored.json");
 String name_mat_a("material1.json");
 String name_mat_b("material2.json");
 
-Holder<Geometry> geo_a = nullptr;
-Holder<Geometry> geo_b = nullptr;
-Holder<SceneGraphMaterial> mat_a = nullptr;
-Holder<SceneGraphMaterial> mat_b = nullptr;
+RefCountHolder<Geometry> geo_a = nullptr;
+RefCountHolder<Geometry> geo_b = nullptr;
+RefCountHolder<SceneGraphMaterial> mat_a = nullptr;
+RefCountHolder<SceneGraphMaterial> mat_b = nullptr;
 
 void build_up_gl()
 {

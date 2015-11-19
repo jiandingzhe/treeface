@@ -14,8 +14,8 @@ class Image;
 class ImageManager
 {
 public:
-    JUCE_DECLARE_NON_COPYABLE(ImageManager);
-    JUCE_DECLARE_NON_MOVABLE(ImageManager);
+    TREECORE_DECLARE_NON_COPYABLE(ImageManager);
+    TREECORE_DECLARE_NON_MOVABLE(ImageManager);
     juce_DeclareSingleton(ImageManager, false);
 
     treecore::Result get_image(const treecore::String& name, Image** img);

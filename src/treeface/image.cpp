@@ -248,7 +248,7 @@ FIBITMAP* Image::exchange_image(FIBITMAP* new_img)
 }
 
 
-ImageRef Image::get_image_ref() const NOEXCEPT
+ImageRef Image::get_image_ref() const noexcept
 {
     if (m_fi_img)
         return {m_gl_format, m_gl_type, int(FreeImage_GetWidth(m_fi_img)), int(FreeImage_GetHeight(m_fi_img)), FreeImage_GetBits(m_fi_img)};

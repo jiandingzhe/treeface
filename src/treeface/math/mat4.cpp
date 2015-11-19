@@ -9,7 +9,7 @@ namespace treeface {
 static_assert( sizeof(Mat4f) == sizeof(float)*16 , "size of Mat4f is not 16*float");
 
 template<>
-float Mat4<float>::determinant() const NOEXCEPT
+float Mat4<float>::determinant() const noexcept
 {
     // + 00*11*22*33 + 00*21*32*13 + 00*31*12*23 - 00*31*22*13 - 00*21*12*33 - 00*11*32*23
     // + 10*31*22*03 + 10*21*02*33 + 10*01*32*23 - 10*01*22*33 - 10*21*32*03 - 10*31*02*23
@@ -56,7 +56,7 @@ float Mat4<float>::determinant() const NOEXCEPT
 }
 
 template<>
-void Mat4<float>::set_perspective(float vertical_angle, float ratio, float near, float far) NOEXCEPT
+void Mat4<float>::set_perspective(float vertical_angle, float ratio, float near, float far) noexcept
 {
     if (ratio == 0.0f || near == far)
         return;
@@ -80,7 +80,7 @@ void Mat4<float>::set_perspective(float vertical_angle, float ratio, float near,
 }
 
 template<>
-void Mat4<float>::set_rotate(const Quat<float>& value) NOEXCEPT
+void Mat4<float>::set_rotate(const Quat<float>& value) noexcept
 {
 #define _MAT4_FLOAT_ROTATE_OP_ treecore::simd_add<float>(tmp_unit, treecore::simd_mul<float>(tmp_mul, treecore::simd_add<float>(treecore::simd_mul<float>(tmp_a, tmp_b),treecore::simd_xor<float>(treecore::simd_mul<float>(tmp_c, tmp_d), tmp_sign_mask))))
 //        m[0]  = 1 - 2 * (y*y + z*z);
@@ -125,7 +125,7 @@ void Mat4<float>::set_rotate(const Quat<float>& value) NOEXCEPT
     // translation is kept untouched
 }
 
-Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) NOEXCEPT
+Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) noexcept
 {
     // column to row
     treecore::SIMDType<16> row0 = treecore::simd_set<float, 16>(
@@ -180,7 +180,7 @@ Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) NOEXCEPT
     return Mat4<float>(re0, re1, re2, re3);
 }
 
-Vec4<float> operator * (const Mat4<float>& mat, const Vec4<float>& vec) NOEXCEPT
+Vec4<float> operator * (const Mat4<float>& mat, const Vec4<float>& vec) noexcept
 {
     treecore::SIMDType<16> tmp;
     tmp = treecore::simd_set<float, 16>(

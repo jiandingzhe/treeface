@@ -59,11 +59,11 @@ void TestFramework::content()
     PackageManager* pkg_mgr = PackageManager::getInstance();
     pkg_mgr->add_package(File::getCurrentWorkingDirectory().getChildFile("../examples/resource.zip"), PackageManager::KEEP_EXISTING);
 
-    Holder<Scene> scene = new Scene();
+    RefCountHolder<Scene> scene = new Scene();
     OK(scene.get());
 
-    Holder<MaterialManager> mat_mgr = scene->get_material_manager();
-    Holder<GeometryManager> geo_mgr = scene->get_geometry_manager();
+    RefCountHolder<MaterialManager> mat_mgr = scene->get_material_manager();
+    RefCountHolder<GeometryManager> geo_mgr = scene->get_geometry_manager();
 
     OK(mat_mgr.get());
     OK(geo_mgr.get());
@@ -74,8 +74,8 @@ void TestFramework::content()
     OK(geo_mgr->geometry_is_cached("geom_colored.json"));
     OK(geo_mgr->geometry_is_cached("geom_cube.json"));
 
-    Holder<Geometry> geo_colored = nullptr;
-    Holder<Geometry> geo_cube = nullptr;
+    RefCountHolder<Geometry> geo_colored = nullptr;
+    RefCountHolder<Geometry> geo_cube = nullptr;
     OK(geo_mgr->get_geometry("geom_colored.json", geo_colored));
     OK(geo_mgr->get_geometry("geom_cube.json", geo_cube));
 

@@ -4,7 +4,7 @@
 #include "treeface/scene/geometry.h"
 
 #include <treecore/HashMap.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/JSON.h>
 #include <treecore/MemoryBlock.h>
 #include <treecore/Result.h>
@@ -17,7 +17,7 @@ namespace treeface {
 
 struct GeometryManager::Impl
 {
-    HashMap<String, Holder<Geometry> > items;
+    HashMap<String, RefCountHolder<Geometry> > items;
 };
 
 GeometryManager::GeometryManager(): m_impl(new Impl())
@@ -30,7 +30,7 @@ GeometryManager::~GeometryManager()
         delete m_impl;
 }
 
-treecore::Result GeometryManager::get_geometry(const treecore::String& name, Holder<Geometry>& result)
+treecore::Result GeometryManager::get_geometry(const treecore::String& name, RefCountHolder<Geometry>& result)
 {
     if (m_impl->items.contains(name))
     {
@@ -79,7 +79,7 @@ treecore::Result GeometryManager::get_geometry(const treecore::String& name, Hol
     return Result::ok();
 }
 
-bool GeometryManager::geometry_is_cached(const treecore::String& name) const NOEXCEPT
+bool GeometryManager::geometry_is_cached(const treecore::String& name) const noexcept
 {
     return m_impl->items.contains(name);
 }

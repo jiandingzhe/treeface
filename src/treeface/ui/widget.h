@@ -5,7 +5,7 @@
 #include "treeface/ui/event.h"
 
 #include <treecore/ArrayRef.h>
-#include <treecore/Object.h>
+#include <treecore/RefCountObject.h>
 
 class TestFramework;
 
@@ -21,30 +21,30 @@ class Widget;
 
 typedef bool (*EventFunc)(Widget* emitter, Widget* listener, const Event& event);
 
-class Widget: public treecore::Object
+class Widget: public treecore::RefCountObject
 {
     friend class ::TestFramework;
 
 public:
-    Widget() NOEXCEPT;
-    Widget(treeface::SceneNode* node) NOEXCEPT;
+    Widget() noexcept;
+    Widget(treeface::SceneNode* node) noexcept;
     virtual ~Widget();
 
-    bool add_child(Widget* child) NOEXCEPT;
-    bool remove_child(Widget* child) NOEXCEPT;
-    bool has_child(Widget* child) const NOEXCEPT;
+    bool add_child(Widget* child) noexcept;
+    bool remove_child(Widget* child) noexcept;
+    bool has_child(Widget* child) const noexcept;
 
-    Widget* get_parent() NOEXCEPT;
-    SceneNode* get_scene_node() NOEXCEPT;
+    Widget* get_parent() noexcept;
+    SceneNode* get_scene_node() noexcept;
 
-    bool add_event_listener(const treecore::String& event_name, EventFunc func, void* data) NOEXCEPT;
+    bool add_event_listener(const treecore::String& event_name, EventFunc func, void* data) noexcept;
     bool remove_event_listener(const treecore::String& event_name);
     bool remove_event_listener(const treecore::String& event_name, EventFunc func);
 
-    bool can_handle(const treecore::String& event_name) const NOEXCEPT;
-    bool has_handler(const treecore::String& event_name, EventFunc func) const NOEXCEPT;
-    bool any_child_can_handle(const treecore::String& event_name) const NOEXCEPT;
-    bool any_parent_can_handle(const treecore::String& event_name) const NOEXCEPT;
+    bool can_handle(const treecore::String& event_name) const noexcept;
+    bool has_handler(const treecore::String& event_name, EventFunc func) const noexcept;
+    bool any_child_can_handle(const treecore::String& event_name) const noexcept;
+    bool any_parent_can_handle(const treecore::String& event_name) const noexcept;
 
 protected:
 

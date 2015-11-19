@@ -62,7 +62,7 @@ void TestFramework::content()
     PackageManager* pkg_mgr = PackageManager::getInstance();
     ImageManager* img_mgr = ImageManager::getInstance();
 
-    Holder<MaterialManager> mat_mgr = new MaterialManager();
+    RefCountHolder<MaterialManager> mat_mgr = new MaterialManager();
 
     printf("add zip file to package manager\n");
     pkg_mgr->add_package(File::getCurrentWorkingDirectory().getChildFile("../examples/resource.zip"), PackageManager::KEEP_EXISTING);

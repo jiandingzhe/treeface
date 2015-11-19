@@ -3,8 +3,8 @@
 
 #include "treeface/common.h"
 
-#include <treecore/Holder.h>
-#include <treecore/Object.h>
+#include <treecore/RefCountHolder.h>
+#include <treecore/RefCountObject.h>
 #include <treecore/Result.h>
 
 namespace treecore {
@@ -18,19 +18,19 @@ class MaterialManager;
 class SceneNode;
 class VisualObject;
 
-class SceneNodeManager: public treecore::Object
+class SceneNodeManager: public treecore::RefCountObject
 {
 public:
     SceneNodeManager() = delete;
     SceneNodeManager(GeometryManager* geo_mgr, MaterialManager* mat_mgr);
 
-    JUCE_DECLARE_NON_COPYABLE(SceneNodeManager);
-    JUCE_DECLARE_NON_MOVABLE(SceneNodeManager);
+    TREECORE_DECLARE_NON_COPYABLE(SceneNodeManager);
+    TREECORE_DECLARE_NON_MOVABLE(SceneNodeManager);
 
     virtual ~SceneNodeManager();
 
     treecore::Result add_nodes(const treecore::var& data, SceneNode** root_node_pp);
-    treecore::Result add_nodes(const treecore::var& data, treecore::Holder<SceneNode>& root_node);
+    treecore::Result add_nodes(const treecore::var& data, treecore::RefCountHolder<SceneNode>& root_node);
 
     /**
      * @brief
@@ -39,7 +39,7 @@ public:
      * @see add_nodes(const treecore::var& data)
      */
     treecore::Result add_nodes(const treecore::String& data_name, SceneNode** root_node_pp);
-    treecore::Result add_nodes(const treecore::String& data_name, treecore::Holder<SceneNode>& root_node);
+    treecore::Result add_nodes(const treecore::String& data_name, treecore::RefCountHolder<SceneNode>& root_node);
 
     /**
      * @brief get named node object

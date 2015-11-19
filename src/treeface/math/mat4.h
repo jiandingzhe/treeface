@@ -9,10 +9,13 @@
 
 namespace treeface {
 
+TREECORE_ALN_BEGIN(16)
 template<typename T, int SZ = sizeof(T) * 4>
-struct Mat4: public treecore::AlignedMalloc<sizeof(T)*4>
+struct Mat4
 {
     typedef treecore::SIMDType<SZ> DataType;
+
+    TREECORE_ALIGNED_ALLOCATOR(Mat4);
 
     /**
      * @brief create identity matrix
@@ -103,7 +106,7 @@ struct Mat4: public treecore::AlignedMalloc<sizeof(T)*4>
      * @return value on specified row and column
      */
     template<int row, int col>
-    T get() const NOEXCEPT
+    T get() const noexcept
     {
         return treecore::simd_get_one<row, T>(data[col]);
     }
@@ -111,7 +114,7 @@ struct Mat4: public treecore::AlignedMalloc<sizeof(T)*4>
     void set(T col0_0, T col0_1, T col0_2, T col0_3,
              T col1_0, T col1_1, T col1_2, T col1_3,
              T col2_0, T col2_1, T col2_2, T col2_3,
-             T col3_0, T col3_1, T col3_2, T col3_3) NOEXCEPT
+             T col3_0, T col3_1, T col3_2, T col3_3) noexcept
     {
         data[0] = treecore::simd_set<T, SZ>(col0_0, col0_1, col0_2, col0_3);
         data[1] = treecore::simd_set<T, SZ>(col1_0, col1_1, col1_2, col1_3);
@@ -122,7 +125,7 @@ struct Mat4: public treecore::AlignedMalloc<sizeof(T)*4>
     /**
      * @brief switch lines and columns
      */
-    void transpose() NOEXCEPT
+    void transpose() noexcept
     {
         treecore::SIMDType<SZ> tmp0 = treecore::simd_set<T, SZ>(
                 treecore::simd_get_one<0, T>(data[0]),
@@ -154,7 +157,7 @@ struct Mat4: public treecore::AlignedMalloc<sizeof(T)*4>
         data[3] = tmp3;
     }
 
-    Mat4<T> get_normal_matrix() const NOEXCEPT
+    Mat4<T> get_normal_matrix() const noexcept
     {
         Mat4<T> re(*this);
 
@@ -172,7 +175,7 @@ struct Mat4: public treecore::AlignedMalloc<sizeof(T)*4>
      * @brief calculate matrix determinant
      * @return determinant value
      */
-    T determinant() const NOEXCEPT;
+    T determinant() const noexcept;
 
     /**
      * @brief set the first 3x3 dimension to scale matrix. The 4th translation column is untouched.
@@ -180,7 +183,7 @@ struct Mat4: public treecore::AlignedMalloc<sizeof(T)*4>
      * @param y: scale rate along Y axis
      * @param z: scale rate along Z axis
      */
-    void set_scale(T x, T y, T z) NOEXCEPT
+    void set_scale(T x, T y, T z) noexcept
     {
         data[0] = treecore::simd_set<T, SZ>(x, 0, 0, 0);
         data[1] = treecore::simd_set<T, SZ>(0, y, 0, 0);
@@ -193,7 +196,7 @@ struct Mat4: public treecore::AlignedMalloc<sizeof(T)*4>
      * @param y: offset on Y axis
      * @param z: offset on Z axis
      */
-    void set_translate(T x, T y, T z) NOEXCEPT
+    void set_translate(T x, T y, T z) noexcept
     {
         data[3] = treecore::simd_set<T, SZ>(x, y, z, 1);
     }
@@ -202,7 +205,7 @@ struct Mat4: public treecore::AlignedMalloc<sizeof(T)*4>
      * @brief set 4rd column to translation, keep other columns untouched
      * @param value: offsets in one vector. The 4rd component will be set to 1 by force.
      */
-    void set_translate(Vec4<T> value) NOEXCEPT
+    void set_translate(Vec4<T> value) noexcept
     {
         value.set_w(1);
         data[3] = value.data;
@@ -211,13 +214,13 @@ struct Mat4: public treecore::AlignedMalloc<sizeof(T)*4>
     /**
      * @brief
      */
-    void set_perspective(float vertical_angle, float ratio, float near, float far) NOEXCEPT;
+    void set_perspective(float vertical_angle, float ratio, float near, float far) noexcept;
 
     /**
      * @brief inverse this matrix
      * @return the determinant before inverse
      */
-    T inverse() NOEXCEPT
+    T inverse() noexcept
     {
         // 00 01 02 03
         // 10 11 12 13
@@ -259,22 +262,22 @@ struct Mat4: public treecore::AlignedMalloc<sizeof(T)*4>
      * @brief set first 3x3 dimention to rotate matrix using specified quaternion. The 4th translation column is untouched.
      * @param value: quaternion representing the rotation
      */
-    void set_rotate(const Quat<T>& value) NOEXCEPT;
+    void set_rotate(const Quat<T>& value) noexcept;
 
     DataType data[4];
-};
+} TREECORE_ALN_END(16);
 
 typedef Mat4<float> Mat4f;
 
 template<>
-float Mat4<float>::determinant() const NOEXCEPT;
+float Mat4<float>::determinant() const noexcept;
 
 template<>
-void Mat4<float>::set_rotate(const Quat<float>& value) NOEXCEPT;
+void Mat4<float>::set_rotate(const Quat<float>& value) noexcept;
 
-Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) NOEXCEPT;
+Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) noexcept;
 
-Vec4<float> operator * (const Mat4<float>& mat, const Vec4<float>& vec) NOEXCEPT;
+Vec4<float> operator * (const Mat4<float>& mat, const Vec4<float>& vec) noexcept;
 
 } // namespace treeface
 

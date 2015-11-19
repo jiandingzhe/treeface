@@ -25,7 +25,7 @@
 #include "treeface/math/quat.h"
 
 #include <treecore/File.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/JSON.h>
 #include <treecore/Result.h>
 #include <treecore/StringRef.h>
@@ -69,12 +69,12 @@ void build_up_sdl(SDL_Window** window, SDL_GLContext* context)
     }
 }
 
-Holder<GeometryManager> geo_mgr;
-Holder<MaterialManager> mat_mgr;
-Holder<SceneNodeManager> node_mgr;
+RefCountHolder<GeometryManager> geo_mgr;
+RefCountHolder<MaterialManager> mat_mgr;
+RefCountHolder<SceneNodeManager> node_mgr;
 PackageManager* pkg_mgr = nullptr;
 
-Holder<Scene> scene;
+RefCountHolder<Scene> scene;
 
 void build_up_gl()
 {
@@ -94,8 +94,8 @@ void build_up_gl()
     scene->set_global_light_ambient(0.2, 0.2, 0.2, 1);
     scene->set_global_light_direction(1, 1, -0.5);
 
-    Holder<Geometry> geom;
-    Holder<Geometry> geom_back;
+    RefCountHolder<Geometry> geom;
+    RefCountHolder<Geometry> geom_back;
     {
         Result re = geo_mgr->get_geometry("geom_sphere2.json", geom);
         if (!re)
@@ -107,8 +107,8 @@ void build_up_gl()
             die("%s", re.getErrorMessage().toRawUTF8());
     }
 
-    Holder<Material> mat;
-    Holder<Material> mat_back;
+    RefCountHolder<Material> mat;
+    RefCountHolder<Material> mat_back;
     {
         Result re = mat_mgr->get_material("material_color_light.json", mat);
         if (!re)
@@ -149,7 +149,7 @@ void main_loop(SDL_Window* window)
 {
     SceneNode* node = scene->get_root_node()->get_child_at(0);
 
-    Holder<SceneRenderer> renderer = new SceneRenderer();
+    RefCountHolder<SceneRenderer> renderer = new SceneRenderer();
 
     float angle = 0;
     Mat4f mat;

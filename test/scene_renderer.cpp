@@ -24,7 +24,7 @@
 #include "treeface/math/quat.h"
 
 #include <treecore/File.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/JSON.h>
 #include <treecore/StringRef.h>
 #include <treecore/Variant.h>
@@ -67,12 +67,12 @@ void build_up_sdl(SDL_Window** window, SDL_GLContext* context)
     }
 }
 
-Holder<GeometryManager> geo_mgr;
-Holder<MaterialManager> mat_mgr;
-Holder<SceneNodeManager> node_mgr;
+RefCountHolder<GeometryManager> geo_mgr;
+RefCountHolder<MaterialManager> mat_mgr;
+RefCountHolder<SceneNodeManager> node_mgr;
 PackageManager* pkg_mgr = nullptr;
 
-Holder<Scene> scene;
+RefCountHolder<Scene> scene;
 
 void build_up_gl()
 {
@@ -103,7 +103,7 @@ void build_up_gl()
             die("%s", re.getErrorMessage().toRawUTF8());
     }
 
-    Holder<SceneNode> builded_nodes;
+    RefCountHolder<SceneNode> builded_nodes;
     {
         Result re = node_mgr->add_nodes(json_root_node, builded_nodes);
         if (!re)
@@ -118,7 +118,7 @@ void build_up_gl()
 
 void main_loop(SDL_Window* window)
 {
-    Holder<SceneRenderer> renderer = new SceneRenderer();
+    RefCountHolder<SceneRenderer> renderer = new SceneRenderer();
 
     float angle = 0;
 

@@ -8,7 +8,7 @@
 #include "treeface/misc/propertyvalidator.h"
 
 #include <treecore/DynamicObject.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/NamedValueSet.h>
 #include <treecore/Result.h>
 #include <treecore/Variant.h>
@@ -19,9 +19,9 @@ namespace treeface {
 
 struct VisualObject::Impl
 {
-    Holder<SceneGraphMaterial> material = nullptr;
-    Holder<Geometry> geometry = nullptr;
-    Holder<VertexArray> vertex_array = nullptr;
+    RefCountHolder<SceneGraphMaterial> material = nullptr;
+    RefCountHolder<Geometry> geometry = nullptr;
+    RefCountHolder<VertexArray> vertex_array = nullptr;
 };
 
 VisualObject::VisualObject(): m_impl(new Impl())
@@ -35,7 +35,7 @@ VisualObject::~VisualObject()
 }
 
 
-treecore::Result VisualObject::build(Geometry* geom, SceneGraphMaterial* mat) NOEXCEPT
+treecore::Result VisualObject::build(Geometry* geom, SceneGraphMaterial* mat) noexcept
 {
     if (!geom)
         return Result::fail("geometry is null while building visual object");
@@ -49,17 +49,17 @@ treecore::Result VisualObject::build(Geometry* geom, SceneGraphMaterial* mat) NO
     return m_impl->vertex_array->build(geom->get_buffer(), geom->get_vertex_template(), mat->get_program());
 }
 
-SceneGraphMaterial* VisualObject::get_material() NOEXCEPT
+SceneGraphMaterial* VisualObject::get_material() noexcept
 {
     return m_impl->material;
 }
 
-Geometry* VisualObject::get_geometry() NOEXCEPT
+Geometry* VisualObject::get_geometry() noexcept
 {
     return m_impl->geometry;
 }
 
-VertexArray* VisualObject::get_vertex_array() NOEXCEPT
+VertexArray* VisualObject::get_vertex_array() noexcept
 {
     return m_impl->vertex_array;
 }

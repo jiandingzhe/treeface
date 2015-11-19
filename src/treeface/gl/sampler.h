@@ -6,27 +6,27 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-#include <treecore/Object.h>
+#include <treecore/RefCountObject.h>
 #include <treecore/PlatformDefs.h>
 #include <treecore/Result.h>
 
 namespace treeface {
 
-struct Sampler: public treecore::Object
+struct Sampler: public treecore::RefCountObject
 {
     Sampler();
     virtual ~Sampler();
 
     // invalidate copy and move
-    JUCE_DECLARE_NON_COPYABLE(Sampler);
-    JUCE_DECLARE_NON_MOVABLE(Sampler);
+    TREECORE_DECLARE_NON_COPYABLE(Sampler);
+    TREECORE_DECLARE_NON_MOVABLE(Sampler);
 
-    void use(GLuint unit) const NOEXCEPT
+    void use(GLuint unit) const noexcept
     {
         glBindSampler(unit, m_sampler);
     }
 
-    static void unuse(GLuint unit) NOEXCEPT
+    static void unuse(GLuint unit) noexcept
     {
         glBindSampler(unit, 0);
     }

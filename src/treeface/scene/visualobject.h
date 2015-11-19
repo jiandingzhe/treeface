@@ -3,7 +3,7 @@
 
 #include "treeface/scene/sceneitem.h"
 
-#include <treecore/Object.h>
+#include <treecore/RefCountObject.h>
 
 namespace treecore {
 class Result;
@@ -22,14 +22,14 @@ public:
     VisualObject();
     virtual ~VisualObject();
 
-    JUCE_DECLARE_NON_COPYABLE(VisualObject);
-    JUCE_DECLARE_NON_MOVABLE(VisualObject);
+    TREECORE_DECLARE_NON_COPYABLE(VisualObject);
+    TREECORE_DECLARE_NON_MOVABLE(VisualObject);
 
-    treecore::Result build(Geometry* geom, SceneGraphMaterial* mat) NOEXCEPT;
+    treecore::Result build(Geometry* geom, SceneGraphMaterial* mat) noexcept;
 
-    SceneGraphMaterial* get_material() NOEXCEPT;
-    Geometry* get_geometry() NOEXCEPT;
-    VertexArray* get_vertex_array() NOEXCEPT;
+    SceneGraphMaterial* get_material() noexcept;
+    Geometry* get_geometry() noexcept;
+    VertexArray* get_vertex_array() noexcept;
 
 protected:
     struct Impl;

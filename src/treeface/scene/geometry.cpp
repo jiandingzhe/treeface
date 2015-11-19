@@ -13,7 +13,7 @@
 #include <treecore/CriticalSection.h>
 #include <treecore/DynamicObject.h>
 #include <treecore/HashSet.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/NamedValueSet.h>
 #include <treecore/Result.h>
 #include <treecore/ScopedLock.h>
@@ -28,7 +28,7 @@ struct Geometry::Impl
 {
     Array<HostVertexAttrib> attrs;
     VertexTemplate vtx_template;
-    Holder<VertexIndexBuffer> buffer;
+    RefCountHolder<VertexIndexBuffer> buffer;
     GLenum primitive;
 };
 
@@ -64,7 +64,7 @@ public:
 juce_ImplementSingleton(GeometryPropertyValidator)
 
 
-treecore::Result Geometry::build(const treecore::var& geom_root_node) NOEXCEPT
+treecore::Result Geometry::build(const treecore::var& geom_root_node) noexcept
 {
     if (!geom_root_node.isObject())
         return Result::fail("geometry root node is not a object");
@@ -103,7 +103,7 @@ treecore::Result Geometry::build(const treecore::var& geom_root_node) NOEXCEPT
     for (int i_vtx = 0; i_vtx < vtx_nodes->size(); i_vtx++)
     {
         // get and validate vertex node
-        const var& vtx_node = vtx_nodes->getReference(i_vtx);
+        const var& vtx_node = (*vtx_nodes)[i_vtx];
 
         if (!vtx_node.isArray())
             return Result::fail("vertex node at "+String(i_vtx)+" is not an array");
@@ -116,7 +116,7 @@ treecore::Result Geometry::build(const treecore::var& geom_root_node) NOEXCEPT
         // fill data
         for (int i_elem = 0; i_elem < n_vtx_elem; i_elem++)
         {
-            m_impl->vtx_template.set_value_at(vtx_data, i_elem, vtx_elems->getReference(i_elem));
+            m_impl->vtx_template.set_value_at(vtx_data, i_elem, (*vtx_elems)[i_elem]);
         }
 
         // move forward pointer of current vertex data
@@ -130,7 +130,7 @@ treecore::Result Geometry::build(const treecore::var& geom_root_node) NOEXCEPT
 
     for (int i_idx = 0; i_idx < idx_nodes->size(); i_idx++)
     {
-        int idx = int(idx_nodes->getReference(i_idx));
+        int idx = int((*idx_nodes)[i_idx]);
         if (idx >= vtx_nodes->size())
             return Result::fail("vertex amount is "+String(vtx_nodes->size())+", but got index "+String(idx));
         m_impl->buffer->m_data_idx.add(idx);
@@ -142,32 +142,32 @@ treecore::Result Geometry::build(const treecore::var& geom_root_node) NOEXCEPT
     return Result::ok();
 }
 
-bool Geometry::is_dirty() const NOEXCEPT
+bool Geometry::is_dirty() const noexcept
 {
     return m_impl->buffer->m_data_changed;
 }
 
-void Geometry::mark_dirty() NOEXCEPT
+void Geometry::mark_dirty() noexcept
 {
     m_impl->buffer->m_data_changed = true;
 }
 
-GLenum Geometry::get_primitive() const NOEXCEPT
+GLenum Geometry::get_primitive() const noexcept
 {
     return m_impl->primitive;
 }
 
-void Geometry::set_primitive(GLenum value) NOEXCEPT
+void Geometry::set_primitive(GLenum value) noexcept
 {
     m_impl->primitive = value;
 }
 
-treeface::VertexIndexBuffer* Geometry::get_buffer() NOEXCEPT
+treeface::VertexIndexBuffer* Geometry::get_buffer() noexcept
 {
     return m_impl->buffer.get();
 }
 
-const VertexTemplate& Geometry::get_vertex_template() const NOEXCEPT
+const VertexTemplate& Geometry::get_vertex_template() const noexcept
 {
     return m_impl->vtx_template;
 }

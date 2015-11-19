@@ -16,10 +16,13 @@ namespace treeface {
  * The layout of Vec4 is compatiable with OpenGL, so the data can be directly
  * transmitted to GL server side buffers or program attributes.
  */
+TREECORE_ALN_BEGIN(16)
 template<typename T, int SZ = sizeof(T)*4>
-struct Vec4: public treecore::AlignedMalloc<sizeof(T)*4>
+struct Vec4
 {
     typedef treecore::SIMDType<SZ> DataType;
+
+    TREECORE_ALIGNED_ALLOCATOR(Vec4);
 
     /**
      * @brief default constructor
@@ -250,7 +253,7 @@ struct Vec4: public treecore::AlignedMalloc<sizeof(T)*4>
      * transmitted to GL buffers or program attributes directly.
      */
     DataType data;
-};
+} TREECORE_ALN_END(16);
 
 /**
  * @brief vector add

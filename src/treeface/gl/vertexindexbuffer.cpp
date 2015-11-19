@@ -25,7 +25,7 @@ VertexIndexBuffer::~VertexIndexBuffer()
         glDeleteBuffers(1, &m_buffer_idx);
 }
 
-void VertexIndexBuffer::upload_data() const NOEXCEPT
+void VertexIndexBuffer::upload_data() const noexcept
 {
     glBufferData(GL_ARRAY_BUFFER,
                  m_data_vtx.getSize(),

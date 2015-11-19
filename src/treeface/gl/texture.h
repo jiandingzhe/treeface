@@ -6,7 +6,7 @@
 
 #include <treecore/ArrayRef.h>
 #include <treecore/MathsFunctions.h>
-#include <treecore/Object.h>
+#include <treecore/RefCountObject.h>
 #include <treecore/Result.h>
 
 #define GLEW_STATIC
@@ -23,15 +23,15 @@ extern const GLenum TEXTURE_UNITS[32];
 /**
  * @brief wrapper for OpenGL 2D texture
  */
-class Texture: public treecore::Object
+class Texture: public treecore::RefCountObject
 {
 public:
     Texture();
     virtual ~Texture();
 
     // disable copy and move
-    JUCE_DECLARE_NON_COPYABLE(Texture);
-    JUCE_DECLARE_NON_MOVABLE(Texture);
+    TREECORE_DECLARE_NON_COPYABLE(Texture);
+    TREECORE_DECLARE_NON_MOVABLE(Texture);
 
     /**
      * @brief Set image data.
@@ -44,7 +44,7 @@ public:
      *
      * @return ok if success, otherwise false.
      */
-    treecore::Result set_image_data(ImageRef image, GLint internal_fmt, bool gen_mipmap) NOEXCEPT;
+    treecore::Result set_image_data(ImageRef image, GLint internal_fmt, bool gen_mipmap) noexcept;
 
     /**
      * @brief Specify image data for all mipmap levels explicitly.
@@ -57,7 +57,7 @@ public:
      *
      * @return ok if success, otherwise false.
      */
-    treecore::Result set_image_data(treecore::ArrayRef<ImageRef> images, GLint internal_fmt) NOEXCEPT;
+    treecore::Result set_image_data(treecore::ArrayRef<ImageRef> images, GLint internal_fmt) noexcept;
 
     /**
      * @brief build texture from JSON data
@@ -68,10 +68,10 @@ public:
      */
     treecore::Result build(const treecore::var& texture_root_node);
 
-    inline float get_min_lod() const NOEXCEPT
+    inline float get_min_lod() const noexcept
     { return m_min_lod; }
 
-    inline void set_min_lod(float value) NOEXCEPT
+    inline void set_min_lod(float value) noexcept
     {
         if (m_min_lod != value)
         {
@@ -80,10 +80,10 @@ public:
         }
     }
 
-    inline float get_max_lod() const NOEXCEPT
+    inline float get_max_lod() const noexcept
     { return m_max_lod; }
 
-    inline void set_max_lod(float value) NOEXCEPT
+    inline void set_max_lod(float value) noexcept
     {
         if (m_max_lod != value)
         {
@@ -92,10 +92,10 @@ public:
         }
     }
 
-    inline GLenum get_wrap_s() const NOEXCEPT
+    inline GLenum get_wrap_s() const noexcept
     { return m_wrap_s; }
 
-    inline void set_wrap_s(GLenum value) NOEXCEPT
+    inline void set_wrap_s(GLenum value) noexcept
     {
         if (m_wrap_s != value)
         {
@@ -104,10 +104,10 @@ public:
         }
     }
 
-    inline GLenum get_wrap_t() const NOEXCEPT
+    inline GLenum get_wrap_t() const noexcept
     { return m_wrap_t; }
 
-    inline void set_wrap_t(GLenum value) NOEXCEPT
+    inline void set_wrap_t(GLenum value) noexcept
     {
         if (m_wrap_t != value)
         {
@@ -116,10 +116,10 @@ public:
         }
     }
 
-    inline GLenum get_min_filter() const NOEXCEPT
+    inline GLenum get_min_filter() const noexcept
     { return m_min_filter; }
 
-    inline void set_min_filter(GLenum value) NOEXCEPT
+    inline void set_min_filter(GLenum value) noexcept
     {
         if (m_min_filter != value)
         {
@@ -128,10 +128,10 @@ public:
         }
     }
 
-    inline GLenum get_mag_filter() const NOEXCEPT
+    inline GLenum get_mag_filter() const noexcept
     { return m_mag_filter; }
 
-    inline void set_mag_filter(GLenum value) NOEXCEPT
+    inline void set_mag_filter(GLenum value) noexcept
     {
         if (m_mag_filter != value)
         {
@@ -146,7 +146,7 @@ public:
      * If any cached texture parameter is modified, they will be uploaded to the
      * device.
      */
-    inline void use() NOEXCEPT
+    inline void use() noexcept
     {
         glBindTexture(GL_TEXTURE_2D, m_texture);
 
@@ -166,7 +166,7 @@ public:
     /**
      * @brief bind zero
      */
-    static inline void unuse() NOEXCEPT
+    static inline void unuse() noexcept
     {
         glBindTexture(GL_TEXTURE_2D, 0);
     }

@@ -32,15 +32,16 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-    NamedValueSet& root_kv = root_node.getDynamicObject()->getProperties();
+    NamedValueSet::MapType& root_kv = root_node.getDynamicObject()->getProperties().getValues();
+    NamedValueSet::MapType::ConstIterator i_root_kv(root_kv);
     int root_size = root_kv.size();
     printf("root has %d properties\n", root_size);
 
-    for (int i = 0; i < root_size; i++)
+    while (i_root_kv.next())
     {
-        Identifier key = root_kv.getName(i);
-        printf("  %d: %s\n", i, key.toString().toRawUTF8());
-        const var& value = root_kv[key];
+        Identifier key = i_root_kv.key();
+        printf("  %s\n", key.toString().toRawUTF8());
+        const var& value = i_root_kv.value();
 
         if (value.isString())
         {

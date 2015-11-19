@@ -12,7 +12,7 @@
 #include "treeface/scene/visualobject.h"
 
 #include <treecore/File.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/JSON.h>
 #include <treecore/Logger.h>
 #include <treecore/ScopedPointer.h>
@@ -66,13 +66,13 @@ void TestFramework::content()
 
     PackageManager* pkg_mgr = PackageManager::getInstance();
 
-    Holder<MaterialManager> mat_mgr = new MaterialManager();
-    Holder<GeometryManager> geo_mgr = new GeometryManager();
-    Holder<SceneNodeManager> node_mgr = new SceneNodeManager(geo_mgr, mat_mgr);
+    RefCountHolder<MaterialManager> mat_mgr = new MaterialManager();
+    RefCountHolder<GeometryManager> geo_mgr = new GeometryManager();
+    RefCountHolder<SceneNodeManager> node_mgr = new SceneNodeManager(geo_mgr, mat_mgr);
 
     pkg_mgr->add_package(File::getCurrentWorkingDirectory().getChildFile("../examples/resource.zip"), PackageManager::KEEP_EXISTING);
 
-    Holder<SceneNode> root_node;
+    RefCountHolder<SceneNode> root_node;
     OK(node_mgr->add_nodes(String("nodes.json"), root_node));
     SceneNode* node_a = node_mgr->get_node("a");
     SceneNode* node_b = node_mgr->get_node("b");
@@ -96,9 +96,9 @@ void TestFramework::content()
     OK(mat_mgr->get_material("material2.json", &material2));
     OK(mat_mgr->get_material("material_vert_color.json", &material_vert_color));
 
-    Holder<Geometry> geom_cube;
-    Holder<Geometry> geom_colored;
-    Holder<Geometry> geom_simple;
+    RefCountHolder<Geometry> geom_cube;
+    RefCountHolder<Geometry> geom_colored;
+    RefCountHolder<Geometry> geom_simple;
 
     OK(geo_mgr->get_geometry("geom_cube.json",    geom_cube));
     OK(geo_mgr->get_geometry("geom_colored.json", geom_colored));

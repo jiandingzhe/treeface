@@ -9,7 +9,7 @@
 
 #include <treecore/Array.h>
 #include <treecore/HashMap.h>
-#include <treecore/Object.h>
+#include <treecore/RefCountObject.h>
 #include <treecore/Result.h>
 #include <treecore/String.h>
 
@@ -47,7 +47,7 @@ struct UniformInfo: public VertexAttrib
  * The cached set_uniform() methods seems totally useless, and it will probably
  * be deprecated in future.
  */
-class Program: public treecore::Object
+class Program: public treecore::RefCountObject
 {
     friend class Material;
     friend struct VertexArray;
@@ -61,8 +61,8 @@ public:
     Program();
 
     // invalidate copy and move
-    JUCE_DECLARE_NON_COPYABLE(Program);
-    JUCE_DECLARE_NON_MOVABLE(Program);
+    TREECORE_DECLARE_NON_COPYABLE(Program);
+    TREECORE_DECLARE_NON_MOVABLE(Program);
 
     /**
      * @brief the GL shader and program objects will also be released
@@ -77,7 +77,7 @@ public:
      */
     treecore::Result build(const char* src_vert, const char* src_frag);
 
-    inline bool usable() const NOEXCEPT
+    inline bool usable() const noexcept
     {
         return compiled_and_linked;
     }
@@ -85,22 +85,22 @@ public:
     /**
      * @brief bind program, upload outdated cached uniforms
      */
-    void use() NOEXCEPT;
+    void use() noexcept;
 
     /**
      * @brief bind zero
      */
-    inline static void unuse() NOEXCEPT
+    inline static void unuse() noexcept
     {
         glUseProgram(0);
     }
 
-    void instant_set_uniform(GLint uni_loc, GLint value) const NOEXCEPT;
-    void instant_set_uniform(GLint uni_loc, GLuint value) const NOEXCEPT;
-    void instant_set_uniform(GLint uni_loc, GLfloat value) const NOEXCEPT;
-    void instant_set_uniform(GLint uni_loc, const Sampler& sampler) const NOEXCEPT;
-    void instant_set_uniform(GLint uni_loc, const Vec4f& value) const NOEXCEPT;
-    void instant_set_uniform(GLint uni_loc, const Mat4f& value) const NOEXCEPT;
+    void instant_set_uniform(GLint uni_loc, GLint value) const noexcept;
+    void instant_set_uniform(GLint uni_loc, GLuint value) const noexcept;
+    void instant_set_uniform(GLint uni_loc, GLfloat value) const noexcept;
+    void instant_set_uniform(GLint uni_loc, const Sampler& sampler) const noexcept;
+    void instant_set_uniform(GLint uni_loc, const Vec4f& value) const noexcept;
+    void instant_set_uniform(GLint uni_loc, const Mat4f& value) const noexcept;
 
     /**
      * @brief get vertex attribute index by name
@@ -108,41 +108,41 @@ public:
      * @return attribute index. -1 will be returned if the name does not exist
      * in program.
      */
-    int get_attribute_index(const treecore::String& name) const NOEXCEPT;
+    int get_attribute_index(const treecore::String& name) const noexcept;
 
     /**
      * @brief get vertex attribute info by index
      * @param i_attr: attribute index
      * @return attribute information
      */
-    const VertexAttrib& get_attribute_info(int i_attr) const NOEXCEPT;
+    const VertexAttrib& get_attribute_info(int i_attr) const noexcept;
 
     /**
      * @brief get uniform index by name
      * @param name: uniform name
      * @return uniform index. -1 will be returned if name not exist.
      */
-    int get_uniform_index(const treecore::String& name) const NOEXCEPT;
+    int get_uniform_index(const treecore::String& name) const noexcept;
 
     /**
      * @brief get uniform index by location
      * @param uni_loc: uniform location
      * @return uniform index. -1 will be returned if location not exist.
      */
-    int get_uniform_index(const GLint uni_loc) const NOEXCEPT;
+    int get_uniform_index(const GLint uni_loc) const noexcept;
 
     /**
      * @brief get uniform info by index
      * @param i_attr: uniform index
      * @return uniform information
      */
-    const UniformInfo& get_uniform_info(int i_uni) const NOEXCEPT;
+    const UniformInfo& get_uniform_info(int i_uni) const noexcept;
 
     /**
      *
      *
      */
-    GLint get_uniform_location(const treecore::String& name) const NOEXCEPT;
+    GLint get_uniform_location(const treecore::String& name) const noexcept;
 protected:
     struct Impl;
 

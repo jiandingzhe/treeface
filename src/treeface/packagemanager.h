@@ -34,8 +34,8 @@ public:
 
     juce_DeclareSingleton(PackageManager, false);
 
-    JUCE_DECLARE_NON_COPYABLE(PackageManager);
-    JUCE_DECLARE_NON_MOVABLE(PackageManager);
+    TREECORE_DECLARE_NON_COPYABLE(PackageManager);
+    TREECORE_DECLARE_NON_MOVABLE(PackageManager);
 
     /**
      * @brief add a zip package into resource manager
@@ -86,7 +86,7 @@ public:
     treecore::Result get_item_data(const treecore::String& name,
                                    treecore::MemoryBlock& data);
 
-    bool has_resource(const treecore::String& name) const NOEXCEPT;
+    bool has_resource(const treecore::String& name) const noexcept;
 
 protected:
     PackageManager();

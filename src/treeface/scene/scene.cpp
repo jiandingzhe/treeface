@@ -14,7 +14,7 @@
 #include "treeface/packagemanager.h"
 
 #include <treecore/DynamicObject.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/JSON.h>
 #include <treecore/MemoryBlock.h>
 #include <treecore/NamedValueSet.h>
@@ -71,7 +71,7 @@ public:
 
 juce_ImplementSingleton(ScenePropertyValidator)
 
-treecore::Result Scene::build(const treecore::String& name) NOEXCEPT
+treecore::Result Scene::build(const treecore::String& name) noexcept
 {
     // get JSON source
     MemoryBlock json_src;
@@ -103,7 +103,7 @@ treecore::Result Scene::build(const treecore::String& name) NOEXCEPT
     return Result::ok();
 }
 
-treecore::Result Scene::build(const treecore::var& root) NOEXCEPT
+treecore::Result Scene::build(const treecore::var& root) noexcept
 {
     //
     // validate root node
@@ -129,11 +129,11 @@ treecore::Result Scene::build(const treecore::var& root) NOEXCEPT
         Array<var>* values = root_kv[KEY_GLOBAL_LIGHT_DIRECTION].getArray();
         if (values->size() != 4)
             return Result::fail("Scene: global light direction is not an array of 4 values");
-        m_guts->global_light_direction.set(float(values->getReference(0)),
-                                           float(values->getReference(1)),
-                                           float(values->getReference(2)),
-                                           float(values->getReference(3))
-                                           );
+        m_guts->global_light_direction.set(float((*values)[0]),
+                float((*values)[1]),
+                float((*values)[2]),
+                float((*values)[3])
+                );
     }
 
     // color of global light
@@ -142,11 +142,11 @@ treecore::Result Scene::build(const treecore::var& root) NOEXCEPT
         Array<var>* values = root_kv[KEY_GLOBAL_LIGHT_COLOR].getArray();
         if (values->size() != 4)
             return Result::fail("Scene: global light color is not an array of 4 values");
-        m_guts->global_light_color.set(float(values->getReference(0)),
-                                       float(values->getReference(1)),
-                                       float(values->getReference(2)),
-                                       float(values->getReference(3))
-                                       );
+        m_guts->global_light_color.set(float((*values)[0]),
+                                       float((*values)[1]),
+                                       float((*values)[2]),
+                                       float((*values)[3])
+                );
     }
 
     // global light intensities
@@ -155,18 +155,18 @@ treecore::Result Scene::build(const treecore::var& root) NOEXCEPT
         Array<var>* values = root_kv[KEY_GLOBAL_LIGHT_AMB].getArray();
         if (values->size() != 4)
             return Result::fail("Scene: global light ambient is not an array of 4 values");
-        m_guts->global_light_ambient.set(float(values->getReference(0)),
-                                       float(values->getReference(1)),
-                                       float(values->getReference(2)),
-                                       float(values->getReference(3))
-                                       );
+        m_guts->global_light_ambient.set(float((*values)[0]),
+                                         float((*values)[1]),
+                                         float((*values)[2]),
+                                         float((*values)[3])
+                                         );
     }
 
     // scene graph
     Array<var>* scenenode_nodes = root_kv[KEY_NODES].getArray();
     for (int i = 0; i < scenenode_nodes->size(); i++)
     {
-        const var& scenenode_data = scenenode_nodes->getReference(i);
+        const var& scenenode_data = (*scenenode_nodes)[i];
         SceneNode* node = nullptr;
 
         Result re = m_guts->node_mgr->add_nodes(scenenode_data, &node);
@@ -179,69 +179,69 @@ treecore::Result Scene::build(const treecore::var& root) NOEXCEPT
     return Result::ok();
 }
 
-SceneNode* Scene::get_root_node() NOEXCEPT
+SceneNode* Scene::get_root_node() noexcept
 {
     return m_guts->root_node.get();
 }
 
-SceneNode* Scene::get_node(const treecore::String& name) NOEXCEPT
+SceneNode* Scene::get_node(const treecore::String& name) noexcept
 {
     return m_guts->node_mgr->get_node(name);
 }
 
-GeometryManager* Scene::get_geometry_manager() NOEXCEPT
+GeometryManager* Scene::get_geometry_manager() noexcept
 {
     return m_guts->geo_mgr.get();
 }
 
-MaterialManager* Scene::get_material_manager() NOEXCEPT
+MaterialManager* Scene::get_material_manager() noexcept
 {
     return m_guts->mat_mgr.get();
 }
 
-const Vec4f& Scene::get_global_light_color() const NOEXCEPT
+const Vec4f& Scene::get_global_light_color() const noexcept
 {
     return m_guts->global_light_color;
 }
 
-void Scene::set_global_light_color(float r, float g, float b, float a) NOEXCEPT
+void Scene::set_global_light_color(float r, float g, float b, float a) noexcept
 {
     m_guts->global_light_color.set(r, g, b, a);
 }
 
-void Scene::set_global_light_color(const Vec4f& value) NOEXCEPT
+void Scene::set_global_light_color(const Vec4f& value) noexcept
 {
     m_guts->global_light_color = value;
 }
 
-const Vec4f& Scene::get_global_light_direction() const NOEXCEPT
+const Vec4f& Scene::get_global_light_direction() const noexcept
 {
     return m_guts->global_light_direction;
 }
 
-void Scene::set_global_light_direction(float x, float y, float z) NOEXCEPT
+void Scene::set_global_light_direction(float x, float y, float z) noexcept
 {
     m_guts->global_light_direction.set(x, y, z, 0);
     m_guts->global_light_direction.normalize();
 }
 
-void Scene::set_global_light_direction(const Vec4f& value) NOEXCEPT
+void Scene::set_global_light_direction(const Vec4f& value) noexcept
 {
     m_guts->global_light_direction = value;
     m_guts->global_light_direction.normalize();
 }
 
-const Vec4f& Scene::get_global_light_ambient() const NOEXCEPT
+const Vec4f& Scene::get_global_light_ambient() const noexcept
 {
     return m_guts->global_light_ambient;
 }
 
-void Scene::set_global_light_ambient(float r, float g, float b, float a) NOEXCEPT
+void Scene::set_global_light_ambient(float r, float g, float b, float a) noexcept
 {
     m_guts->global_light_ambient.set(r, g, b, a);
 }
 
-void Scene::set_global_light_ambient(const Vec4f& value) NOEXCEPT
+void Scene::set_global_light_ambient(const Vec4f& value) noexcept
 {
     m_guts->global_light_ambient = value;
 }

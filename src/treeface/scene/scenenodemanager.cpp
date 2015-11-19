@@ -31,10 +31,10 @@ namespace treeface {
 
 struct SceneNodeManager::Impl
 {
-    Holder<GeometryManager> geo_mgr;
-    Holder<MaterialManager> mat_mgr;
+    RefCountHolder<GeometryManager> geo_mgr;
+    RefCountHolder<MaterialManager> mat_mgr;
 
-    HashMap<String, Holder<SceneNode> > nodes;
+    HashMap<String, RefCountHolder<SceneNode> > nodes;
 };
 
 SceneNodeManager::SceneNodeManager(GeometryManager* geo_mgr, MaterialManager* mat_mgr)
@@ -57,7 +57,7 @@ treecore::Result SceneNodeManager::add_nodes(const treecore::var& data, SceneNod
     return build_node(data, root_node);
 }
 
-treecore::Result SceneNodeManager::add_nodes(const treecore::var& data, treecore::Holder<SceneNode>& root_node)
+treecore::Result SceneNodeManager::add_nodes(const treecore::var& data, treecore::RefCountHolder<SceneNode>& root_node)
 {
     SceneNode* _root_node = nullptr;
     Result re = add_nodes(data, &_root_node);
@@ -88,7 +88,7 @@ treecore::Result SceneNodeManager::add_nodes(const treecore::String& data_name, 
     return add_nodes(data, root_pp);
 }
 
-treecore::Result SceneNodeManager::add_nodes(const treecore::String& data_name, treecore::Holder<SceneNode>& root_node)
+treecore::Result SceneNodeManager::add_nodes(const treecore::String& data_name, treecore::RefCountHolder<SceneNode>& root_node)
 {
     SceneNode* _root_node = nullptr;
     Result re = add_nodes(data_name, &_root_node);
@@ -146,7 +146,7 @@ treecore::Result SceneNodeManager::build_visual_item(const var &data, VisualObje
         return Result::fail("failed to build visual item:\n" + mat_re.getErrorMessage());
 
     String name_geom = data_kv[KEY_VISUAL_GEO].toString();
-    Holder<Geometry> geom;
+    RefCountHolder<Geometry> geom;
     Result geom_re = m_impl->geo_mgr->get_geometry(name_geom, geom);
     if (!geom_re)
         return Result::fail("failed to build visual item:\n" + geom_re.getErrorMessage());
@@ -199,10 +199,10 @@ treecore::Result SceneNodeManager::build_node(const treecore::var& data, SceneNo
         if (trans_array->size() != 16)
             return Result::fail("transform is not an array of 16 numbers: " + String(trans_array->size()));
 
-        Mat4f mat(float(trans_array->getReference(0)), float(trans_array->getReference(1)), float(trans_array->getReference(2)), float(trans_array->getReference(3)),
-                  float(trans_array->getReference(4)), float(trans_array->getReference(5)), float(trans_array->getReference(6)), float(trans_array->getReference(7)),
-                  float(trans_array->getReference(8)), float(trans_array->getReference(9)), float(trans_array->getReference(10)), float(trans_array->getReference(11)),
-                  float(trans_array->getReference(12)), float(trans_array->getReference(13)), float(trans_array->getReference(14)), float(trans_array->getReference(15)));
+        Mat4f mat(static_cast<float>((*trans_array)[0]),  float((*trans_array)[1]),  float((*trans_array)[2]),  float((*trans_array)[3]),
+                  static_cast<float>((*trans_array)[4]),  float((*trans_array)[5]),  float((*trans_array)[6]),  float((*trans_array)[7]),
+                  static_cast<float>((*trans_array)[8]),  float((*trans_array)[9]),  float((*trans_array)[10]), float((*trans_array)[11]),
+                  static_cast<float>((*trans_array)[12]), float((*trans_array)[13]), float((*trans_array)[14]), float((*trans_array)[15]));
         node->m_impl->trans = mat;
         node->m_impl->trans_dirty = true;
     }
@@ -217,7 +217,7 @@ treecore::Result SceneNodeManager::build_node(const treecore::var& data, SceneNo
         {
             // TODO: may be not a VisualObject
             VisualObject* item = new VisualObject();
-            Result re = build_visual_item(visual_array->getReference(i), item);
+            Result re = build_visual_item((*visual_array)[i], item);
             if (!re)
                 return re;
             node->add_item(item);
@@ -233,7 +233,7 @@ treecore::Result SceneNodeManager::build_node(const treecore::var& data, SceneNo
         for (int i = 0; i < child_array->size(); i++)
         {
             SceneNode* child = new SceneNode();
-            Result re = build_node(child_array->getReference(i), child);
+            Result re = build_node((*child_array)[i], child);
             if (!re)
                 return re;
 

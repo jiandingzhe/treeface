@@ -55,12 +55,12 @@ void TestFramework::content()
     build_up_sdl(&window, &context);
 
     PackageManager* pkg_mgr = PackageManager::getInstance();
-    Holder<GeometryManager> geom_mgr = new GeometryManager();
+    RefCountHolder<GeometryManager> geom_mgr = new GeometryManager();
 
     pkg_mgr->add_package(File("../examples/resource.zip"), PackageManager::KEEP_EXISTING);
     OK(pkg_mgr->has_resource("geom_colored.json"));
 
-    Holder<Geometry> geom;
+    RefCountHolder<Geometry> geom;
     OK(geom_mgr->get_geometry("geom_colored.json", geom));
 
     IS(geom->get_primitive(), GL_TRIANGLES);

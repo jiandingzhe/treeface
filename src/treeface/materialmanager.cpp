@@ -16,11 +16,12 @@
 
 #include <treecore/DynamicObject.h>
 #include <treecore/HashMap.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/MemoryBlock.h>
 #include <treecore/JSON.h>
 #include <treecore/Singleton.h>
 #include <treecore/String.h>
+#include <treecore/Variant.h>
 
 #if defined TREEFACE_GL_3_0
 #   error "TODO what should be it?"
@@ -38,7 +39,7 @@ namespace treeface {
 
 struct MaterialManager::Impl
 {
-    HashMap<String, Holder<Material> > materials;
+    HashMap<String, RefCountHolder<Material> > materials;
 };
 
 MaterialManager::MaterialManager()
@@ -98,7 +99,7 @@ public:
 };
 juce_ImplementSingleton(MaterialPropertyValidator)
 
-treecore::Result MaterialManager::build_material(const treecore::var& data, treecore::Holder<Material>& mat)
+treecore::Result MaterialManager::build_material(const treecore::var& data, treecore::RefCountHolder<Material>& mat)
 {
     if (!data.isObject())
     {
@@ -129,8 +130,8 @@ treecore::Result MaterialManager::build_material(const treecore::var& data, tree
     if (program_names->size() != 2)
         return Result::fail("Invalid program specification: "+node_program.toString()+".\nExpect an array of two strings specifying vertex and fragment shader name.");
 
-    String name_vertex = program_names->getReference(0).toString();
-    String name_frag = program_names->getReference(1).toString();
+    String name_vertex = (*program_names)[0].toString();
+    String name_frag = (*program_names)[1].toString();
 
     MemoryBlock src_vert_raw;
     MemoryBlock src_frag_raw;
@@ -221,7 +222,7 @@ treecore::Result MaterialManager::build_material(const treecore::var& data, tree
 
         for (int i_tex = 0; i_tex < tex_list->size(); i_tex++)
         {
-            const var& tex_node = tex_list->getReference(i_tex);
+            const var& tex_node = (*tex_list)[i_tex];
 
             Texture* tex_obj = new Texture();
             Result tex_re = tex_obj->build(tex_node);
@@ -245,7 +246,7 @@ treecore::Result MaterialManager::build_material(const treecore::var& data, tree
     return Result::ok();
 }
 
-Result MaterialManager::get_material(const String& name, Holder<Material>& mat)
+Result MaterialManager::get_material(const String& name, RefCountHolder<Material>& mat)
 {
     if (m_impl->materials.contains(name))
     {
@@ -296,7 +297,7 @@ Result MaterialManager::get_material(const String& name, Holder<Material>& mat)
 
 treecore::Result MaterialManager::get_material(const treecore::String& name, Material** mat_pp)
 {
-    Holder<Material> mat;
+    RefCountHolder<Material> mat;
     Result re = get_material(name, mat);
     *mat_pp = mat.get();
     return re;

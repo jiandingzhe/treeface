@@ -3,8 +3,8 @@
 
 #include "treeface/common.h"
 
-#include <treecore/Holder.h>
-#include <treecore/Object.h>
+#include <treecore/RefCountHolder.h>
+#include <treecore/RefCountObject.h>
 #include <treecore/String.h>
 #include <treecore/Result.h>
 
@@ -13,19 +13,19 @@ namespace treeface {
 
 class Geometry;
 
-class GeometryManager: public treecore::Object
+class GeometryManager: public treecore::RefCountObject
 {
 public:
     GeometryManager();
 
-    JUCE_DECLARE_NON_COPYABLE(GeometryManager);
-    JUCE_DECLARE_NON_MOVABLE(GeometryManager);
+    TREECORE_DECLARE_NON_COPYABLE(GeometryManager);
+    TREECORE_DECLARE_NON_MOVABLE(GeometryManager);
 
     virtual ~GeometryManager();
 
-    treecore::Result get_geometry(const treecore::String& name, treecore::Holder<Geometry>& result);
+    treecore::Result get_geometry(const treecore::String& name, treecore::RefCountHolder<Geometry>& result);
 
-    bool geometry_is_cached(const treecore::String& name) const NOEXCEPT;
+    bool geometry_is_cached(const treecore::String& name) const noexcept;
     bool release_geometry_hold(const treecore::String& name);
 
 private:

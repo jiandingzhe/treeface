@@ -3,7 +3,7 @@
 
 #include "treeface/common.h"
 
-#include <treecore/Object.h>
+#include <treecore/RefCountObject.h>
 
 namespace treecore {
 class Result;
@@ -12,24 +12,24 @@ class Result;
 namespace treeface {
 class SceneNode;
 
-class SceneQuery: public treecore::Object
+class SceneQuery: public treecore::RefCountObject
 {
 public:
     SceneQuery();
 
-    JUCE_DECLARE_NON_COPYABLE(SceneQuery);
+    TREECORE_DECLARE_NON_COPYABLE(SceneQuery);
 
     virtual ~SceneQuery();
 
-    treecore::Result traverse(SceneNode* root) NOEXCEPT;
+    treecore::Result traverse(SceneNode* root) noexcept;
 
 protected:
-    virtual treecore::Result traverse_begin() NOEXCEPT = 0;
-    virtual treecore::Result traverse_one_node(SceneNode* node) NOEXCEPT = 0;
-    virtual treecore::Result traverse_end() NOEXCEPT = 0;
+    virtual treecore::Result traverse_begin() noexcept = 0;
+    virtual treecore::Result traverse_one_node(SceneNode* node) noexcept = 0;
+    virtual treecore::Result traverse_end() noexcept = 0;
 
 private:
-    treecore::Result recur_part(SceneNode* node) NOEXCEPT;
+    treecore::Result recur_part(SceneNode* node) noexcept;
 };
 
 } // namespace treeface

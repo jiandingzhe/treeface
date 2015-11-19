@@ -12,7 +12,7 @@
 #include "treeface/misc/stringcast.h"
 
 #include <treecore/Logger.h>
-#include <treecore/Object.h>
+#include <treecore/RefCountObject.h>
 #include <treecore/Result.h>
 #include <treecore/String.h>
 #include <treecore/StringRef.h>
@@ -31,17 +31,17 @@ Material::~Material()
         delete m_impl;
 }
 
-Program* Material::get_program() NOEXCEPT
+Program* Material::get_program() noexcept
 {
     return m_program.get();
 }
 
-int32 Material::get_num_textures() const NOEXCEPT
+int32 Material::get_num_textures() const noexcept
 {
     return m_impl->layers.size();
 }
 
-Texture* Material::get_texture(treecore::int32 layer_idx) NOEXCEPT
+Texture* Material::get_texture(treecore::int32 layer_idx) noexcept
 {
     if (layer_idx >= m_impl->layers.size())
         return nullptr;
@@ -49,7 +49,7 @@ Texture* Material::get_texture(treecore::int32 layer_idx) NOEXCEPT
         return m_impl->layers[layer_idx].gl_texture.get();
 }
 
-Texture* Material::get_texture(treecore::StringRef name) NOEXCEPT
+Texture* Material::get_texture(treecore::StringRef name) noexcept
 {
     for (int i = 0; i < m_impl->layers.size(); i++)
     {
@@ -60,12 +60,12 @@ Texture* Material::get_texture(treecore::StringRef name) NOEXCEPT
     return nullptr;
 }
 
-void Material::use() NOEXCEPT
+void Material::use() noexcept
 {
     // use materials
     for (int i_layer = 0; i_layer < m_impl->layers.size(); i_layer++)
     {
-        TextureLayer& curr_layer = m_impl->layers.getReference(i_layer);
+        TextureLayer& curr_layer = m_impl->layers[i_layer];
 
         glActiveTexture(GL_TEXTURE0 + i_layer);
         curr_layer.gl_texture->use();
@@ -77,16 +77,16 @@ void Material::use() NOEXCEPT
     // set samplers to program
     for (int i_layer = 0; i_layer < m_impl->layers.size(); i_layer++)
     {
-        TextureLayer& curr_layer = m_impl->layers.getReference(i_layer);
+        TextureLayer& curr_layer = m_impl->layers[i_layer];
 		m_program->instant_set_uniform(curr_layer.program_uniform_loc, i_layer);
     }
 }
 
-void Material::unuse() NOEXCEPT
+void Material::unuse() noexcept
 {
     for (int i_layer = 0; i_layer < m_impl->layers.size(); i_layer++)
     {
-        TextureLayer& curr_layer = m_impl->layers.getReference(i_layer);
+        TextureLayer& curr_layer = m_impl->layers[i_layer];
 
         glActiveTexture(GL_TEXTURE0 + i_layer);
         glBindSampler(i_layer, 0);

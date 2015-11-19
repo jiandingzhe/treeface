@@ -5,12 +5,12 @@
 
 #include <treecore/IntTypes.h>
 #include <treecore/NamedValueSet.h>
-#include <treecore/Object.h>
+#include <treecore/RefCountObject.h>
 #include <treecore/Result.h>
 
 namespace treeface {
 
-class PropertyValidator: public treecore::Object
+class PropertyValidator: public treecore::RefCountObject
 {
 public:
     typedef enum
@@ -25,7 +25,7 @@ public:
 
     void add_item(const treecore::String& key, treecore::uint32 type, bool required);
 
-    treecore::Result validate(const treecore::NamedValueSet& kv) const NOEXCEPT;
+    treecore::Result validate(const treecore::NamedValueSet& kv) const noexcept;
 
 private:
     struct Impl;

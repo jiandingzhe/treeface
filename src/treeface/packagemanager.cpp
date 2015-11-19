@@ -3,7 +3,7 @@
 #include <treecore/File.h>
 #include <treecore/HashMap.h>
 #include <treecore/HashSet.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/InputStream.h>
 #include <treecore/MemoryBlock.h>
 #include <treecore/MemoryInputStream.h>
@@ -24,7 +24,7 @@ struct PackageEntryPoint
 
 struct PackageManager::Impl
 {
-    treecore::HashSet<Holder<ZipFile>> m_packages;
+    treecore::HashSet<RefCountHolder<ZipFile>> m_packages;
     treecore::HashMap<treecore::String, PackageEntryPoint> m_name_pkg_map;
 };
 
@@ -122,7 +122,7 @@ treecore::Result PackageManager::get_item_data(const treecore::String& name,
     return Result::ok();
 }
 
-bool PackageManager::has_resource(const treecore::String& name) const NOEXCEPT
+bool PackageManager::has_resource(const treecore::String& name) const noexcept
 {
     return m_impl->m_name_pkg_map.contains(name);
 }

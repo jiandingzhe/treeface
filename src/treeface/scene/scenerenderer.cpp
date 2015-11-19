@@ -33,7 +33,7 @@ struct ItemCombination
 
 struct ItemCombinationSorter
 {
-    int compareElements(ItemCombination a, ItemCombination b) const NOEXCEPT
+    int compareElements(ItemCombination a, ItemCombination b) const noexcept
     {
         // opaque items should go front
         if (a.mat->is_translucent())
@@ -140,13 +140,13 @@ void SceneRenderer::render(const Mat4f& matrix_proj,
     Program::unuse();
 }
 
-treecore::Result SceneRenderer::traverse_begin() NOEXCEPT
+treecore::Result SceneRenderer::traverse_begin() noexcept
 {
     m_impl->combs.clear();
     return Result::ok();
 }
 
-treecore::Result SceneRenderer::traverse_one_node(SceneNode* node) NOEXCEPT
+treecore::Result SceneRenderer::traverse_one_node(SceneNode* node) noexcept
 {
     jassert(node != nullptr);
     for (int i = 0; i < node->get_num_items(); i++)
@@ -165,7 +165,7 @@ treecore::Result SceneRenderer::traverse_one_node(SceneNode* node) NOEXCEPT
     return Result::ok();
 }
 
-treecore::Result SceneRenderer::traverse_end() NOEXCEPT
+treecore::Result SceneRenderer::traverse_end() noexcept
 {
     return Result::ok();
 }

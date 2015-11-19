@@ -1,10 +1,10 @@
 #include "TestFramework.h"
-#include "treecore/Object.h"
-#include "treecore/Holder.h"
+#include "treecore/RefCountObject.h"
+#include "treecore/RefCountHolder.h"
 
 using namespace treecore;
 
-class TestType: public Object
+class TestType: public RefCountObject
 {
 public:
     TestType(bool* marker): live_marker(marker)
@@ -20,7 +20,7 @@ public:
     bool* live_marker;
 };
 
-typedef Holder<TestType> TestHolder;
+typedef RefCountHolder<TestType> TestHolder;
 
 void TestFramework::content()
 {

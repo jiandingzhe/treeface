@@ -49,7 +49,7 @@ public:
         return *this;
     }
 
-    JUCE_DECLARE_NON_COPYABLE(VertexTemplate);
+    TREECORE_DECLARE_NON_COPYABLE(VertexTemplate);
 
     /**
      * @brief add one vertex attribute into vertex template.
@@ -74,7 +74,7 @@ public:
      * @brief get the byte size of a single vertex
      * @return vertex size in bytes.
      */
-    size_t vertex_size() const NOEXCEPT;
+    size_t vertex_size() const noexcept;
 
     /**
      * @brief get the number of elements of all vertex attributes for a single
@@ -86,7 +86,7 @@ public:
      *
      * @return the total number of elements.
      */
-    int n_elems() const NOEXCEPT;
+    int n_elems() const noexcept;
 
     /**
      * @brief get the number of vertex attributes for a single vertex.
@@ -97,7 +97,7 @@ public:
      *
      * @return the number of vertex attributes.
      */
-    int n_attribs() const NOEXCEPT;
+    int n_attribs() const noexcept;
 
     /**
      * @brief get the offset in bytes for element at specified index.
@@ -112,7 +112,7 @@ public:
      *
      * @return the byte offset of specified element.
      */
-    size_t get_elem_offset(int i_elem) const NOEXCEPT;
+    size_t get_elem_offset(int i_elem) const noexcept;
 
     /**
      * @brief get the offset in bytes for element at specified index.
@@ -129,7 +129,7 @@ public:
      *
      * @return the byte offset of specified element.
      */
-    size_t get_elem_offset(int i_attr, int i_elem_in_attr) const NOEXCEPT;
+    size_t get_elem_offset(int i_attr, int i_elem_in_attr) const noexcept;
 
     /**
      * @brief get type of the element at specified index.
@@ -143,7 +143,7 @@ public:
      *
      * @return the OpenGL type enum of specified element.
      */
-    GLenum get_elem_type(int i_elem) const NOEXCEPT;
+    GLenum get_elem_type(int i_elem) const noexcept;
 
     /**
      * @brief get byte size of the element at specified index.
@@ -157,7 +157,7 @@ public:
      *
      * @return the byte size of specified element.
      */
-    GLenum get_elem_size(int i_elem) const NOEXCEPT;
+    GLenum get_elem_size(int i_elem) const noexcept;
 
     /**
      * @brief get specified vertex attribute.
@@ -166,7 +166,7 @@ public:
      *
      * @return vertex attribute metadata.
      */
-    const HostVertexAttrib& get_attrib(int i_attr) const NOEXCEPT;
+    const HostVertexAttrib& get_attrib(int i_attr) const noexcept;
 
     /**
      * @brief get vertex attribute of the specified element.
@@ -175,7 +175,7 @@ public:
      *
      * @return vertex attribute metadata.
      */
-    const HostVertexAttrib& get_elem_attrib(int i_elem) const NOEXCEPT;
+    const HostVertexAttrib& get_elem_attrib(int i_elem) const noexcept;
 
     /**
      * @brief set value of specified element
@@ -185,7 +185,7 @@ public:
      * @param i_elem: the element index.
      * @param value: the value to be set.
      */
-    void set_value_at(void* vertex, int i_elem, const treecore::var& value) NOEXCEPT;
+    void set_value_at(void* vertex, int i_elem, const treecore::var& value) noexcept;
 
 protected:
     struct Impl;

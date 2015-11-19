@@ -5,14 +5,14 @@ using namespace treecore;
 
 namespace treeface {
 
-Widget::Widget() NOEXCEPT
+Widget::Widget() noexcept
     : m_guts(new (std::nothrow) Guts())
 {
     m_guts->scene_node = new (std::nothrow) SceneNode();
 }
 
 
-Widget::Widget(SceneNode *node) NOEXCEPT
+Widget::Widget(SceneNode *node) noexcept
     : m_guts(new (std::nothrow) Guts())
 {
     m_guts->scene_node = node;
@@ -24,7 +24,7 @@ Widget::~Widget()
         delete m_guts;
 }
 
-bool Widget::add_child(Widget* child) NOEXCEPT
+bool Widget::add_child(Widget* child) noexcept
 {
     if (child->m_guts->parent)
         return false;
@@ -52,7 +52,7 @@ bool Widget::add_child(Widget* child) NOEXCEPT
     return true;
 }
 
-bool Widget::remove_child(Widget* child) NOEXCEPT
+bool Widget::remove_child(Widget* child) noexcept
 {
     int i_child = m_guts->children.indexOf(child);
     if (i_child == -1)
@@ -79,22 +79,22 @@ bool Widget::remove_child(Widget* child) NOEXCEPT
     return true;
 }
 
-bool Widget::has_child(Widget *child) const NOEXCEPT
+bool Widget::has_child(Widget *child) const noexcept
 {
     return m_guts->children.contains(child);
 }
 
-Widget* Widget::get_parent() NOEXCEPT
+Widget* Widget::get_parent() noexcept
 {
     return m_guts->parent;
 }
 
-SceneNode* Widget::get_scene_node() NOEXCEPT
+SceneNode* Widget::get_scene_node() noexcept
 {
     return m_guts->scene_node;
 }
 
-bool Widget::add_event_listener(const treecore::String& event_name, EventFunc func, void* data) NOEXCEPT
+bool Widget::add_event_listener(const treecore::String& event_name, EventFunc func, void* data) noexcept
 {
     // store callback and user data
     EventArray* curr_handlers = nullptr;
@@ -105,7 +105,7 @@ bool Widget::add_event_listener(const treecore::String& event_name, EventFunc fu
         // find if func is already registered in this event name
         for (int i = 0; i < curr_handlers->size(); i++)
         {
-            if (curr_handlers->getReference(i).fp == func)
+            if ((*curr_handlers)[i].fp == func)
                 return false;
         }
     }
@@ -158,7 +158,7 @@ bool Widget::remove_event_listener(const treecore::String& event_name, EventFunc
     int i_ev = -1;
     for (int i = 0; i < ev_list->size(); i++)
     {
-        if (ev_list->getReference(i).fp == func)
+        if ((*ev_list)[i].fp == func)
         {
             i_ev = i;
             break;
@@ -186,12 +186,12 @@ bool Widget::remove_event_listener(const treecore::String& event_name, EventFunc
     return true;
 }
 
-bool Widget::can_handle(const treecore::String& event_name) const NOEXCEPT
+bool Widget::can_handle(const treecore::String& event_name) const noexcept
 {
     return m_guts->abilities.contains(event_name);
 }
 
-bool Widget::has_handler(const treecore::String& event_name, EventFunc func) const NOEXCEPT
+bool Widget::has_handler(const treecore::String& event_name, EventFunc func) const noexcept
 {
     if (m_guts->abilities.contains(event_name))
     {
@@ -199,7 +199,7 @@ bool Widget::has_handler(const treecore::String& event_name, EventFunc func) con
 
         for (int i = 0; i < event_handlers->size(); i++)
         {
-            if (event_handlers->getReference(i).fp == func)
+            if ((*event_handlers)[i].fp == func)
                 return true;
         }
 
@@ -211,13 +211,13 @@ bool Widget::has_handler(const treecore::String& event_name, EventFunc func) con
     }
 }
 
-bool Widget::any_child_can_handle(const treecore::String& event_name) const NOEXCEPT
+bool Widget::any_child_can_handle(const treecore::String& event_name) const noexcept
 {
     m_guts->ensure_resp_child_cache();
     return m_guts->resp_children.contains(event_name);
 }
 
-bool Widget::any_parent_can_handle(const treecore::String& event_name) const NOEXCEPT
+bool Widget::any_parent_can_handle(const treecore::String& event_name) const noexcept
 {
     m_guts->ensure_resp_parent_cache();
     return m_guts->resp_parents.contains(event_name);

@@ -39,20 +39,21 @@ void PropertyValidator::add_item(const treecore::String& key, treecore::uint32 t
         m_impl->required_keys.add(Identifier(key));
 }
 
-treecore::Result PropertyValidator::validate(const treecore::NamedValueSet& kv) const NOEXCEPT
+treecore::Result PropertyValidator::validate(const treecore::NamedValueSet& kv) const noexcept
 {
     // check if all required keys exist
     for (int i = 0; i < m_impl->required_keys.size(); i++)
     {
-        const Identifier& key = m_impl->required_keys.getReference(i);
+        const Identifier& key = m_impl->required_keys[i];
         if (!kv.contains(key))
             return Result::fail("required property \""+key.toString()+"\" is not found");
     }
 
     // check all keys
-    for (int i = 0; i < kv.size(); i++)
+    treecore::NamedValueSet::MapType::ConstIterator i_kv(kv.getValues());
+    while (i_kv.next())
     {
-        Identifier key = kv.getName(i);
+        Identifier key = i_kv.key();
         const String& key_str = key.toString();
 
         if (!m_impl->key_types.contains(key_str))
@@ -60,7 +61,7 @@ treecore::Result PropertyValidator::validate(const treecore::NamedValueSet& kv) 
 
         uint32 type = m_impl->key_types[key_str];
 
-        const var& value = kv.getValueAt(i);
+        const var& value = i_kv.value();
         if (value.isArray())
         {
             if (!(type & ITEM_ARRAY))

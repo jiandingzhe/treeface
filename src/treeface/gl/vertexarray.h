@@ -6,7 +6,7 @@
 #include "treeface/gl/vertexattrib.h"
 
 #include <treecore/ArrayRef.h>
-#include <treecore/Object.h>
+#include <treecore/RefCountObject.h>
 #include <treecore/Result.h>
 #include <treecore/String.h>
 
@@ -25,7 +25,7 @@ class VertexTemplate;
  *
  * It is a bridge between vertex buffer data and program vertex attributes.
  */
-struct VertexArray: public treecore::Object
+struct VertexArray: public treecore::RefCountObject
 {
     /**
      * @brief create an empty VertexArray object. OpenGL VAO ID will be
@@ -39,8 +39,8 @@ struct VertexArray: public treecore::Object
     virtual ~VertexArray();
 
     // disable copy and move
-    JUCE_DECLARE_NON_COPYABLE(VertexArray);
-    JUCE_DECLARE_NON_MOVABLE(VertexArray);
+    TREECORE_DECLARE_NON_COPYABLE(VertexArray);
+    TREECORE_DECLARE_NON_MOVABLE(VertexArray);
 
     /**
      * @brief build vertex array
@@ -80,7 +80,7 @@ struct VertexArray: public treecore::Object
     /**
      * @brief bind the underlying GL VAO
      */
-    inline void use() const NOEXCEPT
+    inline void use() const noexcept
     {
         glBindVertexArray(m_array);
     }
@@ -88,7 +88,7 @@ struct VertexArray: public treecore::Object
     /**
      * @brief bind zero
      */
-    inline static void unuse() NOEXCEPT
+    inline static void unuse() noexcept
     {
         glBindVertexArray(0);
     }

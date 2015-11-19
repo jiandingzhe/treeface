@@ -4,7 +4,7 @@
 #include "treeface/common.h"
 #include "treeface/gl/imageref.h"
 
-#include <treecore/Object.h>
+#include <treecore/RefCountObject.h>
 
 #include <FreeImage.h>
 
@@ -19,7 +19,7 @@ namespace treeface {
 
 treecore::Result convert_fi_image_info_to_gl(FIBITMAP* fi_img, GLenum& gl_format, GLenum& gl_type);
 
-class Image: public treecore::Object
+class Image: public treecore::RefCountObject
 {
 public:
     Image();
@@ -62,7 +62,7 @@ public:
 
 
 
-    ImageRef get_image_ref() const NOEXCEPT;
+    ImageRef get_image_ref() const noexcept;
 
 protected:
     GLenum m_gl_format = 0;

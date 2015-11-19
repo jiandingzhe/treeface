@@ -3,8 +3,8 @@
 
 #include "treeface/common.h"
 
-#include <treecore/Holder.h>
-#include <treecore/Object.h>
+#include <treecore/RefCountHolder.h>
+#include <treecore/RefCountObject.h>
 #include <treecore/Result.h>
 #include <treecore/String.h>
 
@@ -15,21 +15,21 @@ class var;
 namespace treeface {
 class Material;
 
-class MaterialManager: public treecore::Object
+class MaterialManager: public treecore::RefCountObject
 {
 public:
     MaterialManager();
 
-    JUCE_DECLARE_NON_COPYABLE(MaterialManager);
-    JUCE_DECLARE_NON_MOVABLE(MaterialManager);
+    TREECORE_DECLARE_NON_COPYABLE(MaterialManager);
+    TREECORE_DECLARE_NON_MOVABLE(MaterialManager);
 
     virtual ~MaterialManager();
 
-    treecore::Result build_material(const treecore::var& data, treecore::Holder<Material>& mat);
+    treecore::Result build_material(const treecore::var& data, treecore::RefCountHolder<Material>& mat);
 
     treecore::Result get_material(const treecore::String& name, Material** mat_pp);
 
-    treecore::Result get_material(const treecore::String& name, treecore::Holder<Material>& mat);
+    treecore::Result get_material(const treecore::String& name, treecore::RefCountHolder<Material>& mat);
 
     bool material_is_cached(const treecore::String& name);
     bool release_material_hold(const treecore::String& name);

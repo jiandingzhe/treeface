@@ -65,7 +65,7 @@ Texture::~Texture()
         glDeleteTextures(1, &m_texture);
 }
 
-treecore::Result Texture::set_image_data(ImageRef image, GLint internal_fmt, bool gen_mipmap) NOEXCEPT
+treecore::Result Texture::set_image_data(ImageRef image, GLint internal_fmt, bool gen_mipmap) noexcept
 {
     glBindTexture(GL_TEXTURE_2D, m_texture);
 
@@ -118,7 +118,7 @@ treecore::Result Texture::set_image_data(ImageRef image, GLint internal_fmt, boo
     }
 }
 
-treecore::Result Texture::set_image_data(treecore::ArrayRef<ImageRef> images, GLint internal_fmt) NOEXCEPT
+treecore::Result Texture::set_image_data(treecore::ArrayRef<ImageRef> images, GLint internal_fmt) noexcept
 {
     glBindTexture(GL_TEXTURE_2D, m_texture);
 
@@ -259,7 +259,7 @@ Result Texture::build(const treecore::var& tex_node)
         Array<ImageRef> img_refs;
         for (int i = 0; i < image_name_nodes->size(); i++)
         {
-            String img_name = image_name_nodes->getReference(i).toString();
+            String img_name = (*image_name_nodes)[i].toString();
             Image* img = nullptr;
             Result img_re = ImageManager::getInstance()->get_image(img_name, &img);
             if (!img_re)

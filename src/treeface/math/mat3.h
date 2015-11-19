@@ -36,7 +36,7 @@ struct Mat3
         data[8] = v8;
     }
 
-    void transpose() NOEXCEPT
+    void transpose() noexcept
     {
         T tmp[9] = {data[0], data[3], data[6],
                     data[1], data[4], data[7],
@@ -44,7 +44,7 @@ struct Mat3
         memcpy(data, tmp, 9 * sizeof(T));
     }
 
-    T inverse() NOEXCEPT
+    T inverse() noexcept
     {
         T det = determinant();
         if (det == 0)
@@ -67,7 +67,7 @@ struct Mat3
         return det;
     }
 
-    T determinant() NOEXCEPT
+    T determinant() noexcept
     {
         return det3x3<T>(treecore::simd_set<float,16>(data[0], data[1], data[2], 0),
                          treecore::simd_set<float,16>(data[3], data[4], data[5], 0),

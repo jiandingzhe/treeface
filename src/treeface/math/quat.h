@@ -8,10 +8,13 @@ namespace treeface {
 /**
  * Quaternions are frequently used in 3D rotation.
  */
+TREECORE_ALN_BEGIN(16)
 template<typename T, int SZ = sizeof(T) * 4>
 struct Quat
 {
     typedef treecore::SIMDType<SZ> DataType;
+
+    TREECORE_ALIGNED_ALLOCATOR(Quat);
 
     /**
      * @brief create quaternion representing zero rotation
@@ -47,7 +50,7 @@ struct Quat
      * @brief get the value of 1st (x) axis component
      * @return x
      */
-    T get_x() const NOEXCEPT
+    T get_x() const noexcept
     {
         return treecore::simd_get_one<0, float>(data);
     }
@@ -56,7 +59,7 @@ struct Quat
      * @brief get the value of 2nd (y) axis component
      * @return y
      */
-    T get_y() const NOEXCEPT
+    T get_y() const noexcept
     {
         return treecore::simd_get_one<1, float>(data);
     }
@@ -65,7 +68,7 @@ struct Quat
      * @brief get the value of 3rd (z) axis component
      * @return z
      */
-    T get_z() const NOEXCEPT
+    T get_z() const noexcept
     {
         return treecore::simd_get_one<2, float>(data);
     }
@@ -74,7 +77,7 @@ struct Quat
      * @brief get the value of 4th (w) component
      * @return w
      */
-    T get_w() const NOEXCEPT
+    T get_w() const noexcept
     {
         return treecore::simd_get_one<3, float>(data);
     }
@@ -84,7 +87,7 @@ struct Quat
      * @param angle: variable for storing angle
      * @param axis: variable for storing axis in (x, y, z, 0)
      */
-    void get_angle_axis(T& angle, Vec4<T>& axis) const NOEXCEPT
+    void get_angle_axis(T& angle, Vec4<T>& axis) const noexcept
     {
         T cos_value = treecore::simd_get_one<3, float>(data);
         angle = std::acos(cos_value) * 2;
@@ -99,7 +102,7 @@ struct Quat
      * @brief set the value of 1st (x) axis component
      * @param value: the value to be set to x component
      */
-    void set_x(T value) NOEXCEPT
+    void set_x(T value) noexcept
     {
         treecore::simd_set_one<0>(data, value);
     }
@@ -108,7 +111,7 @@ struct Quat
      * @brief set the value of 2nd (y) axis component
      * @param value: the value to be set to y component
      */
-    void set_y(T value) NOEXCEPT
+    void set_y(T value) noexcept
     {
         treecore::simd_set_one<1>(data, value);
     }
@@ -117,7 +120,7 @@ struct Quat
      * @brief set the value of 3rd (z) axis component
      * @param value: the value to be set to z component
      */
-    void set_z(T value) NOEXCEPT
+    void set_z(T value) noexcept
     {
         treecore::simd_set_one<2>(data, value);
     }
@@ -126,7 +129,7 @@ struct Quat
      * @brief set the value of 4th (w) component
      * @param value: the value to be set to w component
      */
-    void set_w(T value) NOEXCEPT
+    void set_w(T value) noexcept
     {
         treecore::simd_set_one<3>(data, value);
     }
@@ -136,7 +139,7 @@ struct Quat
      * @param angle: rotation around axis
      * @param axis: direction of rotation axis. The 4rd component will be omitted.
      */
-    void set_angle_axis(T angle, Vec4<T> axis) NOEXCEPT
+    void set_angle_axis(T angle, Vec4<T> axis) noexcept
     {
         axis.set_w(0);
         axis.normalize();
@@ -150,13 +153,13 @@ struct Quat
     /**
      * @brief set values to (-x, -y, -z, w)
      */
-    void inverse() NOEXCEPT;
+    void inverse() noexcept;
 
     /**
      * @brief make quaternion length to be one
      * @return length before normalize
      */
-    T normalize() NOEXCEPT
+    T normalize() noexcept
     {
         T len = length();
         data = treecore::simd_div<T>(data, treecore::simd_set<T, SZ>(len, len, len, len));
@@ -167,7 +170,7 @@ struct Quat
      * @brief get quaternion length
      * @return length value
      */
-    T length() const NOEXCEPT
+    T length() const noexcept
     {
         return std::sqrt(length2());
     }
@@ -176,7 +179,7 @@ struct Quat
      * @brief get length square
      * @return length * length
      */
-    T length2() const NOEXCEPT
+    T length2() const noexcept
     {
         return treecore::simd_sum<T>(treecore::simd_mul<T>(data, data));
     }
@@ -187,7 +190,7 @@ struct Quat
      *        component of input vector should be zero.
      * @return rotated vector
      */
-    Vec4<T> rotate(Vec4<T> input) const NOEXCEPT
+    Vec4<T> rotate(Vec4<T> input) const noexcept
     {
         Quat<T> inv(data);
         inv.inverse();
@@ -196,10 +199,10 @@ struct Quat
     }
 
     DataType data;
-};
+} TREECORE_ALN_END(16);
 
 template<>
-inline void Quat<float>::inverse() NOEXCEPT
+inline void Quat<float>::inverse() noexcept
 {
     // directly operate on float's sign bit
     data = treecore::simd_xor<float>(data, treecore::simd_set<std::int32_t, 16>(0x80000000, 0x80000000, 0x80000000, 0x00000000));
@@ -209,7 +212,7 @@ inline void Quat<float>::inverse() NOEXCEPT
  * @brief quaternion multiply
  */
 template<typename T, int SZ = sizeof(T) * 4>
-inline Quat<T> operator * (const Quat<T>& a, const Quat<T>& b) NOEXCEPT
+inline Quat<T> operator * (const Quat<T>& a, const Quat<T>& b) noexcept
 {
     //res.x = + a.x*b.w + a.y*b.z - a.z*b.y + a.w*b.x;
     //res.y = - a.x*b.z + a.y*b.w + a.z*b.x + a.w*b.y;

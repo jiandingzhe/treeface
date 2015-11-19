@@ -15,17 +15,17 @@ public:
     SceneRenderer();
     virtual ~SceneRenderer();
 
-    JUCE_DECLARE_NON_COPYABLE(SceneRenderer);
-    JUCE_DECLARE_NON_MOVABLE(SceneRenderer);
+    TREECORE_DECLARE_NON_COPYABLE(SceneRenderer);
+    TREECORE_DECLARE_NON_MOVABLE(SceneRenderer);
 
     void render(const Mat4f& matrix_proj,
                 const Mat4f& matrix_view,
                 Scene* scene);
 
 protected:
-    virtual treecore::Result traverse_begin() NOEXCEPT;
-    virtual treecore::Result traverse_one_node(SceneNode* node) NOEXCEPT;
-    virtual treecore::Result traverse_end() NOEXCEPT;
+    virtual treecore::Result traverse_begin() noexcept;
+    virtual treecore::Result traverse_one_node(SceneNode* node) noexcept;
+    virtual treecore::Result traverse_end() noexcept;
 
 private:
     struct Impl;

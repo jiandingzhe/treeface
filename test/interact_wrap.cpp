@@ -23,7 +23,7 @@
 
 #include <treecore/ArrayRef.h>
 #include <treecore/BasicNativeHeaders.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/Logger.h>
 #include <treecore/HashMultiMap.h>
 
@@ -97,8 +97,11 @@ void show_matrix(Mat4f& mat)
 		   );
 }
 
-struct Widget: public treecore::AlignedMalloc<16>
+TREECORE_ALN_BEGIN(16)
+struct Widget
 {
+    TREECORE_ALIGNED_ALLOCATOR(Widget);
+
     Widget(float x, float y, float width, float height)
     {
         bound.x = x;
@@ -149,13 +152,13 @@ struct Widget: public treecore::AlignedMalloc<16>
 
     bool is_active = false;
     bool is_pressed = false;
-    Holder<Program> program = nullptr;
-    Holder<VertexIndexBuffer> geom_buffer = nullptr;
+    treecore::RefCountHolder<Program> program = nullptr;
+    treecore::RefCountHolder<VertexIndexBuffer> geom_buffer = nullptr;
     size_t n_vertex = 0;
     size_t n_index = 0;
 
     VertexArray array;
-};
+} TREECORE_ALN_END(16);
 
 typedef bool (*is_inside_func)(float x, float y, const BBox& bound);
 
@@ -220,16 +223,16 @@ struct WidgetRenderer
 {
     void add_widget(Widget* widget)
     {
-        widgets_by_program.insert(widget->program, widget);
+        widgets_by_program.store(widget->program, widget);
     }
 
     void render()
     {
         HashMultiMap<Program*, Widget*>::Iterator it_program_widgets(widgets_by_program);
-        while (it_program_widgets.next())
+        while (it_program_widgets.nextKey())
         {
-            Program* program = it_program_widgets.getKey();
-            ArrayRef<Widget*> widgets = it_program_widgets.getValues();
+            Program* program = it_program_widgets.key();
+            Array<Widget*>& widgets = it_program_widgets.values();
 
             program->use();
 
@@ -303,7 +306,7 @@ void on_mouse_motion(SDL_MouseMotionEvent& e)
     HashMultiMap<Program*, Widget*>::Iterator it_program_widgets(renderer.widgets_by_program);
     while (it_program_widgets.next())
     {
-        ArrayRef<Widget*> widgets = it_program_widgets.getValues();
+        Array<Widget*>& widgets = it_program_widgets.values();
         for (int i = 0; i < widgets.size(); i++)
         {
             if (is_inside_rect(x, y, widgets[i]->bound))
@@ -340,7 +343,7 @@ void on_mouse_down(SDL_MouseButtonEvent& e)
         HashMultiMap<Program*, Widget*>::Iterator it_program_widgets(renderer.widgets_by_program);
         while (it_program_widgets.next())
         {
-            ArrayRef<Widget*> widgets = it_program_widgets.getValues();
+            Array<Widget*>& widgets = it_program_widgets.values();
             for (int i = 0; i < widgets.size(); i++)
             {
                 Widget* widget = widgets[i];
@@ -380,10 +383,10 @@ int main(int argc, char** argv)
     SDL_GLContext context = nullptr;
     build_up_sdl(&window, &context);
 
-    Holder<Program> program = new Program();
+    RefCountHolder<Program> program = new Program();
     program->build(src_vertex, src_fragment);
 
-    Holder<VertexIndexBuffer> geom_buffer_rect = new VertexIndexBuffer();
+    RefCountHolder<VertexIndexBuffer> geom_buffer_rect = new VertexIndexBuffer();
     geom_buffer_rect->set_host_data(ArrayRef<const ColoredPoint>(vertex_rect.data(), vertex_rect.size()),
                                     ArrayRef<const uint16>(index_rect.data(), index_rect.size())
                                     );

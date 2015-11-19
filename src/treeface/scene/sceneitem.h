@@ -2,21 +2,21 @@
 #define TREEFACE_SCENE_ITEM_H
 #include "treeface/common.h"
 
-#include <treecore/Object.h>
+#include <treecore/RefCountObject.h>
 
 namespace treeface {
 
 class SceneNode;
 
-class SceneItem: public treecore::Object
+class SceneItem: public treecore::RefCountObject
 {
     friend class SceneNode;
 
 public:
     SceneItem();
 
-    JUCE_DECLARE_NON_COPYABLE(SceneItem);
-    JUCE_DECLARE_NON_MOVABLE(SceneItem);
+    TREECORE_DECLARE_NON_COPYABLE(SceneItem);
+    TREECORE_DECLARE_NON_MOVABLE(SceneItem);
 
     virtual ~SceneItem();
 

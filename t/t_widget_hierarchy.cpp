@@ -3,7 +3,7 @@
 #include "treeface/ui/widget.h"
 #include "treeface/guts/widget_guts.h"
 
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 
 #include <cstdio>
 
@@ -62,12 +62,12 @@ bool callback4baz2(Widget* emitter, Widget* listener, const Event& e)
 void TestFramework::content()
 {
     // create objects
-    Holder<Widget> w1 = new Widget();
-    Holder<Widget> w2 = new Widget();
-    Holder<Widget> w3 = new Widget();
-    Holder<Widget> w4 = new Widget();
-    Holder<Widget> w5 = new Widget();
-    Holder<Widget> w6 = new Widget();
+    RefCountHolder<Widget> w1 = new Widget();
+    RefCountHolder<Widget> w2 = new Widget();
+    RefCountHolder<Widget> w3 = new Widget();
+    RefCountHolder<Widget> w4 = new Widget();
+    RefCountHolder<Widget> w5 = new Widget();
+    RefCountHolder<Widget> w6 = new Widget();
 
     OK(w1.get());
     OK(w2.get());
@@ -121,15 +121,15 @@ void TestFramework::content()
 
     OK(w1->m_guts->resp_children_ok);
     IS(w1->m_guts->resp_children.size(), 1);
-    IS(w1->m_guts->resp_children.getReference("foo")->size(), 1);
-    OK(w1->m_guts->resp_children.getReference("foo")->contains(gut2));
+    IS(w1->m_guts->resp_children["foo"]->size(), 1);
+    OK(w1->m_guts->resp_children["foo"]->contains(gut2));
 
     OK(w2->m_guts->resp_parents_ok);
     IS(w2->m_guts->resp_parents.size(), 2);
-    IS(w2->m_guts->resp_parents.getReference("foo")->size(), 1);
-    OK(w2->m_guts->resp_parents.getReference("foo")->contains(gut1));
-    IS(w2->m_guts->resp_parents.getReference("bar")->size(), 1);
-    OK(w2->m_guts->resp_parents.getReference("bar")->contains(gut1));
+    IS(w2->m_guts->resp_parents["foo"]->size(), 1);
+    OK(w2->m_guts->resp_parents["foo"]->contains(gut1));
+    IS(w2->m_guts->resp_parents["bar"]->size(), 1);
+    OK(w2->m_guts->resp_parents["bar"]->contains(gut1));
 
     // add w5 and w6 to w4
     OK(w4->add_child(w5));
@@ -144,35 +144,35 @@ void TestFramework::content()
     OK(w1->any_child_can_handle("baz"));
     OK(w1->m_guts->resp_children_ok);
     IS(w1->m_guts->resp_children.size(), 2);
-    IS(w1->m_guts->resp_children.getReference("foo")->size(), 1);
-    OK(w1->m_guts->resp_children.getReference("foo")->contains(gut2));
-    IS(w1->m_guts->resp_children.getReference("baz")->size(), 1);
-    OK(w1->m_guts->resp_children.getReference("baz")->contains(gut4));
+    IS(w1->m_guts->resp_children["foo"]->size(), 1);
+    OK(w1->m_guts->resp_children["foo"]->contains(gut2));
+    IS(w1->m_guts->resp_children["baz"]->size(), 1);
+    OK(w1->m_guts->resp_children["baz"]->contains(gut4));
 
     OK(w2->any_child_can_handle("baz"));
     OK(w2->m_guts->resp_children_ok);
     IS(w2->m_guts->resp_children.size(), 1);
-    IS(w2->m_guts->resp_children.getReference("baz")->size(), 1);
-    OK(w2->m_guts->resp_children.getReference("baz")->contains(gut4));
+    IS(w2->m_guts->resp_children["baz"]->size(), 1);
+    OK(w2->m_guts->resp_children["baz"]->contains(gut4));
 
     OK(w2->any_parent_can_handle("foo"));
     OK(w2->any_parent_can_handle("bar"));
     OK(w2->m_guts->resp_parents_ok);
     IS(w2->m_guts->resp_parents.size(), 2);
-    IS(w2->m_guts->resp_parents.getReference("foo")->size(), 1);
-    OK(w2->m_guts->resp_parents.getReference("foo")->contains(gut1));
-    IS(w2->m_guts->resp_parents.getReference("bar")->size(), 1);
-    OK(w2->m_guts->resp_parents.getReference("bar")->contains(gut1));
+    IS(w2->m_guts->resp_parents["foo"]->size(), 1);
+    OK(w2->m_guts->resp_parents["foo"]->contains(gut1));
+    IS(w2->m_guts->resp_parents["bar"]->size(), 1);
+    OK(w2->m_guts->resp_parents["bar"]->contains(gut1));
 
     OK(w4->any_parent_can_handle("foo"));
     OK(w4->any_parent_can_handle("bar"));
     OK(w4->m_guts->resp_parents_ok);
     IS(w4->m_guts->resp_parents.size(), 2);
-    IS(w4->m_guts->resp_parents.getReference("foo")->size(), 2);
-    IS(w4->m_guts->resp_parents.getReference("foo")->indexOf(gut1), 0);
-    IS(w4->m_guts->resp_parents.getReference("foo")->indexOf(gut2), 1);
-    IS(w4->m_guts->resp_parents.getReference("bar")->size(), 1);
-    OK(w4->m_guts->resp_parents.getReference("bar")->contains(gut1));
+    IS(w4->m_guts->resp_parents["foo"]->size(), 2);
+    IS(w4->m_guts->resp_parents["foo"]->indexOf(gut1), 0);
+    IS(w4->m_guts->resp_parents["foo"]->indexOf(gut2), 1);
+    IS(w4->m_guts->resp_parents["bar"]->size(), 1);
+    OK(w4->m_guts->resp_parents["bar"]->contains(gut1));
 
     IS(w4->m_guts->resp_children.size(), 0);
 
@@ -181,26 +181,26 @@ void TestFramework::content()
     OK(w5->any_parent_can_handle("baz"));
     OK(w5->m_guts->resp_parents_ok);
     IS(w5->m_guts->resp_parents.size(), 3);
-    IS(w5->m_guts->resp_parents.getReference("foo")->size(), 2);
-    IS(w5->m_guts->resp_parents.getReference("foo")->indexOf(gut1), 0);
-    IS(w5->m_guts->resp_parents.getReference("foo")->indexOf(gut2), 1);
-    IS(w5->m_guts->resp_parents.getReference("bar")->size(), 1);
-    IS(w5->m_guts->resp_parents.getReference("bar")->indexOf(gut1), 0);
-    IS(w5->m_guts->resp_parents.getReference("baz")->size(), 1);
-    IS(w5->m_guts->resp_parents.getReference("baz")->indexOf(gut4), 0);
+    IS(w5->m_guts->resp_parents["foo"]->size(), 2);
+    IS(w5->m_guts->resp_parents["foo"]->indexOf(gut1), 0);
+    IS(w5->m_guts->resp_parents["foo"]->indexOf(gut2), 1);
+    IS(w5->m_guts->resp_parents["bar"]->size(), 1);
+    IS(w5->m_guts->resp_parents["bar"]->indexOf(gut1), 0);
+    IS(w5->m_guts->resp_parents["baz"]->size(), 1);
+    IS(w5->m_guts->resp_parents["baz"]->indexOf(gut4), 0);
 
     OK(w6->any_parent_can_handle("foo"));
     OK(w6->any_parent_can_handle("bar"));
     OK(w6->any_parent_can_handle("baz"));
     OK(w6->m_guts->resp_parents_ok);
     IS(w6->m_guts->resp_parents.size(), 3);
-    IS(w6->m_guts->resp_parents.getReference("foo")->size(), 2);
-    IS(w6->m_guts->resp_parents.getReference("foo")->indexOf(gut1), 0);
-    IS(w6->m_guts->resp_parents.getReference("foo")->indexOf(gut2), 1);
-    IS(w6->m_guts->resp_parents.getReference("bar")->size(), 1);
-    IS(w6->m_guts->resp_parents.getReference("bar")->indexOf(gut1), 0);
-    IS(w6->m_guts->resp_parents.getReference("baz")->size(), 1);
-    IS(w6->m_guts->resp_parents.getReference("baz")->indexOf(gut4), 0);
+    IS(w6->m_guts->resp_parents["foo"]->size(), 2);
+    IS(w6->m_guts->resp_parents["foo"]->indexOf(gut1), 0);
+    IS(w6->m_guts->resp_parents["foo"]->indexOf(gut2), 1);
+    IS(w6->m_guts->resp_parents["bar"]->size(), 1);
+    IS(w6->m_guts->resp_parents["bar"]->indexOf(gut1), 0);
+    IS(w6->m_guts->resp_parents["baz"]->size(), 1);
+    IS(w6->m_guts->resp_parents["baz"]->indexOf(gut4), 0);
 
     // add w3 to w2
     OK(w2->add_child(w3));
@@ -208,11 +208,11 @@ void TestFramework::content()
     OK(w3->any_parent_can_handle("bar"));
     OK(w3->m_guts->resp_parents_ok);
     IS(w3->m_guts->resp_parents.size(), 2);
-    IS(w3->m_guts->resp_parents.getReference("foo")->size(), 2);
-    IS(w3->m_guts->resp_parents.getReference("foo")->indexOf(gut1), 0);
-    IS(w3->m_guts->resp_parents.getReference("foo")->indexOf(gut2), 1);
-    IS(w3->m_guts->resp_parents.getReference("bar")->size(), 1);
-    OK(w3->m_guts->resp_parents.getReference("bar")->contains(gut1));
+    IS(w3->m_guts->resp_parents["foo"]->size(), 2);
+    IS(w3->m_guts->resp_parents["foo"]->indexOf(gut1), 0);
+    IS(w3->m_guts->resp_parents["foo"]->indexOf(gut2), 1);
+    IS(w3->m_guts->resp_parents["bar"]->size(), 1);
+    OK(w3->m_guts->resp_parents["bar"]->contains(gut1));
 
     // add event listener to w2 when w2 is in hierarchy
     OK(w2->add_event_listener("aaa", callback2aaa, nullptr));
@@ -242,14 +242,14 @@ void TestFramework::content()
     OK(w2->any_child_can_handle("baz"));
     OK(gut2->resp_children_ok);
     IS(gut2->resp_children.size(), 1);
-    IS(gut2->resp_children.getReference("baz")->size(), 1);
-    OK(gut2->resp_children.getReference("baz")->contains(gut4));
+    IS(gut2->resp_children["baz"]->size(), 1);
+    OK(gut2->resp_children["baz"]->contains(gut4));
     OK(gut2->resp_parents_ok);
     IS(gut2->resp_parents.size(), 2);
-    IS(gut2->resp_parents.getReference("foo")->size(), 1);
-    OK(gut2->resp_parents.getReference("foo")->contains(gut1));
-    IS(gut2->resp_parents.getReference("bar")->size(), 1);
-    OK(gut2->resp_parents.getReference("bar")->contains(gut1));
+    IS(gut2->resp_parents["foo"]->size(), 1);
+    OK(gut2->resp_parents["foo"]->contains(gut1));
+    IS(gut2->resp_parents["bar"]->size(), 1);
+    OK(gut2->resp_parents["bar"]->contains(gut1));
 
     OK(w3->any_parent_can_handle("foo"));
     OK(w3->any_parent_can_handle("bar"));
@@ -283,15 +283,15 @@ void TestFramework::content()
     OK(w5->any_parent_can_handle("aaa"));
     OK(gut5->resp_parents_ok);
     IS(gut5->resp_parents.size(), 4);
-    IS(gut5->resp_parents.getReference("foo")->size(), 2);
-    IS(gut5->resp_parents.getReference("foo")->indexOf(gut1), 0);
-    IS(gut5->resp_parents.getReference("foo")->indexOf(gut2), 1);
-    IS(gut5->resp_parents.getReference("bar")->size(), 1);
-    IS(gut5->resp_parents.getReference("bar")->indexOf(gut1), 0);
-    IS(gut5->resp_parents.getReference("baz")->size(), 1);
-    IS(gut5->resp_parents.getReference("baz")->indexOf(gut4), 0);
-    IS(gut5->resp_parents.getReference("aaa")->size(), 1);
-    IS(gut5->resp_parents.getReference("aaa")->indexOf(gut2), 0);
+    IS(gut5->resp_parents["foo"]->size(), 2);
+    IS(gut5->resp_parents["foo"]->indexOf(gut1), 0);
+    IS(gut5->resp_parents["foo"]->indexOf(gut2), 1);
+    IS(gut5->resp_parents["bar"]->size(), 1);
+    IS(gut5->resp_parents["bar"]->indexOf(gut1), 0);
+    IS(gut5->resp_parents["baz"]->size(), 1);
+    IS(gut5->resp_parents["baz"]->indexOf(gut4), 0);
+    IS(gut5->resp_parents["aaa"]->size(), 1);
+    IS(gut5->resp_parents["aaa"]->indexOf(gut2), 0);
 
     OK(w6->any_parent_can_handle("foo"));
     OK(w6->any_parent_can_handle("bar"));
@@ -299,15 +299,15 @@ void TestFramework::content()
     OK(w6->any_parent_can_handle("aaa"));
     OK(gut6->resp_parents_ok);
     IS(gut6->resp_parents.size(), 4);
-    IS(gut6->resp_parents.getReference("foo")->size(), 2);
-    IS(gut6->resp_parents.getReference("foo")->indexOf(gut1), 0);
-    IS(gut6->resp_parents.getReference("foo")->indexOf(gut2), 1);
-    IS(gut6->resp_parents.getReference("bar")->size(), 1);
-    IS(gut6->resp_parents.getReference("bar")->indexOf(gut1), 0);
-    IS(gut6->resp_parents.getReference("baz")->size(), 1);
-    IS(gut6->resp_parents.getReference("baz")->indexOf(gut4), 0);
-    IS(gut6->resp_parents.getReference("aaa")->size(), 1);
-    IS(gut6->resp_parents.getReference("aaa")->indexOf(gut2), 0);
+    IS(gut6->resp_parents["foo"]->size(), 2);
+    IS(gut6->resp_parents["foo"]->indexOf(gut1), 0);
+    IS(gut6->resp_parents["foo"]->indexOf(gut2), 1);
+    IS(gut6->resp_parents["bar"]->size(), 1);
+    IS(gut6->resp_parents["bar"]->indexOf(gut1), 0);
+    IS(gut6->resp_parents["baz"]->size(), 1);
+    IS(gut6->resp_parents["baz"]->indexOf(gut4), 0);
+    IS(gut6->resp_parents["aaa"]->size(), 1);
+    IS(gut6->resp_parents["aaa"]->indexOf(gut2), 0);
 
     // remove some callbacks
     OK(w2->remove_event_listener("foo"));
@@ -327,14 +327,14 @@ void TestFramework::content()
     OK(w2->any_child_can_handle("baz"));
     OK(gut2->resp_children_ok);
     IS(gut2->resp_children.size(), 1);
-    IS(gut2->resp_children.getReference("baz")->size(), 1);
-    OK(gut2->resp_children.getReference("baz")->contains(gut4));
+    IS(gut2->resp_children["baz"]->size(), 1);
+    OK(gut2->resp_children["baz"]->contains(gut4));
     OK(gut2->resp_parents_ok);
     IS(gut2->resp_parents.size(), 2);
-    IS(gut2->resp_parents.getReference("foo")->size(), 1);
-    OK(gut2->resp_parents.getReference("foo")->contains(gut1));
-    IS(gut2->resp_parents.getReference("bar")->size(), 1);
-    OK(gut2->resp_parents.getReference("bar")->contains(gut1));
+    IS(gut2->resp_parents["foo"]->size(), 1);
+    OK(gut2->resp_parents["foo"]->contains(gut1));
+    IS(gut2->resp_parents["bar"]->size(), 1);
+    OK(gut2->resp_parents["bar"]->contains(gut1));
 
     OK(w3->any_parent_can_handle("foo"));
     OK(w3->any_parent_can_handle("bar"));
@@ -366,14 +366,14 @@ void TestFramework::content()
     OK(w5->any_parent_can_handle("aaa"));
     OK(gut5->resp_parents_ok);
     IS(gut5->resp_parents.size(), 4);
-    IS(gut5->resp_parents.getReference("foo")->size(), 1);
-    IS(gut5->resp_parents.getReference("foo")->indexOf(gut1), 0);
-    IS(gut5->resp_parents.getReference("bar")->size(), 1);
-    IS(gut5->resp_parents.getReference("bar")->indexOf(gut1), 0);
-    IS(gut5->resp_parents.getReference("baz")->size(), 1);
-    IS(gut5->resp_parents.getReference("baz")->indexOf(gut4), 0);
-    IS(gut5->resp_parents.getReference("aaa")->size(), 1);
-    IS(gut5->resp_parents.getReference("aaa")->indexOf(gut2), 0);
+    IS(gut5->resp_parents["foo"]->size(), 1);
+    IS(gut5->resp_parents["foo"]->indexOf(gut1), 0);
+    IS(gut5->resp_parents["bar"]->size(), 1);
+    IS(gut5->resp_parents["bar"]->indexOf(gut1), 0);
+    IS(gut5->resp_parents["baz"]->size(), 1);
+    IS(gut5->resp_parents["baz"]->indexOf(gut4), 0);
+    IS(gut5->resp_parents["aaa"]->size(), 1);
+    IS(gut5->resp_parents["aaa"]->indexOf(gut2), 0);
 
     OK(w6->any_parent_can_handle("foo"));
     OK(w6->any_parent_can_handle("bar"));
@@ -381,14 +381,14 @@ void TestFramework::content()
     OK(w6->any_parent_can_handle("aaa"));
     OK(gut6->resp_parents_ok);
     IS(gut6->resp_parents.size(), 4);
-    IS(gut6->resp_parents.getReference("foo")->size(), 1);
-    IS(gut6->resp_parents.getReference("foo")->indexOf(gut1), 0);
-    IS(gut6->resp_parents.getReference("bar")->size(), 1);
-    IS(gut6->resp_parents.getReference("bar")->indexOf(gut1), 0);
-    IS(gut6->resp_parents.getReference("baz")->size(), 1);
-    IS(gut6->resp_parents.getReference("baz")->indexOf(gut4), 0);
-    IS(gut6->resp_parents.getReference("aaa")->size(), 1);
-    IS(gut6->resp_parents.getReference("aaa")->indexOf(gut2), 0);
+    IS(gut6->resp_parents["foo"]->size(), 1);
+    IS(gut6->resp_parents["foo"]->indexOf(gut1), 0);
+    IS(gut6->resp_parents["bar"]->size(), 1);
+    IS(gut6->resp_parents["bar"]->indexOf(gut1), 0);
+    IS(gut6->resp_parents["baz"]->size(), 1);
+    IS(gut6->resp_parents["baz"]->indexOf(gut4), 0);
+    IS(gut6->resp_parents["aaa"]->size(), 1);
+    IS(gut6->resp_parents["aaa"]->indexOf(gut2), 0);
 
     // remove child widget
     OK(w4->remove_child(w6));
@@ -409,14 +409,14 @@ void TestFramework::content()
     OK(w2->any_child_can_handle("baz"));
     OK(gut2->resp_children_ok);
     IS(gut2->resp_children.size(), 1);
-    IS(gut2->resp_children.getReference("baz")->size(), 1);
-    OK(gut2->resp_children.getReference("baz")->contains(gut4));
+    IS(gut2->resp_children["baz"]->size(), 1);
+    OK(gut2->resp_children["baz"]->contains(gut4));
     OK(gut2->resp_parents_ok);
     IS(gut2->resp_parents.size(), 2);
-    IS(gut2->resp_parents.getReference("foo")->size(), 1);
-    OK(gut2->resp_parents.getReference("foo")->contains(gut1));
-    IS(gut2->resp_parents.getReference("bar")->size(), 1);
-    OK(gut2->resp_parents.getReference("bar")->contains(gut1));
+    IS(gut2->resp_parents["foo"]->size(), 1);
+    OK(gut2->resp_parents["foo"]->contains(gut1));
+    IS(gut2->resp_parents["bar"]->size(), 1);
+    OK(gut2->resp_parents["bar"]->contains(gut1));
 
     OK(w3->any_parent_can_handle("foo"));
     OK(w3->any_parent_can_handle("bar"));
@@ -448,14 +448,14 @@ void TestFramework::content()
     OK(w5->any_parent_can_handle("aaa"));
     OK(gut5->resp_parents_ok);
     IS(gut5->resp_parents.size(), 4);
-    IS(gut5->resp_parents.getReference("foo")->size(), 1);
-    IS(gut5->resp_parents.getReference("foo")->indexOf(gut1), 0);
-    IS(gut5->resp_parents.getReference("bar")->size(), 1);
-    IS(gut5->resp_parents.getReference("bar")->indexOf(gut1), 0);
-    IS(gut5->resp_parents.getReference("baz")->size(), 1);
-    IS(gut5->resp_parents.getReference("baz")->indexOf(gut4), 0);
-    IS(gut5->resp_parents.getReference("aaa")->size(), 1);
-    IS(gut5->resp_parents.getReference("aaa")->indexOf(gut2), 0);
+    IS(gut5->resp_parents["foo"]->size(), 1);
+    IS(gut5->resp_parents["foo"]->indexOf(gut1), 0);
+    IS(gut5->resp_parents["bar"]->size(), 1);
+    IS(gut5->resp_parents["bar"]->indexOf(gut1), 0);
+    IS(gut5->resp_parents["baz"]->size(), 1);
+    IS(gut5->resp_parents["baz"]->indexOf(gut4), 0);
+    IS(gut5->resp_parents["aaa"]->size(), 1);
+    IS(gut5->resp_parents["aaa"]->indexOf(gut2), 0);
 
     IS(gut6->resp_parents.size(), 0);
 
@@ -468,8 +468,8 @@ void TestFramework::content()
     IS(gut2->resp_parents.size(), 0);
     OK(gut2->resp_children_ok);
     IS(gut2->resp_children.size(), 1);
-    IS(gut2->resp_children.getReference("baz")->size(), 1);
-    OK(gut2->resp_children.getReference("baz")->contains(gut4));
+    IS(gut2->resp_children["baz"]->size(), 1);
+    OK(gut2->resp_children["baz"]->contains(gut4));
 
     OK(w3->any_parent_can_handle("aaa"));
     OK(gut3->resp_parents_ok);
@@ -487,8 +487,8 @@ void TestFramework::content()
     OK(w5->any_parent_can_handle("aaa"));
     OK(gut5->resp_parents_ok);
     IS(gut5->resp_parents.size(), 2);
-    IS(gut5->resp_parents.getReference("baz")->size(), 1);
-    IS(gut5->resp_parents.getReference("baz")->indexOf(gut4), 0);
-    IS(gut5->resp_parents.getReference("aaa")->size(), 1);
-    IS(gut5->resp_parents.getReference("aaa")->indexOf(gut2), 0);
+    IS(gut5->resp_parents["baz"]->size(), 1);
+    IS(gut5->resp_parents["baz"]->indexOf(gut4), 0);
+    IS(gut5->resp_parents["aaa"]->size(), 1);
+    IS(gut5->resp_parents["aaa"]->indexOf(gut2), 0);
 }

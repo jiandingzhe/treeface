@@ -6,7 +6,7 @@
 #include <FreeImage.h>
 
 #include <treecore/HashMap.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/MemoryBlock.h>
 #include <treecore/ScopedPointer.h>
 
@@ -18,7 +18,7 @@ juce_ImplementSingleton(ImageManager);
 
 struct ImageManager::Impl
 {
-    HashMap<String, Holder<Image> > items;
+    HashMap<String, RefCountHolder<Image> > items;
 };
 
 ImageManager::ImageManager(): m_impl(new Impl())

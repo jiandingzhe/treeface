@@ -8,14 +8,16 @@
 #include "treeface/scene/scene.h"
 
 #include <treecore/AlignedMalloc.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 
 #include <cmath>
 
 namespace treeface {
 
-struct Face::Guts: public treecore::AlignedMalloc<16>
+TREECORE_ALN_BEGIN(16)
+struct Face::Guts
 {
+    TREECORE_ALIGNED_ALLOCATOR(Face::Guts);
     treecore::uint32 width;
     treecore::uint32 height;
 
@@ -28,22 +30,22 @@ struct Face::Guts: public treecore::AlignedMalloc<16>
     bool matrix_frust_dirty = true;
     bool matrix_ortho_dirty = true;
 
-    treecore::Holder<Widget> root_widget_frust;
-    treecore::Holder<Widget> root_widget_ortho;
-    treecore::Holder<Scene> scene_frust;
-    treecore::Holder<Scene> scene_ortho;
+    treecore::RefCountHolder<Widget> root_widget_frust;
+    treecore::RefCountHolder<Widget> root_widget_ortho;
+    treecore::RefCountHolder<Scene> scene_frust;
+    treecore::RefCountHolder<Scene> scene_ortho;
 
     Mat4f matrix_view;
     Mat4f matrix_frust;
     Mat4f matrix_ortho;
 
-    void update_project_dist() NOEXCEPT
+    void update_project_dist() noexcept
     {
         project_dist = width/2/tan(frustrum_angle);
         project_dist_dirty = false;
     }
 
-    void update_matrix_view() NOEXCEPT
+    void update_matrix_view() noexcept
     {
         if (project_dist_dirty)
             update_project_dist();
@@ -55,7 +57,7 @@ struct Face::Guts: public treecore::AlignedMalloc<16>
         matrix_view_dirty = false;
     }
 
-    void update_matrix_frust() NOEXCEPT
+    void update_matrix_frust() noexcept
     {
         if (project_dist_dirty)
             update_project_dist();
@@ -68,7 +70,7 @@ struct Face::Guts: public treecore::AlignedMalloc<16>
         matrix_frust_dirty = false;
     }
 
-    void update_matrix_ortho() NOEXCEPT
+    void update_matrix_ortho() noexcept
     {
         if (project_dist_dirty)
             update_project_dist();

@@ -16,7 +16,7 @@ SceneQuery::~SceneQuery()
 {
 }
 
-treecore::Result SceneQuery::traverse(SceneNode* root) NOEXCEPT
+treecore::Result SceneQuery::traverse(SceneNode* root) noexcept
 {
     Result begin_re = traverse_begin();
     if (!begin_re)
@@ -33,7 +33,7 @@ treecore::Result SceneQuery::traverse(SceneNode* root) NOEXCEPT
     return Result::ok();
 }
 
-treecore::Result SceneQuery::recur_part(SceneNode* node) NOEXCEPT
+treecore::Result SceneQuery::recur_part(SceneNode* node) noexcept
 {
     Result one_node_re = traverse_one_node(node);
     if (!one_node_re)

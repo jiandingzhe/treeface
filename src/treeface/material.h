@@ -3,9 +3,9 @@
 
 #include "treeface/common.h"
 
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/IntTypes.h>
-#include <treecore/Object.h>
+#include <treecore/RefCountObject.h>
 
 namespace treecore {
 class Result;
@@ -20,7 +20,7 @@ class Program;
 class SceneRenderer;
 class Texture;
 
-class Material: public treecore::Object
+class Material: public treecore::RefCountObject
 {
     friend class MaterialManager;
     friend class SceneRenderer;
@@ -30,19 +30,19 @@ public:
 
     virtual ~Material();
 
-    Program* get_program() NOEXCEPT;
-    treecore::int32 get_num_textures() const NOEXCEPT;
-    Texture* get_texture(treecore::int32 layer_idx) NOEXCEPT;
-    Texture* get_texture(treecore::StringRef name) NOEXCEPT;
+    Program* get_program() noexcept;
+    treecore::int32 get_num_textures() const noexcept;
+    Texture* get_texture(treecore::int32 layer_idx) noexcept;
+    Texture* get_texture(treecore::StringRef name) noexcept;
 
-    void use() NOEXCEPT;
-    void unuse() NOEXCEPT;
+    void use() noexcept;
+    void unuse() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE(Material);
-    JUCE_DECLARE_NON_MOVABLE(Material);
+    TREECORE_DECLARE_NON_COPYABLE(Material);
+    TREECORE_DECLARE_NON_MOVABLE(Material);
 
 protected:
-    treecore::Holder<Program> m_program;
+    treecore::RefCountHolder<Program> m_program;
 
 private:
     struct Impl;

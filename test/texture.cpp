@@ -3,7 +3,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/Logger.h>
 #include <treecore/MathsFunctions.h>
 #include <treecore/Result.h>
@@ -30,12 +30,12 @@ const float data_vertices[] = {
 
 const uint16 data_indices[6] = {0, 1, 2, 2, 1, 3};
 
-Holder<treeface::VertexIndexBuffer> buffer;
-Holder<treeface::VertexArray> vertex_array_tex;
-Holder<treeface::VertexArray> vertex_array_simple;
-Holder<treeface::Texture> texture;
-Holder<treeface::Program> program_tex;
-Holder<treeface::Program> program_simple;
+RefCountHolder<treeface::VertexIndexBuffer> buffer;
+RefCountHolder<treeface::VertexArray> vertex_array_tex;
+RefCountHolder<treeface::VertexArray> vertex_array_simple;
+RefCountHolder<treeface::Texture> texture;
+RefCountHolder<treeface::Program> program_tex;
+RefCountHolder<treeface::Program> program_simple;
 int program_simple_uni = -1;
 
 int window_w = 400;

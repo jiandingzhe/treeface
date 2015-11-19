@@ -171,7 +171,7 @@ treecore::Result Program::build(const char* src_vert_raw, const char* src_frag_r
     return treecore::Result::ok();
 }
 
-void Program::use() NOEXCEPT
+void Program::use() noexcept
 {
     glUseProgram(m_program);
 }
@@ -240,13 +240,13 @@ treecore::Result Program::fetch_program_error_log()
     return treecore::Result::ok();
 }
 
-void Program::instant_set_uniform(GLint uni_loc, GLint value) const NOEXCEPT
+void Program::instant_set_uniform(GLint uni_loc, GLint value) const noexcept
 {
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index(uni_loc);
     jassert(i_uni >= 0);
-    const UniformInfo& uni_info = m_impl->uni_store.getReference(i_uni);
+    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
     jassert(uni_info.n_elem == 1);
     jassert(uni_info.type == GL_INT ||
             uni_info.type == GL_BOOL ||
@@ -261,13 +261,13 @@ void Program::instant_set_uniform(GLint uni_loc, GLint value) const NOEXCEPT
     glUniform1i(uni_loc, value);
 }
 
-void Program::instant_set_uniform(GLint uni_loc, GLuint value) const NOEXCEPT
+void Program::instant_set_uniform(GLint uni_loc, GLuint value) const noexcept
 {
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index(uni_loc);
     jassert(i_uni >= 0);
-    const UniformInfo& uni_info = m_impl->uni_store.getReference(i_uni);
+    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
     jassert(uni_info.n_elem == 1);
     jassert(uni_info.type == GL_UNSIGNED_INT ||
 			uni_info.type == GL_BOOL);
@@ -275,13 +275,13 @@ void Program::instant_set_uniform(GLint uni_loc, GLuint value) const NOEXCEPT
     glUniform1ui(uni_loc, value);
 }
 
-void Program::instant_set_uniform(GLint uni_loc, GLfloat value) const NOEXCEPT
+void Program::instant_set_uniform(GLint uni_loc, GLfloat value) const noexcept
 {
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index(uni_loc);
     jassert(i_uni >= 0);
-    const UniformInfo& uni_info = m_impl->uni_store.getReference(i_uni);
+    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
     jassert(uni_info.n_elem == 1);
     jassert(uni_info.type == GL_FLOAT ||
 			uni_info.type == GL_BOOL);
@@ -289,13 +289,13 @@ void Program::instant_set_uniform(GLint uni_loc, GLfloat value) const NOEXCEPT
     glUniform1f(uni_loc, value);
 }
 
-void Program::instant_set_uniform(GLint uni_loc, const Sampler& sampler) const NOEXCEPT
+void Program::instant_set_uniform(GLint uni_loc, const Sampler& sampler) const noexcept
 {
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index(uni_loc);
     jassert(i_uni >= 0);
-    const UniformInfo& uni_info = m_impl->uni_store.getReference(i_uni);
+    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
     jassert(uni_info.n_elem == 1);
     jassert(uni_info.type == GL_SAMPLER_2D ||
             uni_info.type == GL_SAMPLER_3D ||
@@ -308,33 +308,33 @@ void Program::instant_set_uniform(GLint uni_loc, const Sampler& sampler) const N
     glUniform1i(uni_loc, sampler.m_sampler);
 }
 
-void Program::instant_set_uniform(GLint uni_loc, const Vec4f& value) const NOEXCEPT
+void Program::instant_set_uniform(GLint uni_loc, const Vec4f& value) const noexcept
 {
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index(uni_loc);
     jassert(i_uni >= 0);
-    const UniformInfo& uni_info = m_impl->uni_store.getReference(i_uni);
+    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
     jassert(uni_info.n_elem == 1);
     jassert(uni_info.type == GL_FLOAT_VEC4);
 #endif
     glUniform4fv(uni_loc, 1, (const float*)&value);
 }
 
-void Program::instant_set_uniform(GLint uni_loc, const Mat4f& value) const NOEXCEPT
+void Program::instant_set_uniform(GLint uni_loc, const Mat4f& value) const noexcept
 {
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index(uni_loc);
     jassert(i_uni >= 0);
-    const UniformInfo& uni_info = m_impl->uni_store.getReference(i_uni);
+    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
     jassert(uni_info.n_elem == 1);
     jassert(uni_info.type == GL_FLOAT_MAT4);
 #endif
     glUniformMatrix4fv(uni_loc, 1, false, (const float*) &value);
 }
 
-int Program::get_attribute_index(const treecore::String& name) const NOEXCEPT
+int Program::get_attribute_index(const treecore::String& name) const noexcept
 {
     if (m_impl->attr_idx_by_name.contains(name))
         return m_impl->attr_idx_by_name[name];
@@ -342,12 +342,12 @@ int Program::get_attribute_index(const treecore::String& name) const NOEXCEPT
         return -1;
 }
 
-const VertexAttrib& Program::get_attribute_info(int i_attr) const NOEXCEPT
+const VertexAttrib& Program::get_attribute_info(int i_attr) const noexcept
 {
-    return m_impl->attr_info.getReference(i_attr);
+    return m_impl->attr_info[i_attr];
 }
 
-int Program::get_uniform_index(const treecore::String& name) const NOEXCEPT
+int Program::get_uniform_index(const treecore::String& name) const noexcept
 {
     if (m_impl->uni_idx_by_name.contains(name))
         return m_impl->uni_idx_by_name[name];
@@ -355,7 +355,7 @@ int Program::get_uniform_index(const treecore::String& name) const NOEXCEPT
         return -1;
 }
 
-int Program::get_uniform_index(const GLint uni_loc) const NOEXCEPT
+int Program::get_uniform_index(const GLint uni_loc) const noexcept
 {
     if (m_impl->uni_idx_by_loc.contains(uni_loc))
         return m_impl->uni_idx_by_loc[uni_loc];
@@ -363,17 +363,17 @@ int Program::get_uniform_index(const GLint uni_loc) const NOEXCEPT
         return -1;
 }
 
-const UniformInfo& Program::get_uniform_info(int i_uni) const NOEXCEPT
+const UniformInfo& Program::get_uniform_info(int i_uni) const noexcept
 {
-    return m_impl->uni_store.getReference(i_uni);
+    return m_impl->uni_store[i_uni];
 }
 
-GLint Program::get_uniform_location(const treecore::String& name) const NOEXCEPT
+GLint Program::get_uniform_location(const treecore::String& name) const noexcept
 {
     if (m_impl->uni_idx_by_name.contains(name))
     {
         int index = m_impl->uni_idx_by_name[name];
-        return m_impl->uni_store.getReference(index).location;
+        return m_impl->uni_store[index].location;
     }
     else
     {

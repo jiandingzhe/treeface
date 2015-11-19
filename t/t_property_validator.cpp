@@ -2,10 +2,10 @@
 #include "treeface/misc/propertyvalidator.h"
 
 #include <treecore/Array.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/Identifier.h>
 #include <treecore/NamedValueSet.h>
-#include <treecore/Object.h>
+#include <treecore/RefCountObject.h>
 #include <treecore/String.h>
 #include <treecore/Variant.h>
 
@@ -47,7 +47,7 @@ void TestFramework::content()
     }
 
     {
-         Holder<Object> obj = new Object();
+         treecore::RefCountHolder<RefCountObject> obj = new RefCountObject();
          NamedValueSet kv5;
          kv5.set(Identifier("prop1"), var(obj.get()));
          kv5.set(Identifier("prop2"), var("aaaaaaa"));

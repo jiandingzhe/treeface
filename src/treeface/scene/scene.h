@@ -4,8 +4,8 @@
 #include "treeface/common.h"
 #include "treeface/math/vec4.h"
 
-#include <treecore/Object.h>
-#include <treecore/Holder.h>
+#include <treecore/RefCountObject.h>
+#include <treecore/RefCountHolder.h>
 
 namespace treecore {
 class Result;
@@ -20,20 +20,20 @@ class SceneNode;
 class SceneNodeManager;
 class SceneRenderer;
 
-class Scene: public treecore::Object
+class Scene: public treecore::RefCountObject
 {
     friend class SceneRenderer;
 public:
     Scene();
     Scene(GeometryManager* geo_mgr, MaterialManager* mat_mgr);
 
-    JUCE_DECLARE_NON_COPYABLE(Scene)
-    JUCE_DECLARE_NON_MOVABLE(Scene)
+    TREECORE_DECLARE_NON_COPYABLE(Scene)
+    TREECORE_DECLARE_NON_MOVABLE(Scene)
 
     virtual ~Scene();
 
-    treecore::Result build(const treecore::String& name) NOEXCEPT;
-    treecore::Result build(const treecore::var& root) NOEXCEPT;
+    treecore::Result build(const treecore::String& name) noexcept;
+    treecore::Result build(const treecore::var& root) noexcept;
 
     /**
      * @brief get the root of the scene hierarchy
@@ -43,7 +43,7 @@ public:
      *
      * @return root node object.
      */
-    SceneNode* get_root_node() NOEXCEPT;
+    SceneNode* get_root_node() noexcept;
 
     /**
      * @brief get node by name
@@ -51,22 +51,22 @@ public:
      * @return If has node object with name, return node object; otherwise
      *         return nullptr.
      */
-    SceneNode* get_node(const treecore::String& name) NOEXCEPT;
+    SceneNode* get_node(const treecore::String& name) noexcept;
 
-    GeometryManager* get_geometry_manager() NOEXCEPT;
-    MaterialManager* get_material_manager() NOEXCEPT;
+    GeometryManager* get_geometry_manager() noexcept;
+    MaterialManager* get_material_manager() noexcept;
 
-    const Vec4f& get_global_light_color() const NOEXCEPT;
-    void set_global_light_color(float r, float g, float b, float a) NOEXCEPT;
-    void set_global_light_color(const Vec4f& value) NOEXCEPT;
+    const Vec4f& get_global_light_color() const noexcept;
+    void set_global_light_color(float r, float g, float b, float a) noexcept;
+    void set_global_light_color(const Vec4f& value) noexcept;
 
-    const Vec4f& get_global_light_direction() const NOEXCEPT;
-    void set_global_light_direction(float x, float y, float z) NOEXCEPT;
-    void set_global_light_direction(const Vec4f& value) NOEXCEPT;
+    const Vec4f& get_global_light_direction() const noexcept;
+    void set_global_light_direction(float x, float y, float z) noexcept;
+    void set_global_light_direction(const Vec4f& value) noexcept;
 
-    const Vec4f& get_global_light_ambient() const NOEXCEPT;
-    void set_global_light_ambient(float r, float g, float b, float a) NOEXCEPT;
-    void set_global_light_ambient(const Vec4f& value) NOEXCEPT;
+    const Vec4f& get_global_light_ambient() const noexcept;
+    void set_global_light_ambient(float r, float g, float b, float a) noexcept;
+    void set_global_light_ambient(const Vec4f& value) noexcept;
 
 private:
     struct Guts;

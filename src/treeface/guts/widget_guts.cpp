@@ -4,7 +4,7 @@ using namespace treecore;
 
 namespace treeface {
 
-void Widget::Guts::fetch_this_and_parent_ability(RespWidgetMap& result) NOEXCEPT
+void Widget::Guts::fetch_this_and_parent_ability(RespWidgetMap& result) noexcept
 {
     jassert(result.size() == 0);
 
@@ -12,17 +12,17 @@ void Widget::Guts::fetch_this_and_parent_ability(RespWidgetMap& result) NOEXCEPT
     RespWidgetMap::Iterator it_parent_cache(resp_parents);
     while (it_parent_cache.next())
     {
-        String ev_name = it_parent_cache.getKey();
+        const String& ev_name = it_parent_cache.key();
         WidgetRawArray* curr = new (std::nothrow) WidgetRawArray();
         result.set(ev_name, curr);
-        *curr = *it_parent_cache.getValue();
+        *curr = *it_parent_cache.value();
     }
 
     // store ability
     EventMap::Iterator it_ev(abilities);
     while (it_ev.next())
     {
-        String ev_name = it_ev.getKey();
+        const String& ev_name = it_ev.key();
 
         // create slot if this event name is not exist
         WidgetRawArray* curr = nullptr;
@@ -40,7 +40,7 @@ void Widget::Guts::fetch_this_and_parent_ability(RespWidgetMap& result) NOEXCEPT
     }
 }
 
-void Widget::Guts::recur_clear_resp_parent_cache() NOEXCEPT
+void Widget::Guts::recur_clear_resp_parent_cache() noexcept
 {
     printf("%s: clear resp-parent cache\n", name.toRawUTF8());
     resp_parents.clear();
@@ -51,7 +51,7 @@ void Widget::Guts::recur_clear_resp_parent_cache() NOEXCEPT
     }
 }
 
-void Widget::Guts::recur_clear_resp_child_cache() NOEXCEPT
+void Widget::Guts::recur_clear_resp_child_cache() noexcept
 {
     printf("%s: clear resp-child cache\n", name.toRawUTF8());
     resp_children.clear();
@@ -60,7 +60,7 @@ void Widget::Guts::recur_clear_resp_child_cache() NOEXCEPT
         parent->m_guts->recur_clear_resp_child_cache();
 }
 
-void Widget::Guts::recur_build_resp_parent_cache() NOEXCEPT
+void Widget::Guts::recur_build_resp_parent_cache() noexcept
 {
     build_resp_parent_cache();
     for (int i = 0; i < children.size(); i++)
@@ -69,14 +69,14 @@ void Widget::Guts::recur_build_resp_parent_cache() NOEXCEPT
     }
 }
 
-void Widget::Guts::recur_build_resp_child_cache() NOEXCEPT
+void Widget::Guts::recur_build_resp_child_cache() noexcept
 {
     build_resp_child_cache();
     if (parent)
         parent->m_guts->recur_build_resp_child_cache();
 }
 
-void Widget::Guts::recur_remove_resp_parent(const treecore::String& ev_name, Guts* to_be_removed) NOEXCEPT
+void Widget::Guts::recur_remove_resp_parent(const treecore::String& ev_name, Guts* to_be_removed) noexcept
 {
     if (resp_parents_ok)
     {
@@ -92,7 +92,7 @@ void Widget::Guts::recur_remove_resp_parent(const treecore::String& ev_name, Gut
     }
 }
 
-void Widget::Guts::recur_remove_resp_child(const treecore::String& ev_name, Guts* to_be_removed) NOEXCEPT
+void Widget::Guts::recur_remove_resp_child(const treecore::String& ev_name, Guts* to_be_removed) noexcept
 {
     if (resp_children_ok)
     {
@@ -112,7 +112,7 @@ void Widget::Guts::recur_remove_resp_child(const treecore::String& ev_name, Guts
         parent->m_guts->recur_remove_resp_child(ev_name, to_be_removed);
 }
 
-void Widget::Guts::recur_build_or_prepend_update_resp_parent_cache(const RespWidgetMap& prefix_data) NOEXCEPT
+void Widget::Guts::recur_build_or_prepend_update_resp_parent_cache(const RespWidgetMap& prefix_data) noexcept
 {
     if (resp_parents_ok)
     {
@@ -130,7 +130,7 @@ void Widget::Guts::recur_build_or_prepend_update_resp_parent_cache(const RespWid
 }
 
 
-void Widget::Guts::build_resp_parent_cache() NOEXCEPT
+void Widget::Guts::build_resp_parent_cache() noexcept
 {
     printf("%s: update resp-parent cache\n", name.toRawUTF8());
     jassert(!resp_parents_ok);
@@ -147,7 +147,7 @@ void Widget::Guts::build_resp_parent_cache() NOEXCEPT
     parent->m_guts->fetch_this_and_parent_ability(resp_parents);
 }
 
-void Widget::Guts::build_resp_child_cache() NOEXCEPT
+void Widget::Guts::build_resp_child_cache() noexcept
 {
     printf("%s: update resp-child cache\n", name.toRawUTF8());
     jassert(!resp_children_ok);
@@ -166,7 +166,7 @@ void Widget::Guts::build_resp_child_cache() NOEXCEPT
         EventMap::Iterator it_child_ev(child->m_guts->abilities);
         while (it_child_ev.next())
         {
-            String ev_name = it_child_ev.getKey();
+            const String& ev_name = it_child_ev.key();
 
             // create slot if this event name is not exist
             WidgetRawArray* curr = nullptr;
@@ -187,7 +187,7 @@ void Widget::Guts::build_resp_child_cache() NOEXCEPT
         RespWidgetMap::Iterator it_child_resp(child->m_guts->resp_children);
         while (it_child_resp.next())
         {
-            String ev_name = it_child_resp.getKey();
+            const String& ev_name = it_child_resp.key();
 
             // create slot if this event name is not exist
             WidgetRawArray* curr = nullptr;
@@ -201,21 +201,21 @@ void Widget::Guts::build_resp_child_cache() NOEXCEPT
                 curr = resp_children[ev_name];
             }
 
-            curr->addArray(*it_child_resp.getValue());
+            curr->addArray(*it_child_resp.value());
         }
     }
 }
 
-void Widget::Guts::prepend_update_resp_parent_cache(const RespWidgetMap& prefix_data) NOEXCEPT
+void Widget::Guts::prepend_update_resp_parent_cache(const RespWidgetMap& prefix_data) noexcept
 {
     printf("%s: prepend update resp-parent cache\n", name.toRawUTF8());
     jassert(resp_parents_ok);
 
-    RespWidgetMap::Iterator it(prefix_data);
+    RespWidgetMap::ConstIterator it(prefix_data);
     while (it.next())
     {
-        String ev_name = it.getKey();
-        WidgetRawArray* data = it.getValue();
+        const String& ev_name = it.key();
+        WidgetRawArray* data = it.value();
 
         if (resp_parents.contains(ev_name))
         {

@@ -101,7 +101,7 @@ treecore::Result VertexTemplate::add_attribs(const treecore::var& list_node)
 
     for (int i = 0; i < attr_nodes->size(); i++)
     {
-        const var& attr_node = attr_nodes->getReference(i);
+        const var& attr_node = (*attr_nodes)[i];
         if (!attr_node.isObject())
             return Result::fail("attrib node at "+String(i)+" is not a KV");
 
@@ -127,55 +127,55 @@ treecore::Result VertexTemplate::add_attribs(const treecore::var& list_node)
     return Result::ok();
 }
 
-size_t VertexTemplate::vertex_size() const NOEXCEPT
+size_t VertexTemplate::vertex_size() const noexcept
 {
     return m_impl->size;
 }
 
-int VertexTemplate::n_elems() const NOEXCEPT
+int VertexTemplate::n_elems() const noexcept
 {
     return m_impl->elem_offsets.size();
 }
 
-int VertexTemplate::n_attribs() const NOEXCEPT
+int VertexTemplate::n_attribs() const noexcept
 {
     return m_impl->attrs.size();
 }
 
-size_t VertexTemplate::get_elem_offset(int i_elem) const NOEXCEPT
+size_t VertexTemplate::get_elem_offset(int i_elem) const noexcept
 {
     return m_impl->elem_offsets[i_elem];
 }
 
-size_t VertexTemplate::get_elem_offset(int i_attr, int i_elem_in_attr) const NOEXCEPT
+size_t VertexTemplate::get_elem_offset(int i_attr, int i_elem_in_attr) const noexcept
 {
-    const HostVertexAttrib attr = m_impl->attrs.getReference(i_attr);
+    const HostVertexAttrib attr = m_impl->attrs[i_attr];
     return attr.offset + attr.get_elem_offset(i_elem_in_attr);
 }
 
-GLenum VertexTemplate::get_elem_type(int i_elem) const NOEXCEPT
+GLenum VertexTemplate::get_elem_type(int i_elem) const noexcept
 {
     int i_attr = m_impl->elem_attr_index[i_elem];
-    return m_impl->attrs.getReference(i_attr).type;
+    return m_impl->attrs[i_attr].type;
 }
 
-GLenum VertexTemplate::get_elem_size(int i_elem) const NOEXCEPT
+GLenum VertexTemplate::get_elem_size(int i_elem) const noexcept
 {
     return size_of_gl_type(get_elem_type(i_elem));
 }
 
-const HostVertexAttrib& VertexTemplate::get_attrib(int i_attr) const NOEXCEPT
+const HostVertexAttrib& VertexTemplate::get_attrib(int i_attr) const noexcept
 {
-    return m_impl->attrs.getReference(i_attr);
+    return m_impl->attrs[i_attr];
 }
 
-const HostVertexAttrib& VertexTemplate::get_elem_attrib(int i_elem) const NOEXCEPT
+const HostVertexAttrib& VertexTemplate::get_elem_attrib(int i_elem) const noexcept
 {
     int i_attr = m_impl->elem_attr_index[i_elem];
-    return m_impl->attrs.getReference(i_attr);
+    return m_impl->attrs[i_attr];
 }
 
-void VertexTemplate::set_value_at(void* vertex, int i_elem, const treecore::var& value) NOEXCEPT
+void VertexTemplate::set_value_at(void* vertex, int i_elem, const treecore::var& value) noexcept
 {
     size_t offset = get_elem_offset(i_elem);
     char* value_p = (char*) vertex;

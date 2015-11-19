@@ -21,13 +21,13 @@ struct VertexAttrib
     {
     }
 
-    inline size_t get_elem_offset(treecore::int32 index) const NOEXCEPT
+    inline size_t get_elem_offset(treecore::int32 index) const noexcept
     {
         jassert(index < n_elem);
         return index * size_of_gl_type(type);
     }
 
-    inline size_t size() const NOEXCEPT
+    inline size_t size() const noexcept
     {
         return n_elem * size_of_gl_type(type);
     }

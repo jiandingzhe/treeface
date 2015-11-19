@@ -12,7 +12,7 @@ namespace treeface {
 template<typename T, int SZ = sizeof(T) * 4>
 T det3x3(const treecore::SIMDType<SZ>& v0,
          const treecore::SIMDType<SZ>& v1,
-         const treecore::SIMDType<SZ>& v2) NOEXCEPT;
+         const treecore::SIMDType<SZ>& v2) noexcept;
 
 /**
  * Get determinant value of a 3x3 matrix. For each input SIMD value, only the
@@ -21,7 +21,7 @@ T det3x3(const treecore::SIMDType<SZ>& v0,
 template<>
 inline float det3x3<float, 16>(const treecore::SIMDType<16>& v0,
                                const treecore::SIMDType<16>& v1,
-                               const treecore::SIMDType<16>& v2) NOEXCEPT
+                               const treecore::SIMDType<16>& v2) noexcept
 {
 //        + v00 * v11 * v22
 //        + v02 * v10 * v21

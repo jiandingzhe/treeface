@@ -18,29 +18,29 @@ public:
     SceneGraphMaterial();
     virtual ~SceneGraphMaterial();
 
-    void instant_set_matrix_model_view(const Mat4f& mat) const NOEXCEPT;
-    void instant_set_matrix_proj(const Mat4f& mat) const NOEXCEPT;
-    void instant_set_matrix_model_view_proj(const Mat4f& mat) const NOEXCEPT;
-    void instant_set_matrix_norm(const Mat4f& mat) const NOEXCEPT;
-    void instant_set_light(const Vec4f& direction, const Vec4f& color, const Vec4f& ambient) const NOEXCEPT;
+    void instant_set_matrix_model_view(const Mat4f& mat) const noexcept;
+    void instant_set_matrix_proj(const Mat4f& mat) const noexcept;
+    void instant_set_matrix_model_view_proj(const Mat4f& mat) const noexcept;
+    void instant_set_matrix_norm(const Mat4f& mat) const noexcept;
+    void instant_set_light(const Vec4f& direction, const Vec4f& color, const Vec4f& ambient) const noexcept;
 
-    bool is_translucent() const NOEXCEPT
+    bool is_translucent() const noexcept
     {
         return m_translucent;
     }
 
-    bool project_shadow() const NOEXCEPT
+    bool project_shadow() const noexcept
     {
         return m_project_shadow;
     }
 
-    bool receive_shadow() const NOEXCEPT
+    bool receive_shadow() const noexcept
     {
         return m_receive_shadow;
     }
 
-    JUCE_DECLARE_NON_COPYABLE(SceneGraphMaterial);
-    JUCE_DECLARE_NON_MOVABLE(SceneGraphMaterial);
+    TREECORE_DECLARE_NON_COPYABLE(SceneGraphMaterial);
+    TREECORE_DECLARE_NON_MOVABLE(SceneGraphMaterial);
 
 protected:
     bool m_translucent = false;
