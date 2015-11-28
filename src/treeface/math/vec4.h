@@ -5,7 +5,8 @@
 #include "treeface/common.h"
 #include <treecore/AlignedMalloc.h>
 #include <treecore/PlatformDefs.h>
-#include <treecore/SIMD.h>
+#include <treecore/SimdFunc.h>
+#include <treecore/SimilarFloat.h>
 
 namespace treeface {
 
@@ -17,10 +18,11 @@ namespace treeface {
  * transmitted to GL server side buffers or program attributes.
  */
 TREECORE_ALN_BEGIN(16)
-template<typename T, int SZ = sizeof(T)*4>
+template<typename T>
 struct Vec4
 {
-    typedef treecore::SIMDType<SZ> DataType;
+    typedef typename treecore::similar_float<T>::type FloatType;
+    typedef treecore::SIMDType<sizeof(T) * 4> DataType;
 
     TREECORE_ALIGNED_ALLOCATOR(Vec4);
 
@@ -29,13 +31,16 @@ struct Vec4
      *
      * values are initialized as zero point
      */
-    Vec4(): data(treecore::simd_set<T, SZ>(0, 0, 0, 1)) {}
+    Vec4()
+    {
+        treecore::simd_set_all<T>(data, T(0), T(0), T(0), T(1));
+    }
 
     /**
      * @brief constructor with values specified
      * @param value: a SIMDType containing x, y, z and w
      */
-    Vec4(const treecore::SIMDType<SZ>& value): data(value) {}
+    Vec4(const DataType& value): data(value) {}
 
     /**
      * @brief copy constructor
@@ -50,13 +55,19 @@ struct Vec4
      * @param z
      * @param w
      */
-    Vec4(T x, T y, T z, T w): data(treecore::simd_set<T, SZ> (x, y, z, w)) {}
+    Vec4(T x, T y, T z, T w)
+    {
+        treecore::simd_set_all<T>(data, x, y, z, w);
+    }
 
     /**
      * @brief constructor with values specified
-     * @param values: an array storing x, y, z and w
+     * @param values: an array storing reversed w, z, y, x
      */
-    Vec4(const T* values): data(treecore::simd_set<T, SZ>(values)) {}
+    Vec4(const T* values)
+    {
+        treecore::simd_set_all<T>(data, values);
+    }
 
     /**
      * @brief assignment operator
@@ -76,27 +87,18 @@ struct Vec4
      * @param z
      * @param w
      */
-    void set(float x, float y, float z, float w)
+    void set(T x, T y, T z, T w)
     {
-        data = treecore::simd_set<T, SZ> (x, y, z, w);
+        treecore::simd_set_all<T> (data, x, y, z, w);
     }
 
     /**
      * @brief set vector contents
      * @param values: an array storing x, y, z and w
      */
-    void set(const float* values)
+    void set(const T* values)
     {
-        data = treecore::simd_set<T, SZ> (values);
-    }
-
-    /**
-     * @brief set vector contents
-     * @param other: another vector whose data will be copied to this vector
-     */
-    void set(const Vec4& other)
-    {
-        data = other.data;
+        treecore::simd_set_all<T> (data, values);
     }
 
     /**
@@ -178,7 +180,9 @@ struct Vec4
      */
     Vec4& operator += (const Vec4& other)
     {
-        data = treecore::simd_add<T>(data, other.data);
+        DataType result;
+        treecore::simd_add<T>(result, data, other.data);
+        data = result;
         return *this;
     }
 
@@ -189,7 +193,9 @@ struct Vec4
      */
     Vec4& operator -= (const Vec4& other)
     {
-        data = treecore::simd_sub<T>(data, other.data);
+        DataType result;
+        treecore::simd_sub<T>(result, data, other.data);
+        data = result;
         return *this;
     }
 
@@ -200,8 +206,11 @@ struct Vec4
      */
     Vec4& operator *= (T value)
     {
-        treecore::SIMDType<SZ> tmp = treecore::simd_set<T, SZ> (value);
-        data = treecore::simd_mul<T>(data, tmp);
+        DataType result;
+        DataType tmp;
+        treecore::simd_broadcast<T> (tmp, value);
+        treecore::simd_mul<T>(result, data, tmp);
+        data = result;
         return *this;
     }
 
@@ -210,10 +219,13 @@ struct Vec4
      * @param value: the scale
      * @return self
      */
-    Vec4& operator /= (float value)
+    Vec4& operator /= (T value)
     {
-        treecore::SIMDType<SZ> tmp = treecore::simd_set<T, SZ>(value);
-        data = treecore::simd_div<T>(data, tmp);
+        DataType result;
+        DataType tmp;
+        treecore::simd_broadcast<T> (tmp, value);
+        treecore::simd_div<T>(result, data, tmp);
+        data = result;
         return *this;
     }
 
@@ -221,10 +233,14 @@ struct Vec4
      * @brief scale vector to make its length to be 1
      * @return length before normalize
      */
-    T normalize()
+    FloatType normalize()
     {
-        T len = length();
-        data = treecore::simd_div<T>(data, treecore::simd_set<T, SZ>(len, len, len, len));
+        FloatType len = (T) length();
+        DataType tmp;
+        treecore::simd_broadcast<T>(tmp, T(len));
+        DataType result;
+        treecore::simd_div<T>(result, data, tmp);
+        data = result;
         return len;
     }
 
@@ -232,7 +248,7 @@ struct Vec4
      * @brief get vector length
      * @return length
      */
-    T length() const
+    FloatType length() const
     {
         return std::sqrt(length2());
     }
@@ -241,9 +257,11 @@ struct Vec4
      * @brief get length square
      * @return length square
      */
-    T length2() const
+    FloatType length2() const
     {
-        return treecore::simd_sum<T, SZ>(treecore::simd_mul<T, SZ>(data, data));
+        DataType tmp;
+        treecore::simd_mul<T>(tmp, data, data);
+        return (FloatType) treecore::simd_sum<T>(tmp);
     }
 
     /**
@@ -262,10 +280,12 @@ struct Vec4
  * @param b: addend
  * @return a new Vec4 object containing result
  */
-template<typename T, int SZ = sizeof(T)*4>
+template<typename T>
 Vec4<T> operator + (const Vec4<T>& a, const Vec4<T>& b)
 {
-    return Vec4<T>( treecore::simd_add<T, SZ>(a.data, b.data) );
+    Vec4<T> result;
+    treecore::simd_add<T>(result.data, a.data, b.data);
+    return result;
 }
 
 /**
@@ -275,10 +295,12 @@ Vec4<T> operator + (const Vec4<T>& a, const Vec4<T>& b)
  * @param b: subtrahend
  * @return a new Vec4 object containing result
  */
-template<typename T, int SZ = sizeof(T)*4>
+template<typename T>
 Vec4<T> operator - (const Vec4<T>& a, const Vec4<T>& b)
 {
-    return Vec4<T>( treecore::simd_sub<T, SZ>(a.data, b.data) );
+    Vec4<T> result;
+    treecore::simd_sub<T>(result.data, a.data, b.data);
+    return result;
 }
 
 /**
@@ -288,11 +310,14 @@ Vec4<T> operator - (const Vec4<T>& a, const Vec4<T>& b)
  * @param b: scale
  * @return a new Vec4 object containing scaled values
  */
-template<typename T, int SZ = sizeof(T)*4>
+template<typename T>
 Vec4<T> operator * (const Vec4<T>& a, T b)
 {
-    treecore::SIMDType<SZ> tmp = treecore::simd_set<T, SZ> (b);
-    return Vec4<T>(treecore::simd_mul<T, SZ>(a.data, tmp));
+    typename Vec4<T>::DataType tmp;
+    treecore::simd_broadcast<T>(tmp, b);
+    typename Vec4<T>::DataType result;
+    treecore::simd_mul<T>(result, a.data, tmp);
+    return Vec4<T>(result);
 }
 
 /**
@@ -302,11 +327,14 @@ Vec4<T> operator * (const Vec4<T>& a, T b)
  * @param b: scale
  * @return a new Vec4 object containing shrinked values
  */
-template<typename T, int SZ = sizeof(T)*4>
+template<typename T>
 Vec4<T> operator / (const Vec4<T>& a, T b)
 {
-    treecore::SIMDType<16> tmp = treecore::simd_set<T, 16> (b);
-    return Vec4<T>(treecore::simd_div<T, SZ>(a.data, tmp));
+    typename Vec4<T>::DataType tmp;
+    treecore::simd_broadcast<T>(tmp, b);
+    typename Vec4<T>::DataType result;
+    treecore::simd_div<T>(result, a.data, tmp);
+    return Vec4<T>(result);
 }
 
 /**
@@ -316,11 +344,12 @@ Vec4<T> operator / (const Vec4<T>& a, T b)
  * @param b: the other vector value
  * @return a scalar value containing dot product
  */
-template<typename T, int SZ = sizeof(T)*4>
+template<typename T>
 T operator * (const Vec4<T>& a, const Vec4<T>& b)
 {
-    treecore::SIMDType<16> tmp = treecore::simd_mul<T>(a.data, b.data);
-    return treecore::simd_sum<T, SZ>(tmp);
+    typename Vec4<T>::DataType result;
+    treecore::simd_mul<T>(result.data, a.data, b.data);
+    return result;
 }
 
 /**
@@ -332,19 +361,29 @@ T operator * (const Vec4<T>& a, const Vec4<T>& b)
 template<typename T, int SZ = sizeof(T)*4>
 Vec4<T> operator ^ (const Vec4<T>& a, const Vec4<T>& b)
 {
-// Res.ele[0] = A.ele[1] * B.ele[2] - A.ele[2] * B.ele[1];
-// Res.ele[1] = A.ele[2] * B.ele[0] - A.ele[0] * B.ele[2];
-// Res.ele[2] = A.ele[0] * B.ele[1] - A.ele[1] * B.ele[0];
-// Res.ele[3] = 0.0f;
-    treecore::SIMDType<SZ> v1 = treecore::simd_shuffle<1, 2, 0, 0>(a.data);
-    treecore::SIMDType<SZ> v2 = treecore::simd_shuffle<2, 0, 1, 0>(b.data);
+    // Res.ele[0] = A.ele[1] * B.ele[2] - A.ele[2] * B.ele[1];
+    // Res.ele[1] = A.ele[2] * B.ele[0] - A.ele[0] * B.ele[2];
+    // Res.ele[2] = A.ele[0] * B.ele[1] - A.ele[1] * B.ele[0];
+    // Res.ele[3] = 0.0f;
+    typename Vec4<T>::DataType v1 = a.data;
+    typename Vec4<T>::DataType v2 = b.data;
+    typename Vec4<T>::DataType v3 = a.data;
+    typename Vec4<T>::DataType v4 = b.data;
 
-    treecore::SIMDType<SZ> v3 = treecore::simd_shuffle<2, 0, 1, 0>(a.data);
-    treecore::SIMDType<SZ> v4 = treecore::simd_shuffle<1, 2, 0, 0>(b.data);
+    treecore::simd_shuffle<1, 2, 0, 0>(v1);
+    treecore::simd_shuffle<2, 0, 1, 0>(v2);
+    treecore::simd_shuffle<2, 0, 1, 0>(v3);
+    treecore::simd_shuffle<1, 2, 0, 0>(v4);
 
-    treecore::SIMDType<SZ> re = treecore::simd_sub<T>(treecore::simd_mul<T>(v1, v2),
-                                               treecore::simd_mul<T>(v3, v4));
+    typename Vec4<T>::DataType tmp1;
+    typename Vec4<T>::DataType tmp2;
+    typename Vec4<T>::DataType re;
+
+    treecore::simd_mul<T>(tmp1, v1, v2);
+    treecore::simd_mul<T>(tmp2, v3, v4);
+    treecore::simd_sub<T>(re, tmp1, tmp2);
     treecore::simd_set_one<3, T>(re, 0);
+
     return Vec4<T>(re);
 }
 
@@ -354,6 +393,7 @@ Vec4<T> operator ^ (const Vec4<T>& a, const Vec4<T>& b)
 template<typename T, int SZ = sizeof(T)*4>
 bool operator == (const Vec4<T>& a, const Vec4<T>& b)
 {
+
     die("vec4 == not implemented");
     return false;
 }

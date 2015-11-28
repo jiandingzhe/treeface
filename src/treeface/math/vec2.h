@@ -1,0 +1,200 @@
+#ifndef TREECORE_VEC2_H
+#define TREECORE_VEC2_H
+
+#include <treecore/AlignedMalloc.h>
+#include <treecore/IntTypes.h>
+#include <treecore/SimilarFloat.h>
+
+namespace treeface
+{
+
+TREECORE_ALN_BEGIN(8)
+template<typename T>
+struct Vec2
+{
+    typedef typename treecore::similar_float<T>::type FloatType;
+
+    Vec2() noexcept
+        : x(0)
+        , y(0)
+    {}
+
+    Vec2(T x, T y) noexcept
+        : x(x)
+        , y(y)
+    {}
+
+    Vec2(const Vec2& peer) noexcept
+        : x(peer.x)
+        , y(peer.y)
+    {
+    }
+
+    TREECORE_ALIGNED_ALLOCATOR(Vec2);
+
+    Vec2& operator = (const Vec2& peer) noexcept
+    {
+        x = peer.x;
+        y = peer.y;
+        return *this;
+    }
+
+    void set(T x, T y) noexcept
+    {
+        this->x = x;
+        this->y = y;
+    }
+
+    /**
+     * @brief perform vector add
+     */
+    Vec2& operator += (const Vec2& value) noexcept
+    {
+        x += value.x;
+        y += value.y;
+        return *this;
+    }
+
+    /**
+     * @brief perform vector subtract
+     */
+    Vec2& operator -= (const Vec2& value) noexcept
+    {
+        x -= value.x;
+        y -= value.y;
+        return *this;
+    }
+
+    /**
+     * @breif multiply this vector with a single value
+     */
+    template<typename T2>
+    Vec2& operator *= (T2 value) noexcept
+    {
+        x *= value;
+        y *= value;
+        return *this;
+    }
+
+    /**
+     * @brief divide this vector with a single value
+     */
+    template<typename T2>
+    Vec2& operator /= (T2 value) noexcept
+    {
+        x /= value;
+        y /= value;
+        return *this;
+    }
+
+    /**
+     * @brief get length*length
+     * @return result in float type whose size is similar with T
+     */
+    FloatType length2() const noexcept
+    {
+        return x*x + y*y;
+    }
+
+    /**
+     * @brief get length
+     * @return length value in float type whose size is similar with T
+     */
+    FloatType length() const noexcept
+    {
+        return std::sqrt(length2());
+    }
+
+    /**
+     * @brief scale vector to make its length be one
+     *
+     * Note this is probably meaningless for integer type vectors.
+     *
+     * @return vector length
+     */
+    FloatType normalize() noexcept
+    {
+        FloatType len = (FloatType) length();
+        x /= len;
+        y /= len;
+        return len;
+    }
+
+    T x;
+    T y;
+} TREECORE_ALN_END(8);
+
+/**
+ * @brief vector add
+ */
+template<typename T>
+Vec2<T> operator + (const Vec2<T>& a, const Vec2<T>& b)
+{
+    Vec2<T> result(a);
+    a += b;
+    return result;
+}
+
+/**
+ * @brief vector subtract
+ */
+template<typename T>
+Vec2<T> operator - (const Vec2<T>& a, const Vec2<T>& b)
+{
+    Vec2<T> result(a);
+    a -= b;
+    return result;
+}
+
+/**
+ * @brief multiply vector with a single value
+ */
+template<typename T>
+Vec2<T> operator * (const Vec2<T>& a, T b)
+{
+    Vec2<T> result(a);
+    result *= b;
+    return result;
+}
+
+/**
+ * @brief divide vector with a single value
+ */
+template<typename T>
+Vec2<T> operator / (const Vec2<T>& a, T b)
+{
+    Vec2<T> result(a);
+    result /= b;
+    return result;
+}
+
+/**
+ * @brief dot multiply, or inner product
+ *
+ * Calculates ax*bx + ay*by
+ *
+ * @return result in float type whose size is similar with T
+ */
+template<typename T>
+typename Vec2<T>::FloatType operator * (const Vec2<T>& a, const Vec2<T>& b)
+{
+    return Vec2<T>::FloatType(a.x) * Vec2<T>::FloatType(b.x) + Vec2<T>::FloatType(a.y) * Vec2<T>::FloatType(b.y);
+}
+
+/**
+ * @brief cross multiply
+ *
+ * @return result in float type whose size is similar with T
+ */
+template<typename T>
+typename Vec2<T>::FloatType operator ^ (const Vec2<T>& a, const Vec2<T>& b)
+{
+    return Vec2<T>::FloatType(a.x) * Vec2<T>::FloatType(b.y) - Vec2<T>::FloatType(a.y) * Vec2<T>::FloatType(b.x);
+}
+
+typedef Vec2<float>           Vec2f;
+typedef Vec2<treecore::int32> Vec2i;
+
+} // namespace treeface
+
+#endif // TREECORE_VEC2_H
