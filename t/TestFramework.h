@@ -80,7 +80,7 @@ template<typename T1, typename T2>
 void TestFramework::is_epsilon(T1 value, T2 expect, const char* desc, T2 rate)
 {
     n_got++;
-    if (std::abs(value-expect) <= std::abs(1.0/rate))
+    if (std::abs(value-expect) <= std::abs(expect/rate))
     {
         std::cout << "ok " << n_got << " - " << desc << std::endl;
     }

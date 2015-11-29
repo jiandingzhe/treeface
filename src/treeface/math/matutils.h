@@ -4,7 +4,7 @@
 #include "treeface/common.h"
 
 #include <treecore/IntTypes.h>
-#include <treecore/SIMD.h>
+#include <treecore/SimdFunc.h>
 #include <treecore/PlatformDefs.h>
 
 namespace treeface {

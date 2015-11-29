@@ -26,6 +26,12 @@ target_link_libraries(t_quat
     TestFramework
 )
 
+add_executable(t_vec3f t_vec3f.cpp)
+target_link_libraries(t_vec3f
+    TestFramework
+)
+target_use_treecore(t_vec3f)
+
 add_executable(t_mat4 t_mat4.cpp)
 target_use_treecore(t_mat4)
 target_link_libraries(t_mat4
