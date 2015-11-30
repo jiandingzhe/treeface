@@ -15,8 +15,6 @@ struct Vec2
     typedef typename treecore::similar_float<T>::type FloatType;
 
     Vec2() noexcept
-        : x(0)
-        , y(0)
     {}
 
     Vec2(T x, T y) noexcept
@@ -105,6 +103,13 @@ struct Vec2
         return std::sqrt(length2());
     }
 
+    FloatType distance_from(const Vec2& start)
+    {
+        FloatType dx(x - start.x);
+        FloatType dy(y - start.y);
+        return std::sqrt(dx * dx + dy * dy);
+    }
+
     /**
      * @brief scale vector to make its length be one
      *
@@ -120,8 +125,8 @@ struct Vec2
         return len;
     }
 
-    T x;
-    T y;
+    T x{};
+    T y{};
 } TREECORE_ALN_END(8);
 
 /**
@@ -131,7 +136,7 @@ template<typename T>
 Vec2<T> operator + (const Vec2<T>& a, const Vec2<T>& b)
 {
     Vec2<T> result(a);
-    a += b;
+    result += b;
     return result;
 }
 
@@ -142,7 +147,7 @@ template<typename T>
 Vec2<T> operator - (const Vec2<T>& a, const Vec2<T>& b)
 {
     Vec2<T> result(a);
-    a -= b;
+    result -= b;
     return result;
 }
 
@@ -178,7 +183,7 @@ Vec2<T> operator / (const Vec2<T>& a, T b)
 template<typename T>
 typename Vec2<T>::FloatType operator * (const Vec2<T>& a, const Vec2<T>& b)
 {
-    return Vec2<T>::FloatType(a.x) * Vec2<T>::FloatType(b.x) + Vec2<T>::FloatType(a.y) * Vec2<T>::FloatType(b.y);
+    return typename Vec2<T>::FloatType(a.x) * typename Vec2<T>::FloatType(b.x) + typename Vec2<T>::FloatType(a.y) * typename Vec2<T>::FloatType(b.y);
 }
 
 /**
@@ -189,7 +194,19 @@ typename Vec2<T>::FloatType operator * (const Vec2<T>& a, const Vec2<T>& b)
 template<typename T>
 typename Vec2<T>::FloatType operator ^ (const Vec2<T>& a, const Vec2<T>& b)
 {
-    return Vec2<T>::FloatType(a.x) * Vec2<T>::FloatType(b.y) - Vec2<T>::FloatType(a.y) * Vec2<T>::FloatType(b.x);
+    return typename Vec2<T>::FloatType(a.x) * typename Vec2<T>::FloatType(b.y) - typename Vec2<T>::FloatType(a.y) * typename Vec2<T>::FloatType(b.x);
+}
+
+template<typename T>
+bool operator == (const Vec2<T>& a, const Vec2<T>& b)
+{
+    return a.x == b.x && a.y == b.y;
+}
+
+template<typename T>
+bool operator != (const Vec2<T>& a, const Vec2<T>& b)
+{
+    return a.x != b.x || a.y != b.y;
 }
 
 typedef Vec2<float>           Vec2f;
