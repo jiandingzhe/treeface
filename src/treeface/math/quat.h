@@ -2,30 +2,32 @@
 #define TREEFACE_QUAT_H
 
 #include "treeface/math/vec4.h"
+#include <treecore/SimilarFloat.h>
 
 namespace treeface {
 
 /**
  * Quaternions are frequently used in 3D rotation.
  */
-TREECORE_ALN_BEGIN(16)
-template<typename T, int SZ = sizeof(T) * 4>
+template<typename T>
 struct Quat
 {
-    typedef treecore::SIMDType<SZ> DataType;
+    typedef treecore::SimdObject<T, 4> DataType;
+    typedef typename treecore::similar_float<T>::type FloatType;
 
     TREECORE_ALIGNED_ALLOCATOR(Quat);
 
     /**
      * @brief create quaternion representing zero rotation
      */
-    Quat(): data(treecore::simd_set<T, SZ>(0, 0, 0, 1)) {}
+    Quat(): data(T(0), T(0), T(0), T(1)) {}
 
     /**
      * @brief crete quaternion with value specified
      * @param value
      */
-    Quat(const treecore::SIMDType<SZ>& value): data(value) {}
+    Quat(const DataType& value): data(value) {}
+    Quat(const typename DataType::DataType& value): data(value) {}
 
     /**
      * @brief create quaternion by specifying all four components
@@ -34,14 +36,19 @@ struct Quat
      * @param z: component 3
      * @param w: component 4, represents cos(a/2)
      */
-    Quat(T x, T y, T z, T w): data(treecore::simd_set<T, SZ>(x, y, z, w)) {}
+    Quat(T x, T y, T z, T w): data(x, y, z, w) {}
 
     /**
      * @brief create quaternion with rotation specified by right-hand angle and axis
      * @param angle: rotation around axis
      * @param axis: direction of rotaton axis. The 4rd component will be omitted
      */
-    Quat(T angle, Vec4<T> axis)
+    Quat(T angle, const Vec3<T>& axis)
+    {
+        set_angle_axis(angle, axis);
+    }
+
+    Quat(T angle, const Vec4<T>& axis)
     {
         set_angle_axis(angle, axis);
     }
@@ -52,7 +59,7 @@ struct Quat
      */
     T get_x() const noexcept
     {
-        return treecore::simd_get_one<0, float>(data);
+        return data.template get<0>();
     }
 
     /**
@@ -61,7 +68,7 @@ struct Quat
      */
     T get_y() const noexcept
     {
-        return treecore::simd_get_one<1, float>(data);
+        return data.template get<1>();
     }
 
     /**
@@ -70,7 +77,7 @@ struct Quat
      */
     T get_z() const noexcept
     {
-        return treecore::simd_get_one<2, float>(data);
+        return data.template get<2>();
     }
 
     /**
@@ -79,7 +86,7 @@ struct Quat
      */
     T get_w() const noexcept
     {
-        return treecore::simd_get_one<3, float>(data);
+        return data.template get<3>();
     }
 
     /**
@@ -87,15 +94,23 @@ struct Quat
      * @param angle: variable for storing angle
      * @param axis: variable for storing axis in (x, y, z, 0)
      */
+
+    void get_angle_axis(T& angle, Vec3<T>& axis) const noexcept
+    {
+        T cos_d2 = data.template get<3>();
+        T sin_d2 = std::sqrt(1 - cos_d2 * cos_d2);
+
+        angle = std::acos(cos_d2) * 2;
+
+        DataType tmp = data / DataType(sin_d2);
+        axis.set(tmp.template get<0>(), tmp.template get<1>(), tmp.template get<2>());
+    }
+
     void get_angle_axis(T& angle, Vec4<T>& axis) const noexcept
     {
-        T cos_value = treecore::simd_get_one<3, float>(data);
-        angle = std::acos(cos_value) * 2;
-
-        T sin_value = std::sqrt(1 - cos_value * cos_value);
-        axis.data = data;
-        axis.data = treecore::simd_div<T>(axis.data, treecore::simd_set<T, SZ>(sin_value, sin_value, sin_value, sin_value));
-        axis.set_w(0);
+        Vec3<T> tmp_axis;
+        get_angle_axis(angle, tmp_axis);
+        axis.set_direction(tmp_axis);
     }
 
     /**
@@ -104,7 +119,7 @@ struct Quat
      */
     void set_x(T value) noexcept
     {
-        treecore::simd_set_one<0>(data, value);
+        data.template set<0>(value);
     }
 
     /**
@@ -113,7 +128,7 @@ struct Quat
      */
     void set_y(T value) noexcept
     {
-        treecore::simd_set_one<1>(data, value);
+        data.template set<1>(value);
     }
 
     /**
@@ -122,7 +137,7 @@ struct Quat
      */
     void set_z(T value) noexcept
     {
-        treecore::simd_set_one<2>(data, value);
+        data.template set<2>(value);
     }
 
     /**
@@ -131,7 +146,7 @@ struct Quat
      */
     void set_w(T value) noexcept
     {
-        treecore::simd_set_one<3>(data, value);
+        data.template set<3>(value);
     }
 
     /**
@@ -139,15 +154,21 @@ struct Quat
      * @param angle: rotation around axis
      * @param axis: direction of rotation axis. The 4rd component will be omitted.
      */
-    void set_angle_axis(T angle, Vec4<T> axis) noexcept
+
+    void set_angle_axis(T angle, const Vec3<T>& axis) noexcept
     {
-        axis.set_w(0);
-        axis.normalize();
+        T sine = std::sin(angle/2);
 
-        axis *= std::sin(angle / 2);
-        data = axis.data;
+        Vec3<T> tmp = axis;
+        tmp.normalize();
+        tmp *= sine;
 
-        treecore::simd_set_one<3, T, SZ>(data, std::cos(angle / 2));
+        data.set_all( tmp.x, tmp.y, tmp.z, std::sqrt(T(1) - sine*sine) );
+    }
+
+    void set_angle_axis(T angle, const Vec4<T>& axis) noexcept
+    {
+        set_angle_axis(angle, Vec3<T>(axis.get_x(), axis.get_y(), axis.get_z()) );
     }
 
     /**
@@ -159,10 +180,10 @@ struct Quat
      * @brief make quaternion length to be one
      * @return length before normalize
      */
-    T normalize() noexcept
+    FloatType normalize() noexcept
     {
-        T len = length();
-        data = treecore::simd_div<T>(data, treecore::simd_set<T, SZ>(len, len, len, len));
+        FloatType len = length();
+        data /= DataType(T(len));
         return len;
     }
 
@@ -170,7 +191,7 @@ struct Quat
      * @brief get quaternion length
      * @return length value
      */
-    T length() const noexcept
+    FloatType length() const noexcept
     {
         return std::sqrt(length2());
     }
@@ -179,9 +200,9 @@ struct Quat
      * @brief get length square
      * @return length * length
      */
-    T length2() const noexcept
+    FloatType length2() const noexcept
     {
-        return treecore::simd_sum<T>(treecore::simd_mul<T>(data, data));
+        return (data * data).sum();
     }
 
     /**
@@ -194,6 +215,7 @@ struct Quat
     {
         Quat<T> inv(data);
         inv.inverse();
+
         Quat<T> re =  *this * Quat<T>(input.data) * inv;
         return Vec4<T>(re.data);
     }
@@ -205,7 +227,7 @@ template<>
 inline void Quat<float>::inverse() noexcept
 {
     // directly operate on float's sign bit
-    data = treecore::simd_xor<float>(data, treecore::simd_set<std::int32_t, 16>(0x80000000, 0x80000000, 0x80000000, 0x00000000));
+    data ^= treecore::SimdObject<treecore::int32, 4>(0x80000000, 0x80000000, 0x80000000, 0x00000000);
 }
 
 /**
@@ -220,26 +242,31 @@ inline Quat<T> operator * (const Quat<T>& a, const Quat<T>& b) noexcept
     //res.w = - a.x*b.x - a.y*b.y - a.z*b.z + a.w*b.w;
 
     Quat<T> result;
+    typename Quat<T>::DataType tmp1;
+    typename Quat<T>::DataType tmp2;
 
     T av = a.get_x();
-    treecore::SIMDType<SZ> tmp1 = treecore::simd_set<T, SZ>(av, -av, av, -av);
-    treecore::SIMDType<SZ> tmp2 = treecore::simd_shuffle<3, 2, 1, 0>(b.data);
-    result.data = treecore::simd_mul<T>(tmp1, tmp2);
+    tmp1.set_all(av, -av, av, -av);
+    tmp2 = b.data;
+    tmp2.template shuffle<3, 2, 1, 0>();
+    result.data = tmp1 * tmp2;
 
     av = a.get_y();
-    tmp1 = treecore::simd_set<T, SZ>(av, av, -av, -av);
-    tmp2 = treecore::simd_shuffle<2, 3, 0, 1>(b.data);
-    result.data = treecore::simd_add<T>(result.data, treecore::simd_mul<T>(tmp1, tmp2));
+    tmp1.set_all(av, av, -av, -av);
+    tmp2 = b.data;
+    tmp2.template shuffle<2, 3, 0, 1>();
+    result.data += tmp1 * tmp2;
 
     av = a.get_z();
-    tmp1 = treecore::simd_set<T, SZ>(-av, av, av, -av);
-    tmp2 = treecore::simd_shuffle<1, 0, 3, 2>(b.data);
-    result.data = treecore::simd_add<T>(result.data, treecore::simd_mul<T>(tmp1, tmp2));
+    tmp1.set_all(-av, av, av, -av);
+    tmp2 = b.data;
+    tmp2.template shuffle<1, 0, 3, 2>();
+    result.data += tmp1 * tmp2;
 
     av = a.get_w();
-    tmp1 = treecore::simd_set<T, SZ>(av, av, av, av);
-    // no shuffle needed, use b data directly
-    result.data = treecore::simd_add<T>(result.data, treecore::simd_mul<T>(tmp1, b.data));
+    tmp1.set_all(av, av, av, av);
+    tmp2 = b.data;
+    result.data += tmp1 * tmp2;
 
     return result;
 }

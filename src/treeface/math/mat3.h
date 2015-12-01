@@ -10,20 +10,22 @@ namespace treeface {
 template<typename T>
 struct Mat3
 {
-    Mat3()
+    Mat3() noexcept
     {
-        data[0] = 1;
-        data[1] = 0;
-        data[2] = 0;
-        data[3] = 0;
-        data[4] = 1;
-        data[5] = 0;
-        data[6] = 0;
-        data[7] = 0;
-        data[8] = 1;
+        data[0] = T(1);
+        data[1] = T(0);
+        data[2] = T(0);
+
+        data[3] = T(0);
+        data[4] = T(1);
+        data[5] = T(0);
+
+        data[6] = T(0);
+        data[7] = T(0);
+        data[8] = T(1);
     }
 
-    Mat3(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8)
+    Mat3(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8) noexcept
     {
         data[0] = v0;
         data[1] = v1;
@@ -69,9 +71,9 @@ struct Mat3
 
     T determinant() noexcept
     {
-        return det3x3<T>(treecore::simd_set<float,16>(data[0], data[1], data[2], 0),
-                         treecore::simd_set<float,16>(data[3], data[4], data[5], 0),
-                         treecore::simd_set<float,16>(data[6], data[7], data[8], 0));
+        return det3x3<T>(treecore::SimdObject<T, 4>(data[0], data[1], data[2], T(0)),
+                         treecore::SimdObject<T, 4>(data[3], data[4], data[5], T(0)),
+                         treecore::SimdObject<T, 4>(data[6], data[7], data[8], T(0)));
     }
 
     T data[9];

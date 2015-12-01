@@ -86,15 +86,15 @@ const char* src_fragment =
 
 void show_matrix(Mat4f& mat)
 {
-	printf("%f %f %f %f\n"
-		   "%f %f %f %f\n"
-		   "%f %f %f %f\n"
-		   "%f %f %f %f\n",
-		   mat.get<0, 0>(), mat.get<0, 1>(), mat.get<0, 2>(), mat.get<0, 3>(),
-		   mat.get<1, 0>(), mat.get<1, 1>(), mat.get<1, 2>(), mat.get<1, 3>(),
-		   mat.get<2, 0>(), mat.get<2, 1>(), mat.get<2, 2>(), mat.get<2, 3>(),
-		   mat.get<3, 0>(), mat.get<3, 1>(), mat.get<3, 2>(), mat.get<3, 3>()
-		   );
+    printf("%f %f %f %f\n"
+           "%f %f %f %f\n"
+           "%f %f %f %f\n"
+           "%f %f %f %f\n",
+           mat.get<0, 0>(), mat.get<0, 1>(), mat.get<0, 2>(), mat.get<0, 3>(),
+           mat.get<1, 0>(), mat.get<1, 1>(), mat.get<1, 2>(), mat.get<1, 3>(),
+           mat.get<2, 0>(), mat.get<2, 1>(), mat.get<2, 2>(), mat.get<2, 3>(),
+           mat.get<3, 0>(), mat.get<3, 1>(), mat.get<3, 2>(), mat.get<3, 3>()
+           );
 }
 
 TREECORE_ALN_BEGIN(16)
@@ -109,13 +109,13 @@ struct Widget
         bound.width = width;
         bound.height = height;
 
-        simd_set_one<0, float>(trans.data[0], width);
-        simd_set_one<1, float>(trans.data[1], height);
-        simd_set_one<0, float>(trans.data[3], x);
-        simd_set_one<1, float>(trans.data[3], y);
-		
-		printf("after construction\n");
-		show_matrix(trans);
+        trans.data[0].set<0>(width);
+        trans.data[1].set<1>(height);
+        trans.data[3].set<0>(x);
+        trans.data[3].set<1>(y);
+
+        printf("after construction\n");
+        show_matrix(trans);
     }
 
     void set_position(float x, float y)
@@ -125,8 +125,8 @@ struct Widget
             bound.x = x;
             bound.y = y;
 
-            simd_set_one<0, float>(trans.data[3], x);
-            simd_set_one<1, float>(trans.data[3], y);
+            trans.data[3].set<0>(x);
+            trans.data[3].set<1>(y);
         }
     }
 
@@ -135,7 +135,7 @@ struct Widget
         bound.x += dx;
         bound.y += dy;
 
-        trans.data[3] = simd_add<float>(trans.data[3], simd_set<float, 16>(dx, dy, 0, 0));
+        trans.data[3] += treecore::SimdObject<float, 4>(dx, dy, 0.0f, 0.0f);
     }
 
     void bound_geometry_with_program()

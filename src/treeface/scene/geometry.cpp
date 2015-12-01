@@ -13,8 +13,9 @@
 #include <treecore/CriticalSection.h>
 #include <treecore/DynamicObject.h>
 #include <treecore/HashSet.h>
-#include <treecore/RefCountHolder.h>
 #include <treecore/NamedValueSet.h>
+#include <treecore/RefCountHolder.h>
+#include <treecore/RefCountSingleton.h>
 #include <treecore/Result.h>
 #include <treecore/ScopedLock.h>
 #include <treecore/Singleton.h>
@@ -48,7 +49,7 @@ Geometry::~Geometry()
 #define KEY_IDX  "indices"
 #define KEY_PRIM "primitive"
 
-class GeometryPropertyValidator: public PropertyValidator
+class GeometryPropertyValidator: public PropertyValidator, public treecore::RefCountSingleton<GeometryPropertyValidator>
 {
 public:
     GeometryPropertyValidator()
@@ -58,11 +59,7 @@ public:
         add_item(KEY_IDX, PropertyValidator::ITEM_ARRAY, true);
         add_item(KEY_PRIM, PropertyValidator::ITEM_SCALAR, true);
     }
-
-    juce_DeclareSingleton(GeometryPropertyValidator, false)
 };
-juce_ImplementSingleton(GeometryPropertyValidator)
-
 
 treecore::Result Geometry::build(const treecore::var& geom_root_node) noexcept
 {

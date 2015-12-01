@@ -35,6 +35,14 @@ typedef enum
     BUTTON_UP = 0,
 } ButtonUpDown;
 
+typedef enum
+{
+    FULL_SCREEN_UNKNOWN = -1,
+    FULL_SCREEN_OFF = 0,
+    FULL_SCREEN_FAKE = 1,
+    FULL_SCREEN_REAL = 2
+} FullScreenMode;
+
 } // namespace treeface
 
 #endif // TREEFACE_ENUMS_H

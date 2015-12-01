@@ -36,7 +36,6 @@ public:
     /**
      * @brief set data.
      */
-    // NOTE: this is not thread-safe
     treecore::Result build(const treecore::var& geom_root_node) noexcept;
 
     /**

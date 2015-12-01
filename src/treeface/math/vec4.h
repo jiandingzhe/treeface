@@ -2,10 +2,13 @@
 #define TREEFACE_VEC4_H
 
 #include <cmath>
+
 #include "treeface/common.h"
+#include "treeface/math/vec3.h"
+
 #include <treecore/AlignedMalloc.h>
 #include <treecore/PlatformDefs.h>
-#include <treecore/SimdFunc.h>
+#include <treecore/SimdObject.h>
 #include <treecore/SimilarFloat.h>
 
 namespace treeface {
@@ -17,12 +20,11 @@ namespace treeface {
  * The layout of Vec4 is compatiable with OpenGL, so the data can be directly
  * transmitted to GL server side buffers or program attributes.
  */
-TREECORE_ALN_BEGIN(16)
 template<typename T>
 struct Vec4
 {
     typedef typename treecore::similar_float<T>::type FloatType;
-    typedef treecore::SIMDType<sizeof(T) * 4> DataType;
+    typedef treecore::SimdObject<T, 4> DataType;
 
     TREECORE_ALIGNED_ALLOCATOR(Vec4);
 
@@ -31,9 +33,8 @@ struct Vec4
      *
      * values are initialized as zero point
      */
-    Vec4()
+    Vec4(): data(T(0), T(0), T(0), T(1))
     {
-        treecore::simd_set_all<T>(data, T(0), T(0), T(0), T(1));
     }
 
     /**
@@ -57,7 +58,7 @@ struct Vec4
      */
     Vec4(T x, T y, T z, T w)
     {
-        treecore::simd_set_all<T>(data, x, y, z, w);
+        data.set_all(x, y, z, w);
     }
 
     /**
@@ -66,7 +67,7 @@ struct Vec4
      */
     Vec4(const T* values)
     {
-        treecore::simd_set_all<T>(data, values);
+        data.set_all(values);
     }
 
     /**
@@ -89,7 +90,7 @@ struct Vec4
      */
     void set(T x, T y, T z, T w)
     {
-        treecore::simd_set_all<T> (data, x, y, z, w);
+        data.set_all(x, y, z, w);
     }
 
     /**
@@ -98,7 +99,17 @@ struct Vec4
      */
     void set(const T* values)
     {
-        treecore::simd_set_all<T> (data, values);
+        data.set_all(values);
+    }
+
+    void set_point(const Vec3<T>& value)
+    {
+        data.set_all(value.x, value.y, value.z, T(1));
+    }
+
+    void set_direction(const Vec3<T>& value)
+    {
+        data.set_all(value.x, value.y, value.z, T(0));
     }
 
     /**
@@ -107,7 +118,7 @@ struct Vec4
      */
     T get_x() const
     {
-        return treecore::simd_get_one<0, float>(data);
+        return data.template get<0>();
     }
 
     /**
@@ -116,7 +127,7 @@ struct Vec4
      */
     T get_y() const
     {
-        return treecore::simd_get_one<1, float>(data);
+        return data.template get<1>();
     }
 
     /**
@@ -125,7 +136,7 @@ struct Vec4
      */
     T get_z() const
     {
-        return treecore::simd_get_one<2, float>(data);
+        return data.template get<2>();
     }
 
     /**
@@ -134,7 +145,7 @@ struct Vec4
      */
     T get_w() const
     {
-        return treecore::simd_get_one<3, float>(data);
+        return data.template get<3>();
     }
 
     /**
@@ -143,7 +154,7 @@ struct Vec4
      */
     void set_x(T value)
     {
-        treecore::simd_set_one<0>(data, value);
+        data.template set<0>(value);
     }
 
     /**
@@ -152,7 +163,7 @@ struct Vec4
      */
     void set_y(T value)
     {
-        treecore::simd_set_one<1>(data, value);
+        data.template set<1>(value);
     }
 
     /**
@@ -161,7 +172,7 @@ struct Vec4
      */
     void set_z(T value)
     {
-        treecore::simd_set_one<2>(data, value);
+        data.template set<2>(value);
     }
 
     /**
@@ -170,7 +181,7 @@ struct Vec4
      */
     void set_w(T value)
     {
-        treecore::simd_set_one<3>(data, value);
+        data.template set<3>(value);
     }
 
     /**
@@ -180,9 +191,7 @@ struct Vec4
      */
     Vec4& operator += (const Vec4& other)
     {
-        DataType result;
-        treecore::simd_add<T>(result, data, other.data);
-        data = result;
+        data += other.data;
         return *this;
     }
 
@@ -193,9 +202,7 @@ struct Vec4
      */
     Vec4& operator -= (const Vec4& other)
     {
-        DataType result;
-        treecore::simd_sub<T>(result, data, other.data);
-        data = result;
+        data -= other.data;
         return *this;
     }
 
@@ -206,11 +213,7 @@ struct Vec4
      */
     Vec4& operator *= (T value)
     {
-        DataType result;
-        DataType tmp;
-        treecore::simd_broadcast<T> (tmp, value);
-        treecore::simd_mul<T>(result, data, tmp);
-        data = result;
+        data *= DataType(value);
         return *this;
     }
 
@@ -221,11 +224,7 @@ struct Vec4
      */
     Vec4& operator /= (T value)
     {
-        DataType result;
-        DataType tmp;
-        treecore::simd_broadcast<T> (tmp, value);
-        treecore::simd_div<T>(result, data, tmp);
-        data = result;
+        data /= DataType(value);
         return *this;
     }
 
@@ -235,12 +234,8 @@ struct Vec4
      */
     FloatType normalize()
     {
-        FloatType len = (T) length();
-        DataType tmp;
-        treecore::simd_broadcast<T>(tmp, T(len));
-        DataType result;
-        treecore::simd_div<T>(result, data, tmp);
-        data = result;
+        FloatType len = length();
+        data /= DataType(len);
         return len;
     }
 
@@ -259,9 +254,7 @@ struct Vec4
      */
     FloatType length2() const
     {
-        DataType tmp;
-        treecore::simd_mul<T>(tmp, data, data);
-        return (FloatType) treecore::simd_sum<T>(tmp);
+        return FloatType((data * data).sum());
     }
 
     /**
@@ -271,7 +264,7 @@ struct Vec4
      * transmitted to GL buffers or program attributes directly.
      */
     DataType data;
-} TREECORE_ALN_END(16);
+};
 
 /**
  * @brief vector add
@@ -284,7 +277,7 @@ template<typename T>
 Vec4<T> operator + (const Vec4<T>& a, const Vec4<T>& b)
 {
     Vec4<T> result;
-    treecore::simd_add<T>(result.data, a.data, b.data);
+    result.data = a.data + b.data;
     return result;
 }
 
@@ -299,7 +292,7 @@ template<typename T>
 Vec4<T> operator - (const Vec4<T>& a, const Vec4<T>& b)
 {
     Vec4<T> result;
-    treecore::simd_sub<T>(result.data, a.data, b.data);
+    result.data = a.data - b.data;
     return result;
 }
 
@@ -313,11 +306,9 @@ Vec4<T> operator - (const Vec4<T>& a, const Vec4<T>& b)
 template<typename T>
 Vec4<T> operator * (const Vec4<T>& a, T b)
 {
-    typename Vec4<T>::DataType tmp;
-    treecore::simd_broadcast<T>(tmp, b);
-    typename Vec4<T>::DataType result;
-    treecore::simd_mul<T>(result, a.data, tmp);
-    return Vec4<T>(result);
+    Vec4<T> result;
+    result.data = a.data * typename Vec4<T>::DataType(b);
+    return result;
 }
 
 /**
@@ -330,11 +321,9 @@ Vec4<T> operator * (const Vec4<T>& a, T b)
 template<typename T>
 Vec4<T> operator / (const Vec4<T>& a, T b)
 {
-    typename Vec4<T>::DataType tmp;
-    treecore::simd_broadcast<T>(tmp, b);
-    typename Vec4<T>::DataType result;
-    treecore::simd_div<T>(result, a.data, tmp);
-    return Vec4<T>(result);
+    Vec4<T> result;
+    result.data = a.data / typename Vec4<T>::DataType(b);
+    return result;
 }
 
 /**
@@ -347,9 +336,7 @@ Vec4<T> operator / (const Vec4<T>& a, T b)
 template<typename T>
 T operator * (const Vec4<T>& a, const Vec4<T>& b)
 {
-    typename Vec4<T>::DataType result;
-    treecore::simd_mul<T>(result.data, a.data, b.data);
-    return result;
+    return (a.data * b.data).sum();
 }
 
 /**
@@ -370,19 +357,13 @@ Vec4<T> operator ^ (const Vec4<T>& a, const Vec4<T>& b)
     typename Vec4<T>::DataType v3 = a.data;
     typename Vec4<T>::DataType v4 = b.data;
 
-    treecore::simd_shuffle<1, 2, 0, 0>(v1);
-    treecore::simd_shuffle<2, 0, 1, 0>(v2);
-    treecore::simd_shuffle<2, 0, 1, 0>(v3);
-    treecore::simd_shuffle<1, 2, 0, 0>(v4);
+    v1.template shuffle<1, 2, 0, 0>();
+    v2.template shuffle<2, 0, 1, 0>();
+    v3.template shuffle<2, 0, 1, 0>();
+    v4.template shuffle<1, 2, 0, 0>();
 
-    typename Vec4<T>::DataType tmp1;
-    typename Vec4<T>::DataType tmp2;
-    typename Vec4<T>::DataType re;
-
-    treecore::simd_mul<T>(tmp1, v1, v2);
-    treecore::simd_mul<T>(tmp2, v3, v4);
-    treecore::simd_sub<T>(re, tmp1, tmp2);
-    treecore::simd_set_one<3, T>(re, 0);
+    typename Vec4<T>::DataType re = v1 * v2 - v3 * v4;
+    re.template set<3>(T(0));
 
     return Vec4<T>(re);
 }
@@ -393,9 +374,7 @@ Vec4<T> operator ^ (const Vec4<T>& a, const Vec4<T>& b)
 template<typename T, int SZ = sizeof(T)*4>
 bool operator == (const Vec4<T>& a, const Vec4<T>& b)
 {
-
-    die("vec4 == not implemented");
-    return false;
+    return a.data == b.data;
 }
 
 /**
@@ -404,12 +383,11 @@ bool operator == (const Vec4<T>& a, const Vec4<T>& b)
 template<typename T, int SZ = sizeof(T)*4>
 bool operator != (const Vec4<T>& a, const Vec4<T>& b)
 {
-    die("vec4 != not implemented");
-    return false;
+    return a.data != b.data;
 }
 
 typedef Vec4<float> Vec4f;
-typedef Vec4<std::int32_t> Vec4i;
+typedef Vec4<treecore::int32> Vec4i;
 
 } // namespace treeface
 

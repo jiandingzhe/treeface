@@ -31,9 +31,9 @@ void TestFramework::content()
 {
     // 3D determinant
     {
-        float det3 = det3x3<float>(simd_set<float, 16>(1, 2, 3, 0),
-                                   simd_set<float, 16>(4, 5, 6, 0),
-                                   simd_set<float, 16>(7, 8, 9, 0));
+        float det3 = det3x3<float>(SimdObject<float, 4>(1, 2, 3, 0),
+                                   SimdObject<float, 4>(4, 5, 6, 0),
+                                   SimdObject<float, 4>(7, 8, 9, 0));
         float det3_ref = DET3X3<float>(1, 2, 3,
                                        4, 5, 6,
                                        7, 8, 9);
@@ -149,10 +149,10 @@ void TestFramework::content()
         Mat4f trans(Vec4f(2, 2, 0, 0), Quatf(1.57079632679489661923f, Vec4f(0, 0, 1, 0)));
         OK("transform a zero point");
         Vec4f re = trans * Vec4f(0, 0, 0, 1);
-        IS_EPSILON(re.get_x(), 2);
-        IS_EPSILON(re.get_y(), 2);
-        IS_EPSILON(re.get_z(), 0);
-        IS_EPSILON(re.get_w(), 1);
+        IS_EPSILON(re.get_x(), 2.0f);
+        IS_EPSILON(re.get_y(), 2.0f);
+        IS_EPSILON(re.get_z(), 0.0f);
+        IS_EPSILON(re.get_w(), 1.0f);
 
         OK("transform a zero direction");
         re = trans * Vec4f(0, 0, 0, 0);
@@ -196,30 +196,66 @@ void TestFramework::content()
         IS_EPSILON(out_discrete.get_w(), out_combine.get_w());
     }
 
+    OK("matrix inverse");
     {
-        OK("matrix inverse");
+        OK("inverse of scale matrix");
+        Mat4f mat(3.0f, 0.0f, 0.0f, 0.0f,
+                  0.0f, 7.0f, 0.0f, 0.0f,
+                  0.0f, 0.0f, 11.0f, 0.0f,
+                  0.0f, 0.0f, 0.0f, 1.0f);
+        mat.inverse();
+        is_epsilon(mat.get<0,0>(), 1.0f/3, "0 0 is 1/3");
+        is_epsilon(mat.get<1,0>(), 0.0f, "1 0 is 0");
+        is_epsilon(mat.get<2,0>(), 0.0f, "2 0 is 0");
+        is_epsilon(mat.get<3,0>(), 0.0f, "3 0 is 0");
+
+        is_epsilon(mat.get<0,1>(), 0.0f, "0 1 is 0");
+        is_epsilon(mat.get<1,1>(), 1.0f/7, "1 1 is 1/7");
+        is_epsilon(mat.get<2,1>(), 0.0f, "2 1 is 0");
+        is_epsilon(mat.get<3,1>(), 0.0f, "3 1 is 0");
+
+        is_epsilon(mat.get<0,2>(), 0.0f, "0 2 is 0");
+        is_epsilon(mat.get<1,2>(), 0.0f, "1 2 is 0");
+        is_epsilon(mat.get<2,2>(), 1.0f/11, "2 2 is 1/11");
+        is_epsilon(mat.get<3,2>(), 0.0f, "3 2 is 0");
+
+        is_epsilon(mat.get<0,3>(), 0.0f, "0 3 is 0");
+        is_epsilon(mat.get<1,3>(), 0.0f, "1 3 is 0");
+        is_epsilon(mat.get<2,3>(), 0.0f, "2 3 is 0");
+        is_epsilon(mat.get<3,3>(), 1.0f, "3 3 is 1");
+    }
+
+    {
         Mat4f fwd(data_rand);
         Mat4f inv(data_rand);
         float det = inv.inverse();
 
+        printf("  %f  %f  %f  %f\n", inv.data[0].template get<0>(), inv.data[0].template get<1>(), inv.data[0].template get<2>(), inv.data[0].template get<3>());
+        printf("  %f  %f  %f  %f\n", inv.data[1].template get<0>(), inv.data[1].template get<1>(), inv.data[1].template get<2>(), inv.data[1].template get<3>());
+        printf("  %f  %f  %f  %f\n", inv.data[2].template get<0>(), inv.data[2].template get<1>(), inv.data[2].template get<2>(), inv.data[2].template get<3>());
+        printf("  %f  %f  %f  %f\n", inv.data[3].template get<0>(), inv.data[3].template get<1>(), inv.data[3].template get<2>(), inv.data[3].template get<3>());
+
         Mat4f mul = fwd * inv;
 
-        is_epsilon(simd_get_one<0, float>(mul.data[0]), 1.0f, "0,0 is 1");
-        is_epsilon(simd_get_one<1, float>(mul.data[0]), 0.0f, "1,0 is 0");
-        is_epsilon(simd_get_one<2, float>(mul.data[0]), 0.0f, "2,0 is 0");
-        is_epsilon(simd_get_one<3, float>(mul.data[0]), 0.0f, "3,0 is 0");
-        is_epsilon(simd_get_one<0, float>(mul.data[1]), 0.0f, "0,1 is 0");
-        is_epsilon(simd_get_one<1, float>(mul.data[1]), 1.0f, "1,1 is 1");
-        is_epsilon(simd_get_one<2, float>(mul.data[1]), 0.0f, "2,1 is 0");
-        is_epsilon(simd_get_one<3, float>(mul.data[1]), 0.0f, "3,1 is 0");
-        is_epsilon(simd_get_one<0, float>(mul.data[2]), 0.0f, "0,2 is 0");
-        is_epsilon(simd_get_one<1, float>(mul.data[2]), 0.0f, "1,2 is 0");
-        is_epsilon(simd_get_one<2, float>(mul.data[2]), 1.0f, "2,2 is 1");
-        is_epsilon(simd_get_one<3, float>(mul.data[2]), 0.0f, "3,2 is 0");
-        is_epsilon(simd_get_one<0, float>(mul.data[3]), 0.0f, "0,3 is 0");
-        is_epsilon(simd_get_one<1, float>(mul.data[3]), 0.0f, "1,3 is 0");
-        is_epsilon(simd_get_one<2, float>(mul.data[3]), 0.0f, "2,3 is 0");
-        is_epsilon(simd_get_one<3, float>(mul.data[3]), 1.0f, "3,3 is 1");
+        is_epsilon(mul.data[0].template get<0>(), 1.0f, "0,0 is 1");
+        lt(std::abs(mul.data[0].template get<1>()), 1.0f/10000, "1,0 is 0");
+        lt(std::abs(mul.data[0].template get<2>()), 1.0f/10000, "2,0 is 0");
+        lt(std::abs(mul.data[0].template get<3>()), 1.0f/10000, "3,0 is 0");
+
+        lt(std::abs(mul.data[1].template get<0>()), 1.0f/10000, "0,1 is 0");
+        is_epsilon(mul.data[1].template get<1>(), 1.0f, "1,1 is 1");
+        lt(std::abs(mul.data[1].template get<2>()), 1.0f/10000, "2,1 is 0");
+        lt(std::abs(mul.data[1].template get<3>()), 1.0f/10000, "3,1 is 0");
+
+        lt(std::abs(mul.data[2].template get<0>()), 1.0f/10000, "0,2 is 0");
+        lt(std::abs(mul.data[2].template get<1>()), 1.0f/10000, "1,2 is 0");
+        is_epsilon(mul.data[2].template get<2>(), 1.0f, "2,2 is 1");
+        lt(std::abs(mul.data[2].template get<3>()), 1.0f/10000, "3,2 is 0");
+
+        lt(std::abs(mul.data[3].template get<0>()), 1.0f/10000, "0,3 is 0");
+        lt(std::abs(mul.data[3].template get<1>()), 1.0f/10000, "1,3 is 0");
+        lt(std::abs(mul.data[3].template get<2>()), 1.0f/10000, "2,3 is 0");
+        is_epsilon(mul.data[3].template get<3>(), 1.0f, "3,3 is 1");
 
     }
 }
