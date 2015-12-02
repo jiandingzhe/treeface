@@ -80,11 +80,11 @@ void Mat4<float>::set_perspective(float vertical_angle, float ratio, float near,
         0, 0, zw,  1);
 }
 
-
-Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) noexcept
+template<typename T>
+Mat4<T> operator * (const Mat4<T>& a, const Mat4<T>& b) noexcept
 {
     // column to row
-    Mat4f a_t = a;
+    Mat4<T> a_t = a;
     a_t.transpose();
 
     // multiply rows in A with columns in B
@@ -108,19 +108,26 @@ Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) noexcept
                         (a_t.data[2] * b.data[3]).sum(),
                         (a_t.data[3] * b.data[3]).sum());
 
-    return Mat4<float>(re0, re1, re2, re3);
+    return Mat4<T>(re0, re1, re2, re3);
 }
 
-Vec4<float> operator * (const Mat4<float>& mat, const Vec4<float>& vec) noexcept
+template
+Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) noexcept;
+
+template<typename T>
+Vec4<T> operator * (const Mat4<T>& mat, const Vec4<T>& vec) noexcept
 {
     // column to row
-    Mat4f mat_t = mat;
+    Mat4<T> mat_t = mat;
     mat_t.transpose();
 
-    return Vec4<float>((mat_t.data[0] * vec.data).sum(),
-                       (mat_t.data[1] * vec.data).sum(),
-                       (mat_t.data[2] * vec.data).sum(),
-                       (mat_t.data[3] * vec.data).sum());
+    return Vec4<T>((mat_t.data[0] * vec.data).sum(),
+                   (mat_t.data[1] * vec.data).sum(),
+                   (mat_t.data[2] * vec.data).sum(),
+                   (mat_t.data[3] * vec.data).sum());
 }
+
+template
+Vec4<float> operator * (const Mat4<float>& mat, const Vec4<float>& vec) noexcept;
 
 } // namespace treeface

@@ -264,8 +264,22 @@ struct Mat4
 
 typedef Mat4<float> Mat4f;
 
+///
+/// @brief matrix multiply
+///
+template<typename T>
+Mat4<T> operator * (const Mat4<T>& a, const Mat4<T>& b) noexcept;
+
+extern template
 Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) noexcept;
 
+///
+/// @brief transform a vector
+///
+template<typename T>
+Vec4<T> operator * (const Mat4<T>& mat, const Vec4<T>& vec) noexcept;
+
+extern template
 Vec4<float> operator * (const Mat4<float>& mat, const Vec4<float>& vec) noexcept;
 
 } // namespace treeface
