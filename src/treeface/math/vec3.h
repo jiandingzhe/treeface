@@ -1,7 +1,7 @@
 #ifndef TREEFACE_VEC3_H
 #define TREEFACE_VEC3_H
 
-#include <treecore/SimilarFloat.h>
+#include <treecore/FloatUtils.h>
 #include <treecore/SimdObject.h>
 
 namespace treeface

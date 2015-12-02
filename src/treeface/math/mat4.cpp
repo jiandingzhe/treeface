@@ -80,51 +80,6 @@ void Mat4<float>::set_perspective(float vertical_angle, float ratio, float near,
         0, 0, zw,  1);
 }
 
-template<>
-void Mat4<float>::set_rotate(const Quat<float>& value) noexcept
-{
-#define _MAT4_FLOAT_ROTATE_OP_ tmp_unit +  tmp_mul * (tmp_a * tmp_b + (tmp_c * tmp_d) | tmp_sign_mask )
-    //        m[0]  = 1 - 2 * (y*y + z*z);
-    //        m[1]  = 0 + 2 * (x*y + z*w);
-    //        m[2]  = 0 + 2 * (z*x - y*w);
-    //        m[3]  = 0;
-    Mat4f::DataType tmp_unit(1.0f, 0.0f, 0.0f, 0.0f);
-    Mat4f::DataType tmp_mul(-2.0f, 2.0f, 2.0f, 0.0f);
-    SimdObject<treecore::int32, 4> tmp_sign_mask(0, 0, 0x80000000, 0);
-    Mat4f::DataType tmp_a = value.data.template get_shuffle<1, 0, 2, 0>();
-    Mat4f::DataType tmp_b = value.data.template get_shuffle<1, 1, 0, 0>();
-    Mat4f::DataType tmp_c = value.data.template get_shuffle<2, 2, 1, 0>();
-    Mat4f::DataType tmp_d = value.data.template get_shuffle<2, 3, 3, 0>();
-    data[0] = _MAT4_FLOAT_ROTATE_OP_;
-
-    //        m[4]  = 0 + 2 * (x*y - z*w);
-    //        m[5]  = 1 - 2 * (z*z + x*x);
-    //        m[6]  = 0 + 2 * (y*z + x*w);
-    //        m[7]  = 0;
-    tmp_unit.set_all(0.0f, 1.0f, 0.0f, 0.0f);
-    tmp_mul .set_all(2.0f, -2.0f, 2.0f, 0.0f);
-    tmp_sign_mask.set_all(0x80000000, 0, 0, 0);
-    tmp_a = value.data.template get_shuffle<0, 2, 1, 0>();
-    tmp_b = value.data.template get_shuffle<1, 2, 2, 0>();
-    tmp_c = value.data.template get_shuffle<2, 0, 0, 0>();
-    tmp_d = value.data.template get_shuffle<3, 0, 3, 0>();
-    data[1] = _MAT4_FLOAT_ROTATE_OP_;
-
-    //        m[8]  = 0 + 2 * (z*x + y*w);
-    //        m[9]  = 0 + 2 * (y*z - x*w);
-    //        m[10] = 1 - 2 * (x*x + y*y);
-    //        m[11] = 0;
-    tmp_unit.set_all(0.0f, 0.0f, 1.0f, 0.0f);
-    tmp_mul .set_all(2.0f, 2.0f, -2.0f, 0.0f);
-    tmp_sign_mask.set_all(0, 0x80000000, 0, 0);
-    tmp_a = value.data.template get_shuffle<2, 1, 0, 0>();
-    tmp_b = value.data.template get_shuffle<0, 2, 0, 0>();
-    tmp_c = value.data.template get_shuffle<1, 0, 1, 0>();
-    tmp_d = value.data.template get_shuffle<3, 3, 1, 0>();
-    data[2] = _MAT4_FLOAT_ROTATE_OP_;
-
-    // translation is kept untouched
-}
 
 Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) noexcept
 {

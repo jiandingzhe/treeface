@@ -9,7 +9,7 @@
 #include <treecore/AlignedMalloc.h>
 #include <treecore/PlatformDefs.h>
 #include <treecore/SimdObject.h>
-#include <treecore/SimilarFloat.h>
+#include <treecore/FloatUtils.h>
 
 namespace treeface {
 

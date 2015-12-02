@@ -2,7 +2,7 @@
 #define TREEFACE_QUAT_H
 
 #include "treeface/math/vec4.h"
-#include <treecore/SimilarFloat.h>
+#include <treecore/FloatUtils.h>
 
 namespace treeface {
 

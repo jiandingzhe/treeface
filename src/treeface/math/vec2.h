@@ -3,7 +3,7 @@
 
 #include <treecore/AlignedMalloc.h>
 #include <treecore/IntTypes.h>
-#include <treecore/SimilarFloat.h>
+#include <treecore/FloatUtils.h>
 
 namespace treeface
 {

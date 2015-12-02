@@ -251,21 +251,18 @@ struct Mat4
     }
 
     /**
-     * @brief set first 3x3 dimention to rotate matrix using specified quaternion. The 4th translation column is untouched.
+     * @brief set first 3x3 elements to rotate matrix using specified quaternion. The 4th translation column is untouched.
      * @param value: quaternion representing the rotation
      */
-    void set_rotate(const Quat<T>& value) noexcept;
+    void set_rotate(const Quat<T>& value) noexcept
+    {
+        gen_quat_rotate(value.data, data[0], data[1], data[2]);
+    }
 
     DataType data[4];
 };
 
 typedef Mat4<float> Mat4f;
-
-template<>
-float Mat4<float>::determinant() const noexcept;
-
-template<>
-void Mat4<float>::set_rotate(const Quat<float>& value) noexcept;
 
 Mat4<float> operator * (const Mat4<float>& a, const Mat4<float>& b) noexcept;
 

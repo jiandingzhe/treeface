@@ -7,6 +7,9 @@
 
 namespace treeface {
 
+///
+///
+///
 template<typename T>
 struct Mat3
 {
