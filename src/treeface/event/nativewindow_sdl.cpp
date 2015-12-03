@@ -1,4 +1,4 @@
-#include "treeface/ui/window.h"
+#include "treeface/event/nativewindow.h"
 
 #include <SDL.h>
 
@@ -7,16 +7,16 @@
 namespace treeface
 {
 
-typedef treecore::HashMap<SDL_Window*, Window*> WindowMap;
+typedef treecore::HashMap<SDL_Window*, NativeWindow*> WindowMap;
 WindowMap& native_window_map() { static WindowMap map; return map; }
 
-struct Window::Impl
+struct NativeWindow::Impl
 {
     SDL_Window* window;
     SDL_GLContext context;
 };
 
-Window::Window(): m_impl(new Window::Impl())
+NativeWindow::NativeWindow(): m_impl(new NativeWindow::Impl())
 {
     // create window
     m_impl->window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1, 1, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
@@ -32,8 +32,8 @@ Window::Window(): m_impl(new Window::Impl())
     native_window_map()[m_impl->window] = this;
 }
 
-Window::Window(void* data)
-    : m_impl(new Window::Impl())
+NativeWindow::NativeWindow(void* data)
+    : m_impl(new NativeWindow::Impl())
 {
     // create window
     m_impl->window = SDL_CreateWindowFrom(data);
@@ -54,7 +54,7 @@ Window::Window(void* data)
     native_window_map()[m_impl->window] = this;
 }
 
-Window::Window(const Vec2i& position, const Vec2i& size, bool resizable)
+NativeWindow::NativeWindow(const Vec2i& position, const Vec2i& size, bool resizable)
 {
     treecore::uint32 flags = 0;
     flags |= SDL_WINDOW_OPENGL;
@@ -75,7 +75,7 @@ Window::Window(const Vec2i& position, const Vec2i& size, bool resizable)
     native_window_map()[m_impl->window] = this;
 }
 
-Window::~Window()
+NativeWindow::~NativeWindow()
 {
     if (m_impl)
     {
@@ -85,7 +85,7 @@ Window::~Window()
     }
 }
 
-FullScreenMode Window::get_full_screen_mode() const
+FullScreenMode NativeWindow::get_full_screen_mode() const
 {
     Uint32 flags = SDL_GetWindowFlags(m_impl->window);
     if (flags & SDL_WINDOW_FULLSCREEN)
@@ -96,106 +96,106 @@ FullScreenMode Window::get_full_screen_mode() const
         return FULL_SCREEN_OFF;
 }
 
-Vec2i Window::get_max_size() const
+Vec2i NativeWindow::get_max_size() const
 {
     Vec2i result;
     SDL_GetWindowMaximumSize(m_impl->window, &result.x, &result.y);
     return result;
 }
 
-Vec2i Window::get_min_size() const
+Vec2i NativeWindow::get_min_size() const
 {
     Vec2i result;
     SDL_GetWindowMinimumSize(m_impl->window, &result.x, &result.y);
     return result;
 }
 
-Vec2i Window::get_position() const
+Vec2i NativeWindow::get_position() const
 {
     Vec2i result;
     SDL_GetWindowPosition(m_impl->window, &result.x, &result.y);
     return result;
 }
 
-Vec2i Window::get_size() const
+Vec2i NativeWindow::get_size() const
 {
     Vec2i result;
     SDL_GetWindowSize(m_impl->window, &result.x, &result.y);
     return result;
 }
 
-treecore::String Window::get_title() const
+treecore::String NativeWindow::get_title() const
 {
     return treecore::String(SDL_GetWindowTitle(m_impl->window));
 }
 
-void Window::grab()
+void NativeWindow::grab()
 {
     SDL_SetWindowGrab(m_impl->window, SDL_TRUE);
 }
 
-bool Window::has_decoration() const
+bool NativeWindow::has_decoration() const
 {
     treecore::uint32 flags = SDL_GetWindowFlags(m_impl->window);
     return !bool(flags & SDL_WINDOW_BORDERLESS);
 }
 
-void Window::hide()
+void NativeWindow::hide()
 {
     SDL_HideWindow(m_impl->window);
 }
 
-bool Window::is_grabbed() const
+bool NativeWindow::is_grabbed() const
 {
     treecore::uint32 flags = SDL_GetWindowFlags(m_impl->window);
     return bool(flags & SDL_WINDOW_INPUT_GRABBED);
 }
 
-bool Window::is_hidden() const
+bool NativeWindow::is_hidden() const
 {
     treecore::uint32 flags = SDL_GetWindowFlags(m_impl->window);
     return bool(flags & SDL_WINDOW_HIDDEN);
 }
 
-bool Window::is_maximized() const
+bool NativeWindow::is_maximized() const
 {
     treecore::uint32 flags = SDL_GetWindowFlags(m_impl->window);
     return bool(flags & SDL_WINDOW_MAXIMIZED);
 }
 
-bool Window::is_minimized() const
+bool NativeWindow::is_minimized() const
 {
     treecore::uint32 flags = SDL_GetWindowFlags(m_impl->window);
     return bool(flags & SDL_WINDOW_MINIMIZED);
 }
 
-bool Window::is_resizable() const
+bool NativeWindow::is_resizable() const
 {
     treecore::uint32 flags = SDL_GetWindowFlags(m_impl->window);
     return bool(flags & SDL_WINDOW_RESIZABLE);
 }
 
-void Window::maximize()
+void NativeWindow::maximize()
 {
     SDL_MaximizeWindow(m_impl->window);
 }
 
-void Window::minimize()
+void NativeWindow::minimize()
 {
     SDL_MinimizeWindow(m_impl->window);
 }
 
-void Window::raise()
+void NativeWindow::raise()
 {
     SDL_RaiseWindow(m_impl->window);
 }
 
-void Window::set_decoration(bool deco)
+void NativeWindow::set_decoration(bool deco)
 {
     SDL_SetWindowBordered(m_impl->window, SDL_bool(deco));
 }
 
-void Window::set_full_screen_mode(FullScreenMode mode)
+void NativeWindow::set_full_screen_mode(FullScreenMode mode)
 {
     SDL_Window* nat_win = (SDL_Window*) m_impl;
 
@@ -214,47 +214,47 @@ void Window::set_full_screen_mode(FullScreenMode mode)
     }
 }
 
-void Window::make_gl_context_to_current()
+void NativeWindow::make_gl_context_to_current()
 {
     SDL_GL_MakeCurrent(m_impl->window, m_impl->context);
 }
 
-void Window::set_max_size(Vec2i value)
+void NativeWindow::set_max_size(Vec2i value)
 {
     SDL_SetWindowMaximumSize(m_impl->window, value.x, value.y);
 }
 
-void Window::set_min_size(Vec2i value)
+void NativeWindow::set_min_size(Vec2i value)
 {
     SDL_SetWindowMinimumSize(m_impl->window, value.x, value.y);
 }
 
-void Window::set_position(Vec2i value)
+void NativeWindow::set_position(Vec2i value)
 {
     SDL_SetWindowPosition(m_impl->window, value.x, value.y);
 }
 
-void Window::set_size(Vec2i value)
+void NativeWindow::set_size(Vec2i value)
 {
     SDL_SetWindowSize(m_impl->window, value.x, value.y);
 }
 
-void Window::set_title(const treecore::String& title_text)
+void NativeWindow::set_title(const treecore::String& title_text)
 {
     SDL_SetWindowTitle(m_impl->window, title_text.getCharPointer().getAddress());
 }
 
-void Window::show()
+void NativeWindow::show()
 {
     SDL_ShowWindow((SDL_Window*) m_impl);
 }
 
-void Window::swap_gl_buffer()
+void NativeWindow::swap_gl_buffer()
 {
     SDL_GL_SwapWindow(m_impl->window);
 }
 
-void Window::ungrab()
+void NativeWindow::ungrab()
 {
     SDL_SetWindowGrab(m_impl->window, SDL_FALSE);
 }

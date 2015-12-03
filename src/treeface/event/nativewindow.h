@@ -15,19 +15,19 @@ namespace treeface
  *
  * Note: this class is not a widget. Instead, widgets are run inside Window objects.
  */
-class Window: public treecore::RefCountObject
+class NativeWindow: public treecore::RefCountObject
 {
 public:
     ///
     /// \brief create a resizable window with default parameters and 1x1 size
     ///
-    Window();
+    NativeWindow();
 
     ///
     /// \brief create window object from previously created native window
     /// \param data   native window pointer or handle
     ///
-    Window(void* data);
+    NativeWindow(void* data);
 
     ///
     /// \brief create window at specified position with specified size and properties
@@ -35,12 +35,12 @@ public:
     /// \param size       window size
     /// \param resizable  whether window can be resized
     ///
-    Window(const Vec2i& position, const Vec2i& size, bool resizable = true);
+    NativeWindow(const Vec2i& position, const Vec2i& size, bool resizable = true);
 
-    virtual ~Window();
+    virtual ~NativeWindow();
 
-    TREECORE_DECLARE_NON_COPYABLE(Window);
-    TREECORE_DECLARE_NON_MOVABLE(Window);
+    TREECORE_DECLARE_NON_COPYABLE(NativeWindow);
+    TREECORE_DECLARE_NON_MOVABLE(NativeWindow);
 
     //static Window* get_active_window();
 

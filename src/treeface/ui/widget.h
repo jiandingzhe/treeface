@@ -2,7 +2,7 @@
 #define TREEFACE_WIDGET_H
 
 #include "treeface/common.h"
-#include "treeface/ui/event.h"
+#include "treeface/event/event.h"
 
 #include <treecore/ArrayRef.h>
 #include <treecore/RefCountObject.h>
