@@ -79,11 +79,14 @@ public:
      * @brief set host-side data, mark data dirty.
      */
     template<typename VTX_T>
-    inline void set_host_data(treecore::ArrayRef<VTX_T> data_vtx, treecore::ArrayRef<const treecore::uint16> data_idx) noexcept
+    inline void set_host_data(treecore::ArrayRef<VTX_T> data_vtx, treecore::ArrayRef<const IndexType> data_idx) noexcept
     {
-        m_data_vtx.replaceWith(data_vtx.get_const_data(), sizeof(VTX_T) * data_vtx.size());
+        if (data_vtx.size() > std::numeric_limits<IndexType>::max())
+            die("toooo many vertices: %d\n", data_vtx.size());
+
+        m_data_vtx.replaceWith(data_vtx.get_data(), sizeof(VTX_T) * data_vtx.size());
         m_data_idx.resize(data_idx.size());
-        memcpy(m_data_idx.getRawDataPointer(), data_idx.get_const_data(), data_idx.size() * sizeof(treecore::uint16));
+        memcpy(m_data_idx.getRawDataPointer(), data_idx.get_data(), data_idx.size() * sizeof(IndexType));
         m_data_changed = true;
     }
 
@@ -126,7 +129,7 @@ protected:
 
     bool m_data_changed = false;
     treecore::MemoryBlock m_data_vtx;
-    treecore::Array<treecore::uint16> m_data_idx;
+    treecore::Array<IndexType> m_data_idx;
     GLuint m_buffer_vtx = 0;
     GLuint m_buffer_idx = 0;
 };

@@ -33,7 +33,7 @@ void VertexIndexBuffer::upload_data() const noexcept
                  GL_STATIC_DRAW);
 
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof(treecore::uint16) * m_data_idx.size(),
+                 sizeof(IndexType) * m_data_idx.size(),
                  m_data_idx.getRawDataConstPointer(),
                  GL_STATIC_DRAW);
 }

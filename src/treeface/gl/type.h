@@ -6,7 +6,16 @@
 
 #include "treeface/common.h"
 
+#include <treecore/IntTypes.h>
+
 namespace treeface {
+
+///
+/// \brief type of vertex index
+///
+/// 16 bit seems enough for us
+///
+typedef treecore::uint16 IndexType;
 
 /**
  * @brief helper class to get type at compile time from OpenGL type enums.

@@ -169,4 +169,5 @@ const VertexTemplate& Geometry::get_vertex_template() const noexcept
     return m_impl->vtx_template;
 }
 
+
 } // namespace treeface

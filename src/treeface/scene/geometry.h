@@ -29,9 +29,13 @@ public:
      */
     Geometry();
 
-    virtual ~Geometry();
+    ///
+    /// \brief create with specified vertex template
+    /// \param vtx_temp
+    ///
+    Geometry(const VertexTemplate& vtx_temp);
 
-    void set_vertex_template();
+    virtual ~Geometry();
 
     /**
      * @brief set data.
@@ -49,6 +53,7 @@ public:
     void set_primitive(GLenum value) noexcept;
 
     treeface::VertexIndexBuffer* get_buffer() noexcept;
+
     const VertexTemplate& get_vertex_template() const noexcept;
 
     /**

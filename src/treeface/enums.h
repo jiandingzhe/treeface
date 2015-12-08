@@ -43,6 +43,26 @@ typedef enum
     FULL_SCREEN_REAL = 2
 } FullScreenMode;
 
+typedef enum
+{
+    LINE_CAP_BUTT,
+    LINE_CAP_ROUND,
+    LINE_CAP_SQUARE
+} LineCapStyle;
+
+typedef enum
+{
+    LINE_JOIN_MITER,
+    LINE_JOIN_ROUND,
+    LINE_JOIN_BEVEL
+} LineJoinStyle;
+
+typedef enum
+{
+    FILL_NON_ZERO,
+    FILL_EVEN_ODD,
+} FillRule;
+
 } // namespace treeface
 
 #endif // TREEFACE_ENUMS_H
