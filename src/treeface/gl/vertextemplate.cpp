@@ -26,6 +26,23 @@ VertexTemplate::VertexTemplate(): m_impl(new Impl())
 {
 }
 
+VertexTemplate::VertexTemplate(const VertexTemplate& other): m_impl(new Impl())
+{
+    m_impl->attrs           = other.m_impl->attrs;
+    m_impl->elem_attr_index = other.m_impl->elem_attr_index;
+    m_impl->elem_offsets    = other.m_impl->elem_offsets;
+    m_impl->size            = other.m_impl->size;
+}
+
+VertexTemplate& VertexTemplate::operator = (const VertexTemplate& other)
+{
+    m_impl->attrs           = other.m_impl->attrs;
+    m_impl->elem_attr_index = other.m_impl->elem_attr_index;
+    m_impl->elem_offsets    = other.m_impl->elem_offsets;
+    m_impl->size            = other.m_impl->size;
+    return *this;
+}
+
 //VertexTemplate::VertexTemplate(treecore::ArrayRef<const VertexAttrib> attrs)
 //    : m_impl(new Impl())
 //{

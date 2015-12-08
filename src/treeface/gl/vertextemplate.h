@@ -14,8 +14,10 @@ class Result;
 namespace treeface {
 
 /**
- * @brief The VertexTemplate class holds vertex attribute meta data for vertex
- * buffers.
+ * @brief holds vertex attribute meta data for vertex buffers
+ *
+ * GPU buffers are bare byte data, so we need meta data to describe how vertices
+ * organize.
  */
 class VertexTemplate
 {
@@ -24,6 +26,11 @@ public:
      * @brief create an empty VertexTemplate object.
      */
     VertexTemplate();
+
+    ///
+    /// \brief copy constructor
+    ///
+    VertexTemplate(const VertexTemplate& other);
 
     /**
      * @brief move constructor.
@@ -34,10 +41,13 @@ public:
         other.m_impl = nullptr;
     }
 
+    ///
+    /// \brief assignment operator
+    ///
+    VertexTemplate& operator = (const VertexTemplate& other);
+
     /**
-     * @brief move assignment operator.
-     * @param other
-     * @return
+     * @brief assignment operator using rvalue
      */
     VertexTemplate& operator = (VertexTemplate&& other)
     {
@@ -48,8 +58,6 @@ public:
 
         return *this;
     }
-
-    TREECORE_DECLARE_NON_COPYABLE(VertexTemplate);
 
     /**
      * @brief add one vertex attribute into vertex template.
