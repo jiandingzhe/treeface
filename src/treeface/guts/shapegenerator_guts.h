@@ -36,6 +36,11 @@ struct SubPath
     void triangulate_simple(treecore::Array<Vec2f>& result_vertices, treecore::Array<IndexType>& result_indices) const;
 
     void triangulate_complex(treecore::Array<Vec2f>& result_vertices, treecore::Array<IndexType>& result_indices) const;
+
+    // generates line strip directly, do not support join and cap shape at all
+    void stroke_simple() const;
+
+    void stroke_complex() const;
 };
 
 } // namespace treeface

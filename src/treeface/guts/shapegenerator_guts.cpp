@@ -1,5 +1,7 @@
 #include "treeface/guts/shapegenerator_guts.h"
 
+#include "treeface/graphics/halfedge.h"
+
 #include "treecore/IntUtils.h"
 
 #include <list>
@@ -10,6 +12,123 @@ namespace treeface
 {
 
 typedef std::list<IndexType> IndexList;
+
+bool _is_below_(const Vec2f& a, const Vec2f& b)
+{
+    return a.y < b.y || (a.y == b.y && a.x < b.x);
+}
+
+struct HalfEdgeIndexVerticalSorter
+{
+    HalfEdgeIndexVerticalSorter(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges)
+        : vertices(vertices)
+        , edges(edges)
+    {
+    }
+
+    int compareElements (IndexType a, IndexType b) const noexcept
+    {
+        const Vec2f& p1 = vertices[edges[a].idx_vertex];
+        const Vec2f& p2 = vertices[edges[b].idx_vertex];
+
+        if (p1.y < p2.y)
+        {
+            return 1;
+        }
+        else if (p1.y == p2.y)
+        {
+            if (p1.x < p2.x)
+                return 1;
+            else if (p1.x == p2.x)
+                return 0;
+            else
+                return -1;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
+    const Array<Vec2f>& vertices;
+    const Array<HalfEdge>& edges;
+};
+
+struct HelpEdgeStore
+{
+    HelpEdgeStore(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges)
+        : vertices(vertices)
+        , edges(edges)
+    {
+        jassert(vertices.size() == edges.size());
+        edge_helper_map.resize(edges.size());
+        for (int i = 0; i < edge_helper_map.size(); i++)
+            edge_helper_map[i] = -1;
+    }
+
+    void add(IndexType edge_idx)
+    {
+        i_left_edges.add(edge_idx);
+    }
+
+    void remove(IndexType edge_idx)
+    {
+        i_left_edges.removeFirstMatchingValue(edge_idx);
+    }
+
+    IndexType get_edge_helper_edge(IndexType edge_idx)
+    {
+        IndexType helper_idx = edge_helper_map[edge_idx];
+        return helper_idx;
+    }
+
+    IndexType find_nearest_left_edge(const Vec2f& position)
+    {
+        IndexType result = std::numeric_limits<IndexType>::max();
+        float min_x_dist = std::numeric_limits<float>::max();
+
+        for (IndexType i_edge : i_left_edges)
+        {
+            const HalfEdge& edge = edges[i_edge];
+            const Vec2f& p1 = edge.get_vertex(vertices);
+            const Vec2f& p2 = edge.get_next(edges).get_vertex(vertices);
+
+            jassert(p1.x <= position.x);
+            jassert(p2.x <= position.x);
+            jassert(position.y <= p1.y);
+            jassert(p2.y <= position.y);
+
+            Vec2f edge_v = p2 - p1;
+            if (edge_v.y == 0)
+                continue;
+
+            float slope_inv = edge_v.x / edge_v.y;
+            float dy = position.y - p1.y;
+            float dx = dy * slope_inv;
+            float cross_point_x = p1.x + dx;
+
+            float x_dist = position.x - cross_point_x;
+            if (x_dist < 0)
+                continue;
+
+            if (x_dist < min_x_dist)
+            {
+                result = i_edge;
+                min_x_dist = x_dist;
+            }
+        }
+
+        jassert(min_x_dist > 0);
+        jassert(std::isfinite(min_x_dist));
+        jassert(result != std::numeric_limits<IndexType>::max());
+        return result;
+    }
+
+    Array<IndexType> edge_helper_map; // edge idx => helper edge idx
+    Array<IndexType> i_left_edges;
+    const Array<Vec2f>& vertices;
+    const Array<HalfEdge>& edges;
+};
 
 struct EdgeRebuildTmp
 {
@@ -79,7 +198,235 @@ inline bool _is_counter_clockwise_(const Array<Vec2f>& vertices) noexcept
         sum += (p_curr.x - p_prev.x) * (p_curr.y + p_prev.y);
     }
 
+    {
+        const Vec2f& p_curr = vertices.getFirst();
+        const Vec2f& p_prev = vertices.getLast();
+        sum += (p_curr.x - p_prev.x) * (p_curr.y + p_prev.y);
+    }
+
     return sum < 0;
+}
+
+bool _edge_is_merge_vertex_(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges, IndexType i_edge)
+{
+    const HalfEdge& edge = edges[i_edge];
+
+    const Vec2f& vtx_prev = edge.get_prev(edges).get_vertex(vertices);
+    const Vec2f& vtx_curr = edge.get_vertex(vertices);
+    const Vec2f& vtx_next = edge.get_next(edges).get_vertex(vertices);
+
+    Vec2f helper_v1 = vtx_curr - vtx_prev;
+    Vec2f helper_v2 = vtx_next - vtx_curr;
+
+    return
+            ! _is_below_(vtx_prev, vtx_curr) &&
+            _is_below_(vtx_curr, vtx_next) &&
+            ! _is_convex_(helper_v1, helper_v2);
+}
+
+void _make_connect_(Array<HalfEdge>& edges, IndexType i_edge1, IndexType i_edge2)
+{
+    // pre-calculate the index of newly added half edges
+    IndexType i_edge_1_2 = edges.size();
+    IndexType i_edge_2_1 = i_edge_1_2 + 1;
+
+    HalfEdge& edge1 = edges[i_edge1];
+    IndexType i_edge1_prev = edge1.idx_prev_edge;
+    HalfEdge& edge1_prev = edges[i_edge1_prev];
+
+    HalfEdge& edge2 = edges[i_edge2];
+    IndexType i_edge2_prev = edge2.idx_prev_edge;
+    HalfEdge& edge2_prev = edges[i_edge2_prev];
+
+    // modify existing edges' connection
+    jassert(edge1_prev.idx_next_edge == i_edge1);
+    jassert(edge2_prev.idx_next_edge == i_edge2);
+    edge1.idx_prev_edge = i_edge_2_1;
+    edge2.idx_prev_edge = i_edge_1_2;
+    edge1_prev.idx_next_edge = i_edge_1_2;
+    edge2_prev.idx_next_edge = i_edge_2_1;
+
+    // create new edge
+    edges.add(HalfEdge{edge1.idx_vertex,
+                       i_edge1_prev,
+                       i_edge2,
+                       i_edge_2_1});
+
+    edges.add(HalfEdge{edge2.idx_vertex,
+                       i_edge2_prev,
+                       i_edge1,
+                       i_edge_1_2});
+}
+
+void _partition_polygon_monotone_(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges_input, Array<HalfEdge>& edges_result)
+{
+    edges_result = edges_input;
+
+    int num_edge_orig = edges_input.size();
+
+    // sort by vertical position
+    Array<IndexType> edge_idx_by_y;
+    edge_idx_by_y.resize(edges_input.size());
+    for (int i = 0; i < num_edge_orig; i++)
+        edge_idx_by_y[i] = i;
+
+    {
+        HalfEdgeIndexVerticalSorter sorter(vertices, edges_input);
+        edge_idx_by_y.sort(sorter);
+    }
+
+    // traverse all vertices
+    HelpEdgeStore helper_store(vertices, edges_input);
+
+    for (IndexType i_edge_curr : edge_idx_by_y)
+    {
+        const HalfEdge& edge_curr = edges_input[i_edge_curr];
+        const Vec2f& vtx_curr = edge_curr.get_vertex(vertices);
+        const Vec2f& vtx_prev = edge_curr.get_prev(edges_input).get_vertex(vertices);
+        const Vec2f& vtx_next = edge_curr.get_next(edges_input).get_vertex(vertices);
+        Vec2f v1 = vtx_curr - vtx_prev;
+        Vec2f v2 = vtx_next - vtx_curr;
+
+        if (_is_below_(vtx_prev, vtx_curr))
+        {
+            //
+            // regular vertex of "right" part
+            //
+            if (_is_below_(vtx_curr, vtx_next))
+            {
+                //PSEUDOCODE Search in T to find the edge e(j) directly left of v(i) .
+                IndexType i_left_edge = helper_store.find_nearest_left_edge(vtx_curr);
+
+                //PSEUDOCODE if helper(e(j)) is a merge vertex
+                //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(j)) in D.
+                IndexType i_edge_of_left_edge_helper = helper_store.get_edge_helper_edge(i_left_edge);
+                if (_edge_is_merge_vertex_(vertices, edges_input, i_edge_of_left_edge_helper))
+                {
+                    _make_connect_(edges_result, i_edge_curr, i_edge_of_left_edge_helper);
+                }
+
+                //PSEUDOCODE helper(e(j)) = v(i)
+                helper_store.edge_helper_map[i_left_edge] = i_edge_curr;
+            }
+            else
+            {
+                //
+                // start vertex
+                //
+                if (_is_convex_(v1, v2))
+                {
+                    //PSEUDOCODE Insert e(i) in T and set helper(e(i)) to v(i)
+                    helper_store.add(i_edge_curr);
+                    helper_store.edge_helper_map[i_edge_curr] = i_edge_curr;
+                }
+
+                //
+                // split vertex
+                //
+                else
+                {
+                    //PSEUDOCODE Search in T to find the edge e(j) directly left of v(i)
+                    IndexType i_left_edge = helper_store.find_nearest_left_edge(vtx_curr);
+
+                    //PSEUDOCODE Insert the diagonal connecting v(i) to helper(e(j)) in D
+                    IndexType i_helper_edge = helper_store.get_edge_helper_edge(i_left_edge);
+                    _make_connect_(edges_result, i_edge_curr, i_helper_edge);
+
+                    //PSEUDOCODE helper(e(j)) = v(i)
+                    helper_store.edge_helper_map[i_left_edge] = i_edge_curr;
+
+                    //PSEUDOCODE Insert e(i) in T and set helper(e(i)) to v(i).
+                    helper_store.add(i_edge_curr);
+                    helper_store.edge_helper_map[i_edge_curr] = i_edge_curr;
+                }
+            }
+        }
+        else
+        {
+            if (_is_below_(vtx_curr, vtx_next))
+            {
+                //
+                // end vertex
+                //
+                if (_is_convex_(v1, v2))
+                {
+                    //PSEUDOCODE if helper(e(i-1)) is a merge vertex
+                    //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper( e(i-1) ) in D
+                    const  IndexType i_edge_of_prev_helper = helper_store.get_edge_helper_edge(edge_curr.idx_prev_edge);
+                    jassert(i_edge_of_prev_helper < edges_input.size());
+
+                    if (_edge_is_merge_vertex_(vertices, edges_input, i_edge_of_prev_helper))
+                    {
+                        _make_connect_(edges_result, i_edge_curr, i_edge_of_prev_helper);
+                    }
+
+                    //PSEUDOCODE Delete e(i-1) from T
+                    helper_store.remove(i_edge_of_prev_helper);
+                }
+
+                //
+                // merge vertex
+                //
+                else
+                {
+                    //PSEUDOCODE if helper(e(i-1)) is a merge vertex
+                    //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(i-1)) in D.
+                    const IndexType i_edge_of_prev_helper = helper_store.get_edge_helper_edge(edge_curr.idx_prev_edge);
+                    jassert(i_edge_of_prev_helper < edges_input.size());
+
+                    if (_edge_is_merge_vertex_(vertices, edges_input, i_edge_of_prev_helper))
+                    {
+                        _make_connect_(edges_result, i_edge_curr, i_edge_of_prev_helper);
+                    }
+
+                    //PSEUDOCODE Delete e(i-1) from T.
+                    helper_store.remove(i_edge_of_prev_helper);
+
+                    //PSEUDOCODE Search in T to find the edge e(j) directly left of v(i).
+                    IndexType i_left_edge = helper_store.find_nearest_left_edge(vtx_curr);
+
+                    //PSEUDOCODE if helper(e(j)) is a merge vertex
+                    //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(j)) in D.
+                    IndexType i_edge_of_left_edge_helper = helper_store.get_edge_helper_edge(i_left_edge);
+                    if (_edge_is_merge_vertex_(vertices, edges_input, i_edge_of_left_edge_helper))
+                    {
+                        _make_connect_(edges_result, i_edge_curr, i_edge_of_left_edge_helper);
+                    }
+
+                    //PSEUDOCODE helper(e(j)) = v(i)
+                    helper_store.edge_helper_map[i_left_edge] = i_edge_curr;
+                }
+            }
+
+            //
+            // regular vertex of "left" part
+            //
+            else
+            {
+                //PSEUDOCODE if helper(e(i-1)) is a merge vertex
+                //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(i-1)) in D.
+                const IndexType i_edge_of_prev_helper = helper_store.get_edge_helper_edge(edge_curr.idx_prev_edge);
+                jassert(i_edge_of_prev_helper < edges_input.size());
+
+                if (_edge_is_merge_vertex_(vertices, edges_input, i_edge_of_prev_helper))
+                {
+                    _make_connect_(edges_result, i_edge_curr, i_edge_of_prev_helper);
+                }
+
+                //PSEUDOCODE Delete e(i-1) from T.
+                helper_store.remove(i_edge_of_prev_helper);
+
+                //PSEUDOCODE Insert e(i) in T and set helper(e(i)) to v(i).
+                helper_store.add(i_edge_curr);
+                helper_store.edge_helper_map[i_edge_curr] = i_edge_curr;
+            }
+        }
+    }
+}
+
+void _trangulate_monotone_polygons_(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges, Array<IndexType>& result_indices)
+{
+
 }
 
 ///
@@ -88,207 +435,50 @@ inline bool _is_counter_clockwise_(const Array<Vec2f>& vertices) noexcept
 /// \param vertices  vertex list that all index values should be valid in it
 /// \param indices   result triangle indices will be filled to here
 ///
-void _triangulate_(IndexList& idx_list, const Array<Vec2f>& vertices, Array<IndexType>& result_indices)
+void _triangulate_(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges, Array<IndexType>& result_indices)
 {
-    typedef typename treecore::larger_int<IndexType>::type IndexLarger;
-
-    size_t idx_list_size = idx_list.size();
-
-    // process and reduce vertices one by one
-    while (idx_list_size > 3)
-    {
-        jassert(idx_list_size == idx_list.size());
-
-        printf("to be processed:\n");
-        for (IndexType idx : idx_list)
-            printf("  %u\n", idx);
-
-        // find sharpest convex vertex
-        IndexList::iterator it_use;
-        IndexType idx_use_prev = std::numeric_limits<IndexType>::max();
-        IndexType idx_use_curr = std::numeric_limits<IndexType>::max();
-        IndexType idx_use_next = std::numeric_limits<IndexType>::max();
-
-        {
-            IndexList::iterator convex_sharp_it;
-            IndexLarger         convex_sharp_idx_prev = -1;
-            IndexLarger         convex_sharp_idx_curr = -1;
-            IndexLarger         convex_sharp_idx_next = -1;
-            float               convex_sharp_cosine = 1.0f;
-
-            IndexList::iterator rconvex_sharp_it;
-            IndexLarger         rconvex_sharp_idx_prev = -1;
-            IndexLarger         rconvex_sharp_idx_curr = -1;
-            IndexLarger         rconvex_sharp_idx_next = -1;
-            float               rconvex_sharp_cosine = 1.0f;
-
-            bool got_spine = false;
-
-            {
-                IndexList::iterator it_prev;
-                IndexList::iterator it_curr = idx_list.begin();
-                IndexList::iterator it_next = it_curr; it_next++;
-
-                while (it_curr != idx_list.end())
-                {
-                    // get indices flanking current position
-                    IndexType idx_curr = *it_curr;
-
-                    IndexType idx_prev = it_curr == idx_list.begin()
-                            ? idx_list.back()
-                            : *it_prev;
-
-                    IndexType idx_next = it_next == idx_list.end()
-                            ? idx_list.front()
-                            : *it_next;
-
-                    jassert(idx_prev < vertices.size());
-                    jassert(idx_curr < vertices.size());
-                    jassert(idx_next < vertices.size());
-
-                    const Vec2f& vtx_prev = vertices[idx_prev];
-                    const Vec2f& vtx_curr = vertices[idx_curr];
-                    const Vec2f& vtx_next = vertices[idx_next];
-
-                    Vec2f edge1 = vtx_curr - vtx_prev;
-                    Vec2f edge2 = vtx_next - vtx_curr;
-                    edge1.normalize();
-                    edge2.normalize();
-
-                    float cosine = edge1 * edge2;
-
-                    // we got a spine
-                    // use it for highest priority
-                    if (idx_prev == idx_next || idx_prev == idx_curr || idx_curr == idx_next)
-                    {
-                        got_spine = true;
-                        convex_sharp_idx_prev = idx_prev;
-                        convex_sharp_idx_curr = idx_curr;
-                        convex_sharp_idx_next = idx_next;
-                        convex_sharp_it = it_curr;
-                        break;
-                    }
-
-                    bool convex = _is_convex_(edge1, edge2);
-
-                    // current point is sharp
-                    if (convex && cosine < convex_sharp_cosine)
-                    {
-                        convex_sharp_cosine = cosine;
-                        convex_sharp_idx_prev = idx_prev;
-                        convex_sharp_idx_curr = idx_curr;
-                        convex_sharp_idx_next = idx_next;
-                        convex_sharp_it = it_curr;
-                    }
-                    else if (!convex && cosine < rconvex_sharp_cosine)
-                    {
-                        rconvex_sharp_cosine = cosine;
-                        rconvex_sharp_idx_prev = idx_prev;
-                        rconvex_sharp_idx_curr = idx_curr;
-                        rconvex_sharp_idx_next = idx_next;
-                        rconvex_sharp_it = it_curr;
-                    }
-
-                    // move to next vertex
-                    it_prev = it_curr;
-                    it_curr = it_next;
-                    it_next++;
-                }
-            }
-
-            if (got_spine)
-            {
-                it_use = convex_sharp_it;
-                idx_use_prev = IndexType(convex_sharp_idx_prev);
-                idx_use_curr = IndexType(convex_sharp_idx_curr);
-                idx_use_next = IndexType(convex_sharp_idx_next);
-            }
-            else if (convex_sharp_cosine < 1.0f)
-            {
-                it_use = convex_sharp_it;
-                idx_use_prev = IndexType(convex_sharp_idx_prev);
-                idx_use_curr = IndexType(convex_sharp_idx_curr);
-                idx_use_next = IndexType(convex_sharp_idx_next);
-            }
-            else if (rconvex_sharp_cosine < 1.0f)
-            {
-                it_use = rconvex_sharp_it;
-                idx_use_prev = IndexType(rconvex_sharp_idx_prev);
-                idx_use_curr = IndexType(rconvex_sharp_idx_curr);
-                idx_use_next = IndexType(rconvex_sharp_idx_next);
-            }
-            else
-            {
-                jassertfalse;
-            }
-        }
-
-        // remove current point, record triangle
-        idx_list.erase(it_use);
-        idx_list_size--;
-        if (idx_use_prev != idx_use_next)
-        {
-            printf("triangle %u %u %u\n", idx_use_prev, idx_use_curr, idx_use_next);
-            result_indices.add(idx_use_prev);
-            result_indices.add(idx_use_curr);
-            result_indices.add(idx_use_next);
-        }
-    }
-
-    jassert(idx_list_size == 3);
-    jassert(idx_list.size() == 3);
-
-    // add last triangle
-    {
-        IndexList::iterator it = idx_list.begin();
-        IndexType idx1 = *it;
-        it++;
-        IndexType idx2 = *it;
-        it++;
-        IndexType idx3 = *it;
-
-        if (idx1 != idx2 && idx2 != idx3 && idx3 != idx1)
-        {
-            printf("last triangle %u %u %u\n", idx1, idx2, idx3);
-            result_indices.add(idx1);
-            result_indices.add(idx2);
-            result_indices.add(idx3);
-        }
-    }
+    Array<HalfEdge> edges_monotone;
+    _partition_polygon_monotone_  (vertices, edges,          edges_monotone);
+    _trangulate_monotone_polygons_(vertices, edges_monotone, result_indices);
 }
 
 void SubPath::triangulate_simple(Array<Vec2f>& result_vertices, Array<IndexType>& result_indices) const
 {
     if (vertices.size() < 3) return;
-    const IndexType subpath_idx_begin = IndexType(result_vertices.size());
+    const IndexType subpath_idx_first = IndexType(result_vertices.size());
+    const IndexType subpath_idx_last = subpath_idx_first + vertices.size() - 1;
 
     // assign global vertex index
     // generate vertex connection map
-    IndexList idx_list;
+    Array<HalfEdge> edges;
+    IndexType total_num_edge = vertices.size();
+    bool ccw = _is_counter_clockwise_(vertices);
 
-    if (_is_counter_clockwise_(vertices))
+    for (int i = 0; i < vertices.size(); i++)
     {
-        // subpath is counter-clockwise, use it in order
-        for (int i = 0; i < vertices.size(); i++)
-        {
-            result_vertices.add(vertices[i]);
-            idx_list.push_back(subpath_idx_begin + i);
-        }
-    }
-    else
-    {
-        // subpath is clockwise, use it in reversed order
-        for (int i = vertices.size() - 1; i >= 0; i--)
-        {
-            result_vertices.add(vertices[i]);
-            idx_list.push_back(subpath_idx_begin + i);
-        }
+        IndexType i_vtx = IndexType(result_vertices.size());
+        result_vertices.add(vertices[i]);
+
+        IndexType i_edge_curr = IndexType(edges.size());
+
+        IndexType i_prev = (i == 0
+                            ? IndexType(total_num_edge - 1)
+                            : i_edge_curr - 1);
+
+        IndexType i_next = (i == vertices.size() - 1
+                            ? 0
+                            : i_edge_curr + 1);
+
+        if (ccw)
+            edges.add(HalfEdge{i_vtx, i_prev, i_next, std::numeric_limits<IndexType>::max()});
+        else
+            edges.add(HalfEdge{i_vtx, i_next, i_prev, std::numeric_limits<IndexType>::max()});
     }
 
-    jassert(idx_list.size() == vertices.size());
+    jassert(edges.size() == vertices.size());
 
     // do triangulate
-    _triangulate_(idx_list, result_vertices, result_indices);
+    _triangulate_(result_vertices, edges, result_indices);
 }
 
 void SubPath::triangulate_complex(Array<Vec2f>& result_vertices, Array<IndexType>& result_indices) const
@@ -304,8 +494,7 @@ void SubPath::triangulate_complex(Array<Vec2f>& result_vertices, Array<IndexType
     //
     Array<EdgeRebuildTmp> orig_edges;
 
-    //if (_is_counter_clockwise_(vertices))
-    if (true)
+    if (_is_counter_clockwise_(vertices))
     {
         printf("is counter clockwise\n");
         // subpath is counter-clockwise, add in order
@@ -402,8 +591,6 @@ void SubPath::triangulate_complex(Array<Vec2f>& result_vertices, Array<IndexType
     // sort cross points in each edge
     // generate connection map of all vertices
     //
-    IndexList idx_list;
-
     for (int i_edge = 0; i_edge < orig_edges.size(); i_edge++)
     {
         EdgeRebuildTmp& edge = orig_edges[i_edge];
@@ -415,19 +602,12 @@ void SubPath::triangulate_complex(Array<Vec2f>& result_vertices, Array<IndexType
             edge.idx_interm.sort(sorter);
         }
 
-        // recored vertex connection
-        idx_list.push_back(edge.idx_begin);
-        for (int i_idx = 0; i_idx < edge.idx_interm.size(); i_idx++)
-        {
-            idx_list.push_back(edge.idx_interm[i_idx]);
-        }
+        // record vertex connection
 
-        // the last point is the begin point of next edge or first edge
-        // so we don't need to append it
+
     }
 
     // do triangulate
-    _triangulate_(idx_list, result_vertices, result_indices);
 }
 
 
