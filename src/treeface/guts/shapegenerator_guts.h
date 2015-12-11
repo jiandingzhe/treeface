@@ -4,6 +4,7 @@
 #include "treeface/graphics/shapegenerator.h"
 
 #include "treeface/gl/type.h"
+#include "treeface/graphics/halfedge.h"
 #include "treeface/math/bbox2.h"
 #include "treeface/math/vec3.h"
 #include "treeface/scene/geometry.h"
@@ -12,6 +13,16 @@
 
 namespace treeface
 {
+
+void partition_polygon_monotone(const treecore::Array<Vec2f>& vertices, const treecore::Array<HalfEdge>& edges_input, treecore::Array<HalfEdge>& edges_result);
+
+inline bool is_convex(const Vec2f& edge1, const Vec2f& edge2) noexcept
+{
+    float cross = edge1 ^ edge2;
+    return cross > 0;
+}
+
+bool is_counter_clockwise(const treecore::Array<Vec2f>& vertices) noexcept;
 
 struct SubPath
 {

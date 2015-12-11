@@ -1,7 +1,5 @@
 #include "treeface/guts/shapegenerator_guts.h"
 
-#include "treeface/graphics/halfedge.h"
-
 #include "treecore/IntUtils.h"
 
 #include <list>
@@ -178,14 +176,7 @@ struct IntermVtxSorter
     const Array<Vec2f>& vertices;
 };
 
-
-inline bool _is_convex_(const Vec2f& edge1, const Vec2f& edge2) noexcept
-{
-    float cross = edge1 ^ edge2;
-    return cross > 0;
-}
-
-inline bool _is_counter_clockwise_(const Array<Vec2f>& vertices) noexcept
+bool is_counter_clockwise(const Array<Vec2f>& vertices) noexcept
 {
     jassert(vertices.size() > 2);
 
@@ -221,7 +212,7 @@ bool _edge_is_merge_vertex_(const Array<Vec2f>& vertices, const Array<HalfEdge>&
     return
             ! _is_below_(vtx_prev, vtx_curr) &&
             _is_below_(vtx_curr, vtx_next) &&
-            ! _is_convex_(helper_v1, helper_v2);
+            ! is_convex(helper_v1, helper_v2);
 }
 
 void _make_connect_(Array<HalfEdge>& edges, IndexType i_edge1, IndexType i_edge2)
@@ -258,7 +249,7 @@ void _make_connect_(Array<HalfEdge>& edges, IndexType i_edge1, IndexType i_edge2
                        i_edge_1_2});
 }
 
-void _partition_polygon_monotone_(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges_input, Array<HalfEdge>& edges_result)
+void partition_polygon_monotone(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges_input, Array<HalfEdge>& edges_result)
 {
     edges_result = edges_input;
 
@@ -313,7 +304,7 @@ void _partition_polygon_monotone_(const Array<Vec2f>& vertices, const Array<Half
                 //
                 // start vertex
                 //
-                if (_is_convex_(v1, v2))
+                if (is_convex(v1, v2))
                 {
                     //PSEUDOCODE Insert e(i) in T and set helper(e(i)) to v(i)
                     helper_store.add(i_edge_curr);
@@ -348,7 +339,7 @@ void _partition_polygon_monotone_(const Array<Vec2f>& vertices, const Array<Half
                 //
                 // end vertex
                 //
-                if (_is_convex_(v1, v2))
+                if (is_convex(v1, v2))
                 {
                     //PSEUDOCODE if helper(e(i-1)) is a merge vertex
                     //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper( e(i-1) ) in D
@@ -438,7 +429,7 @@ void _trangulate_monotone_polygons_(const Array<Vec2f>& vertices, const Array<Ha
 void _triangulate_(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges, Array<IndexType>& result_indices)
 {
     Array<HalfEdge> edges_monotone;
-    _partition_polygon_monotone_  (vertices, edges,          edges_monotone);
+    partition_polygon_monotone(vertices, edges, edges_monotone);
     _trangulate_monotone_polygons_(vertices, edges_monotone, result_indices);
 }
 
@@ -452,7 +443,7 @@ void SubPath::triangulate_simple(Array<Vec2f>& result_vertices, Array<IndexType>
     // generate vertex connection map
     Array<HalfEdge> edges;
     IndexType total_num_edge = vertices.size();
-    bool ccw = _is_counter_clockwise_(vertices);
+    bool ccw = is_counter_clockwise(vertices);
 
     for (int i = 0; i < vertices.size(); i++)
     {
@@ -494,7 +485,7 @@ void SubPath::triangulate_complex(Array<Vec2f>& result_vertices, Array<IndexType
     //
     Array<EdgeRebuildTmp> orig_edges;
 
-    if (_is_counter_clockwise_(vertices))
+    if (is_counter_clockwise(vertices))
     {
         printf("is counter clockwise\n");
         // subpath is counter-clockwise, add in order
