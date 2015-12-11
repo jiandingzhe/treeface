@@ -39,6 +39,19 @@ add_library(treeface STATIC
 target_use_treecore(treeface)
 
 #
+# a strange macro for 2D graphic stepwise visualise debug
+#
+set(TREECORE_2D_GEOMETRY_STEPWISE_VISUAL 0 CACHE BOOL "")
+if(TREECORE_2D_GEOMETRY_STEPWISE_VISUAL)
+    find_package(PkgConfig)
+    pkg_check_modules(CAIRO REQUIRED cairo)
+    add_definitions(-DSUCK_TREECORE_GEOMETRY)
+    target_include_directories(treeface PUBLIC ${CAIRO_INCLUDE_DIRS})
+    target_link_libraries(treeface ${CAIRO_LIBRARIES})
+endif()
+
+
+#
 # utilities
 #
 
