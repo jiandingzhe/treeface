@@ -13,7 +13,9 @@ using namespace treecore;
 namespace treeface
 {
 
-GeomSucker::GeomSucker(const treecore::Array<Vec2f>& vertices, const treecore::Array<HalfEdge>& skeleton): vertices(vertices)
+GeomSucker::GeomSucker(const treecore::Array<Vec2f>& vertices, const treecore::Array<HalfEdge>& edges, const treecore::String& title)
+    : vertices(vertices)
+    , edges(edges)
 {
     // get X and Y boundary
     float x_min = std::numeric_limits<float>::max();
@@ -30,8 +32,8 @@ GeomSucker::GeomSucker(const treecore::Array<Vec2f>& vertices, const treecore::A
     }
 
     // get scales
-    float width = x_max - x_min;
-    float height = y_max - y_min;
+    width = x_max - x_min;
+    height = y_max - y_min;
 
     line_w = std::sqrt(width*height) / 100;
 
@@ -46,39 +48,71 @@ GeomSucker::GeomSucker(const treecore::Array<Vec2f>& vertices, const treecore::A
     }
 
     // create cairo stuffs
-    surface = cairo_svg_surface_create(file_out.toRawUTF8(), width * 1.2, height * 1.2);
+    float border = std::min(width * 0.5, height * 0.5);
+    surface = cairo_svg_surface_create(file_out.toRawUTF8(), (width + border * 2) * 5, (height + border * 2) * 5);
     context = cairo_create(surface);
 
-    cairo_translate(context, -x_min * 1.2, -y_min * 1.2);
-
-    //draw axis
-    cairo_move_to(context, x_min, 0.0);
-    cairo_line_to(context, x_max, 0.0);
-    cairo_move_to(context, 0.0, y_min);
-    cairo_line_to(context, 0.0, y_max);
-
-    cairo_set_line_width(context, 2 * line_w);
-    cairo_set_source_rgba(context, SUCKER_BLACK, 0.8);
-    cairo_stroke(context);
-
-    // draw skeleton
-    // assume skeleton is a single-connected loop
-    cairo_new_path(context);
-    for (int i = 0;;)
-    {
-        const HalfEdge& edge = skeleton[i];
-
-        const Vec2f& vtx = edge.get_vertex(vertices);
-        cairo_line_to(context, vtx.x, vtx.y);
-
-        i = edge.idx_next_edge;
-        if (i == 0) break;
-    }
+    // set to initial state
+    cairo_scale(context, 5, 5);
+    cairo_translate(context, border, border);
+    cairo_translate(context, -x_min, height + y_min);
 
     cairo_set_line_width(context, line_w);
-    cairo_stroke(context);
+    cairo_set_line_cap(context, CAIRO_LINE_CAP_ROUND);
+    cairo_set_line_join(context, CAIRO_LINE_JOIN_ROUND);
 
-    cairo_set_source_rgba(context, 0.0, 0.0, 0.0, 1.0);
+    cairo_save(context);
+
+    {
+        //draw axis
+        cairo_move_to(context, x_min, 0);
+        cairo_line_to(context, x_max, 0);
+        cairo_move_to(context, 0.0, - y_min);
+        cairo_line_to(context, 0.0, - y_max);
+
+        cairo_set_line_width(context, 2 * line_w);
+        cairo_set_source_rgba(context, SUCKER_BLACK, 0.5);
+        cairo_stroke(context);
+
+        // draw skeleton
+        cairo_set_line_width(context, line_w);
+
+        Array<bool> rendered;
+        rendered.resize(edges.size());
+        for (int i = 0; i < edges.size(); i++) rendered[i] = false;
+
+        for (int i_begin = 0; i_begin < edges.size(); i_begin++)
+        {
+            if (rendered[i_begin]) continue;
+
+            cairo_new_path(context);
+
+            for (int i_edge = i_begin;;)
+            {
+                const HalfEdge& edge = edges[i_edge];
+
+                const Vec2f& vtx = edge.get_vertex(vertices);
+                cairo_line_to(context, vtx.x, - vtx.y);
+                rendered[i_edge] = true;
+
+                i_edge = edge.idx_next_edge;
+                if (i_edge == i_begin) break;
+            }
+            cairo_close_path(context);
+            cairo_stroke(context);
+        }
+
+        // draw title
+        cairo_set_font_size(context, line_w * 6);
+        cairo_text_extents_t ext;
+        cairo_text_extents(context, title.toRawUTF8(), &ext);
+
+        cairo_move_to(context, (width - ext.width)/2, -(height - ext.height)/2);
+        cairo_set_source_rgba(context, 0.0, 0.0, 0.0, 1.0);
+        cairo_show_text(context, title.toRawUTF8());
+    }
+
+    cairo_restore(context);
 }
 
 GeomSucker::~GeomSucker()
@@ -90,7 +124,86 @@ GeomSucker::~GeomSucker()
         cairo_surface_destroy(surface);
 }
 
-void GeomSucker::draw_edge(const treecore::Array<HalfEdge>& edges, const IndexType i_edge, float offset_rate)
+void GeomSucker::draw_merge_vtx(IndexType vtx_idx) const
+{
+    const Vec2f& vtx = vertices[vtx_idx];
+    Vec2f p1 = vtx - Vec2f(0.0f, line_w * 2);
+    Vec2f p2 = vtx + Vec2f(line_w * 2, line_w * 2);
+    Vec2f p3 = vtx + Vec2f(-line_w * 2, line_w * 2);
+
+    cairo_move_to(context, p1.x, -p1.y);
+    cairo_line_to(context, p2.x, -p2.y);
+    cairo_line_to(context, p3.x, -p3.y);
+    cairo_fill(context);
+}
+
+void GeomSucker::draw_split_vtx(IndexType vtx_idx) const
+{
+    const Vec2f& vtx = vertices[vtx_idx];
+    Vec2f p1 = vtx + Vec2f(0.0f, line_w * 2);
+    Vec2f p2 = vtx + Vec2f(line_w * 2, -line_w * 2);
+    Vec2f p3 = vtx + Vec2f(-line_w * 2,-line_w * 2);
+
+    cairo_move_to(context, p1.x, -p1.y);
+    cairo_line_to(context, p2.x, -p2.y);
+    cairo_line_to(context, p3.x, -p3.y);
+    cairo_fill(context);
+}
+
+void GeomSucker::draw_start_vtx(IndexType vtx_idx) const
+{
+    const Vec2f& vtx = vertices[vtx_idx];
+    Vec2f p1 = vtx + Vec2f(line_w * 1.5, line_w * 1.5);
+    Vec2f p2 = vtx + Vec2f(-line_w * 1.5, line_w * 1.5);
+    Vec2f p3 = vtx + Vec2f(-line_w * 1.5, -line_w * 1.5);
+    Vec2f p4 = vtx + Vec2f(line_w * 1.5, -line_w * 1.5);
+
+    cairo_move_to(context, p1.x, -p1.y);
+    cairo_line_to(context, p2.x, -p2.y);
+    cairo_line_to(context, p3.x, -p3.y);
+    cairo_line_to(context, p4.x, -p4.y);
+    cairo_close_path(context);
+    cairo_stroke(context);
+}
+
+void GeomSucker::draw_end_vtx(IndexType vtx_idx) const
+{
+    const Vec2f& vtx = vertices[vtx_idx];
+    Vec2f p1 = vtx + Vec2f(line_w * 1.5, line_w * 1.5);
+    Vec2f p2 = vtx + Vec2f(-line_w * 1.5, line_w * 1.5);
+    Vec2f p3 = vtx + Vec2f(-line_w * 1.5, -line_w * 1.5);
+    Vec2f p4 = vtx + Vec2f(line_w * 1.5, -line_w * 1.5);
+
+    cairo_move_to(context, p1.x, -p1.y);
+    cairo_line_to(context, p2.x, -p2.y);
+    cairo_line_to(context, p3.x, -p3.y);
+    cairo_line_to(context, p4.x, -p4.y);
+    cairo_fill(context);
+}
+
+void GeomSucker::draw_regular_left_vtx(IndexType vtx_idx) const
+{
+    const Vec2f& vtx = vertices[vtx_idx];
+    cairo_new_path(context);
+    cairo_arc(context, vtx.x, -vtx.y, line_w * 2, 0, 3.14159265*2);
+    cairo_fill(context);
+    cairo_move_to(context, vtx.x - line_w * 2, -vtx.y - line_w * 5);
+    cairo_line_to(context, vtx.x - line_w * 2, -vtx.y + line_w * 5);
+    cairo_stroke(context);
+}
+
+void GeomSucker::draw_regular_right_vtx(IndexType vtx_idx) const
+{
+    const Vec2f& vtx = vertices[vtx_idx];
+    cairo_new_path(context);
+    cairo_arc(context, vtx.x, -vtx.y, line_w * 2, 0, 3.14159265*2);
+    cairo_fill(context);
+    cairo_move_to(context, vtx.x + line_w * 2, -vtx.y - line_w * 5);
+    cairo_line_to(context, vtx.x + line_w * 2, -vtx.y + line_w * 5);
+    cairo_stroke(context);
+}
+
+void GeomSucker::draw_edge(const IndexType i_edge, float offset_rate)
 {
     const HalfEdge& edge = edges[i_edge];
     const Vec2f& p_start = edge.get_vertex(vertices);
@@ -106,40 +219,85 @@ void GeomSucker::draw_edge(const treecore::Array<HalfEdge>& edges, const IndexTy
     float l_curr = v_curr.normalize();
     float l_next = v_next.normalize();
 
-    Vec2f ortho_prev(-v_prev.y, v_prev.x);
-    Vec2f ortho_curr(-v_curr.y, v_curr.x);
-    Vec2f ortho_next(-v_next.y, v_next.x);
+//    Vec2f ortho_prev(-v_prev.y, v_prev.x);
+//    Vec2f ortho_curr(-v_curr.y, v_curr.x);
+//    Vec2f ortho_next(-v_next.y, v_next.x);
 
-    ortho_prev.normalize();
-    ortho_curr.normalize();
-    ortho_next.normalize();
+//    ortho_prev.normalize();
+//    ortho_curr.normalize();
+//    ortho_next.normalize();
 
     float offset = line_w * offset_rate;
-    Vec2f p1 = p_start - v_prev * (l_prev / 3.0f) + ortho_prev * offset;
-    Vec2f p2 = p_start + (ortho_prev + ortho_curr) * offset;
-    Vec2f p3 = p_end   + (ortho_curr + ortho_next) * offset;
-    Vec2f p4 = p_end   + v_next * (l_next / 3.0f) + ortho_next * offset;
+    Vec2f p1 = p_start - v_prev * (l_prev / 3.0f) + v_curr * offset;
+    Vec2f p2 = p_start + (v_curr - v_prev) * offset;
+    Vec2f p3 = p_end   + (v_next - v_curr) * offset;
+    Vec2f p4 = p_end   + v_next * (l_next / 3.0f) - v_curr * offset;
 
     // arrow
-    float arrow_sz = line_w * 5;
-    Vec2f p_arrow_root = p4 - v_next * arrow_sz;
+    float arrow_sz = line_w * 2;
+    Vec2f ortho_next(-v_next.y, v_next.x);
+    Vec2f p_arrow_root = p4 - v_next * (arrow_sz*2);
     Vec2f p_arrow1 = p_arrow_root + ortho_next * arrow_sz;
     Vec2f p_arrow2 = p_arrow_root + ortho_next * -arrow_sz;
 
     // do_drawing
     cairo_new_path(context);
 
-    cairo_move_to(context, p1.x, p1.y);
-    cairo_line_to(context, p2.x, p2.y);
-    cairo_line_to(context, p3.x, p3.y);
-    cairo_line_to(context, p4.x, p4.y);
-
-    cairo_move_to(context, p_arrow1.x, p_arrow1.y);
-    cairo_line_to(context, p4.x, p4.y);
-    cairo_line_to(context, p_arrow2.x, p_arrow2.y);
+    cairo_move_to(context, p1.x, - p1.y);
+    cairo_line_to(context, p2.x, - p2.y);
+    cairo_line_to(context, p3.x, - p3.y);
+    cairo_line_to(context, p4.x, - p4.y);
 
     cairo_set_line_width(context, line_w);
     cairo_stroke(context);
+
+    cairo_move_to(context, p_arrow1.x, - p_arrow1.y);
+    cairo_line_to(context, p4.x,       - p4.y);
+    cairo_line_to(context, p_arrow2.x, - p_arrow2.y);
+    cairo_fill(context);
+
+    cairo_arc(context, p_start.x, - p_start.y, line_w*2, 0, 3.141592653589793*2);
+    cairo_fill(context);
+}
+
+void GeomSucker::draw_helper(IndexType i_edge, IndexType i_helper)
+{
+    cairo_save(context);
+
+    draw_edge(i_edge);
+
+    cairo_set_source_rgb(context, SUCKER_GREEN);
+    draw_edge(i_helper, 4.0f);
+
+    cairo_restore(context);
+}
+
+
+void GeomSucker::draw_helper_change(IndexType i_edge, IndexType i_helper_old, IndexType i_helper_new)
+{
+    cairo_save(context);
+
+    draw_edge(i_edge, 1.5f);
+
+    cairo_set_source_rgba(context, SUCKER_GREEN, 0.33);
+    draw_edge(i_helper_old, 3.0f);
+
+    cairo_set_source_rgba(context, SUCKER_GREEN, 0.66);
+    draw_edge(i_helper_new, 4.5f);
+
+    cairo_restore(context);
+}
+
+void GeomSucker::text(const treecore::String& text, const Vec2f& position)
+{
+    cairo_move_to(context, position.x, - position.y);
+    cairo_set_font_size(context, line_w * 3);
+    cairo_show_text(context, text.toRawUTF8());
+}
+
+void GeomSucker::text(const treecore::String& text, IndexType i_vtx)
+{
+    this->text(text, vertices[i_vtx]);
 }
 
 } // namespace treeface
