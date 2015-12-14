@@ -264,10 +264,10 @@ void GeomSucker::draw_helper(IndexType i_edge, IndexType i_helper)
 {
     cairo_save(context);
 
-    draw_edge(i_edge);
+    draw_edge(i_edge, 1.0f);
 
     cairo_set_source_rgb(context, SUCKER_GREEN);
-    draw_edge(i_helper, 4.0f);
+    draw_edge(i_helper, 2.0f);
 
     cairo_restore(context);
 }
@@ -277,13 +277,13 @@ void GeomSucker::draw_helper_change(IndexType i_edge, IndexType i_helper_old, In
 {
     cairo_save(context);
 
-    draw_edge(i_edge, 1.5f);
+    draw_edge(i_edge, 0.5f);
 
-    cairo_set_source_rgba(context, SUCKER_GREEN, 0.33);
-    draw_edge(i_helper_old, 3.0f);
+    cairo_set_source_rgba(context, SUCKER_BLUE, 0.33);
+    draw_edge(i_helper_old, 1.0f);
 
     cairo_set_source_rgba(context, SUCKER_GREEN, 0.66);
-    draw_edge(i_helper_new, 4.5f);
+    draw_edge(i_helper_new, 2.0f);
 
     cairo_restore(context);
 }

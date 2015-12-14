@@ -73,7 +73,7 @@ struct HelpEdgeStore
         SUCK_GEOM(for (IndexType idx : i_left_edges)                              )
         SUCK_GEOM(    sucker.draw_edge(idx);                                      )
         SUCK_GEOM(sucker.rgba(SUCKER_GREEN, 0.7);                                 )
-        SUCK_GEOM(sucker.draw_edge(edge_idx, 4.0f);                               )
+        SUCK_GEOM(sucker.draw_edge(edge_idx, 2.0f);                               )
 
         i_left_edges.add(edge_idx);
     }
@@ -87,7 +87,7 @@ struct HelpEdgeStore
         SUCK_GEOM(for (IndexType idx : i_left_edges)                                   )
         SUCK_GEOM(    sucker.draw_edge(idx);                                           )
         SUCK_GEOM(sucker.rgba(SUCKER_RED, 0.7);                                        )
-        SUCK_GEOM(sucker.draw_edge(edge_idx, 4.0f);                                    )
+        SUCK_GEOM(sucker.draw_edge(edge_idx, 2.0f);                                    )
     }
 
     IndexType get_edge_helper_edge(IndexType edge_idx)
@@ -96,10 +96,22 @@ struct HelpEdgeStore
         return helper_idx;
     }
 
+    ///
+    /// \brief find_nearest_left_edge
+    ///
+    /// If no left edge is found, it will search for right edge!
+    ///
+    /// \param position
+    /// \return half edge index
+    ///
     IndexType find_nearest_left_edge(const Vec2f& position)
     {
         IndexType result = std::numeric_limits<IndexType>::max();
         float min_x_dist = std::numeric_limits<float>::max();
+
+        IndexType result_rev = std::numeric_limits<IndexType>::max();
+        float min_x_dist_rev = std::numeric_limits<float>::max();
+
 
         for (IndexType i_edge : i_left_edges)
         {
@@ -121,20 +133,37 @@ struct HelpEdgeStore
             float cross_point_x = p1.x + dx;
 
             float x_dist = position.x - cross_point_x;
-            if (x_dist <= 0)
-                continue;
 
-            if (x_dist < min_x_dist)
+            if (x_dist > 0)
             {
-                result = i_edge;
-                min_x_dist = x_dist;
+                if (x_dist < min_x_dist)
+                {
+                    result = i_edge;
+                    min_x_dist = x_dist;
+                }
+            }
+            else
+            {
+                x_dist *= -1;
+                if (x_dist < min_x_dist_rev)
+                {
+                    result_rev = i_edge;
+                    min_x_dist_rev = x_dist;
+                }
             }
         }
 
-        jassert(min_x_dist > 0);
-        jassert(std::isfinite(min_x_dist));
-        jassert(result != std::numeric_limits<IndexType>::max());
-        return result;
+        if (result != std::numeric_limits<IndexType>::max())
+        {
+            jassert(min_x_dist != std::numeric_limits<float>::max());
+            return result;
+        }
+        else
+        {
+            jassert(result_rev != std::numeric_limits<IndexType>::max());
+            jassert(min_x_dist_rev != std::numeric_limits<float>::max());
+            return result_rev;
+        }
     }
 
     Array<IndexType> edge_helper_map; // edge idx => helper edge idx
@@ -305,15 +334,6 @@ void partition_polygon_monotone(const Array<Vec2f>& vertices, const Array<HalfEd
         HalfEdgeIndexVerticalSorter sorter(vertices, edges_input);
         edge_idx_by_y.sort(sorter);
     }
-
-    SUCK_GEOM(for (int i = 0; i < edge_idx_by_y.size(); i++)                                   )
-    SUCK_GEOM({                                                                   )
-    SUCK_GEOM(    IndexType idx = edge_idx_by_y[i];                               )
-    SUCK_GEOM(    GeomSucker sucker(vertices, edges_input);                       )
-    SUCK_GEOM(    sucker.draw_edge(idx);                               )
-    SUCK_GEOM(    const Vec2f& pos = edges_input[idx].get_vertex(vertices);         )
-    SUCK_GEOM(    sucker.text("sorted #"+String(i)+" at "+String(pos.y), pos);     )
-    SUCK_GEOM(}                                                                   )
 
     // traverse all vertices
     HelpEdgeStore helper_store(vertices, edges_input);
@@ -487,6 +507,7 @@ void partition_polygon_monotone(const Array<Vec2f>& vertices, const Array<HalfEd
 
                     //PSEUDOCODE Search in T to find the edge e(j) directly left of v(i).
                     IndexType i_left_edge = helper_store.find_nearest_left_edge(vtx_curr);
+
                     IndexType i_edge_of_left_edge_helper = helper_store.get_edge_helper_edge(i_left_edge);
 
                     SUCK_GEOM({)
