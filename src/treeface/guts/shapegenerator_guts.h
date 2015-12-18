@@ -14,10 +14,19 @@
 namespace treeface
 {
 
+typedef enum {
+    VTX_ROLE_INVALID = -1,
+    VTX_ROLE_START,
+    VTX_ROLE_END,
+    VTX_ROLE_LEFT,
+    VTX_ROLE_RIGHT,
+    VTX_ROLE_SPLIT,
+    VTX_ROLE_MERGE
+} VertexRole;
+
 void partition_polygon_monotone(const treecore::Array<Vec2f>& vertices,
                                 const treecore::Array<HalfEdge>& edges_input,
-                                treecore::Array<HalfEdge>& edges_result,
-                                treecore::Array<IndexType>& edge_idx_by_y);
+                                treecore::Array<HalfEdge>& edges_result);
 
 inline bool is_convex(const Vec2f& edge1, const Vec2f& edge2) noexcept
 {

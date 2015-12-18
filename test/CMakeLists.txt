@@ -82,9 +82,9 @@ target_link_libraries(sdl_text
     ${SDL2_LIBRARY}
 )
 
-add_executable(subpath_triangulate subpath_triangulate.cpp)
-target_use_treecore(subpath_triangulate)
-target_link_libraries(subpath_triangulate treeface)
+add_executable(polygon_triangle polygon_triangle.cpp)
+target_use_treecore(polygon_triangle)
+target_link_libraries(polygon_triangle treeface)
 
 add_executable(polygon_monotone polygon_monotone.cpp)
 target_use_treecore(polygon_monotone)

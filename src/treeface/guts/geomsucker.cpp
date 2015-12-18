@@ -35,7 +35,7 @@ GeomSucker::GeomSucker(const treecore::Array<Vec2f>& vertices, const treecore::A
     width = x_max - x_min;
     height = y_max - y_min;
 
-    line_w = std::sqrt(width*height) / 100;
+    line_w = std::sqrt(width*height) / 200;
 
     // decide output file name
     String file_out;
@@ -124,6 +124,14 @@ GeomSucker::~GeomSucker()
         cairo_surface_destroy(surface);
 }
 
+void GeomSucker::draw_vtx(IndexType vtx_idx) const
+{
+    const Vec2f& vtx = vertices[vtx_idx];
+    cairo_new_path(context);
+    cairo_arc(context, vtx.x, -vtx.y, line_w * 2, 0, 3.14159265*2);
+    cairo_fill(context);
+}
+
 void GeomSucker::draw_merge_vtx(IndexType vtx_idx) const
 {
     const Vec2f& vtx = vertices[vtx_idx];
@@ -183,10 +191,10 @@ void GeomSucker::draw_end_vtx(IndexType vtx_idx) const
 
 void GeomSucker::draw_regular_left_vtx(IndexType vtx_idx) const
 {
+    draw_vtx(vtx_idx);
+
     const Vec2f& vtx = vertices[vtx_idx];
     cairo_new_path(context);
-    cairo_arc(context, vtx.x, -vtx.y, line_w * 2, 0, 3.14159265*2);
-    cairo_fill(context);
     cairo_move_to(context, vtx.x - line_w * 2, -vtx.y - line_w * 5);
     cairo_line_to(context, vtx.x - line_w * 2, -vtx.y + line_w * 5);
     cairo_stroke(context);
@@ -194,10 +202,10 @@ void GeomSucker::draw_regular_left_vtx(IndexType vtx_idx) const
 
 void GeomSucker::draw_regular_right_vtx(IndexType vtx_idx) const
 {
+    draw_vtx(vtx_idx);
+
     const Vec2f& vtx = vertices[vtx_idx];
     cairo_new_path(context);
-    cairo_arc(context, vtx.x, -vtx.y, line_w * 2, 0, 3.14159265*2);
-    cairo_fill(context);
     cairo_move_to(context, vtx.x + line_w * 2, -vtx.y - line_w * 5);
     cairo_line_to(context, vtx.x + line_w * 2, -vtx.y + line_w * 5);
     cairo_stroke(context);
@@ -236,7 +244,8 @@ void GeomSucker::draw_edge(const IndexType i_edge, float offset_rate)
     // arrow
     float arrow_sz = line_w * 2;
     Vec2f ortho_next(-v_next.y, v_next.x);
-    Vec2f p_arrow_root = p4 - v_next * (arrow_sz*2);
+    Vec2f p_arrow_root = p4 - v_next * (arrow_sz*3.0f);
+    Vec2f p_arrow_root2 = p4 - v_next * (arrow_sz*2.0f);
     Vec2f p_arrow1 = p_arrow_root + ortho_next * arrow_sz;
     Vec2f p_arrow2 = p_arrow_root + ortho_next * -arrow_sz;
 
@@ -254,16 +263,16 @@ void GeomSucker::draw_edge(const IndexType i_edge, float offset_rate)
     cairo_move_to(context, p_arrow1.x, - p_arrow1.y);
     cairo_line_to(context, p4.x,       - p4.y);
     cairo_line_to(context, p_arrow2.x, - p_arrow2.y);
+    cairo_line_to(context, p_arrow_root2.x, -p_arrow_root2.y);
     cairo_fill(context);
 
-    cairo_arc(context, p_start.x, - p_start.y, line_w*2, 0, 3.141592653589793*2);
-    cairo_fill(context);
+    draw_vtx(edge.idx_vertex);
 }
 
 void GeomSucker::draw_edge_stack(const treecore::Array<IndexType>& edges)
 {
     cairo_save(context);
-    cairo_set_source_rgba(context, SUCKER_BLACK, 0.6);
+    cairo_set_source_rgba(context, SUCKER_BLACK, 0.3);
     for (IndexType edge_i : edges)
     {
         draw_edge(edge_i);

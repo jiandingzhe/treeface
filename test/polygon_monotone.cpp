@@ -65,8 +65,7 @@ int main(int argc, char** argv)
 
     // do split
     Array<HalfEdge> edges_out;
-    Array<IndexType> edge_idx_by_y;
-    partition_polygon_monotone(vertices, edges_in, edges_out, edge_idx_by_y);
+    partition_polygon_monotone(vertices, edges_in, edges_out);
 
     printf("%d input edges generated %d edges\n", edges_in.size(), edges_out.size());
 

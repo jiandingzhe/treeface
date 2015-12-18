@@ -33,6 +33,7 @@ struct GeomSucker
     void rgba(float r, float g, float b, float a) { cairo_set_source_rgba(context, r, g, b, a); }
     void rgb (float r, float g, float b)          { cairo_set_source_rgb (context, r, g, b);    }
 
+    void draw_vtx(IndexType vtx_idx) const;
     void draw_merge_vtx(IndexType vtx_idx) const;
     void draw_split_vtx(IndexType vtx_idx) const;
     void draw_start_vtx(IndexType vtx_idx) const;
