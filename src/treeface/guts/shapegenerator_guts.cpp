@@ -11,6 +11,16 @@ using namespace treecore;
 namespace treeface
 {
 
+typedef enum {
+    VTX_ROLE_INVALID,
+    VTX_ROLE_START,
+    VTX_ROLE_END,
+    VTX_ROLE_LEFT,
+    VTX_ROLE_RIGHT,
+    VTX_ROLE_SPLIT,
+    VTX_ROLE_MERGE
+} VertexRole;
+
 typedef std::list<IndexType> IndexList;
 
 bool _is_below_(const Vec2f& a, const Vec2f& b)
@@ -76,6 +86,7 @@ struct HelpEdgeStore
         SUCK_GEOM(sucker.draw_edge(edge_idx, 2.0f);                               )
 
         i_left_edges.add(edge_idx);
+        edge_helper_map[edge_idx] = edge_idx;
     }
 
     void remove(IndexType edge_idx)
@@ -314,7 +325,10 @@ void _make_connect_(const Array<Vec2f>& vertices, Array<HalfEdge>& edges, IndexT
     SUCK_GEOM(})
 }
 
-void partition_polygon_monotone(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges_input, Array<HalfEdge>& edges_result)
+void partition_polygon_monotone(const Array<Vec2f>& vertices,
+                                const Array<HalfEdge>& edges_input,
+                                Array<HalfEdge>& edges_result,
+                                Array<IndexType>& edge_idx_by_y)
 {
     edges_result = edges_input;
 
@@ -325,7 +339,6 @@ void partition_polygon_monotone(const Array<Vec2f>& vertices, const Array<HalfEd
     SUCK_GEOM(}                                     );
 
     // sort by vertical position
-    Array<IndexType> edge_idx_by_y;
     edge_idx_by_y.resize(edges_input.size());
     for (int i = 0; i < num_edge_orig; i++)
         edge_idx_by_y[i] = i;
@@ -335,7 +348,49 @@ void partition_polygon_monotone(const Array<Vec2f>& vertices, const Array<HalfEd
         edge_idx_by_y.sort(sorter);
     }
 
-    // traverse all vertices
+
+    // determine edge role
+    Array<VertexRole> input_edge_roles;
+    for (int i = 0; i < edges_input.size(); i++)
+    {
+        const HalfEdge& edge_curr = edges_input[i];
+        const Vec2f& vtx_curr = edge_curr.get_vertex(vertices);
+        const Vec2f& vtx_prev = edge_curr.get_prev(edges_input).get_vertex(vertices);
+        const Vec2f& vtx_next = edge_curr.get_next(edges_input).get_vertex(vertices);
+        Vec2f v1 = vtx_curr - vtx_prev;
+        Vec2f v2 = vtx_next - vtx_curr;
+
+        if (_is_below_(vtx_prev, vtx_curr))
+        {
+            if (_is_below_(vtx_curr, vtx_next))
+            {
+                input_edge_roles.add(VTX_ROLE_RIGHT);
+            }
+            else
+            {
+                if (is_convex(v1, v2))
+                    input_edge_roles.add(VTX_ROLE_START);
+                else
+                    input_edge_roles.add(VTX_ROLE_SPLIT);
+            }
+        }
+        else
+        {
+            if (_is_below_(vtx_curr, vtx_next))
+            {
+                if (is_convex(v1, v2))
+                    input_edge_roles.add(VTX_ROLE_END);
+                else
+                    input_edge_roles.add(VTX_ROLE_MERGE);
+            }
+            else
+            {
+                input_edge_roles.add(VTX_ROLE_LEFT);
+            }
+        }
+    }
+
+    // process all edges by decreasing Y corrd
     HelpEdgeStore helper_store(vertices, edges_input);
 
     for (IndexType i_edge_curr : edge_idx_by_y)
@@ -347,226 +402,534 @@ void partition_polygon_monotone(const Array<Vec2f>& vertices, const Array<HalfEd
         Vec2f v1 = vtx_curr - vtx_prev;
         Vec2f v2 = vtx_next - vtx_curr;
 
-        if (_is_below_(vtx_prev, vtx_curr))
+        switch (input_edge_roles[i_edge_curr])
         {
-            //
-            // regular vertex of "right" part
-            //
-            if (_is_below_(vtx_curr, vtx_next))
-            {
-                SUCK_GEOM({)
-                SUCK_GEOM(    GeomSucker sucker(vertices, edges_result);                     )
-                SUCK_GEOM(    sucker.text("regular right vtx", edge_curr.idx_vertex);        )
-                SUCK_GEOM(    sucker.draw_regular_right_vtx(edge_curr.idx_vertex);           )
-                SUCK_GEOM(})
+        case VTX_ROLE_START:
+        {
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result);      )
+            SUCK_GEOM(    sucker.text("start vtx", edge_curr.idx_vertex); )
+            SUCK_GEOM(    sucker.draw_start_vtx(edge_curr.idx_vertex);    )
+            SUCK_GEOM(})
 
-                //PSEUDOCODE Search in T to find the edge e(j) directly left of v(i) .
-                IndexType i_left_edge = helper_store.find_nearest_left_edge(vtx_curr);
-                IndexType i_edge_of_left_edge_helper = helper_store.get_edge_helper_edge(i_left_edge);
-
-                SUCK_GEOM({)
-                SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "left edge and helper"); )
-                SUCK_GEOM(    sucker.draw_helper(i_left_edge, i_edge_of_left_edge_helper);       )
-                SUCK_GEOM(})
-
-                //PSEUDOCODE if helper(e(j)) is a merge vertex
-                //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(j)) in D.
-                if (_edge_is_merge_vertex_(vertices, edges_input, i_edge_of_left_edge_helper))
-                {
-                    _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_left_edge_helper);
-                }
-
-                //PSEUDOCODE helper(e(j)) = v(i)
-                helper_store.edge_helper_map[i_left_edge] = i_edge_curr;
-                SUCK_GEOM({)
-                SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "set helper to current vtx");          )
-                SUCK_GEOM(    sucker.draw_helper_change(i_left_edge, i_edge_of_left_edge_helper, i_edge_curr); )
-                SUCK_GEOM(})
-            }
-            else
-            {
-                //
-                // start vertex
-                //
-                if (is_convex(v1, v2))
-                {
-                    SUCK_GEOM({)
-                    SUCK_GEOM(    GeomSucker sucker(vertices, edges_result);      )
-                    SUCK_GEOM(    sucker.text("start vtx", edge_curr.idx_vertex); )
-                    SUCK_GEOM(    sucker.draw_start_vtx(edge_curr.idx_vertex);    )
-                    SUCK_GEOM(})
-
-                    //PSEUDOCODE Insert e(i) in T and set helper(e(i)) to v(i)
-                    helper_store.add(i_edge_curr);
-                    helper_store.edge_helper_map[i_edge_curr] = i_edge_curr;
-                }
-
-                //
-                // split vertex
-                //
-                else
-                {
-                    SUCK_GEOM({)
-                    SUCK_GEOM(    GeomSucker sucker(vertices, edges_result);      )
-                    SUCK_GEOM(    sucker.text("split vtx", edge_curr.idx_vertex); )
-                    SUCK_GEOM(    sucker.draw_split_vtx(edge_curr.idx_vertex);    )
-                    SUCK_GEOM(})
-
-                    //PSEUDOCODE Search in T to find the edge e(j) directly left of v(i)
-                    IndexType i_left_edge = helper_store.find_nearest_left_edge(vtx_curr);
-                    IndexType i_helper_edge = helper_store.get_edge_helper_edge(i_left_edge);
-
-                    SUCK_GEOM({)
-                    SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "left edge and helper"); )
-                    SUCK_GEOM(    sucker.draw_edge(i_left_edge);                                     )
-                    SUCK_GEOM(    sucker.rgb(SUCKER_GREEN);                                    )
-                    SUCK_GEOM(    sucker.draw_edge(i_helper_edge, 3.0f);                      )
-                    SUCK_GEOM(})
-
-                    //PSEUDOCODE Insert the diagonal connecting v(i) to helper(e(j)) in D
-                    _make_connect_(vertices, edges_result, i_edge_curr, i_helper_edge);
-
-                    //PSEUDOCODE helper(e(j)) = v(i)
-                    helper_store.edge_helper_map[i_left_edge] = i_edge_curr;
-
-                    SUCK_GEOM({)
-                    SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "set helper to current vtx"); )
-                    SUCK_GEOM(    sucker.draw_helper_change(i_left_edge, i_helper_edge, i_edge_curr);     )
-                    SUCK_GEOM(})
-
-                    //PSEUDOCODE Insert e(i) in T and set helper(e(i)) to v(i).
-                    helper_store.add(i_edge_curr);
-                    helper_store.edge_helper_map[i_edge_curr] = i_edge_curr;
-                }
-            }
+            //PSEUDOCODE Insert e(i) in T and set helper(e(i)) to v(i)
+            helper_store.add(i_edge_curr);
         }
-        else
+            break;
+
+        case VTX_ROLE_END  :
         {
-            if (_is_below_(vtx_curr, vtx_next))
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result);    )
+            SUCK_GEOM(    sucker.text("end vtx", edge_curr.idx_vertex); )
+            SUCK_GEOM(    sucker.draw_end_vtx(edge_curr.idx_vertex);    )
+            SUCK_GEOM(})
+
+            //PSEUDOCODE if helper(e(i-1)) is a merge vertex
+            //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper( e(i-1) ) in D
+            const  IndexType i_edge_of_prev_helper = helper_store.get_edge_helper_edge(edge_curr.idx_prev_edge);
+            jassert(i_edge_of_prev_helper < edges_input.size());
+
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "helper of prev"); )
+            SUCK_GEOM(    sucker.draw_edge(edge_curr.idx_prev_edge);)
+            SUCK_GEOM(    sucker.rgba(SUCKER_GREEN, 0.5);)
+            SUCK_GEOM(    sucker.draw_edge(i_edge_of_prev_helper);)
+            SUCK_GEOM(})
+
+            if (input_edge_roles[i_edge_of_prev_helper] == VTX_ROLE_MERGE)
             {
-                //
-                // end vertex
-                //
-                if (is_convex(v1, v2))
-                {
-                    SUCK_GEOM({)
-                    SUCK_GEOM(    GeomSucker sucker(vertices, edges_result);    )
-                    SUCK_GEOM(    sucker.text("end vtx", edge_curr.idx_vertex); )
-                    SUCK_GEOM(    sucker.draw_end_vtx(edge_curr.idx_vertex);    )
-                    SUCK_GEOM(})
-
-                    //PSEUDOCODE if helper(e(i-1)) is a merge vertex
-                    //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper( e(i-1) ) in D
-                    const  IndexType i_edge_of_prev_helper = helper_store.get_edge_helper_edge(edge_curr.idx_prev_edge);
-                    jassert(i_edge_of_prev_helper < edges_input.size());
-
-                    SUCK_GEOM({)
-                    SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "helper of prev"); )
-                    SUCK_GEOM(    sucker.draw_edge(edge_curr.idx_prev_edge);)
-                    SUCK_GEOM(    sucker.rgba(SUCKER_GREEN, 0.5);)
-                    SUCK_GEOM(    sucker.draw_edge(i_edge_of_prev_helper);)
-                    SUCK_GEOM(})
-
-                    if (_edge_is_merge_vertex_(vertices, edges_input, i_edge_of_prev_helper))
-                    {
-                        _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_prev_helper);
-                    }
-
-                    //PSEUDOCODE Delete e(i-1) from T
-                    helper_store.remove(edge_curr.idx_prev_edge);
-                }
-
-                //
-                // merge vertex
-                //
-                else
-                {
-                    SUCK_GEOM({)
-                    SUCK_GEOM(    GeomSucker sucker(vertices, edges_result);      )
-                    SUCK_GEOM(    sucker.text("merge vtx", edge_curr.idx_vertex); )
-                    SUCK_GEOM(    sucker.draw_merge_vtx(edge_curr.idx_vertex);    )
-                    SUCK_GEOM(})
-
-                    //PSEUDOCODE if helper(e(i-1)) is a merge vertex
-                    //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(i-1)) in D.
-                    const IndexType i_edge_of_prev_helper = helper_store.get_edge_helper_edge(edge_curr.idx_prev_edge);
-                    jassert(i_edge_of_prev_helper < edges_input.size());
-
-                    SUCK_GEOM({)
-                    SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "prev edge and helper");  )
-                    SUCK_GEOM(    sucker.draw_helper(edge_curr.idx_prev_edge, i_edge_of_prev_helper);  )
-                    SUCK_GEOM(})
-
-                    if (_edge_is_merge_vertex_(vertices, edges_input, i_edge_of_prev_helper))
-                    {
-                        _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_prev_helper);
-                    }
-
-                    //PSEUDOCODE Delete e(i-1) from T.
-                    helper_store.remove(edge_curr.idx_prev_edge);
-
-                    //PSEUDOCODE Search in T to find the edge e(j) directly left of v(i).
-                    IndexType i_left_edge = helper_store.find_nearest_left_edge(vtx_curr);
-
-                    IndexType i_edge_of_left_edge_helper = helper_store.get_edge_helper_edge(i_left_edge);
-
-                    SUCK_GEOM({)
-                    SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "left edge and helper"); )
-                    SUCK_GEOM(    sucker.draw_helper(i_left_edge, i_edge_of_left_edge_helper);       )
-                    SUCK_GEOM(})
-
-                    //PSEUDOCODE if helper(e(j)) is a merge vertex
-                    //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(j)) in D.
-                    if (_edge_is_merge_vertex_(vertices, edges_input, i_edge_of_left_edge_helper))
-                    {
-                        _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_left_edge_helper);
-                    }
-
-                    //PSEUDOCODE helper(e(j)) = v(i)
-                    helper_store.edge_helper_map[i_left_edge] = i_edge_curr;
-
-                    SUCK_GEOM({)
-                    SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "change helper edge"); )
-                    SUCK_GEOM(    sucker.draw_helper_change(i_left_edge, i_edge_of_left_edge_helper, i_edge_curr);)
-                    SUCK_GEOM(})
-                }
+                _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_prev_helper);
             }
 
-            //
-            // regular vertex of "left" part
-            //
-            else
+            //PSEUDOCODE Delete e(i-1) from T
+            helper_store.remove(edge_curr.idx_prev_edge);
+        }
+            break;
+
+        case VTX_ROLE_LEFT :
+        {
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result);             )
+            SUCK_GEOM(    sucker.text("regular left vtx", edge_curr.idx_vertex); )
+            SUCK_GEOM(    sucker.draw_regular_left_vtx(edge_curr.idx_vertex);    )
+            SUCK_GEOM(})
+
+            //PSEUDOCODE if helper(e(i-1)) is a merge vertex
+            //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(i-1)) in D.
+            const IndexType i_edge_of_prev_helper = helper_store.get_edge_helper_edge(edge_curr.idx_prev_edge);
+            jassert(i_edge_of_prev_helper < edges_input.size());
+
+            if (input_edge_roles[i_edge_of_prev_helper] == VTX_ROLE_MERGE)
             {
-                SUCK_GEOM({)
-                SUCK_GEOM(    GeomSucker sucker(vertices, edges_result);             )
-                SUCK_GEOM(    sucker.text("regular left vtx", edge_curr.idx_vertex); )
-                SUCK_GEOM(    sucker.draw_regular_left_vtx(edge_curr.idx_vertex);    )
-                SUCK_GEOM(})
-
-                //PSEUDOCODE if helper(e(i-1)) is a merge vertex
-                //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(i-1)) in D.
-                const IndexType i_edge_of_prev_helper = helper_store.get_edge_helper_edge(edge_curr.idx_prev_edge);
-                jassert(i_edge_of_prev_helper < edges_input.size());
-
-                if (_edge_is_merge_vertex_(vertices, edges_input, i_edge_of_prev_helper))
-                {
-                    _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_prev_helper);
-                }
-
-                //PSEUDOCODE Delete e(i-1) from T.
-                helper_store.remove(edge_curr.idx_prev_edge);
-
-                //PSEUDOCODE Insert e(i) in T and set helper(e(i)) to v(i).
-                helper_store.add(i_edge_curr);
-                helper_store.edge_helper_map[i_edge_curr] = i_edge_curr;
+                _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_prev_helper);
             }
+
+            //PSEUDOCODE Delete e(i-1) from T.
+            helper_store.remove(edge_curr.idx_prev_edge);
+
+            //PSEUDOCODE Insert e(i) in T and set helper(e(i)) to v(i).
+            helper_store.add(i_edge_curr);
+        }
+            break;
+
+        case VTX_ROLE_RIGHT:
+        {
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result);                     )
+            SUCK_GEOM(    sucker.text("regular right vtx", edge_curr.idx_vertex);        )
+            SUCK_GEOM(    sucker.draw_regular_right_vtx(edge_curr.idx_vertex);           )
+            SUCK_GEOM(})
+
+            //PSEUDOCODE Search in T to find the edge e(j) directly left of v(i) .
+            IndexType i_left_edge = helper_store.find_nearest_left_edge(vtx_curr);
+            IndexType i_edge_of_left_edge_helper = helper_store.get_edge_helper_edge(i_left_edge);
+
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "left edge and helper"); )
+            SUCK_GEOM(    sucker.draw_helper(i_left_edge, i_edge_of_left_edge_helper);       )
+            SUCK_GEOM(})
+
+            //PSEUDOCODE if helper(e(j)) is a merge vertex
+            //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(j)) in D.
+            if (input_edge_roles[i_edge_of_left_edge_helper] == VTX_ROLE_MERGE)
+            {
+                _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_left_edge_helper);
+            }
+
+            //PSEUDOCODE helper(e(j)) = v(i)
+            helper_store.edge_helper_map[i_left_edge] = i_edge_curr;
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "set helper to current vtx");          )
+            SUCK_GEOM(    sucker.draw_helper_change(i_left_edge, i_edge_of_left_edge_helper, i_edge_curr); )
+            SUCK_GEOM(})
+        }
+            break;
+
+        case VTX_ROLE_SPLIT:
+        {
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result);      )
+            SUCK_GEOM(    sucker.text("split vtx", edge_curr.idx_vertex); )
+            SUCK_GEOM(    sucker.draw_split_vtx(edge_curr.idx_vertex);    )
+            SUCK_GEOM(})
+
+            //PSEUDOCODE Search in T to find the edge e(j) directly left of v(i)
+            IndexType i_left_edge = helper_store.find_nearest_left_edge(vtx_curr);
+            IndexType i_helper_edge = helper_store.get_edge_helper_edge(i_left_edge);
+
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "left edge and helper"); )
+            SUCK_GEOM(    sucker.draw_edge(i_left_edge);                                     )
+            SUCK_GEOM(    sucker.rgb(SUCKER_GREEN);                                    )
+            SUCK_GEOM(    sucker.draw_edge(i_helper_edge, 3.0f);                      )
+            SUCK_GEOM(})
+
+            //PSEUDOCODE Insert the diagonal connecting v(i) to helper(e(j)) in D
+            _make_connect_(vertices, edges_result, i_edge_curr, i_helper_edge);
+
+            //PSEUDOCODE helper(e(j)) = v(i)
+            helper_store.edge_helper_map[i_left_edge] = i_edge_curr;
+
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "set helper to current vtx"); )
+            SUCK_GEOM(    sucker.draw_helper_change(i_left_edge, i_helper_edge, i_edge_curr);     )
+            SUCK_GEOM(})
+
+            //PSEUDOCODE Insert e(i) in T and set helper(e(i)) to v(i).
+            helper_store.add(i_edge_curr);
+        }
+            break;
+
+        case VTX_ROLE_MERGE:
+        {
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result);      )
+            SUCK_GEOM(    sucker.text("merge vtx", edge_curr.idx_vertex); )
+            SUCK_GEOM(    sucker.draw_merge_vtx(edge_curr.idx_vertex);    )
+            SUCK_GEOM(})
+
+            //PSEUDOCODE if helper(e(i-1)) is a merge vertex
+            //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(i-1)) in D.
+            const IndexType i_edge_of_prev_helper = helper_store.get_edge_helper_edge(edge_curr.idx_prev_edge);
+            jassert(i_edge_of_prev_helper < edges_input.size());
+
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "prev edge and helper");  )
+            SUCK_GEOM(    sucker.draw_helper(edge_curr.idx_prev_edge, i_edge_of_prev_helper);  )
+            SUCK_GEOM(})
+
+            if (input_edge_roles[i_edge_of_prev_helper] == VTX_ROLE_MERGE)
+            {
+                _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_prev_helper);
+            }
+
+            //PSEUDOCODE Delete e(i-1) from T.
+            helper_store.remove(edge_curr.idx_prev_edge);
+
+            //PSEUDOCODE Search in T to find the edge e(j) directly left of v(i).
+            IndexType i_left_edge = helper_store.find_nearest_left_edge(vtx_curr);
+
+            IndexType i_edge_of_left_edge_helper = helper_store.get_edge_helper_edge(i_left_edge);
+
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "left edge and helper"); )
+            SUCK_GEOM(    sucker.draw_helper(i_left_edge, i_edge_of_left_edge_helper);       )
+            SUCK_GEOM(})
+
+            //PSEUDOCODE if helper(e(j)) is a merge vertex
+            //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(j)) in D.
+            if (input_edge_roles[i_edge_of_left_edge_helper] == VTX_ROLE_MERGE)
+            {
+                _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_left_edge_helper);
+            }
+
+            //PSEUDOCODE helper(e(j)) = v(i)
+            helper_store.edge_helper_map[i_left_edge] = i_edge_curr;
+
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "change helper edge"); )
+            SUCK_GEOM(    sucker.draw_helper_change(i_left_edge, i_edge_of_left_edge_helper, i_edge_curr);)
+            SUCK_GEOM(})
+        }
+            break;
+
+        default:
+            abort();
         }
     }
 }
 
-void _trangulate_monotone_polygons_(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges, Array<IndexType>& result_indices)
+///
+/// \brief distinguish single-connected polygons
+///
+/// Find single-connected polygons from a mess of input edges, assign ID for
+/// them, and find the edge's roles
+///
+/// \param edges              input edge soup
+/// \param edge_indices_by_y  edge indices sorted by decreasing Y coord
+/// \param edge_polygon_map   edge ID => polygon ID
+/// \param edge_site_map      edge ID => role of edge's vertex
+///
+/// \return number of polygons
+///
+int16 _separate_polygons_(const Array<Vec2f>& vertices,
+                          const Array<HalfEdge>& edges,
+                          const Array<IndexType>& edge_indices_by_y,
+                          Array<int16>& edge_polygon_map,
+                          Array<VertexRole>& edge_role_map)
 {
+    jassert(edges.size() == edge_indices_by_y.size());
+    int num_edge = edges.size();
 
+    edge_polygon_map.resize(num_edge);
+    edge_role_map.resize(num_edge);
+    for (int i = 0; i < num_edge; i++)
+    {
+        edge_polygon_map[i] = -1;
+        edge_role_map[i] = VTX_ROLE_INVALID;
+    }
+
+
+    int16 i_polygon = 0;
+    for (IndexType i_edge_first : edge_indices_by_y)
+    {
+        // skip processed edge
+        if (edge_polygon_map[i_edge_first] >= 0) continue;
+
+        // mark all edges of this polygon
+        bool reached_bottom = false;
+        for (IndexType i_edge = i_edge_first;;)
+        {
+            // mark polygon index
+            jassert(edge_polygon_map[i_edge] == -1);
+            edge_polygon_map[i_edge] = i_polygon;
+
+            // mark vertex role
+            const HalfEdge& edge = edges[i_edge];
+
+            if (i_edge == i_edge_first)
+            {
+                edge_role_map[i_edge] = VTX_ROLE_START;
+            }
+            else
+            {
+                const Vec2f& vtx_prev = edge.get_prev(edges).get_vertex(vertices);
+                const Vec2f& vtx_curr = edge.get_vertex(vertices);
+                const Vec2f& vtx_next = edge.get_next(edges).get_vertex(vertices);
+
+                if (_is_below_(vtx_curr, vtx_prev) && _is_below_(vtx_curr, vtx_next))
+                {
+                    reached_bottom = true;
+                    edge_role_map[i_edge] = VTX_ROLE_END;
+                }
+                else
+                {
+                    if (reached_bottom)
+                        edge_role_map[i_edge] = VTX_ROLE_RIGHT;
+                    else
+                        edge_role_map[i_edge] = VTX_ROLE_LEFT;
+                }
+            }
+
+            // move to next
+            if (edge.idx_next_edge == i_edge_first) break;
+            i_edge = edge.idx_next_edge;
+        }
+
+        i_polygon++;
+    }
+
+    return i_polygon;
+}
+
+void _trangulate_monotone_polygons_(const Array<Vec2f>& vertices,
+                                    const Array<HalfEdge>& edges,
+                                    const Array<IndexType>& edge_indices_by_y,
+                                    const Array<int16>& edge_polygon_map,
+                                    int16 num_polygon,
+                                    const Array<VertexRole>& edge_roles,
+                                    Array<IndexType>& result_indices)
+{
+    SUCK_GEOM({)
+    SUCK_GEOM(    GeomSucker sucker(vertices, edges, "input for triangulation");)
+    SUCK_GEOM(})
+
+    Array<IndexType> edge_stack;
+
+    for (int16 i_polygon = 0; i_polygon < num_polygon; i_polygon++)
+    {
+        int count = 0;
+
+        IndexType i_edge_first = std::numeric_limits<IndexType>::max();
+        IndexType i_edge_prev = std::numeric_limits<IndexType>::max();
+
+        //
+        // traverse by decreasing Y coord
+        //
+        for (IndexType i_edge : edge_indices_by_y)
+        {
+            if (edge_polygon_map[i_edge] != i_polygon) continue;
+
+            const VertexRole role = edge_roles[i_edge];
+            const HalfEdge& edge = edges[i_edge];
+            const Vec2f& vtx = edge.get_vertex(vertices);
+
+            DBGCODE( if (count == 0) jassert(role == VTX_ROLE_START) );
+
+            if (count < 2)
+            {
+                //
+                // first two edges
+                //
+                SUCK_GEOM(GeomSucker sucker(vertices, edges);          )
+                SUCK_GEOM(sucker.draw_edge_stack(edge_stack);               )
+                SUCK_GEOM(sucker.rgba(SUCKER_BLACK, 0.7);              )
+                SUCK_GEOM(sucker.draw_edge(i_edge);                    )
+                SUCK_GEOM(sucker.text("enstack first two edges", vtx); )
+
+                if (count == 0)
+                {
+                    edge_stack.clear();
+                    i_edge_first = i_edge;
+                }
+                edge_stack.add(i_edge);
+            }
+            else
+            {
+                //
+                // middle edges
+                //
+                if (role != VTX_ROLE_END)
+                {
+                    //PSEUDOCODE if u(j) and the vertex on top of S are on different chains
+                    if (role != edge_roles[edge_stack.getLast()])
+                    {
+                        SUCK_GEOM({)
+                        SUCK_GEOM(    GeomSucker sucker(vertices, edges);          )
+                        SUCK_GEOM(    sucker.draw_edge_stack(edge_stack);               )
+                        SUCK_GEOM(    sucker.rgba(SUCKER_BLACK, 0.7);              )
+                        SUCK_GEOM(    sucker.draw_edge(i_edge);                    )
+                        SUCK_GEOM(    sucker.text("curr on different chain", vtx); )
+                        SUCK_GEOM(})
+
+                        //PSEUDOCODE Pop all vertices from S.
+                        //PSEUDOCODE Insert into D a diagonal from u(j) to each popped vertex, except the last one.
+                        for (int i_stack = 1; i_stack < edge_stack.size(); i_stack++)
+                        {
+                            IndexType i_curr = edge_stack[i_stack];
+                            IndexType i_prev = edge_stack[i_stack-1];
+                            result_indices.add(edge.idx_vertex);
+                            result_indices.add(edges[i_curr].idx_vertex);
+                            result_indices.add(edges[i_prev].idx_vertex);
+                            SUCK_GEOM({)
+                            SUCK_GEOM(    GeomSucker sucker(vertices, edges, "do triangulation");)
+                            SUCK_GEOM(    sucker.draw_edge_stack(edge_stack);                         )
+                            SUCK_GEOM(    sucker.rgba(SUCKER_GREEN, 0.5);                        )
+                            SUCK_GEOM(    sucker.draw_trig_by_edge(i_curr, i_prev, i_edge);      )
+                            SUCK_GEOM(})
+                        }
+
+                        edge_stack.clear();
+
+                        //PSEUDOCODE Push u(j−1) and u(j) onto S
+                        edge_stack.add(i_edge_prev);
+                        edge_stack.add(i_edge);
+
+                        SUCK_GEOM({)
+                        SUCK_GEOM(    GeomSucker sucker(vertices, edges, "add curr edge and prev edge to stack");)
+                        SUCK_GEOM(    sucker.draw_edge_stack(edge_stack);                                             )
+                        SUCK_GEOM(})
+                    }
+                    else
+                    {
+                        SUCK_GEOM({)
+                        SUCK_GEOM(    GeomSucker sucker(vertices, edges);          )
+                        SUCK_GEOM(    sucker.draw_edge_stack(edge_stack);               )
+                        SUCK_GEOM(    sucker.rgba(SUCKER_BLACK, 0.7);              )
+                        SUCK_GEOM(    sucker.draw_edge(i_edge);                    )
+                        SUCK_GEOM(    sucker.text("curr on same chain", vtx);      )
+                        SUCK_GEOM(})
+
+                        jassert(edge_stack.size() > 1);
+                        Array<IndexType> popped_edges;
+
+                        //PSEUDOCODE Pop one vertex from S.
+                        popped_edges.add(edge_stack.getLast());
+                        edge_stack.removeLast(1);
+
+                        SUCK_GEOM({)
+                        SUCK_GEOM(    GeomSucker sucker(vertices, edges);                                        )
+                        SUCK_GEOM(    sucker.draw_edge_stack(edge_stack);                                        )
+                        SUCK_GEOM(    sucker.rgba(SUCKER_RED, 0.2);                                              )
+                        SUCK_GEOM(    sucker.draw_edge(popped_edges.getLast());                                  )
+                        SUCK_GEOM(    sucker.rgb(SUCKER_BLACK);                                                  )
+                        SUCK_GEOM(    sucker.text("remove stack top", edges[popped_edges.getLast()].idx_vertex); )
+                        SUCK_GEOM(})
+
+
+                        //PSEUDOCODE Pop the other vertices from S as long as the diagonals from u(j) to them are inside P.
+                        while (edge_stack.size() > 1)
+                        {
+                            const IndexType i_edge_stack_top = edge_stack.getLast();
+                            const IndexType i_edge_stack_2nd = edge_stack[edge_stack.size() - 2];
+
+                            const Vec2f& vtx_stack_top = edges[i_edge_stack_top].get_vertex(vertices);
+                            const Vec2f& vtx_stack_2nd = edges[i_edge_stack_2nd].get_vertex(vertices);
+
+                            bool diag_is_inside;
+                            if (edge_roles[i_edge] == VTX_ROLE_LEFT)
+                                diag_is_inside = is_convex(vtx_stack_2nd, vtx_stack_top, vtx);
+                            else if (edge_roles[i_edge] == VTX_ROLE_RIGHT)
+                                diag_is_inside = is_convex(vtx, vtx_stack_top, vtx_stack_2nd);
+                            else
+                                jassertfalse;
+
+                            SUCK_GEOM(GeomSucker sucker(vertices, edges);)
+                            SUCK_GEOM(sucker.draw_edge_stack(edge_stack);)
+
+                            if (diag_is_inside)
+                            {
+                                SUCK_GEOM(sucker.rgba(SUCKER_BLUE, 0.7);                )
+                                SUCK_GEOM(sucker.draw_edge(i_edge_stack_2nd);           )
+                                SUCK_GEOM(sucker.rgba(SUCKER_GREEN, 0.7);               )
+                                SUCK_GEOM(sucker.draw_edge(i_edge_stack_top);           )
+                                SUCK_GEOM(sucker.text("is convex, pop stack top", vtx_stack_top); )
+                                SUCK_GEOM(sucker.rgba(SUCKER_BLACK, 0.7);               )
+                                SUCK_GEOM(sucker.draw_edge(i_edge);                     )
+                                popped_edges.add(i_edge_stack_top);
+                                edge_stack.removeLast(1);
+                            }
+                            else
+                            {
+                                SUCK_GEOM(sucker.rgba(SUCKER_BLUE, 0.7);                          )
+                                SUCK_GEOM(sucker.draw_edge(i_edge_stack_2nd);                     )
+                                SUCK_GEOM(sucker.rgba(SUCKER_RED, 0.7);                           )
+                                SUCK_GEOM(sucker.draw_edge(i_edge_stack_top);                     )
+                                SUCK_GEOM(sucker.text("not convex, break", vtx_stack_top);        )
+                                SUCK_GEOM(sucker.rgba(SUCKER_BLACK, 0.7);                         )
+                                SUCK_GEOM(sucker.draw_edge(i_edge);                               )
+                                break;
+                            }
+                        }
+
+                        //PSEUDOCODE Insert these diagonals into D.
+                        for (int i = 1; i < popped_edges.size(); i++)
+                        {
+                            // the last one continues with edge stack top
+                            IndexType i_edge1 = popped_edges[i];
+                            IndexType i_edge2 = popped_edges[i-1];
+
+                            result_indices.add(edge.idx_vertex);
+                            result_indices.add(edges[i_edge1].idx_vertex);
+                            result_indices.add(edges[i_edge2].idx_vertex);
+
+                            SUCK_GEOM({)
+                            SUCK_GEOM(    GeomSucker sucker(vertices, edges, "do triangulation"); )
+                            SUCK_GEOM(    sucker.draw_edge_stack(popped_edges);                   )
+                            SUCK_GEOM(    sucker.rgba(SUCKER_GREEN, 0.5);                         )
+                            SUCK_GEOM(    sucker.draw_trig_by_edge(i_edge1, i_edge2, i_edge);     )
+                            SUCK_GEOM(})
+                        }
+
+                        //PSEUDOCODE Push the last vertex that has been popped back onto S.
+                        //PSEUDOCODE Push u(j) onto S.
+                        IndexType i_popped_last = popped_edges.getLast();
+
+                        SUCK_GEOM({)
+                        SUCK_GEOM(    GeomSucker sucker(vertices, edges);          )
+                        SUCK_GEOM(    sucker.draw_edge_stack(edge_stack);          )
+                        SUCK_GEOM(    sucker.rgba(SUCKER_BLACK, 0.7);              )
+                        SUCK_GEOM(    sucker.draw_edge(i_edge);                    )
+                        SUCK_GEOM(    sucker.text("enstack current edge", vtx);    )
+                        SUCK_GEOM(    sucker.rgba(SUCKER_BLUE, 0.7);               )
+                        SUCK_GEOM(    sucker.draw_edge(i_popped_last);             )
+                        SUCK_GEOM(    sucker.text("enstack last popped edge", edges[i_popped_last].idx_vertex); )
+                        SUCK_GEOM(})
+
+                        edge_stack.add(i_popped_last);
+                        edge_stack.add(i_edge);
+                    }
+                }
+
+                //
+                // last edge
+                //
+                else
+                {
+                    //PSEUDOCODE Add diagonals from u n to all stack vertices except the first and the last one.
+                    SUCK_GEOM({)
+                    SUCK_GEOM(    GeomSucker sucker(vertices, edges);          )
+                    SUCK_GEOM(    sucker.draw_edge_stack(edge_stack);               )
+                    SUCK_GEOM(    sucker.rgba(SUCKER_BLACK, 0.7);              )
+                    SUCK_GEOM(    sucker.draw_edge(i_edge);                    )
+                    SUCK_GEOM(    sucker.text("last one", vtx);      )
+                    SUCK_GEOM(})
+
+                    for (int i = 1; i < edge_stack.size(); i++)
+                    {
+                        IndexType i_prev = edge_stack[i-1];
+                        IndexType i_curr = edge_stack[i];
+                        result_indices.add(edge.idx_vertex);
+                        result_indices.add(edges[i_prev].idx_vertex);
+                        result_indices.add(edges[i_curr].idx_vertex);
+
+                        SUCK_GEOM({)
+                        SUCK_GEOM(    GeomSucker sucker(vertices, edges, "do triangulation"); )
+                        SUCK_GEOM(    sucker.draw_edge_stack(edge_stack);                     )
+                        SUCK_GEOM(    sucker.rgba(SUCKER_GREEN, 0.5);                         )
+                        SUCK_GEOM(    sucker.draw_trig_by_edge(i_curr, i_prev, i_edge);     )
+                        SUCK_GEOM(})
+                    }
+
+                    break;
+                }
+            }
+
+            i_edge_prev = i_edge;
+            count++;
+        }
+    } // polygon cycle
 }
 
 ///
@@ -578,8 +941,13 @@ void _trangulate_monotone_polygons_(const Array<Vec2f>& vertices, const Array<Ha
 void _triangulate_(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges, Array<IndexType>& result_indices)
 {
     Array<HalfEdge> edges_monotone;
-    partition_polygon_monotone(vertices, edges, edges_monotone);
-    _trangulate_monotone_polygons_(vertices, edges_monotone, result_indices);
+    Array<IndexType> edge_indices_by_y;
+    partition_polygon_monotone(vertices, edges, edges_monotone, edge_indices_by_y);
+
+    Array<int16> edge_polygon_map;
+    Array<VertexRole> monotone_edge_roles;
+    int16 num_polygons = _separate_polygons_(vertices, edges_monotone, edge_indices_by_y, edge_polygon_map, monotone_edge_roles);
+
 }
 
 void SubPath::triangulate_simple(Array<Vec2f>& result_vertices, Array<IndexType>& result_indices) const

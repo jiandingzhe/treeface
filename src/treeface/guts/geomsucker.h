@@ -40,6 +40,8 @@ struct GeomSucker
     void draw_regular_left_vtx(IndexType vtx_idx) const;
     void draw_regular_right_vtx(IndexType vtx_idx) const;
     void draw_edge(const IndexType i_edge, float offset_rate = 1.0f);
+    void draw_edge_stack(const treecore::Array<IndexType>& edges);
+    void draw_trig_by_edge(IndexType i_edge1, IndexType i_edge2, IndexType i_edge3);
     void draw_helper(IndexType i_edge, IndexType i_helper);
     void draw_helper_change(IndexType i_edge, IndexType i_helper_old, IndexType i_helper_new);
     void text(const treecore::String& text, const Vec2f& position);

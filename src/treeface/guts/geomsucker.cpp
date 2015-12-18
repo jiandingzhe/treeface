@@ -71,7 +71,7 @@ GeomSucker::GeomSucker(const treecore::Array<Vec2f>& vertices, const treecore::A
         cairo_line_to(context, 0.0, - y_max);
 
         cairo_set_line_width(context, 2 * line_w);
-        cairo_set_source_rgba(context, SUCKER_BLACK, 0.5);
+        cairo_set_source_rgba(context, SUCKER_BLACK, 0.4);
         cairo_stroke(context);
 
         // draw skeleton
@@ -257,6 +257,30 @@ void GeomSucker::draw_edge(const IndexType i_edge, float offset_rate)
     cairo_fill(context);
 
     cairo_arc(context, p_start.x, - p_start.y, line_w*2, 0, 3.141592653589793*2);
+    cairo_fill(context);
+}
+
+void GeomSucker::draw_edge_stack(const treecore::Array<IndexType>& edges)
+{
+    cairo_save(context);
+    cairo_set_source_rgba(context, SUCKER_BLACK, 0.6);
+    for (IndexType edge_i : edges)
+    {
+        draw_edge(edge_i);
+    }
+    cairo_restore(context);
+}
+
+void GeomSucker::draw_trig_by_edge(IndexType i_edge1, IndexType i_edge2, IndexType i_edge3)
+{
+    const Vec2f& p1 = edges[i_edge1].get_vertex(vertices);
+    const Vec2f& p2 = edges[i_edge2].get_vertex(vertices);
+    const Vec2f& p3 = edges[i_edge3].get_vertex(vertices);
+
+    cairo_new_path(context);
+    cairo_move_to(context, p1.x, -p1.y);
+    cairo_line_to(context, p2.x, -p2.y);
+    cairo_line_to(context, p3.x, -p3.y);
     cairo_fill(context);
 }
 

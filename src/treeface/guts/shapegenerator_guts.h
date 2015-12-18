@@ -14,12 +14,20 @@
 namespace treeface
 {
 
-void partition_polygon_monotone(const treecore::Array<Vec2f>& vertices, const treecore::Array<HalfEdge>& edges_input, treecore::Array<HalfEdge>& edges_result);
+void partition_polygon_monotone(const treecore::Array<Vec2f>& vertices,
+                                const treecore::Array<HalfEdge>& edges_input,
+                                treecore::Array<HalfEdge>& edges_result,
+                                treecore::Array<IndexType>& edge_idx_by_y);
 
 inline bool is_convex(const Vec2f& edge1, const Vec2f& edge2) noexcept
 {
     float cross = edge1 ^ edge2;
     return cross > 0;
+}
+
+inline bool is_convex(const Vec2f& vtx1, const Vec2f& vtx2, const Vec2f& vtx3) noexcept
+{
+    return is_convex(vtx2 - vtx1, vtx3 - vtx2);
 }
 
 bool is_counter_clockwise(const treecore::Array<Vec2f>& vertices) noexcept;
