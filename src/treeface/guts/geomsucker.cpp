@@ -4,7 +4,7 @@
 
 #include "cairo-svg.h"
 
-#include <treecore/Thread.h>
+#include <treecore/Process.h>
 #include <treecore/File.h>
 #include <treecore/StringRef.h>
 
@@ -41,7 +41,7 @@ GeomSucker::GeomSucker(const treecore::Array<Vec2f>& vertices, const treecore::A
     String file_out;
     for (int i = 0; ; i++)
     {
-        file_out = String(pointer_sized_int(Thread::getCurrentThreadId())) + "_" + String(i) + ".svg";
+        file_out = String(pointer_sized_int(Process::getProcessID())) + "_" + String(i) + ".svg";
 
         if (!File::getCurrentWorkingDirectory().getChildFile(file_out).exists())
             break;
