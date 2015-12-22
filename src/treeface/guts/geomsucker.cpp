@@ -127,9 +127,43 @@ GeomSucker::~GeomSucker()
 void GeomSucker::draw_vtx(IndexType vtx_idx) const
 {
     const Vec2f& vtx = vertices[vtx_idx];
+    draw_vtx(vtx);
+}
+
+void GeomSucker::draw_vtx(const Vec2f& vtx) const
+{
     cairo_new_path(context);
     cairo_arc(context, vtx.x, -vtx.y, line_w * 2, 0, 3.14159265*2);
     cairo_fill(context);
+}
+
+void GeomSucker::draw_vector(const Vec2f& start, const Vec2f& end) const
+{
+    cairo_save(context);
+    cairo_new_path(context);
+
+    Vec2f v = end - start;
+    v.normalize();
+
+    float arrow_sz = line_w * 2;
+    Vec2f ortho(-v.y, v.x);
+    Vec2f p_arrow_root = end - v * (arrow_sz*3.0f);
+    Vec2f p_arrow_root2 = end - v * (arrow_sz*2.0f);
+    Vec2f p_arrow1 = p_arrow_root + ortho * arrow_sz;
+    Vec2f p_arrow2 = p_arrow_root + ortho * -arrow_sz;
+
+    cairo_move_to(context, start.x, -start.y);
+    cairo_line_to(context, end.x, -end.y);
+    cairo_set_line_width(context, line_w);
+    cairo_stroke(context);
+
+    cairo_move_to(context, end.x, -end.y);
+    cairo_line_to(context, p_arrow1.x, -p_arrow1.y);
+    cairo_line_to(context, p_arrow_root2.x, -p_arrow_root2.y);
+    cairo_line_to(context, p_arrow2.x, -p_arrow2.y);
+    cairo_fill(context);
+
+    cairo_restore(context);
 }
 
 void GeomSucker::draw_merge_vtx(IndexType vtx_idx) const
@@ -300,7 +334,7 @@ void GeomSucker::draw_helper(IndexType i_edge, IndexType i_helper)
     draw_edge(i_edge, 1.0f);
 
     cairo_set_source_rgb(context, SUCKER_GREEN);
-    draw_edge(i_helper, 2.0f);
+    draw_vtx(i_helper);
 
     cairo_restore(context);
 }

@@ -14,6 +14,72 @@
 namespace treeface
 {
 
+typedef enum
+{
+    GLYPH_TYPE_INVALID = -1,
+    GLYPH_TYPE_LINE,
+    GLYPH_TYPE_ARC,
+    GLYPH_TYPE_BESSEL3,
+    GLYPH_TYPE_BESSEL4,
+} GlyphType;
+
+
+struct PathGlyphArc
+{
+    Vec2f center;
+    float angle;
+    bool is_cclw;
+};
+
+struct PathGlyphBessel3
+{
+    Vec2f ctrl;
+};
+
+struct PathGlyphBessel4
+{
+    Vec2f ctrl1;
+    Vec2f ctrl2;
+};
+
+struct PathGlyph
+{
+    explicit PathGlyph(const Vec2f& line_end)
+        : type(GLYPH_TYPE_LINE)
+        , end(line_end)
+    {
+    }
+
+    PathGlyph(const Vec2f& center, const Vec2f& end, float angle, bool is_cclw)
+        : type(GLYPH_TYPE_ARC)
+        , end(end)
+        , arc{center, angle, is_cclw}
+    {
+    }
+
+    PathGlyph(const Vec2f& ctrl, const Vec2f& end)
+        : type(GLYPH_TYPE_BESSEL3)
+        , end(end)
+        , bessel3{ctrl}
+    {
+    }
+
+    PathGlyph(const Vec2f& ctrl1, const Vec2f& ctrl2, const Vec2f& end)
+        : type(GLYPH_TYPE_BESSEL4)
+        , bessel4{ctrl1, ctrl2}
+    {
+    }
+
+    GlyphType type;
+    Vec2f end;
+    union
+    {
+        PathGlyphArc arc;
+        PathGlyphBessel3 bessel3;
+        PathGlyphBessel4 bessel4;
+    };
+};
+
 typedef enum {
     VTX_ROLE_INVALID = -1,
     VTX_ROLE_START,
@@ -39,11 +105,17 @@ inline bool is_convex(const Vec2f& vtx1, const Vec2f& vtx2, const Vec2f& vtx3) n
     return is_convex(vtx2 - vtx1, vtx3 - vtx2);
 }
 
-bool is_counter_clockwise(const treecore::Array<Vec2f>& vertices) noexcept;
+double clockwise_accum(const treecore::Array<Vec2f>& vertices, IndexType i_begin, IndexType i_end) noexcept;
+
+int segment_arc(treecore::Array<Vec2f>& result_vertices, const PathGlyph& glyph);
+
+int segment_bessel3(treecore::Array<Vec2f>& result_vertices, const PathGlyph& glyph);
+
+int segment_bessel4(treecore::Array<Vec2f>& result_vertices, const PathGlyph& glyph);
 
 struct SubPath
 {
-    treecore::Array<Vec2f> vertices;
+    treecore::Array<PathGlyph> glyphs;
     bool closed = false;
 
     ///
@@ -55,20 +127,29 @@ struct SubPath
     {
         if (closed)
         {
-            jassert(vertices.size() > 1);
-            vertices.add(vertices.getFirst());
+            jassert(glyphs.size() > 1);
+            const PathGlyph& first_glyph = glyphs.getFirst();
+            jassert(first_glyph.type == GLYPH_TYPE_LINE);
+            glyphs.add(first_glyph);
             closed = false;
         }
     }
 
-    void triangulate_simple(treecore::Array<Vec2f>& result_vertices, treecore::Array<IndexType>& result_indices) const;
-
-    void triangulate_complex(treecore::Array<Vec2f>& result_vertices, treecore::Array<IndexType>& result_indices) const;
-
     // generates line strip directly, do not support join and cap shape at all
-    void stroke_simple() const;
+    void stroke_simple(treecore::Array<Vec2f>& result_vertices, treecore::Array<IndexType>& result_indices) const;
 
-    void stroke_complex() const;
+    void stroke_complex(treecore::Array<Vec2f>& result_vertices,
+                        treecore::Array<IndexType>& result_indices,
+                        LineCapStyle cap_style,
+                        LineJoinStyle join_style,
+                        float line_width) const;
+};
+
+struct ShapeGenerator::Guts
+{
+    treecore::Array<SubPath> subpaths;
+
+    void triangulate(treecore::Array<Vec2f>& result_vertices, treecore::Array<IndexType>& result_indices);
 };
 
 } // namespace treeface

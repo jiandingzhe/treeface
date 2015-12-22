@@ -61,9 +61,9 @@ struct HelpEdgeStore
         , edges(edges)
     {
         jassert(vertices.size() == edges.size());
-        edge_helper_map.resize(edges.size());
-        for (int i = 0; i < edge_helper_map.size(); i++)
-            edge_helper_map[i] = -1;
+        edge_helper_edge_map.resize(edges.size());
+        for (int i = 0; i < edge_helper_edge_map.size(); i++)
+            edge_helper_edge_map[i] = -1;
     }
 
     void add(IndexType edge_idx)
@@ -76,7 +76,7 @@ struct HelpEdgeStore
         SUCK_GEOM(sucker.draw_edge(edge_idx, 2.0f);                               )
 
         i_left_edges.add(edge_idx);
-        edge_helper_map[edge_idx] = edges[edge_idx].idx_vertex;
+        edge_helper_edge_map[edge_idx] = edge_idx;
     }
 
     void remove(IndexType edge_idx)
@@ -91,10 +91,10 @@ struct HelpEdgeStore
         SUCK_GEOM(sucker.draw_edge(edge_idx, 2.0f);                                    )
     }
 
-    IndexType get_edge_helper_vtx(IndexType edge_idx)
+    IndexType get_edge_helper_edge(IndexType edge_idx)
     {
-        IndexType helper_idx = edge_helper_map[edge_idx];
-        jassert(0 <= helper_idx && helper_idx < vertices.size());
+        IndexType helper_idx = edge_helper_edge_map[edge_idx];
+        jassert(0 <= helper_idx && helper_idx < edges.size());
         return helper_idx;
     }
 
@@ -168,7 +168,7 @@ struct HelpEdgeStore
         }
     }
 
-    Array<IndexType> edge_helper_map; // edge idx => helper edge idx
+    Array<IndexType> edge_helper_edge_map; // edge idx => helper edge idx
     Array<IndexType> i_left_edges;
     const Array<Vec2f>& vertices;
     const Array<HalfEdge>& edges;
@@ -222,13 +222,14 @@ struct IntermVtxSorter
     const Array<Vec2f>& vertices;
 };
 
-bool is_counter_clockwise(const Array<Vec2f>& vertices) noexcept
+double clockwise_accum(const Array<Vec2f>& vertices, IndexType i_begin, IndexType i_end) noexcept
 {
-    jassert(vertices.size() > 2);
+    jassert(i_end - i_begin > 2);
+    jassert(i_end <= vertices.size());
 
-    float sum = 0.0f;
+    double sum = 0.0;
 
-    for (int i = 1; i < vertices.size(); i++)
+    for (int i = i_begin + 1; i != i_end; i++)
     {
         const Vec2f& p_curr = vertices[i];
         const Vec2f& p_prev = vertices[i - 1];
@@ -236,12 +237,12 @@ bool is_counter_clockwise(const Array<Vec2f>& vertices) noexcept
     }
 
     {
-        const Vec2f& p_curr = vertices.getFirst();
-        const Vec2f& p_prev = vertices.getLast();
+        const Vec2f& p_curr = vertices[i_begin];
+        const Vec2f& p_prev = vertices[i_end - 1];
         sum += (p_curr.x - p_prev.x) * (p_curr.y + p_prev.y);
     }
 
-    return sum < 0;
+    return sum;
 }
 
 bool _edge_is_merge_vertex_(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges, IndexType i_edge)
@@ -316,22 +317,220 @@ void _make_connect_(const Array<Vec2f>& vertices, Array<HalfEdge>& edges, IndexT
     SUCK_GEOM(})
 }
 
-IndexType _search_edge_in_same_ring_(const Array<HalfEdge>& edges, IndexType i_edge_start, IndexType i_target_vtx)
+bool _vec_are_ccw_(const Vec2f& v1, const Vec2f& v2, const Vec2f& v3)
 {
-    for (IndexType i_edge = i_edge_start;;)
+    jassert(v1.length2() - 1.0f < 0.00001f);
+    jassert(v2.length2() - 1.0f < 0.00001f);
+    jassert(v3.length2() - 1.0f < 0.00001f);
+
+    Vec2f v12 = v2 - v1;
+    Vec2f v13 = v3 - v1;
+
+    float orient = v12 ^ v13;
+
+    return orient >= 0;
+}
+
+IndexType _iter_next_edge_diff_vtx_(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges, const IndexType i_edge_from)
+{
+    const HalfEdge& edge_from = edges[i_edge_from];
+    const Vec2f& vtx_from = edge_from.get_vertex(vertices);
+
+    for (IndexType i_edge = edge_from.idx_next_edge; i_edge != i_edge_from;)
     {
         const HalfEdge& edge = edges[i_edge];
-        if (edge.idx_vertex == i_target_vtx)
+        const Vec2f& vtx = edge.get_vertex(vertices);
+
+        if (vtx != vtx_from)
+        {
             return i_edge;
+        }
 
         i_edge = edge.idx_next_edge;
-        if (i_edge == i_edge_start)
-            break;
     }
 
     jassertfalse;
     return std::numeric_limits<IndexType>::max();
 }
+
+IndexType _iter_prev_edge_diff_vtx_(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges, const IndexType i_edge_from)
+{
+    const HalfEdge& edge_from = edges[i_edge_from];
+    const Vec2f& vtx_from = edge_from.get_vertex(vertices);
+
+
+    for (IndexType i_edge = edge_from.idx_prev_edge; i_edge != i_edge_from;)
+    {
+        const HalfEdge& edge = edges[i_edge];
+        const Vec2f& vtx = edge.get_vertex(vertices);
+        if (vtx != vtx_from)
+        {
+            return i_edge;
+        }
+
+        i_edge = edge.idx_prev_edge;
+    }
+
+    jassertfalse;
+    return std::numeric_limits<IndexType>::max();
+
+}
+
+IndexType _search_connectable_edge_(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges, const IndexType i_edge_ref, const IndexType i_edge_search)
+{
+    const Vec2f& vtx_target = edges[i_edge_search].get_vertex(vertices);
+
+    // center vector
+    // orients from target vertex
+    Vec2f v_connect;
+
+    {
+        Vec2f vtx_ref_use = edges[i_edge_ref].get_vertex(vertices);
+        if (vtx_ref_use == vtx_target)
+        {
+            IndexType i_edge_ref_next = _iter_next_edge_diff_vtx_(vertices, edges, i_edge_ref);
+            IndexType i_edge_ref_prev = _iter_prev_edge_diff_vtx_(vertices, edges, i_edge_ref);
+            vtx_ref_use = edges[i_edge_ref_next].get_vertex(vertices) + edges[i_edge_ref_prev].get_vertex(vertices);
+        }
+
+        v_connect = vtx_ref_use - vtx_target;
+        jassert(v_connect.length2() > 0.0f);
+        v_connect.normalize();
+    }
+
+    // search forward
+    IndexType i_edge_target = i_edge_search;
+    bool got_target = false;
+
+    for (;;)
+    {
+        const HalfEdge& edge_target = edges[i_edge_target];
+
+        IndexType i_edge_target_next = _iter_next_edge_diff_vtx_(vertices, edges, i_edge_target);
+        IndexType i_edge_target_prev = _iter_prev_edge_diff_vtx_(vertices, edges, i_edge_target);
+
+        const Vec2f& vtx_target_next = edges[i_edge_target_next].get_vertex(vertices);
+        const Vec2f& vtx_target_prev = edges[i_edge_target_prev].get_vertex(vertices);
+
+        // test if link edge is contained inside
+        Vec2f v_next = vtx_target_next - vtx_target;
+        Vec2f v_prev = vtx_target_prev - vtx_target;
+        jassert(v_next.length2() > 0.0f);
+        jassert(v_prev.length2() > 0.0f);
+        v_next.normalize();
+        v_prev.normalize();
+
+        if (_vec_are_ccw_(v_next, v_connect, v_prev))
+        {
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges, "search edge clockwise: success");  )
+            SUCK_GEOM(    sucker.draw_vector(vtx_target, vtx_target_next);                       )
+            SUCK_GEOM(    sucker.rgba(SUCKER_BLACK, 0.7f);                                       )
+            SUCK_GEOM(    sucker.draw_vector(vtx_target, vtx_target_prev);                       )
+            SUCK_GEOM(    sucker.rgb(SUCKER_GREEN);                                              )
+            SUCK_GEOM(    sucker.draw_vector(vtx_target, edges[i_edge_ref].get_vertex(vertices));)
+            SUCK_GEOM(})
+
+            got_target = true;
+            break;
+        }
+
+        // iter to peer's next
+        SUCK_GEOM({)
+        SUCK_GEOM(    GeomSucker sucker(vertices, edges, "search edge clockwise: fail");     )
+        SUCK_GEOM(    sucker.draw_vector(vtx_target, vtx_target_next);                       )
+        SUCK_GEOM(    sucker.rgba(SUCKER_BLACK, 0.7f);                                       )
+        SUCK_GEOM(    sucker.draw_vector(vtx_target, vtx_target_prev);                       )
+        SUCK_GEOM(    sucker.rgb(SUCKER_RED);                                                )
+        SUCK_GEOM(    sucker.draw_vector(vtx_target, edges[i_edge_ref].get_vertex(vertices));)
+        SUCK_GEOM(})
+
+        if (edge_target.idx_peer_edge == std::numeric_limits<IndexType>::max())
+            break;
+
+        IndexType i_next_to_search = edge_target.get_peer(edges).idx_next_edge;
+        if (i_next_to_search == i_edge_search)
+            break;
+
+        i_edge_target = i_next_to_search;
+    }
+
+    // search revert
+    if (!got_target)
+    {
+        i_edge_target = i_edge_search;
+
+        for (;;)
+        {
+            const HalfEdge& edge_target = edges[i_edge_target];
+
+            IndexType i_edge_target_next = _iter_next_edge_diff_vtx_(vertices, edges, i_edge_target);
+            IndexType i_edge_target_prev = _iter_prev_edge_diff_vtx_(vertices, edges, i_edge_target);
+
+            const Vec2f& vtx_target_next = edges[i_edge_target_next].get_vertex(vertices);
+            const Vec2f& vtx_target_prev = edges[i_edge_target_prev].get_vertex(vertices);
+
+            // test if link edge is contained inside
+            Vec2f v_next = vtx_target_next - vtx_target;
+            Vec2f v_prev = vtx_target_prev - vtx_target;
+            jassert(v_next.length2() > 0.0f);
+            jassert(v_prev.length2() > 0.0f);
+            v_next.normalize();
+            v_prev.normalize();
+
+            if (_vec_are_ccw_(v_next, v_connect, v_prev))
+            {
+                SUCK_GEOM({)
+                SUCK_GEOM(    GeomSucker sucker(vertices, edges, "search edge clockwise: success");  )
+                SUCK_GEOM(    sucker.draw_vector(vtx_target, vtx_target_next);                       )
+                SUCK_GEOM(    sucker.rgba(SUCKER_BLACK, 0.7f);                                       )
+                SUCK_GEOM(    sucker.draw_vector(vtx_target, vtx_target_prev);                       )
+                SUCK_GEOM(    sucker.rgb(SUCKER_GREEN);                                              )
+                SUCK_GEOM(    sucker.draw_vector(vtx_target, edges[i_edge_ref].get_vertex(vertices));)
+                SUCK_GEOM(})
+
+                got_target = true;
+                break;
+            }
+
+            // iter to prev's peer
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges, "search edge clockwise: fail");     )
+            SUCK_GEOM(    sucker.draw_vector(vtx_target, vtx_target_next);                       )
+            SUCK_GEOM(    sucker.rgba(SUCKER_BLACK, 0.7f);                                       )
+            SUCK_GEOM(    sucker.draw_vector(vtx_target, vtx_target_prev);                       )
+            SUCK_GEOM(    sucker.rgb(SUCKER_RED);                                                )
+            SUCK_GEOM(    sucker.draw_vector(vtx_target, edges[i_edge_ref].get_vertex(vertices));)
+            SUCK_GEOM(})
+
+            IndexType i_next_to_search = edge_target.get_prev(edges).idx_peer_edge;
+            if (i_next_to_search == std::numeric_limits<IndexType>::max() || i_next_to_search == i_edge_search)
+                break;
+
+            i_edge_target = i_next_to_search;
+        }
+    }
+
+    jassert(got_target);
+    return i_edge_target;
+}
+
+//IndexType _search_edge_in_same_ring_(const Array<HalfEdge>& edges, IndexType i_edge_start, IndexType i_target_vtx)
+//{
+//    for (IndexType i_edge = i_edge_start;;)
+//    {
+//        const HalfEdge& edge = edges[i_edge];
+//        if (edge.idx_vertex == i_target_vtx)
+//            return i_edge;
+//
+//        i_edge = edge.idx_next_edge;
+//        if (i_edge == i_edge_start)
+//            break;
+//    }
+//
+//    jassertfalse;
+//    return std::numeric_limits<IndexType>::max();
+//}
 
 void partition_polygon_monotone(const Array<Vec2f>& vertices,
                                 const Array<HalfEdge>& edges_input,
@@ -435,16 +634,17 @@ void partition_polygon_monotone(const Array<Vec2f>& vertices,
 
             //PSEUDOCODE if helper(e(i-1)) is a merge vertex
             //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper( e(i-1) ) in D
-            const IndexType i_prev_edge_helper = helper_store.get_edge_helper_vtx(edge_curr.idx_prev_edge);
-            const IndexType i_edge_of_prev_edge_helper = _search_edge_in_same_ring_(edges_result, i_edge_curr, i_prev_edge_helper);
+            IndexType i_edge_of_prev_edge_helper = helper_store.get_edge_helper_edge(edge_curr.idx_prev_edge);
+            IndexType i_prev_edge_helper = edges_result[i_edge_of_prev_edge_helper].idx_vertex;
 
             SUCK_GEOM({)
             SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "helper of prev"); )
-            SUCK_GEOM(    sucker.draw_helper(edge_curr.idx_prev_edge, i_edge_of_prev_edge_helper);)
+            SUCK_GEOM(    sucker.draw_helper(edge_curr.idx_prev_edge, i_prev_edge_helper);)
             SUCK_GEOM(})
 
             if (vtx_roles[i_prev_edge_helper] == VTX_ROLE_MERGE)
             {
+                i_edge_of_prev_edge_helper = _search_connectable_edge_(vertices, edges_result, i_edge_curr, i_edge_of_prev_edge_helper);
                 _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_prev_edge_helper);
             }
 
@@ -463,16 +663,16 @@ void partition_polygon_monotone(const Array<Vec2f>& vertices,
 
             //PSEUDOCODE if helper(e(i-1)) is a merge vertex
             //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(i-1)) in D.
-            const IndexType i_prev_edge_helper = helper_store.get_edge_helper_vtx(edge_curr.idx_prev_edge);
-            const IndexType i_edge_of_prev_edge_helper = _search_edge_in_same_ring_(edges_result, i_edge_curr, i_prev_edge_helper);
-
+            IndexType i_edge_of_prev_edge_helper = helper_store.get_edge_helper_edge(edge_curr.idx_prev_edge);
+            IndexType i_prev_edge_helper = edges_result[i_edge_of_prev_edge_helper].idx_vertex;
             SUCK_GEOM({)
             SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "prev edge and helper"); )
-            SUCK_GEOM(    sucker.draw_helper(edge_curr.idx_prev_edge, i_edge_of_prev_edge_helper);       )
+            SUCK_GEOM(    sucker.draw_helper(edge_curr.idx_prev_edge, i_prev_edge_helper);       )
             SUCK_GEOM(})
 
             if (vtx_roles[i_prev_edge_helper] == VTX_ROLE_MERGE)
             {
+                i_edge_of_prev_edge_helper = _search_connectable_edge_(vertices, edges_result, i_edge_curr, i_edge_of_prev_edge_helper);
                 _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_prev_edge_helper);
             }
 
@@ -494,22 +694,23 @@ void partition_polygon_monotone(const Array<Vec2f>& vertices,
 
             //PSEUDOCODE Search in T to find the edge e(j) directly left of v(i) .
             IndexType i_left_edge = helper_store.find_nearest_left_edge(vtx_curr);
-            IndexType i_left_edge_helper = helper_store.get_edge_helper_vtx(i_left_edge);
-            IndexType i_edge_of_left_edge_helper = _search_edge_in_same_ring_(edges_result, i_edge_curr, i_left_edge_helper);
+            IndexType i_edge_of_left_edge_helper = helper_store.get_edge_helper_edge(i_left_edge);
+            IndexType i_left_edge_helper = edges_result[i_edge_of_left_edge_helper].idx_vertex;
+            SUCK_GEOM({)
+            SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "left edge and helper"); )
+            SUCK_GEOM(    sucker.draw_helper(i_left_edge, i_left_edge_helper);       )
+            SUCK_GEOM(})
 
             //PSEUDOCODE if helper(e(j)) is a merge vertex
             //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(j)) in D.
             if (vtx_roles[i_left_edge_helper] == VTX_ROLE_MERGE)
             {
-                SUCK_GEOM({)
-                SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "left edge and helper"); )
-                SUCK_GEOM(    sucker.draw_helper(i_left_edge, i_edge_of_left_edge_helper);       )
-                SUCK_GEOM(})
+                i_edge_of_left_edge_helper = _search_connectable_edge_(vertices, edges_result, i_edge_curr, i_edge_of_left_edge_helper);
                 _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_left_edge_helper);
             }
 
             //PSEUDOCODE helper(e(j)) = v(i)
-            helper_store.edge_helper_map[i_left_edge] = edge_curr.idx_vertex;
+            helper_store.edge_helper_edge_map[i_left_edge] = i_edge_curr;
             SUCK_GEOM({)
             SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "set helper to current vtx");          )
             SUCK_GEOM(    sucker.draw_helper_change(i_left_edge, i_edge_of_left_edge_helper, i_edge_curr); )
@@ -527,19 +728,20 @@ void partition_polygon_monotone(const Array<Vec2f>& vertices,
 
             //PSEUDOCODE Search in T to find the edge e(j) directly left of v(i)
             IndexType i_left_edge = helper_store.find_nearest_left_edge(vtx_curr);
-            IndexType i_left_edge_helper = helper_store.get_edge_helper_vtx(i_left_edge);
-            IndexType i_edge_of_left_edge_helper = _search_edge_in_same_ring_(edges_result, i_edge_curr, i_left_edge_helper);
+            IndexType i_edge_of_left_edge_helper = helper_store.get_edge_helper_edge(i_left_edge);
+            IndexType i_left_edge_helper = edges_result[i_edge_of_left_edge_helper].idx_vertex;
 
             SUCK_GEOM({)
             SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "left edge and helper"); )
-            SUCK_GEOM(    sucker.draw_helper(i_left_edge, i_edge_of_left_edge_helper);       )
+            SUCK_GEOM(    sucker.draw_helper(i_left_edge, i_left_edge_helper);       )
             SUCK_GEOM(})
 
             //PSEUDOCODE Insert the diagonal connecting v(i) to helper(e(j)) in D
+            i_edge_of_left_edge_helper = _search_connectable_edge_(vertices, edges_result, i_edge_curr, i_edge_of_left_edge_helper);
             _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_left_edge_helper);
 
             //PSEUDOCODE helper(e(j)) = v(i)
-            helper_store.edge_helper_map[i_left_edge] = edge_curr.idx_vertex;
+            helper_store.edge_helper_edge_map[i_left_edge] = i_edge_curr;
 
             SUCK_GEOM({)
             SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "set helper to current vtx");          )
@@ -561,16 +763,17 @@ void partition_polygon_monotone(const Array<Vec2f>& vertices,
 
             //PSEUDOCODE if helper(e(i-1)) is a merge vertex
             //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(i-1)) in D.
-            const IndexType i_prev_edge_helper = helper_store.get_edge_helper_vtx(edge_curr.idx_prev_edge);
-            const IndexType i_edge_of_prev_edge_helper = _search_edge_in_same_ring_(edges_result, i_edge_curr, i_prev_edge_helper);
+            IndexType i_edge_of_prev_edge_helper = helper_store.get_edge_helper_edge(edge_curr.idx_prev_edge);
+            IndexType i_prev_edge_helper = edges_result[i_edge_of_prev_edge_helper].idx_vertex;
 
             SUCK_GEOM({)
             SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "prev edge and helper");  )
-            SUCK_GEOM(    sucker.draw_helper(edge_curr.idx_prev_edge, i_edge_of_prev_edge_helper);  )
+            SUCK_GEOM(    sucker.draw_helper(edge_curr.idx_prev_edge, i_prev_edge_helper);  )
             SUCK_GEOM(})
 
             if (vtx_roles[i_prev_edge_helper] == VTX_ROLE_MERGE)
             {
+                i_edge_of_prev_edge_helper = _search_connectable_edge_(vertices, edges_result, i_edge_curr, i_edge_of_prev_edge_helper);
                 _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_prev_edge_helper);
             }
 
@@ -579,23 +782,23 @@ void partition_polygon_monotone(const Array<Vec2f>& vertices,
 
             //PSEUDOCODE Search in T to find the edge e(j) directly left of v(i).
             IndexType i_left_edge = helper_store.find_nearest_left_edge(vtx_curr);
-            IndexType i_left_edge_helper = helper_store.get_edge_helper_vtx(i_left_edge);
-            IndexType i_edge_of_left_edge_helper = _search_edge_in_same_ring_(edges_result, i_edge_curr, i_left_edge_helper);
-
+            IndexType i_edge_of_left_edge_helper = helper_store.get_edge_helper_edge(i_left_edge);
+            IndexType i_left_edge_helper = edges_result[i_edge_of_left_edge_helper].idx_vertex;
             SUCK_GEOM({)
             SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "left edge and helper"); )
-            SUCK_GEOM(    sucker.draw_helper(i_left_edge, i_edge_of_left_edge_helper);       )
+            SUCK_GEOM(    sucker.draw_helper(i_left_edge, i_left_edge_helper);       )
             SUCK_GEOM(})
 
             //PSEUDOCODE if helper(e(j)) is a merge vertex
             //PSEUDOCODE     then Insert the diagonal connecting v(i) to helper(e(j)) in D.
             if (vtx_roles[i_left_edge_helper] == VTX_ROLE_MERGE)
             {
+                i_edge_of_left_edge_helper = _search_connectable_edge_(vertices, edges_result, i_edge_curr, i_edge_of_left_edge_helper);
                 _make_connect_(vertices, edges_result, i_edge_curr, i_edge_of_left_edge_helper);
             }
 
             //PSEUDOCODE helper(e(j)) = v(i)
-            helper_store.edge_helper_map[i_left_edge] = edge_curr.idx_vertex;
+            helper_store.edge_helper_edge_map[i_left_edge] = i_edge_curr;
 
             SUCK_GEOM({)
             SUCK_GEOM(    GeomSucker sucker(vertices, edges_result, "change helper edge"); )
@@ -996,173 +1199,166 @@ void _triangulate_(const Array<Vec2f>& vertices, const Array<HalfEdge>& edges_in
     _triangulate_monotone_polygons_(vertices, edges_monotone, edge_monotone_by_y, edge_polygon_map, num_polygon, monotone_edge_roles, result_indices);
 }
 
-void SubPath::triangulate_simple(Array<Vec2f>& result_vertices, Array<IndexType>& result_indices) const
+
+void _gen_line_join_round_(float half_w, const Vec2f& p_prev, const Vec2f& p_curr, const Vec2f& p_next,
+                           Array<Vec2f>& result_vertices, Array<IndexType>& result_indices,
+                           IndexType prev_tail_left, IndexType prev_tail_right,
+                           IndexType& tail_left, IndexType& tail_right)
 {
-    if (vertices.size() < 3) return;
-    const IndexType subpath_idx_first = IndexType(result_vertices.size());
-    const IndexType subpath_idx_last = subpath_idx_first + vertices.size() - 1;
+    Vec2f v1 = p_curr - p_prev;
+    Vec2f v2 = p_next - p_curr;
+    float l1 = v1.normalize();
+    float l2 = v2.normalize();
 
-    // assign global vertex index
-    // generate vertex connection map
-    Array<HalfEdge> edges;
-    IndexType total_num_edge = vertices.size();
-    bool ccw = is_counter_clockwise(vertices);
+    Vec2f ortho1(-v1.y, v1.x);
+    Vec2f ortho2(-v2.y, v2.x);
 
-    for (int i = 0; i < vertices.size(); i++)
+    float sine = v1 ^ v2;
+
+    // straight, just add two points and move on
+    if (sine == 0)
     {
-        IndexType i_vtx = IndexType(result_vertices.size());
-        result_vertices.add(vertices[i]);
+        tail_left = result_vertices.size();
+        tail_right = tail_left + 1;
 
-        IndexType i_edge_curr = IndexType(edges.size());
+        result_vertices.add(p_curr + ortho1 * half_w);
+        result_vertices.add(p_curr - ortho1 * half_w);
 
-        IndexType i_prev = (i == 0
-                            ? IndexType(total_num_edge - 1)
-                            : i_edge_curr - 1);
+        result_indices.add(prev_tail_left);
+        result_indices.add(prev_tail_right);
+        result_indices.add(tail_left);
 
-        IndexType i_next = (i == vertices.size() - 1
-                            ? 0
-                            : i_edge_curr + 1);
-
-        if (ccw)
-            edges.add(HalfEdge{i_vtx, i_prev, i_next, std::numeric_limits<IndexType>::max()});
-        else
-            edges.add(HalfEdge{i_vtx, i_next, i_prev, std::numeric_limits<IndexType>::max()});
-    }
-
-    jassert(edges.size() == vertices.size());
-
-    // do triangulate
-    _triangulate_(result_vertices, edges, result_indices);
-}
-
-void SubPath::triangulate_complex(Array<Vec2f>& result_vertices, Array<IndexType>& result_indices) const
-{
-    if (vertices.size() < 3) return;
-
-    const IndexType subpath_idx_begin = IndexType(result_vertices.size());
-
-    //
-    // add subpath's vertices to whole list
-    // assign indices in whole list
-    // generate edges
-    //
-    Array<EdgeRebuildTmp> orig_edges;
-
-    if (is_counter_clockwise(vertices))
-    {
-        printf("is counter clockwise\n");
-        // subpath is counter-clockwise, add in order
-        for (int i = 0; i < vertices.size(); i++)
-        {
-            result_vertices.add(vertices[i]);
-
-            if (i > 0)
-            {
-                IndexType idx_to = IndexType(result_vertices.size() - 1);
-                IndexType idx_from = idx_to - 1;
-                orig_edges.add(EdgeRebuildTmp(idx_from, idx_to, result_vertices));
-            }
-        }
+        result_indices.add(prev_tail_right);
+        result_indices.add(tail_right);
+        result_indices.add(tail_left);
     }
     else
     {
-        printf("is clockwise, use in reverse\n");
-        // subpath is clockwise, add in reversed order
-        for (int i = vertices.size() - 1; i >= 0; i--)
-        {
-            result_vertices.add(vertices[i]);
+        float cosine = v1 * v2;
 
-            if (i != vertices.size() - 1)
+        if (sine > 0)
+        {
+
+        }
+        // turn right
+        else if (sine < 0)
+        {
+
+        }
+    }
+}
+
+void SubPath::stroke_complex(treecore::Array<Vec2f>& result_vertices,
+                             treecore::Array<IndexType>& result_indices,
+                             LineCapStyle cap_style,
+                             LineJoinStyle join_style,
+                             float line_width) const
+{
+    IndexType idx_start_left  = std::numeric_limits<IndexType>::max();
+    IndexType idx_start_right = std::numeric_limits<IndexType>::max();
+    IndexType idx_prev_left  = std::numeric_limits<IndexType>::max();
+    IndexType idx_prev_right = std::numeric_limits<IndexType>::max();
+
+}
+
+void ShapeGenerator::Guts::triangulate(treecore::Array<Vec2f>& result_vertices, treecore::Array<IndexType>& result_indices)
+{
+    // do segment on all subpath
+    Array<IndexType> subpath_begin_indices;
+    for (const SubPath& subpath : subpaths)
+    {
+        IndexType idx_begin = IndexType(result_vertices.size());
+        subpath_begin_indices.add(idx_begin);
+
+        jassert(subpath.glyphs.size() > 1);
+
+        for (int i_glyph = 0; i_glyph < subpath.glyphs.size(); i_glyph++)
+        {
+            const PathGlyph& glyph = subpath.glyphs[i_glyph];
+
+            if (i_glyph == 0)
             {
-                IndexType idx_to = IndexType(result_vertices.size() - 1);
-                IndexType idx_from = idx_to - 1;
-                orig_edges.add(EdgeRebuildTmp(idx_from, idx_to, result_vertices));
+                jassert(glyph.type == GLYPH_TYPE_LINE);
+                result_vertices.add(glyph.end);
+            }
+            else
+            {
+                switch(glyph.type)
+                {
+                case GLYPH_TYPE_LINE:
+                    result_vertices.add(glyph.end);
+                    break;
+                case GLYPH_TYPE_ARC:
+                    //segment_arc(result_vertices, glyph);
+                    break;
+                case GLYPH_TYPE_BESSEL3:
+                    //segment_bessel3(result_vertices, glyph);
+                    break;
+                case GLYPH_TYPE_BESSEL4:
+                    //segment_bessel4(result_vertices, glyph);
+                    break;
+                default:
+                    jassertfalse; abort();
+                }
             }
         }
     }
 
+    jassert(subpath_begin_indices.size() == subpaths.size());
+
+    // determine global clockwise
+    double clw_accum_global = 0.0;
+    for (int i_subpath = 0; i_subpath < subpaths.size(); i_subpath++)
     {
-        IndexType idx_last = IndexType(result_vertices.size() - 1);
-        orig_edges.add(EdgeRebuildTmp(idx_last, subpath_idx_begin, result_vertices));
+        IndexType i_begin = subpath_begin_indices[i_subpath];
+        IndexType i_end = i_subpath == subpaths.size() - 1
+                ? result_vertices.size()
+                : subpath_begin_indices[i_subpath + 1];
+        clw_accum_global += clockwise_accum(result_vertices, i_begin, i_end);
     }
 
-    jassert(orig_edges.size() == vertices.size());
-
-    // cross test between all edge pairs
-    // record cross point to subdivide those edges
-    for (int i = 0; i < orig_edges.size(); i++)
+    // generate half edges
+    treecore::Array<HalfEdge> edges;
+    for (int i_subpath = 0; i_subpath < subpaths.size(); i_subpath++)
     {
-        EdgeRebuildTmp& edge1 = orig_edges[i];
+        IndexType i_vtx_begin = subpath_begin_indices[i_subpath];
+        IndexType i_vtx_end = i_subpath == subpaths.size() - 1
+                ? result_vertices.size()
+                : subpath_begin_indices[i_subpath + 1];
 
-        const Vec2f& p1 = result_vertices[edge1.idx_begin];
-        const Vec2f& p2 = result_vertices[edge1.idx_end];
-        const Vec2f v1 = p2 - p1;
-        const float cross12 = p1 ^ p2;
+        IndexType i_vtx_last = i_vtx_end - 1;
 
-        for (int j = i; j < orig_edges.size(); j++)
+        for (IndexType i_vtx = i_vtx_begin; i_vtx != i_vtx_end; i_vtx++)
         {
-            EdgeRebuildTmp& edge2 = orig_edges[j];
+            jassert(i_vtx == edges.size());
+            IndexType i_edge_prev;
+            IndexType i_edge_next;
 
-            const Vec2f& p3 = result_vertices[edge2.idx_begin];
-            const Vec2f& p4 = result_vertices[edge2.idx_end];
-            const Vec2f v2 = p4 - p3;
-            const float cross34 = p3 ^ p4;
+            if (clw_accum_global < 0.0)
+            {
+                i_edge_prev = i_vtx == i_vtx_begin
+                        ? i_vtx_last
+                        : i_vtx - 1;
+                i_edge_next = i_vtx == i_vtx_last
+                        ? i_vtx_begin
+                        : i_vtx + 1;
+            }
+            else
+            {
+                i_edge_prev = i_vtx == i_vtx_last
+                        ? i_vtx_begin
+                        : i_vtx + 1;
+                i_edge_next = i_vtx == i_vtx_begin
+                        ? i_vtx_last
+                        : i_vtx - 1;
+            }
 
-            float epsilon = (edge1.length + edge2.length) / 1000;
-
-            // bbox test
-            if (!(edge1.bound ^ edge2.bound))
-                continue;
-
-            // line parallel test
-            float denm = v1 ^ v2;
-            if (denm == 0.0f)
-                continue;
-
-            // TODO calculate cross point
-            Vec2f cross((cross34 * v1.x - cross12 * v2.x) / denm,
-                        (cross34 * v1.y - cross12 * v2.y) / denm);
-
-            // determine cross point is inside two edges
-            float proj1 = (cross - p1) * edge1.direct;
-            if (proj1 < epsilon || proj1 > edge1.length - epsilon)
-                continue;
-
-            float proj2 = (cross - p3) * edge2.direct;
-            if (proj2 < epsilon || proj2 > edge2.length - epsilon)
-                continue;
-
-            // finally store the cross point
-            result_vertices.add(cross);
-            IndexType cross_idx = IndexType(result_vertices.size() - 1);
-            edge1.idx_interm.add(cross_idx);
-            edge2.idx_interm.add(cross_idx);
+            edges.add(HalfEdge{i_vtx, i_edge_prev, i_edge_next, std::numeric_limits<IndexType>::max()});
         }
     }
 
-    //
-    // traverse all edges
-    // sort cross points in each edge
-    // generate connection map of all vertices
-    //
-    for (int i_edge = 0; i_edge < orig_edges.size(); i_edge++)
-    {
-        EdgeRebuildTmp& edge = orig_edges[i_edge];
-
-        // do sort
-        if (edge.idx_interm.size() > 2)
-        {
-            IntermVtxSorter sorter(edge, result_vertices);
-            edge.idx_interm.sort(sorter);
-        }
-
-        // record vertex connection
-
-
-    }
-
-    // do triangulate
+    // do triangulation
+    _triangulate_(result_vertices, edges, result_indices);
 }
-
 
 } // namespace treeface

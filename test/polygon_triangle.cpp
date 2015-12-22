@@ -1,5 +1,53 @@
 #include "treeface/guts/shapegenerator_guts.h"
 
+class TestFramework
+{
+public:
+    static void run(const char* file_in, const char* file_out)
+    {
+        FILE* fh_in = fopen(file_in, "rb");
+        if (!fh_in)
+        {
+            fprintf(stderr, "failed to open input file %s: %s\n", file_in, strerror(errno));
+            exit(EXIT_FAILURE);
+        }
+
+        treeface::ShapeGenerator generator;
+        for (;;)
+        {
+            float x = std::numeric_limits<float>::signaling_NaN();
+            float y = std::numeric_limits<float>::signaling_NaN();
+
+            if (fscanf(fh_in, "%f %f", &x, &y) == EOF)
+                break;
+
+            generator.line_to(treeface::Vec2f(x, y));
+        }
+
+        fclose(fh_in);
+
+        treecore::Array<treeface::Vec2f> result_vertices;
+        treecore::Array<treeface::IndexType> result_indices;
+        generator.m_guts->triangulate(result_vertices, result_indices);
+
+
+        FILE* fh_out = fopen(file_out, "wb");
+        if (!fh_out)
+        {
+            fprintf(stderr, "failed to open output file %s: %s\n", file_out, strerror(errno));
+            exit(EXIT_FAILURE);
+        }
+
+        for (treeface::IndexType idx : result_indices)
+        {
+            fprintf(fh_out, "%f\t%f\n", result_vertices[idx].x, result_vertices[idx].y);
+        }
+
+        fclose(fh_out);
+    }
+};
+
+
 int main(int argc, char** argv)
 {
     if (argc != 3)
@@ -8,43 +56,5 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    FILE* fh_in = fopen(argv[1], "rb");
-    if (!fh_in)
-    {
-        fprintf(stderr, "failed to open input file %s: %s\n", argv[1], strerror(errno));
-        exit(EXIT_FAILURE);
-    }
-
-    treeface::SubPath obj;
-    for (;;)
-    {
-        float x = std::numeric_limits<float>::signaling_NaN();
-        float y = std::numeric_limits<float>::signaling_NaN();
-
-        if (fscanf(fh_in, "%f %f", &x, &y) == EOF)
-            break;
-
-        obj.vertices.add(treeface::Vec2f(x, y));
-    }
-
-    fclose(fh_in);
-
-    treecore::Array<treeface::Vec2f> result_vertices;
-    treecore::Array<treeface::IndexType> result_indices;
-    obj.triangulate_simple(result_vertices, result_indices);
-
-
-    FILE* fh_out = fopen(argv[2], "wb");
-    if (!fh_out)
-    {
-        fprintf(stderr, "failed to open output file %s: %s\n", argv[2], strerror(errno));
-        exit(EXIT_FAILURE);
-    }
-
-    for (treeface::IndexType idx : result_indices)
-    {
-        fprintf(fh_out, "%f\t%f\n", result_vertices[idx].x, result_vertices[idx].y);
-    }
-
-    fclose(fh_out);
+    TestFramework::run(argv[1], argv[2]);
 }

@@ -7,6 +7,8 @@
 #include "treeface/math/vec2.h"
 #include "treeface/enums.h"
 
+class TestFramework;
+
 namespace treeface
 {
 
@@ -15,6 +17,8 @@ class VertexTemplate;
 
 class ShapeGenerator: public treecore::RefCountObject, public treecore::RefCountSingleton<ShapeGenerator>
 {
+    friend class ::TestFramework;
+
 public:
     static const VertexTemplate& stroke_template();
     static const VertexTemplate& fill_template();

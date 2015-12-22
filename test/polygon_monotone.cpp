@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     // generate edges
     Array<HalfEdge> edges_in;
     IndexType total_num_edge = vertices.size();
-    bool ccw = is_counter_clockwise(vertices);
+    bool ccw = (clockwise_accum(vertices, 0, vertices.size()) < 0.0);
 
     if (ccw)
         printf("polygon is counter-clockwise\n");

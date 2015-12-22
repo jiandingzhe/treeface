@@ -10,12 +10,6 @@ using namespace treecore;
 namespace treeface
 {
 
-struct ShapeGenerator::Guts
-{
-    Array<SubPath> subpaths;
-};
-
-
 ShapeGenerator::ShapeGenerator(): m_guts(new Guts())
 {
 }
@@ -50,19 +44,15 @@ Geometry* ShapeGenerator::fill_simple()
 
 Geometry* ShapeGenerator::fill_simple_preserve()
 {
-    Array<Vec2f> vertices;
-    Array<IndexType> indices;
-
-    for (int i_sub = 0; i_sub < m_guts->subpaths.size(); i_sub++)
-    {
-        const SubPath& curr_sub = m_guts->subpaths[i_sub];
-        curr_sub.triangulate_simple(vertices, indices);
-    }
-
-    Geometry* result = new Geometry(fill_template());
-    result->get_buffer()->set_host_data(ArrayRef<const Vec2f>(vertices), ArrayRef<const IndexType>(indices));
-
-    return result;
+    //Array<Vec2f> vertices;
+    //Array<IndexType> indices;
+    //
+    //m_guts->triangulate(vertices, indices);
+    //
+    //Geometry* result = new Geometry(fill_template());
+    //result->get_buffer()->set_host_data(ArrayRef<const Vec2f>(vertices), ArrayRef<const IndexType>(indices));
+    //
+    //return result;
 }
 
 void ShapeGenerator::line_to(const Vec2f& position)
@@ -75,7 +65,7 @@ void ShapeGenerator::line_to(const Vec2f& position)
     curr_path.try_reopen_closed_path();
 
     // record glyph
-    curr_path.vertices.add(position);
+    curr_path.glyphs.add(PathGlyph(position));
 }
 
 void ShapeGenerator::line_to_rel(const Vec2f& offset)
@@ -89,9 +79,9 @@ void ShapeGenerator::line_to_rel(const Vec2f& offset)
 
     // record glyph using relative position
     Vec2f pos = offset;
-    if (curr_path.vertices.size() > 0)
-        pos += curr_path.vertices.getLast();
-    curr_path.vertices.add(pos);
+    if (curr_path.glyphs.size() > 0)
+        pos += curr_path.glyphs.getLast().end;
+    curr_path.glyphs.add(PathGlyph(pos));
 }
 
 void ShapeGenerator::move_to(const Vec2f& position)
@@ -99,7 +89,7 @@ void ShapeGenerator::move_to(const Vec2f& position)
     // create new subpath and set its first position
     m_guts->subpaths.add(SubPath());
     SubPath& curr_path = m_guts->subpaths.getLast();
-    curr_path.vertices.add(position);
+    curr_path.glyphs.add(PathGlyph(position));
 }
 
 void ShapeGenerator::move_to_rel(const Vec2f& offset)
@@ -109,11 +99,11 @@ void ShapeGenerator::move_to_rel(const Vec2f& offset)
     if (m_guts->subpaths.size() > 0)
     {
         SubPath& prev_path = m_guts->subpaths.getLast();
-        jassert(prev_path.vertices.size() > 0);
+        jassert(prev_path.glyphs.size() > 0);
         if (prev_path.closed)
-            pos += prev_path.vertices.getFirst();
+            pos += prev_path.glyphs.getFirst().end;
         else
-            pos += prev_path.vertices.getLast();
+            pos += prev_path.glyphs.getLast().end;
     }
 
     move_to(pos);

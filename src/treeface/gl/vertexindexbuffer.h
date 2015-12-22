@@ -81,7 +81,7 @@ public:
     template<typename VTX_T>
     inline void set_host_data(treecore::ArrayRef<VTX_T> data_vtx, treecore::ArrayRef<const IndexType> data_idx) noexcept
     {
-        if (data_vtx.size() > std::numeric_limits<IndexType>::max())
+        if (data_vtx.size() >= std::numeric_limits<IndexType>::max())
             die("toooo many vertices: %d\n", data_vtx.size());
 
         m_data_vtx.replaceWith(data_vtx.get_data(), sizeof(VTX_T) * data_vtx.size());

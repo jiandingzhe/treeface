@@ -22,20 +22,11 @@ struct Vec2
         , y(y)
     {}
 
-    Vec2(const Vec2& peer) noexcept
-        : x(peer.x)
-        , y(peer.y)
-    {
-    }
+    Vec2(const Vec2& peer) noexcept = default;
 
     TREECORE_ALIGNED_ALLOCATOR(Vec2);
 
-    Vec2& operator = (const Vec2& peer) noexcept
-    {
-        x = peer.x;
-        y = peer.y;
-        return *this;
-    }
+    Vec2& operator = (const Vec2& peer) noexcept = default;
 
     void set(T x, T y) noexcept
     {
