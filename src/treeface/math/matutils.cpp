@@ -55,16 +55,16 @@ void gen_quat_rotate(const treecore::SimdObject<T, 4>& quat,
 {
     typedef typename treecore::similar_int<T>::type IntT;
 
-#define _MAT4_FLOAT_ROTATE_OP_ tmp_unit +  tmp_mul * (tmp_a * tmp_b + (tmp_c * tmp_d) | tmp_sign_mask )
+#define _MAT4_FLOAT_ROTATE_OP_ tmp_unit +  tmp_mul * (tmp_a * tmp_b + ((tmp_c * tmp_d) ^ tmp_sign_mask) )
     //        m[0]  = 1 - 2 * (y*y + z*z);
     //        m[1]  = 0 + 2 * (x*y + z*w);
     //        m[2]  = 0 + 2 * (z*x - y*w);
     //        m[3]  = 0;
     treecore::SimdObject<T, 4> tmp_unit(T(1),  T(0), T(0), T(0));
     treecore::SimdObject<T, 4> tmp_mul (T(-2), T(2), T(2), T(0));
-    treecore::SimdObject<IntT, 4> tmp_sign_mask(0, 0, treecore::float_sign_mask<T>::value, 0);
     treecore::SimdObject<T, 4> tmp_a = quat.template get_shuffle<1, 0, 2, 0>();
     treecore::SimdObject<T, 4> tmp_b = quat.template get_shuffle<1, 1, 0, 0>();
+    treecore::SimdObject<IntT, 4> tmp_sign_mask(0, 0, treecore::float_sign_mask<T>::value, 0);
     treecore::SimdObject<T, 4> tmp_c = quat.template get_shuffle<2, 2, 1, 0>();
     treecore::SimdObject<T, 4> tmp_d = quat.template get_shuffle<2, 3, 3, 0>();
     col1 = _MAT4_FLOAT_ROTATE_OP_;

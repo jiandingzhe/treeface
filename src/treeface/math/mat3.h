@@ -29,18 +29,7 @@ struct Mat3
         data[8] = T(1);
     }
 
-    Mat3(const Mat3& peer) noexcept
-    {
-        data[0] = peer.data[0];
-        data[1] = peer.data[1];
-        data[2] = peer.data[2];
-        data[3] = peer.data[3];
-        data[4] = peer.data[4];
-        data[5] = peer.data[5];
-        data[6] = peer.data[6];
-        data[7] = peer.data[7];
-        data[8] = peer.data[8];
-    }
+    Mat3(const Mat3& peer) noexcept = default;
 
     Mat3(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8) noexcept
     {

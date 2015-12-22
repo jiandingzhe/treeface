@@ -8,6 +8,12 @@ target_link_libraries(t_vec4
     TestFramework
 )
 
+add_executable(t_simd_xor_flip t_simd_xor_flip.cpp)
+target_link_libraries(t_simd_xor_flip
+    TestFramework
+)
+target_use_treecore(t_simd_xor_flip)
+
 add_executable(t_sdl2_leak t_sdl2_leak.cpp)
 target_use_treecore(t_sdl2_leak)
 target_link_libraries(t_sdl2_leak
@@ -53,6 +59,13 @@ target_link_libraries(t_mat3
 add_executable(t_mat4 t_mat4.cpp)
 target_use_treecore(t_mat4)
 target_link_libraries(t_mat4
+    treeface
+    TestFramework
+)
+
+add_executable(t_mat4_quat_rot t_mat4_quat_rot.cpp)
+target_use_treecore(t_mat4_quat_rot)
+target_link_libraries(t_mat4_quat_rot
     treeface
     TestFramework
 )
