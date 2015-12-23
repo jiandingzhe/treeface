@@ -2,6 +2,7 @@
 #define TREEFACE_SHAPE_GENERATOR_GUTS_H
 
 #include "treeface/graphics/shapegenerator.h"
+#include "treeface/graphics/guts/enums.h"
 
 #include "treeface/gl/type.h"
 #include "treeface/graphics/halfedge.h"
@@ -14,14 +15,6 @@
 namespace treeface
 {
 
-typedef enum
-{
-    GLYPH_TYPE_INVALID = -1,
-    GLYPH_TYPE_LINE,
-    GLYPH_TYPE_ARC,
-    GLYPH_TYPE_BESSEL3,
-    GLYPH_TYPE_BESSEL4,
-} GlyphType;
 
 
 struct PathGlyphArc
@@ -79,31 +72,6 @@ struct PathGlyph
         PathGlyphBessel4 bessel4;
     };
 };
-
-typedef enum {
-    VTX_ROLE_INVALID = -1,
-    VTX_ROLE_START,
-    VTX_ROLE_END,
-    VTX_ROLE_LEFT,
-    VTX_ROLE_RIGHT,
-    VTX_ROLE_SPLIT,
-    VTX_ROLE_MERGE
-} VertexRole;
-
-void partition_polygon_monotone(const treecore::Array<Vec2f>& vertices,
-                                const treecore::Array<HalfEdge>& edges_input,
-                                treecore::Array<HalfEdge>& edges_result);
-
-inline bool is_convex(const Vec2f& edge1, const Vec2f& edge2) noexcept
-{
-    float cross = edge1 ^ edge2;
-    return cross > 0;
-}
-
-inline bool is_convex(const Vec2f& vtx1, const Vec2f& vtx2, const Vec2f& vtx3) noexcept
-{
-    return is_convex(vtx2 - vtx1, vtx3 - vtx2);
-}
 
 double clockwise_accum(const treecore::Array<Vec2f>& vertices, IndexType i_begin, IndexType i_end) noexcept;
 

@@ -3,7 +3,7 @@
 #include "treeface/gl/vertexindexbuffer.h"
 #include "treeface/gl/vertextemplate.h"
 
-#include "treeface/guts/shapegenerator_guts.h"
+#include "treeface/graphics/guts/shapegenerator_guts.h"
 
 using namespace treecore;
 

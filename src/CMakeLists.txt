@@ -26,12 +26,7 @@ configure_file(treeface/config.h.in treeface/config.h @ONLY)
 #
 # treeface
 #
-file(GLOB treeface_src_files
-    "treeface/*.h"
-    "treeface/*.cpp"
-    "treeface/*/*.h"
-    "treeface/*/*.cpp"
-)
+file(GLOB_RECURSE treeface_src_files "treeface/*.h" "treeface/*.cpp")
 
 add_library(treeface STATIC
     ${treeface_src_files}

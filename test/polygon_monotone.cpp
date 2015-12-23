@@ -1,4 +1,5 @@
-#include "treeface/guts/shapegenerator_guts.h"
+#include "treeface/graphics/guts/shapegenerator_guts.h"
+#include "treeface/graphics/guts/HalfEdgeNetwork.h"
 
 using namespace treecore;
 using namespace treeface;
@@ -34,40 +35,20 @@ int main(int argc, char** argv)
     fclose(fh_in);
 
     // generate edges
-    Array<HalfEdge> edges_in;
-    IndexType total_num_edge = vertices.size();
-    bool ccw = (clockwise_accum(vertices, 0, vertices.size()) < 0.0);
+    HalfEdgeNetwork network(vertices);
 
-    if (ccw)
-        printf("polygon is counter-clockwise\n");
-    else
-        printf("polygon is clockwise\n");
-
-    for (int i_vtx = 0; i_vtx < vertices.size(); i_vtx++)
     {
-        IndexType i_edge_curr = IndexType(edges_in.size());
-
-        IndexType i_prev = (i_vtx == 0
-                            ? IndexType(total_num_edge - 1)
-                            : i_edge_curr - 1);
-
-        IndexType i_next = (i_vtx == vertices.size() - 1
-                            ? 0
-                            : i_edge_curr + 1);
-
-        if (ccw)
-            edges_in.add(HalfEdge{IndexType(i_vtx), i_prev, i_next, std::numeric_limits<IndexType>::max()});
-        else
-            edges_in.add(HalfEdge{IndexType(i_vtx), i_next, i_prev, std::numeric_limits<IndexType>::max()});
+        bool ccw = (clockwise_accum(vertices, 0, vertices.size()) < 0.0);
+        Array<IndexType> begin;
+        begin.add(0);
+        network.build_half_edges(begin, ccw);
     }
 
-    jassert(edges_in.size() == vertices.size());
-
     // do split
-    Array<HalfEdge> edges_out;
-    partition_polygon_monotone(vertices, edges_in, edges_out);
+    HalfEdgeNetwork network_result(vertices);
+    network.partition_polygon_monotone(network_result);
 
-    printf("%d input edges generated %d edges\n", edges_in.size(), edges_out.size());
+    printf("%d input edges generated %d edges\n", network.edges.size(), network_result.edges.size());
 
     // write result
     FILE* fh_out = fopen(argv[2], "wb");
@@ -78,10 +59,10 @@ int main(int argc, char** argv)
     }
 
     Array<bool> edges_out_written;
-    for (int i = 0; i < edges_out.size(); i++)
+    for (int i = 0; i < network_result.edges.size(); i++)
         edges_out_written.add(false);
 
-    for (int i_begin = 0; i_begin < edges_out.size(); i_begin++)
+    for (int i_begin = 0; i_begin < network_result.edges.size(); i_begin++)
     {
         if (edges_out_written[i_begin])
             continue;
@@ -89,7 +70,7 @@ int main(int argc, char** argv)
         IndexType i_edge = IndexType(i_begin);
         for (;;)
         {
-            const HalfEdge& edge = edges_out[i_edge];
+            const HalfEdge& edge = network_result.edges[i_edge];
 
             const Vec2f& vtx = vertices[edge.idx_vertex];
 

@@ -8,7 +8,7 @@
 
 #include <treecore/Array.h>
 
-#include "treeface/graphics/halfedge.h"
+#include "treeface/graphics/guts/HalfEdgeNetwork.h"
 
 #define SUCKER_RED      1.0f, 0.0f, 0.0f
 #define SUCKER_ORANGE   1.0f, 0.5f, 0.0f
@@ -25,8 +25,7 @@ namespace treeface
 
 struct GeomSucker
 {
-    GeomSucker(const treecore::Array<Vec2f>& vertices,
-               const treecore::Array<HalfEdge>& edges,
+    GeomSucker(const HalfEdgeNetwork& network,
                const treecore::String& title = treecore::String::empty);
     ~GeomSucker();
 
@@ -50,8 +49,7 @@ struct GeomSucker
     void text(const treecore::String& text, const Vec2f& position);
     void text(const treecore::String& text, IndexType i_vtx);
 
-    const treecore::Array<Vec2f>& vertices;
-    const treecore::Array<HalfEdge>& edges;
+    const HalfEdgeNetwork& network;
 
     float width = std::numeric_limits<float>::signaling_NaN();
     float height = std::numeric_limits<float>::signaling_NaN();

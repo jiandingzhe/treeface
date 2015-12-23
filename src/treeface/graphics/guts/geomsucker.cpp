@@ -1,6 +1,6 @@
 #ifdef SUCK_TREECORE_GEOMETRY
 
-#include "treeface/guts/geomsucker.h"
+#include "treeface/graphics/guts/geomsucker.h"
 
 #include "cairo-svg.h"
 
@@ -13,9 +13,8 @@ using namespace treecore;
 namespace treeface
 {
 
-GeomSucker::GeomSucker(const treecore::Array<Vec2f>& vertices, const treecore::Array<HalfEdge>& edges, const treecore::String& title)
-    : vertices(vertices)
-    , edges(edges)
+GeomSucker::GeomSucker(const HalfEdgeNetwork& network, const treecore::String& title)
+    : network(network)
 {
     // get X and Y boundary
     float x_min = std::numeric_limits<float>::max();
@@ -23,7 +22,7 @@ GeomSucker::GeomSucker(const treecore::Array<Vec2f>& vertices, const treecore::A
     float x_max = std::numeric_limits<float>::min();
     float y_max = std::numeric_limits<float>::min();
 
-    for (const Vec2f& vtx : vertices)
+    for (const Vec2f& vtx : network.vertices)
     {
         if (x_min > vtx.x) x_min = vtx.x;
         if (y_min > vtx.y) y_min = vtx.y;
@@ -78,10 +77,10 @@ GeomSucker::GeomSucker(const treecore::Array<Vec2f>& vertices, const treecore::A
         cairo_set_line_width(context, line_w);
 
         Array<bool> rendered;
-        rendered.resize(edges.size());
-        for (int i = 0; i < edges.size(); i++) rendered[i] = false;
+        rendered.resize(network.edges.size());
+        for (int i = 0; i < network.edges.size(); i++) rendered[i] = false;
 
-        for (int i_begin = 0; i_begin < edges.size(); i_begin++)
+        for (int i_begin = 0; i_begin < network.edges.size(); i_begin++)
         {
             if (rendered[i_begin]) continue;
 
@@ -89,9 +88,9 @@ GeomSucker::GeomSucker(const treecore::Array<Vec2f>& vertices, const treecore::A
 
             for (int i_edge = i_begin;;)
             {
-                const HalfEdge& edge = edges[i_edge];
+                const HalfEdge& edge = network.edges[i_edge];
 
-                const Vec2f& vtx = edge.get_vertex(vertices);
+                const Vec2f& vtx = edge.get_vertex(network.vertices);
                 cairo_line_to(context, vtx.x, - vtx.y);
                 rendered[i_edge] = true;
 
@@ -126,7 +125,7 @@ GeomSucker::~GeomSucker()
 
 void GeomSucker::draw_vtx(IndexType vtx_idx) const
 {
-    const Vec2f& vtx = vertices[vtx_idx];
+    const Vec2f& vtx = network.vertices[vtx_idx];
     draw_vtx(vtx);
 }
 
@@ -168,7 +167,7 @@ void GeomSucker::draw_vector(const Vec2f& start, const Vec2f& end) const
 
 void GeomSucker::draw_merge_vtx(IndexType vtx_idx) const
 {
-    const Vec2f& vtx = vertices[vtx_idx];
+    const Vec2f& vtx = network.vertices[vtx_idx];
     Vec2f p1 = vtx - Vec2f(0.0f, line_w * 2);
     Vec2f p2 = vtx + Vec2f(line_w * 2, line_w * 2);
     Vec2f p3 = vtx + Vec2f(-line_w * 2, line_w * 2);
@@ -181,7 +180,7 @@ void GeomSucker::draw_merge_vtx(IndexType vtx_idx) const
 
 void GeomSucker::draw_split_vtx(IndexType vtx_idx) const
 {
-    const Vec2f& vtx = vertices[vtx_idx];
+    const Vec2f& vtx = network.vertices[vtx_idx];
     Vec2f p1 = vtx + Vec2f(0.0f, line_w * 2);
     Vec2f p2 = vtx + Vec2f(line_w * 2, -line_w * 2);
     Vec2f p3 = vtx + Vec2f(-line_w * 2,-line_w * 2);
@@ -194,7 +193,7 @@ void GeomSucker::draw_split_vtx(IndexType vtx_idx) const
 
 void GeomSucker::draw_start_vtx(IndexType vtx_idx) const
 {
-    const Vec2f& vtx = vertices[vtx_idx];
+    const Vec2f& vtx = network.vertices[vtx_idx];
     Vec2f p1 = vtx + Vec2f(line_w * 1.5, line_w * 1.5);
     Vec2f p2 = vtx + Vec2f(-line_w * 1.5, line_w * 1.5);
     Vec2f p3 = vtx + Vec2f(-line_w * 1.5, -line_w * 1.5);
@@ -210,7 +209,7 @@ void GeomSucker::draw_start_vtx(IndexType vtx_idx) const
 
 void GeomSucker::draw_end_vtx(IndexType vtx_idx) const
 {
-    const Vec2f& vtx = vertices[vtx_idx];
+    const Vec2f& vtx = network.vertices[vtx_idx];
     Vec2f p1 = vtx + Vec2f(line_w * 1.5, line_w * 1.5);
     Vec2f p2 = vtx + Vec2f(-line_w * 1.5, line_w * 1.5);
     Vec2f p3 = vtx + Vec2f(-line_w * 1.5, -line_w * 1.5);
@@ -227,7 +226,7 @@ void GeomSucker::draw_regular_left_vtx(IndexType vtx_idx) const
 {
     draw_vtx(vtx_idx);
 
-    const Vec2f& vtx = vertices[vtx_idx];
+    const Vec2f& vtx = network.vertices[vtx_idx];
     cairo_new_path(context);
     cairo_move_to(context, vtx.x - line_w * 2, -vtx.y - line_w * 5);
     cairo_line_to(context, vtx.x - line_w * 2, -vtx.y + line_w * 5);
@@ -238,7 +237,7 @@ void GeomSucker::draw_regular_right_vtx(IndexType vtx_idx) const
 {
     draw_vtx(vtx_idx);
 
-    const Vec2f& vtx = vertices[vtx_idx];
+    const Vec2f& vtx = network.vertices[vtx_idx];
     cairo_new_path(context);
     cairo_move_to(context, vtx.x + line_w * 2, -vtx.y - line_w * 5);
     cairo_line_to(context, vtx.x + line_w * 2, -vtx.y + line_w * 5);
@@ -247,11 +246,11 @@ void GeomSucker::draw_regular_right_vtx(IndexType vtx_idx) const
 
 void GeomSucker::draw_edge(const IndexType i_edge, float offset_rate)
 {
-    const HalfEdge& edge = edges[i_edge];
-    const Vec2f& p_start = edge.get_vertex(vertices);
-    const Vec2f& p_end = edge.get_next(edges).get_vertex(vertices);
-    const Vec2f& p_prev = edge.get_prev(edges).get_vertex(vertices);
-    const Vec2f& p_next = edge.get_next(edges).get_next(edges).get_vertex(vertices);
+    const HalfEdge& edge = network.edges[i_edge];
+    const Vec2f& p_start = edge.get_vertex(network.vertices);
+    const Vec2f& p_end = edge.get_next(network.edges).get_vertex(network.vertices);
+    const Vec2f& p_prev = edge.get_prev(network.edges).get_vertex(network.vertices);
+    const Vec2f& p_next = edge.get_next(network.edges).get_next(network.edges).get_vertex(network.vertices);
 
     Vec2f v_prev = p_start - p_prev;
     Vec2f v_curr = p_end - p_start;
@@ -316,9 +315,9 @@ void GeomSucker::draw_edge_stack(const treecore::Array<IndexType>& edges)
 
 void GeomSucker::draw_trig_by_edge(IndexType i_edge1, IndexType i_edge2, IndexType i_edge3)
 {
-    const Vec2f& p1 = edges[i_edge1].get_vertex(vertices);
-    const Vec2f& p2 = edges[i_edge2].get_vertex(vertices);
-    const Vec2f& p3 = edges[i_edge3].get_vertex(vertices);
+    const Vec2f& p1 = network.get_edge_vertex(i_edge1);
+    const Vec2f& p2 = network.get_edge_vertex(i_edge2);
+    const Vec2f& p3 = network.get_edge_vertex(i_edge3);
 
     cairo_new_path(context);
     cairo_move_to(context, p1.x, -p1.y);
@@ -364,7 +363,7 @@ void GeomSucker::text(const treecore::String& text, const Vec2f& position)
 
 void GeomSucker::text(const treecore::String& text, IndexType i_vtx)
 {
-    this->text(text, vertices[i_vtx]);
+    this->text(text, network.vertices[i_vtx]);
 }
 
 } // namespace treeface

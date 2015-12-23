@@ -1,4 +1,4 @@
-#include "treeface/guts/shapegenerator_guts.h"
+#include "treeface/graphics/guts/shapegenerator_guts.h"
 
 class TestFramework
 {
