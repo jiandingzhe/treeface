@@ -111,6 +111,9 @@ struct Vec2
     FloatType normalize() noexcept
     {
         FloatType len = (FloatType) length();
+        if (len == FloatType(0))
+            return len;
+
         x /= len;
         y /= len;
         return len;

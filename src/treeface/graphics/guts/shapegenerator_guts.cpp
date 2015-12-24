@@ -97,14 +97,33 @@ void _triangulate_(const HalfEdgeNetwork& network, Array<IndexType>& result_indi
     HalfEdgeNetwork network_monotone(network.vertices);
     network.partition_polygon_monotone(network_monotone);
 
-    Array<IndexType> edge_monotone_by_y;
-    Array<int16> edge_polygon_map;
     Array<VertexRole> monotone_edge_roles;
-    int16 num_polygon = network_monotone.mark_monotone_polygons(edge_monotone_by_y, edge_polygon_map, monotone_edge_roles);
+    network_monotone.get_edge_role(monotone_edge_roles);
+
+    Array<IndexType> edge_monotone_by_y;
+    network_monotone.get_edge_vertical_order(monotone_edge_roles, edge_monotone_by_y);
+
+    Array<int16> edge_polygon_map;
+    int16 num_polygon = network_monotone.mark_polygons(edge_polygon_map);
+
+    SUCK_GEOM(for (int i_poly = 0; i_poly < num_polygon; i_poly++)               )
+    SUCK_GEOM({                                                                  )
+    SUCK_GEOM(    GeomSucker sucker(network_monotone, "monotone polygon #"+String(i_poly)); )
+    SUCK_GEOM(    int idx = 0;                                                   )
+    SUCK_GEOM(    for (IndexType i_edge = 0; i_edge < network_monotone.edges.size(); i_edge++)    )
+    SUCK_GEOM(    {                                                              )
+    SUCK_GEOM(        if (edge_polygon_map[i_edge] != i_poly) continue;          )
+    SUCK_GEOM(        IndexType i_vtx = network_monotone.edges[i_edge].idx_vertex;                )
+    SUCK_GEOM(        sucker.rgba(SUCKER_BLACK, 0.4);                            )
+    SUCK_GEOM(        sucker.draw_edge(i_edge);                                  )
+    SUCK_GEOM(        sucker.rgb(SUCKER_BLACK);                                  )
+    SUCK_GEOM(        sucker.draw_roled_vtx(i_vtx, monotone_edge_roles[i_edge]); )
+    SUCK_GEOM(        idx++;                                                     )
+    SUCK_GEOM(    }                                                              )
+    SUCK_GEOM(}                                                                  )
 
     network_monotone.triangulate_monotone_polygons(edge_monotone_by_y, edge_polygon_map, num_polygon, monotone_edge_roles, result_indices);
 }
-
 
 void _gen_line_join_round_(float half_w, const Vec2f& p_prev, const Vec2f& p_curr, const Vec2f& p_next,
                            Array<Vec2f>& result_vertices, Array<IndexType>& result_indices,

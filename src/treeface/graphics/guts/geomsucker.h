@@ -35,6 +35,7 @@ struct GeomSucker
     void draw_vtx(IndexType vtx_idx) const;
     void draw_vtx(const Vec2f& vtx) const;
     void draw_vector(const Vec2f& start, const Vec2f& end) const;
+    void draw_roled_vtx(IndexType vtx_idx, VertexRole role) const;
     void draw_merge_vtx(IndexType vtx_idx) const;
     void draw_split_vtx(IndexType vtx_idx) const;
     void draw_start_vtx(IndexType vtx_idx) const;

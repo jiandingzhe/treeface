@@ -102,7 +102,7 @@ GeomSucker::GeomSucker(const HalfEdgeNetwork& network, const treecore::String& t
         }
 
         // draw title
-        cairo_set_font_size(context, line_w * 6);
+        cairo_set_font_size(context, line_w * 8);
         cairo_text_extents_t ext;
         cairo_text_extents(context, title.toRawUTF8(), &ext);
 
@@ -163,6 +163,20 @@ void GeomSucker::draw_vector(const Vec2f& start, const Vec2f& end) const
     cairo_fill(context);
 
     cairo_restore(context);
+}
+
+void GeomSucker::draw_roled_vtx(IndexType vtx_idx, VertexRole role) const
+{
+    switch (role)
+    {
+    case VTX_ROLE_START: draw_start_vtx(vtx_idx); break;
+    case VTX_ROLE_END: draw_end_vtx(vtx_idx); break;
+    case VTX_ROLE_LEFT: draw_regular_left_vtx(vtx_idx); break;
+    case VTX_ROLE_RIGHT: draw_regular_right_vtx(vtx_idx); break;
+    case VTX_ROLE_MERGE: draw_merge_vtx(vtx_idx); break;
+    case VTX_ROLE_SPLIT: draw_split_vtx(vtx_idx); break;
+    default: abort();
+    }
 }
 
 void GeomSucker::draw_merge_vtx(IndexType vtx_idx) const
@@ -260,14 +274,6 @@ void GeomSucker::draw_edge(const IndexType i_edge, float offset_rate)
     float l_curr = v_curr.normalize();
     float l_next = v_next.normalize();
 
-//    Vec2f ortho_prev(-v_prev.y, v_prev.x);
-//    Vec2f ortho_curr(-v_curr.y, v_curr.x);
-//    Vec2f ortho_next(-v_next.y, v_next.x);
-
-//    ortho_prev.normalize();
-//    ortho_curr.normalize();
-//    ortho_next.normalize();
-
     float offset = line_w * offset_rate;
     Vec2f p1 = p_start - v_prev * (l_prev / 3.0f) + v_curr * offset;
     Vec2f p2 = p_start + (v_curr - v_prev) * offset;
@@ -357,7 +363,7 @@ void GeomSucker::draw_helper_change(IndexType i_edge, IndexType i_helper_old, In
 void GeomSucker::text(const treecore::String& text, const Vec2f& position)
 {
     cairo_move_to(context, position.x, - position.y);
-    cairo_set_font_size(context, line_w * 3);
+    cairo_set_font_size(context, line_w * 5);
     cairo_show_text(context, text.toRawUTF8());
 }
 

@@ -2,10 +2,55 @@
 #include "treeface/graphics/guts/geomsucker.h"
 #include "treeface/graphics/utils.h"
 
+
 using namespace treecore;
 
 namespace treeface
 {
+
+struct HalfEdgeIndexVerticalSorter
+{
+    HalfEdgeIndexVerticalSorter(const treecore::Array<Vec2f>& vertices,
+                                const treecore::Array<HalfEdge>& edges,
+                                const treecore::Array<VertexRole>& edge_roles)
+        : vertices(vertices)
+        , edges(edges)
+        , edge_roles(edge_roles)
+    {
+    }
+
+    int compareElements (IndexType a, IndexType b) const noexcept
+    {
+        const Vec2f& p1 = vertices[edges[a].idx_vertex];
+        const Vec2f& p2 = vertices[edges[b].idx_vertex];
+
+        if (p1.y < p2.y)
+        {
+            return 1;
+        }
+        else if (p1.y == p2.y)
+        {
+            if      (p1.x <  p2.x) return 1;
+            else if (p1.x == p2.x)
+            {
+                VertexRole role1 = edge_roles[a];
+                VertexRole role2 = edge_roles[b];
+                if (role1 < role2)       return 1;
+                else if (role1 == role2) return 0;
+                else                     return -1;
+            }
+            else                   return -1;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
+    const treecore::Array<Vec2f>& vertices;
+    const treecore::Array<HalfEdge>& edges;
+    const treecore::Array<VertexRole>& edge_roles;
+};
 
 struct HelpEdgeStore
 {
@@ -200,15 +245,16 @@ void HalfEdgeNetwork::connect(IndexType i_edge1, IndexType i_edge2)
     edge2_prev.idx_next_edge = i_edge_2_1;
 
     // create new edge
-    edges.add(HalfEdge{edge1.idx_vertex,
-                       i_edge1_prev,
-                       i_edge2,
-                       i_edge_2_1});
-
-    edges.add(HalfEdge{edge2.idx_vertex,
-                       i_edge2_prev,
-                       i_edge1,
-                       i_edge_1_2});
+    HalfEdge tmp_1_2{edge1.idx_vertex,
+                i_edge1_prev,
+                i_edge2,
+                i_edge_2_1};
+    HalfEdge tmp_2_1{edge2.idx_vertex,
+                i_edge2_prev,
+                i_edge1,
+                i_edge_1_2};
+    edges.add(tmp_1_2);
+    edges.add(tmp_2_1);
 
     SUCK_GEOM({)
     SUCK_GEOM(    GeomSucker sucker(*this, "linked");   )
@@ -279,16 +325,63 @@ bool HalfEdgeNetwork::fan_is_facing(const Vec2f& vec_ref, IndexType i_edge) cons
     return vec_are_cclw(v_next, vec_ref, v_prev);
 }
 
-void HalfEdgeNetwork::get_edge_vertical_order(treecore::Array<IndexType>& result) const
+void HalfEdgeNetwork::get_edge_vertical_order(const treecore::Array<VertexRole>& roles, treecore::Array<IndexType>& result) const
 {
+    jassert(roles.size() == edges.size());
+
     int num_edge = edges.size();
     result.resize(num_edge);
 
     for (int i = 0; i < num_edge; i++)
         result[i] = IndexType(i);
 
-    HalfEdgeIndexVerticalSorter sorter(vertices, edges);
+    HalfEdgeIndexVerticalSorter sorter(vertices, edges, roles);
     result.sort(sorter);
+}
+
+void HalfEdgeNetwork::get_edge_role(treecore::Array<VertexRole>& result_roles) const
+{
+    result_roles.resize(edges.size());
+    for (int i_edge = 0; i_edge < edges.size(); i_edge++)
+    {
+        IndexType i_prev = get_prev_edge_diff_vtx(i_edge);
+        IndexType i_next = get_next_edge_diff_vtx(i_edge);
+
+        const Vec2f& vtx_curr = edges[i_edge].get_vertex(vertices);
+        const Vec2f& vtx_prev = edges[i_prev].get_vertex(vertices);
+        const Vec2f& vtx_next = edges[i_next].get_vertex(vertices);
+        Vec2f v1 = vtx_curr - vtx_prev;
+        Vec2f v2 = vtx_next - vtx_curr;
+
+        VertexRole role = VTX_ROLE_INVALID;
+
+        if (is_below(vtx_prev, vtx_curr))
+        {
+            if (is_below(vtx_curr, vtx_next))
+            {
+                role = VTX_ROLE_RIGHT;
+            }
+            else
+            {
+                if (is_convex(v1, v2)) role = VTX_ROLE_START;
+                else                   role = VTX_ROLE_SPLIT;
+            }
+        }
+        else
+        {
+            if (is_below(vtx_curr, vtx_next))
+            {
+                if (is_convex(v1, v2)) role = VTX_ROLE_END;
+                else                   role = VTX_ROLE_MERGE;
+            }
+            else
+            {
+                role = VTX_ROLE_LEFT;
+            }
+        }
+
+        result_roles[i_edge] = role;
+    }
 }
 
 void HalfEdgeNetwork::iter_edge_to_facing_fan(const IndexType i_edge_ref, IndexType& i_edge_iter) const
@@ -386,95 +479,41 @@ void HalfEdgeNetwork::iter_edge_to_facing_fan(const IndexType i_edge_ref, IndexT
 /// Find single-connected polygons from a mess of input edges, assign ID for
 /// them, and find the edge's roles
 ///
-/// \param edge_indices_by_y  edge indices sorted by decreasing Y coord
 /// \param edge_polygon_map   edge ID => polygon ID
-/// \param edge_site_map      edge ID => role of edge's vertex
 ///
 /// \return number of polygons
 ///
-int16 HalfEdgeNetwork::mark_monotone_polygons(Array<IndexType>& edge_indices_by_y,
-                                              Array<int16>& edge_polygon_map,
-                                              Array<VertexRole>& edge_role_map) const
+int16 HalfEdgeNetwork::mark_polygons(Array<int16>& edge_polygon_map) const
 {
     int num_edge = edges.size();
 
-    // sort edge by decreasing Y coord
-    get_edge_vertical_order(edge_indices_by_y);
-
     // initialize polygon map and role map
     edge_polygon_map.resize(num_edge);
-    edge_role_map.resize(num_edge);
     for (int i = 0; i < num_edge; i++)
-    {
         edge_polygon_map[i] = -1;
-        edge_role_map[i] = VTX_ROLE_INVALID;
-    }
 
     // traverse all edges
     int16 num_polygon = 0;
-    for (IndexType i_edge_first : edge_indices_by_y)
+    for (IndexType i_edge_first = 0; i_edge_first < edges.size(); i_edge_first++)
     {
         // skip processed edge
         if (edge_polygon_map[i_edge_first] >= 0) continue;
 
         // mark all edges of this polygon
-        bool reached_bottom = false;
         for (IndexType i_edge = i_edge_first;;)
         {
             // mark polygon index
             jassert(edge_polygon_map[i_edge] == -1);
             edge_polygon_map[i_edge] = num_polygon;
 
-            // mark vertex role
-            const HalfEdge& edge = edges[i_edge];
-
-            if (i_edge == i_edge_first)
-            {
-                edge_role_map[i_edge] = VTX_ROLE_START;
-            }
-            else
-            {
-                const Vec2f& vtx_prev = edge.get_prev(edges).get_vertex(vertices);
-                const Vec2f& vtx_curr = edge.get_vertex(vertices);
-                const Vec2f& vtx_next = edge.get_next(edges).get_vertex(vertices);
-
-                if (is_below(vtx_curr, vtx_prev) && is_below(vtx_curr, vtx_next))
-                {
-                    reached_bottom = true;
-                    edge_role_map[i_edge] = VTX_ROLE_END;
-                }
-                else
-                {
-                    if (reached_bottom)
-                        edge_role_map[i_edge] = VTX_ROLE_RIGHT;
-                    else
-                        edge_role_map[i_edge] = VTX_ROLE_LEFT;
-                }
-            }
-
             // move to next
+            const HalfEdge& edge = edges[i_edge];
             if (edge.idx_next_edge == i_edge_first) break;
             i_edge = edge.idx_next_edge;
         }
 
         num_polygon++;
     }
-
-    SUCK_GEOM(for (int i_poly = 0; i_poly < num_polygon; i_poly++)                         )
-    SUCK_GEOM({                                                                            )
-    SUCK_GEOM(    GeomSucker sucker(*this, "monotone polygon #"+String(i_poly)); )
-    SUCK_GEOM(    int idx = 0;                                                             )
-    SUCK_GEOM(    for (IndexType i_edge : edge_indices_by_y)                               )
-    SUCK_GEOM(    {                                                                        )
-    SUCK_GEOM(        if (edge_polygon_map[i_edge] != i_poly) continue;                    )
-    SUCK_GEOM(        IndexType i_vtx = edges[i_edge].idx_vertex;                          )
-    SUCK_GEOM(        sucker.rgba(SUCKER_BLACK, 0.5);                                      )
-    SUCK_GEOM(        sucker.draw_edge(i_edge);                                            )
-    SUCK_GEOM(        sucker.rgb(SUCKER_BLACK);                                            )
-    SUCK_GEOM(        sucker.text(String(idx), i_vtx);                                     )
-    SUCK_GEOM(        idx++;                                                               )
-    SUCK_GEOM(    }                                                                        )
-    SUCK_GEOM(})
 
     return num_polygon;
 }
@@ -738,47 +777,13 @@ void HalfEdgeNetwork::partition_polygon_monotone(HalfEdgeNetwork& result_network
     SUCK_GEOM(    GeomSucker(*this););
     SUCK_GEOM(}                                     );
 
-    // sort by vertical position
-    Array<IndexType> edge_idx_by_y;
-    get_edge_vertical_order(edge_idx_by_y);
-
-
     // determine edge role
     Array<VertexRole> vtx_roles;
-    vtx_roles.resize(vertices.size());
-    for (const HalfEdge& edge_curr : edges)
-    {
-        const Vec2f& vtx_curr = edge_curr.get_vertex(vertices);
-        const Vec2f& vtx_prev = edge_curr.get_prev(edges).get_vertex(vertices);
-        const Vec2f& vtx_next = edge_curr.get_next(edges).get_vertex(vertices);
-        Vec2f v1 = vtx_curr - vtx_prev;
-        Vec2f v2 = vtx_next - vtx_curr;
+    get_edge_role(vtx_roles);
 
-        if (is_below(vtx_prev, vtx_curr))
-        {
-            if (is_below(vtx_curr, vtx_next))
-            {
-                vtx_roles[edge_curr.idx_vertex] = VTX_ROLE_RIGHT;
-            }
-            else
-            {
-                if (is_convex(v1, v2)) vtx_roles[edge_curr.idx_vertex] = VTX_ROLE_START;
-                else                   vtx_roles[edge_curr.idx_vertex] = VTX_ROLE_SPLIT;
-            }
-        }
-        else
-        {
-            if (is_below(vtx_curr, vtx_next))
-            {
-                if (is_convex(v1, v2)) vtx_roles[edge_curr.idx_vertex] = VTX_ROLE_END;
-                else                   vtx_roles[edge_curr.idx_vertex] = VTX_ROLE_MERGE;
-            }
-            else
-            {
-                vtx_roles[edge_curr.idx_vertex] = VTX_ROLE_LEFT;
-            }
-        }
-    }
+    // sort by vertical position
+    Array<IndexType> edge_idx_by_y;
+    get_edge_vertical_order(vtx_roles, edge_idx_by_y);
 
     // process all edges by decreasing Y corrd
     HelpEdgeStore helper_store(*this);

@@ -10,40 +10,6 @@
 namespace treeface
 {
 
-struct HalfEdgeIndexVerticalSorter
-{
-    HalfEdgeIndexVerticalSorter(const treecore::Array<Vec2f>& vertices, const treecore::Array<HalfEdge>& edges)
-        : vertices(vertices)
-        , edges(edges)
-    {
-    }
-
-    int compareElements (IndexType a, IndexType b) const noexcept
-    {
-        const Vec2f& p1 = vertices[edges[a].idx_vertex];
-        const Vec2f& p2 = vertices[edges[b].idx_vertex];
-
-        if (p1.y < p2.y)
-        {
-            return 1;
-        }
-        else if (p1.y == p2.y)
-        {
-            if      (p1.x <  p2.x)  return 1;
-            else if (p1.x == p2.x) return 0;
-            else                   return -1;
-        }
-        else
-        {
-            return -1;
-        }
-    }
-
-    const treecore::Array<Vec2f>& vertices;
-    const treecore::Array<HalfEdge>& edges;
-};
-
-
 struct HalfEdgeNetwork
 {
     explicit HalfEdgeNetwork(const treecore::Array<Vec2f>& vertices): vertices(vertices) {}
@@ -54,7 +20,9 @@ struct HalfEdgeNetwork
 
     bool fan_is_facing(const Vec2f& vec_ref, IndexType i_edge) const;
 
-    void get_edge_vertical_order(treecore::Array<IndexType>& result) const;
+    void get_edge_vertical_order(const treecore::Array<VertexRole>& roles, treecore::Array<IndexType>& result) const;
+
+    void get_edge_role(treecore::Array<VertexRole>& result_roles) const;
 
     IndexType get_next_edge_diff_vtx(const IndexType i_edge_search_base) const;
     IndexType get_prev_edge_diff_vtx(const IndexType i_edge_search_base) const;
@@ -68,9 +36,7 @@ struct HalfEdgeNetwork
         return vertices[edges[i_edge].idx_vertex];
     }
 
-    treecore::int16 mark_monotone_polygons(treecore::Array<IndexType>&       edge_indices_by_y,
-                                           treecore::Array<treecore::int16>& edge_polygon_map,
-                                           treecore::Array<VertexRole>&      edge_role_map) const;
+    treecore::int16 mark_polygons(treecore::Array<treecore::int16>& edge_polygon_map) const;
 
     void triangulate_monotone_polygons(const treecore::Array<IndexType>& edge_indices_by_y,
                                        const treecore::Array<treecore::int16>& edge_polygon_map,

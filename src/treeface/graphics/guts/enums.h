@@ -6,7 +6,7 @@ namespace treeface
 
 typedef enum
 {
-    GLYPH_TYPE_INVALID = -1,
+    GLYPH_TYPE_INVALID = 0,
     GLYPH_TYPE_LINE,
     GLYPH_TYPE_ARC,
     GLYPH_TYPE_BESSEL3,
@@ -14,13 +14,13 @@ typedef enum
 } GlyphType;
 
 typedef enum {
-    VTX_ROLE_INVALID = -1,
-    VTX_ROLE_START,
-    VTX_ROLE_END,
-    VTX_ROLE_LEFT,
-    VTX_ROLE_RIGHT,
-    VTX_ROLE_SPLIT,
-    VTX_ROLE_MERGE
+    VTX_ROLE_INVALID = 0,
+    VTX_ROLE_END   = 1,
+    VTX_ROLE_SPLIT = 2,
+    VTX_ROLE_LEFT  = 3,
+    VTX_ROLE_RIGHT = 4,
+    VTX_ROLE_MERGE = 5,
+    VTX_ROLE_START = 6,
 } VertexRole;
 
 } // namespace treeface
