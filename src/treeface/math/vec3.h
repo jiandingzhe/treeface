@@ -41,6 +41,11 @@ struct Vec3
         this->z = z;
     }
 
+    operator bool () const noexcept
+    {
+        return x != T(0) || y != T(0) || z != T(0);
+    }
+
     Vec3& operator += (const Vec3& peer) noexcept
     {
         TmpType a(x, y, z, 0);

@@ -34,6 +34,16 @@ struct Vec2
         this->y = y;
     }
 
+    Vec2 get_ortholog() const noexcept
+    {
+        return Vec2(-y, x);
+    }
+
+    operator bool () const noexcept
+    {
+        return x != T(0) || y != T(0);
+    }
+
     /**
      * @brief perform vector add
      */

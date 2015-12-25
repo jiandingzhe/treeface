@@ -70,6 +70,14 @@ struct Vec4
         data.set_all(values);
     }
 
+    operator bool () const noexcept
+    {
+        return data.template get<0>() != T(0) ||
+                data.template get<1>() != T(0) ||
+                data.template get<2>() != T(0) ||
+                data.template get<3>() != T(0);
+    }
+
     /**
      * @brief assignment operator
      * @param other: another vector object
