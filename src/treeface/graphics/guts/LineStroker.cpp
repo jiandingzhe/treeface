@@ -13,17 +13,23 @@ namespace treeface
 int LineStroker::HalfOutline::find_cross_from_tail(const Vec2f& p1, const Vec2f& p2, Vec2f& p_cross) const
 {
     jassert(outline.size() > 1);
+    jassert(outline.size() == outline_bounds.size() + 1);
 
     Vec2f v12 = p2 - p1;
 
+    const BBox2f bound_input(p1, p2);
+
     for (int i = outline.size() - 2; i >= 0; i--)
     {
-        const Vec2f& p3 = outline[i];
-        const Vec2f& p4 = outline[i+1];
-        Vec2f v34 = p4 - p3;
+        if (bound_input ^ outline_bounds[i])
+        {
+            const Vec2f& p3 = outline[i];
+            const Vec2f& p4 = outline[i+1];
+            Vec2f v34 = p4 - p3;
 
-        if (cross_test_exc(p1, p2, v12, p3, p4, v34, p_cross))
-            return i;
+            if (cross_test_exc(p1, p2, v12, p3, p4, v34, p_cross))
+                return i;
+        }
     }
 
     return -1;
