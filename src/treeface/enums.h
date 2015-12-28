@@ -48,14 +48,14 @@ typedef enum
     LINE_CAP_BUTT,
     LINE_CAP_ROUND,
     LINE_CAP_SQUARE
-} LineCapStyle;
+} LineCap;
 
 typedef enum
 {
     LINE_JOIN_MITER,
     LINE_JOIN_ROUND,
     LINE_JOIN_BEVEL
-} LineJoinStyle;
+} LineJoin;
 
 typedef enum
 {

@@ -158,7 +158,7 @@ void main_loop(SDL_Window* window)
     view.set_scale(0.5, 0.5, 0.5);
 
     Mat4f proj;
-    proj.set_perspective(TREEFACE_PI_4, 1, 0.01, 1);
+    proj.set_perspective(PI/4, 1, 0.01, 1);
 
     while (1)
     {

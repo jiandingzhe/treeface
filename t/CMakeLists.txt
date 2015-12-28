@@ -77,6 +77,12 @@ target_link_libraries(t_object
     TestFramework
 )
 
+add_executable(t_line_cross t_line_cross.cpp)
+target_use_treecore(t_line_cross)
+target_link_libraries(t_line_cross
+    treeface
+    TestFramework
+)
 
 #add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/resources.h ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp
 #    COMMAND ${TREECORE_BIN_BUILDER} ${CMAKE_CURRENT_SOURCE_DIR}/resources ${CMAKE_CURRENT_BINARY_DIR} resources

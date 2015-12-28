@@ -20,8 +20,25 @@ class ShapeGenerator: public treecore::RefCountObject, public treecore::RefCount
     friend class ::TestFramework;
 
 public:
-    static const VertexTemplate& stroke_template();
-    static const VertexTemplate& fill_template();
+    static const VertexTemplate& StrokeTemplate();
+    static const VertexTemplate& FillTemplate();
+
+    struct StrokeVertex
+    {
+        Vec2f position;
+        Vec2f normal;
+        float side;
+        float trip_local;
+        float trip_global;
+    };
+
+    struct StrokeStyle
+    {
+        LineCap cap;
+        LineJoin join;
+        float miter_cutoff;
+        float width;
+    };
 
     ShapeGenerator();
     virtual ~ShapeGenerator();
@@ -56,9 +73,9 @@ public:
 
     void move_to_rel(const Vec2f& offset);
 
-    Geometry* stroke_complicated(LineCapStyle cap_style, LineJoinStyle join_style, float line_width);
+    Geometry* stroke_complicated(LineCap cap_style, LineJoin join_style, float line_width);
 
-    Geometry* stroke_complicated_preserve(LineCapStyle cap_style, LineJoinStyle join_style, float line_width);
+    Geometry* stroke_complicated_preserve(LineCap cap_style, LineJoin join_style, float line_width);
 
     TREECORE_DECLARE_NON_COPYABLE(ShapeGenerator);
     TREECORE_DECLARE_NON_MOVABLE(ShapeGenerator);

@@ -9,7 +9,9 @@ namespace treeface
 template<typename T>
 struct BBox2
 {
-    BBox2(const Vec2<T>& p1, const Vec2<T>& p2)
+    BBox2() noexcept = default;
+
+    BBox2(const Vec2<T>& p1, const Vec2<T>& p2) noexcept
     {
         if (p1.x < p2.x)
         {
@@ -34,10 +36,10 @@ struct BBox2
         }
     }
 
-    T x_min;
-    T x_max;
-    T y_min;
-    T y_max;
+    T x_min = std::numeric_limits<T>::quiet_NaN();
+    T x_max = std::numeric_limits<T>::quiet_NaN();
+    T y_min = std::numeric_limits<T>::quiet_NaN();
+    T y_max = std::numeric_limits<T>::quiet_NaN();
 };
 
 typedef BBox2<float> BBox2f;

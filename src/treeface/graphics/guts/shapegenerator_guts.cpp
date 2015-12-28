@@ -1,18 +1,15 @@
 #include "treeface/graphics/guts/shapegenerator_guts.h"
 
-#include "treecore/IntUtils.h"
+#include <treecore/IntUtils.h>
 
-#include <list>
-
+#include "treeface/math/constants.h"
+#include "treeface/math/mat2.h"
 #include "treeface/graphics/guts/geomsucker.h"
 
 using namespace treecore;
 
 namespace treeface
 {
-
-typedef std::list<IndexType> IndexList;
-
 
 struct EdgeRebuildTmp
 {
@@ -125,64 +122,12 @@ void _triangulate_(const HalfEdgeNetwork& network, Array<IndexType>& result_indi
     network_monotone.triangulate_monotone_polygons(edge_monotone_by_y, edge_polygon_map, num_polygon, monotone_edge_roles, result_indices);
 }
 
-void _gen_line_join_round_(float half_w, const Vec2f& p_prev, const Vec2f& p_curr, const Vec2f& p_next,
-                           Array<Vec2f>& result_vertices, Array<IndexType>& result_indices,
-                           IndexType prev_tail_left, IndexType prev_tail_right,
-                           IndexType& tail_left, IndexType& tail_right)
+
+
+void SubPath::stroke_complex(treecore::Array<ShapeGenerator::StrokeVertex>& result_vertices,
+                                  treecore::Array<IndexType>& result_indices,
+                                  ShapeGenerator::StrokeStyle style) const
 {
-    Vec2f v1 = p_curr - p_prev;
-    Vec2f v2 = p_next - p_curr;
-    float l1 = v1.normalize();
-    float l2 = v2.normalize();
-
-    Vec2f ortho1(-v1.y, v1.x);
-    Vec2f ortho2(-v2.y, v2.x);
-
-    float sine = v1 ^ v2;
-
-    // straight, just add two points and move on
-    if (sine == 0)
-    {
-        tail_left = result_vertices.size();
-        tail_right = tail_left + 1;
-
-        result_vertices.add(p_curr + ortho1 * half_w);
-        result_vertices.add(p_curr - ortho1 * half_w);
-
-        result_indices.add(prev_tail_left);
-        result_indices.add(prev_tail_right);
-        result_indices.add(tail_left);
-
-        result_indices.add(prev_tail_right);
-        result_indices.add(tail_right);
-        result_indices.add(tail_left);
-    }
-    else
-    {
-        float cosine = v1 * v2;
-
-        if (sine > 0)
-        {
-
-        }
-        // turn right
-        else if (sine < 0)
-        {
-
-        }
-    }
-}
-
-void SubPath::stroke_complex(treecore::Array<Vec2f>& result_vertices,
-                             treecore::Array<IndexType>& result_indices,
-                             LineCapStyle cap_style,
-                             LineJoinStyle join_style,
-                             float line_width) const
-{
-    IndexType idx_start_left  = std::numeric_limits<IndexType>::max();
-    IndexType idx_start_right = std::numeric_limits<IndexType>::max();
-    IndexType idx_prev_left  = std::numeric_limits<IndexType>::max();
-    IndexType idx_prev_right = std::numeric_limits<IndexType>::max();
 
 }
 
@@ -249,5 +194,137 @@ void ShapeGenerator::Guts::triangulate(treecore::Array<Vec2f>& result_vertices, 
     // do triangulation
     _triangulate_(network, result_indices);
 }
+
+int segment_arc(const PathGlyph& glyph, treecore::Array<Vec2f>& result_vertices)
+{
+    jassert(result_vertices.size() > 0);
+    const int n_vtx_old = result_vertices.size();
+
+    // roll to 0-360 degree
+    float angle_use = glyph.arc.angle;
+    while (angle_use < 0.0f) angle_use += 2.0f * PI;
+    while (angle_use > 2.0f * PI) angle_use -= 2.0f * PI;
+
+    // determine step
+    int num_step = std::round(angle_use / PI * 32);
+    if (num_step < 5 && angle_use > 0.0f) num_step = 5;
+    float step = angle_use / num_step;
+
+    // rotate from end point
+    Mat2f rot;
+    if (glyph.arc.is_cclw) rot.set_rotate(step);
+    else                   rot.set_rotate(-step);
+
+    // generate points
+    Vec2f v = result_vertices.getLast() - glyph.arc.center;
+
+    for (int i = 1; i < num_step; i--)
+    {
+        v = rot * v;
+        result_vertices.add(glyph.arc.center + v);
+    }
+
+    result_vertices.add(glyph.end);
+
+    return result_vertices.size() - n_vtx_old;
+}
+
+#define INTERPO(_a_, _frac_, _b_) _a_ * _frac_ + _b_ * (1.0f - _frac_)
+
+inline Vec2f _bessel3_interpo_(const Vec2f& p1, const Vec2f& p2, const Vec2f& p3, float frac)
+{
+    Vec2f tmp1 = INTERPO(p1, frac, p2);
+    Vec2f tmp2 = INTERPO(p2, frac, p3);
+    return INTERPO(tmp1, frac, tmp2);
+}
+
+inline Vec2f _bessel4_interpo_(const Vec2f& p1, const Vec2f& p2, const Vec2f& p3, const Vec2f& p4, float frac)
+{
+    Vec2f tmp_a1 = INTERPO(p1, frac, p2);
+    Vec2f tmp_a2 = INTERPO(p2, frac, p3);
+    Vec2f tmp_a3 = INTERPO(p3, frac, p4);
+
+    Vec2f tmp_b1 = INTERPO(tmp_a1, frac, tmp_a2);
+    Vec2f tmp_b2 = INTERPO(tmp_a2, frac, tmp_a3);
+
+    return INTERPO(tmp_b1, frac, tmp_b2);
+}
+
+int segment_bessel3(const PathGlyph& glyph, treecore::Array<Vec2f>& result_vertices)
+{
+    jassert(result_vertices.size() > 0);
+    const int n_vtx_old = result_vertices.size();
+
+    float step = 1.0f / 32;
+
+    const Vec2f& prev_end = result_vertices.getLast();
+
+    for (float frac = 0.0f; frac < 1.0f;)
+    {
+        const Vec2f& vtx_prev = result_vertices.getLast();
+        float step_use = step;
+
+        for (;;)
+        {
+            Vec2f vtx_estimator = _bessel3_interpo_(prev_end, glyph.bessel3.ctrl, glyph.end, frac + step_use / 2);
+            Vec2f vtx_curr      = _bessel3_interpo_(prev_end, glyph.bessel3.ctrl, glyph.end, frac + step_use);
+            jassert(vtx_prev != vtx_estimator);
+            jassert(vtx_estimator != vtx_curr);
+            jassert(vtx_curr != vtx_prev);
+
+            float cosine = (vtx_curr - vtx_estimator) * (vtx_estimator - vtx_prev);
+            if (cosine > 0.6f)
+            {
+                result_vertices.add(vtx_curr);
+                break;
+            }
+
+            step_use *= 0.67f;
+        }
+    }
+
+    result_vertices.add(glyph.end);
+
+    return result_vertices.size() - n_vtx_old;
+}
+
+int segment_bessel4(const PathGlyph& glyph, treecore::Array<Vec2f>& result_vertices)
+{
+    jassert(result_vertices.size() > 0);
+    const int n_vtx_old = result_vertices.size();
+
+    float step = 1.0f / 32;
+
+    const Vec2f& prev_end = result_vertices.getLast();
+
+    for (float frac = 0.0f; frac < 1.0f;)
+    {
+        const Vec2f& vtx_prev = result_vertices.getLast();
+        float step_use = step;
+
+        for (;;)
+        {
+            Vec2f vtx_estimator = _bessel4_interpo_(prev_end, glyph.bessel4.ctrl1, glyph.bessel4.ctrl2, glyph.end, frac + step_use / 2);
+            Vec2f vtx_curr      = _bessel4_interpo_(prev_end, glyph.bessel4.ctrl1, glyph.bessel4.ctrl2, glyph.end, frac + step_use);
+            jassert(vtx_prev != vtx_estimator);
+            jassert(vtx_estimator != vtx_curr);
+            jassert(vtx_curr != vtx_prev);
+
+            float cosine = (vtx_curr - vtx_estimator) * (vtx_estimator - vtx_prev);
+            if (cosine > 0.6f)
+            {
+                result_vertices.add(vtx_curr);
+                break;
+            }
+
+            step_use *= 0.67f;
+        }
+    }
+
+    result_vertices.add(glyph.end);
+
+    return result_vertices.size() - n_vtx_old;
+}
+
 
 } // namespace treeface

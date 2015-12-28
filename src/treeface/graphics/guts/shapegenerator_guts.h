@@ -75,11 +75,11 @@ struct PathGlyph
 
 double clockwise_accum(const treecore::Array<Vec2f>& vertices, IndexType i_begin, IndexType i_end) noexcept;
 
-int segment_arc(treecore::Array<Vec2f>& result_vertices, const PathGlyph& glyph);
+int segment_arc(const PathGlyph& glyph, treecore::Array<Vec2f>& result_vertices);
 
-int segment_bessel3(treecore::Array<Vec2f>& result_vertices, const PathGlyph& glyph);
+int segment_bessel3(const PathGlyph& glyph, treecore::Array<Vec2f>& result_vertices);
 
-int segment_bessel4(treecore::Array<Vec2f>& result_vertices, const PathGlyph& glyph);
+int segment_bessel4(const PathGlyph& glyph, treecore::Array<Vec2f>& result_vertices);
 
 struct SubPath
 {
@@ -106,11 +106,9 @@ struct SubPath
     // generates line strip directly, do not support join and cap shape at all
     void stroke_simple(treecore::Array<Vec2f>& result_vertices, treecore::Array<IndexType>& result_indices) const;
 
-    void stroke_complex(treecore::Array<Vec2f>& result_vertices,
+    void stroke_complex(treecore::Array<ShapeGenerator::StrokeVertex>& result_vertices,
                         treecore::Array<IndexType>& result_indices,
-                        LineCapStyle cap_style,
-                        LineJoinStyle join_style,
-                        float line_width) const;
+                        ShapeGenerator::StrokeStyle style) const;
 };
 
 struct ShapeGenerator::Guts

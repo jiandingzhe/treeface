@@ -23,7 +23,7 @@ struct Face::Guts
 
     float project_depth = 2;
     float project_dist = std::nanf("");
-    float frustrum_angle = TREEFACE_PI_4;
+    float frustrum_angle = PI/4;
 
     bool project_dist_dirty = true;
     bool matrix_view_dirty = true;

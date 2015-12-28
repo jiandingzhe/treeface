@@ -64,14 +64,14 @@ void TestFramework::content()
     }
 
     {
-        Vec3f vec = Vec3f(111.222f, 333.444f, 555.666f) * 12.34;
+        Vec3f vec = Vec3f(111.222f, 333.444f, 555.666f) * 12.34f;
         IS_EPSILON(vec.x, 1372.479f);
         IS_EPSILON(vec.y, 4114.699f);
         IS_EPSILON(vec.z, 6856.918f);
     }
 
     {
-        Vec3f vec = Vec3f(111.222f, 333.444f, 555.666f) / 12.34;
+        Vec3f vec = Vec3f(111.222f, 333.444f, 555.666f) / 12.34f;
         IS_EPSILON(vec.x, 9.013128f);
         IS_EPSILON(vec.y, 27.02139f);
         IS_EPSILON(vec.z, 45.02966f);
