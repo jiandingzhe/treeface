@@ -1,0 +1,81 @@
+#ifndef TREEFACE_HALF_OUTLINE_H
+#define TREEFACE_HALF_OUTLINE_H
+
+#include "treeface/math/bbox2.h"
+#include "treeface/math/vec2.h"
+#include "treeface/graphics/guts/utils.h"
+
+namespace treeface
+{
+
+
+struct HalfOutline
+{
+    void add(const Vec2f& vtx, JointID id)
+    {
+        jassert(outline.size() == joint_ids.size());
+        jassert((outline.size() == 0) || (outline.size() == outline_bounds.size() + 1));
+
+        if (outline.size())
+            outline_bounds.add({outline.getLast(), vtx});
+        outline.add(vtx);
+        joint_ids.add(id);
+    }
+
+    void resize(int size)
+    {
+        jassert(size > 0);
+        outline.resize(size);
+        outline_bounds.resize(size - 1);
+        joint_ids.resize(size);
+    }
+
+    void salvage(const Vec2f& p1, const Vec2f& r_prev, JointID id)
+    {
+        if (sunken)
+        {
+            sunken = false;
+            add(p1 + r_prev * side, id);
+        }
+    }
+
+    void add_miter_point(const Vec2f& skeleton1,
+                         JointID id,
+                         const Vec2f& ortho_prev,
+                         const Vec2f& ortho_curr,
+                         const InternalStrokeStyle& style);
+
+    void add_round_points(const Vec2f& skeleton1,
+                          JointID id,
+                          const Vec2f& ortho_prev,
+                          const Vec2f& ortho_curr,
+                          const InternalStrokeStyle& style);
+
+    int find_cross_from_tail(const Vec2f& p1, const Vec2f& p2, Vec2f& result, int step_limit) const;
+
+    void process_inner(const HalfOutline& outer_peer,
+                       const Vec2f& skeleton1,
+                       JointID id1,
+                       const Vec2f& skeleton2,
+                       const Vec2f& ortho_curr,
+                       const InternalStrokeStyle& style);
+
+    void close_inner();
+
+    int size() const noexcept
+    {
+        jassert(outline.size() == joint_ids.size());
+        jassert(outline.size() == outline_bounds.size() + 1);
+        return outline.size();
+    }
+
+    treecore::Array<Vec2f> outline;
+    treecore::Array<BBox2f> outline_bounds;
+    treecore::Array<JointID> joint_ids;
+    float side; // 1 for left, -1 for right
+    bool sunken;
+};
+
+} // namespace treeface
+
+#endif // TREEFACE_HALF_OUTLINE_H

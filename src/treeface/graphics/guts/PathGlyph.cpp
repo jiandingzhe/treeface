@@ -6,10 +6,10 @@
 namespace treeface
 {
 
-void PathGlyph::segment_arc(const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices)
+void PathGlyph::segment_arc(const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices) const
 {
     jassert(type == GLYPH_TYPE_ARC);
-    result_vertices.clear();
+    jassert(result_vertices.size() == 0);
 
     // roll to 0-360 degree
     float angle_use = arc.angle;
@@ -59,10 +59,10 @@ inline Vec2f _bessel4_interpo_(const Vec2f& p1, const Vec2f& p2, const Vec2f& p3
     return INTERPO(tmp_b1, frac, tmp_b2);
 }
 
-void PathGlyph::segment_bessel3(const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices)
+void PathGlyph::segment_bessel3(const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices) const
 {
     jassert(type == GLYPH_TYPE_ARC);
-    result_vertices.clear();
+    jassert(result_vertices.size() == 0);
 
     float step = 1.0f / 32;
 
@@ -93,10 +93,10 @@ void PathGlyph::segment_bessel3(const Vec2f& prev_end, treecore::Array<Vec2f>& r
     result_vertices.add(end);
 }
 
-void PathGlyph::segment_bessel4(const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices)
+void PathGlyph::segment_bessel4(const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices) const
 {
     jassert(type == GLYPH_TYPE_ARC);
-    result_vertices.clear();
+    jassert(result_vertices.size() == 0);
 
     float step = 1.0f / 32;
 

@@ -1,10 +1,28 @@
 #ifndef TREEFACE_GRAPHICS_UTILS_H
 #define TREEFACE_GRAPHICS_UTILS_H
 
+#include "treeface/enums.h"
 #include "treeface/math/vec2.h"
 
 namespace treeface
 {
+
+struct StrokeVertex
+{
+    Vec2f position;
+    Vec2f normal;
+    float side;
+    float trip_local;
+    float trip_global;
+};
+
+struct StrokeStyle
+{
+    LineCap cap;
+    LineJoin join;
+    float miter_cutoff;
+    float width;
+};
 
 inline bool vec_are_cclw(const Vec2f& v1, const Vec2f& v2, const Vec2f& v3)
 {

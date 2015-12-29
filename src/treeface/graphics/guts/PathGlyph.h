@@ -56,6 +56,25 @@ struct PathGlyph
     {
     }
 
+    void segment(const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices) const
+    {
+        result_vertices.clear();
+        switch (type)
+        {
+        case GLYPH_TYPE_ARC    : segment_arc(prev_end, result_vertices); break;
+        case GLYPH_TYPE_BESSEL3: segment_bessel3(prev_end, result_vertices); break;
+        case GLYPH_TYPE_BESSEL4: segment_bessel4(prev_end, result_vertices); break;
+        case GLYPH_TYPE_LINE   : result_vertices.add(end); break;
+        default: abort();
+        }
+    }
+
+    void segment_arc(const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices) const;
+
+    void segment_bessel3(const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices) const;
+
+    void segment_bessel4(const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices) const;
+
     GlyphType type;
     Vec2f end;
     union
@@ -64,13 +83,6 @@ struct PathGlyph
         PathGlyphBessel3 bessel3;
         PathGlyphBessel4 bessel4;
     };
-
-    void segment_arc(const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices);
-
-    void segment_bessel3(const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices);
-
-    void segment_bessel4(const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices);
-
 };
 
 } // namespace treeface

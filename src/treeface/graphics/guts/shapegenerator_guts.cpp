@@ -101,26 +101,6 @@ void _triangulate_(const HalfEdgeNetwork& network, Array<IndexType>& result_indi
 
 
 
-void SubPath::stroke_complex(treecore::Array<ShapeGenerator::StrokeVertex>& result_vertices,
-                             treecore::Array<IndexType>& result_indices,
-                             ShapeGenerator::StrokeStyle style) const
-{
-    for (int i_glyph = 0; i_glyph < glyphs.size(); i_glyph++)
-    {
-        const PathGlyph& glyph = glyphs[i_glyph];
-
-        // first
-        if (i_glyph == 0)
-        {
-            jassert(glyph.type == GLYPH_TYPE_LINE);
-        }
-        else
-        {
-
-        }
-    }
-}
-
 void ShapeGenerator::Guts::triangulate(treecore::Array<Vec2f>& result_vertices, treecore::Array<IndexType>& result_indices)
 {
     // do segment on all subpath

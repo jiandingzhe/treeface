@@ -2,93 +2,33 @@
 #define TREEFACE_LINE_STROKER_H
 
 #include "treeface/gl/type.h"
+#include "treeface/graphics/guts/HalfOutline.h"
+#include "treeface/graphics/utils.h"
 #include "treeface/graphics/shapegenerator.h"
 #include "treeface/math/bbox2.h"
 #include "treeface/math/constants.h"
 #include "treeface/math/mat2.h"
-#include "treeface/math/vec2.h"
 
 #include <treecore/Array.h>
 
 namespace treeface
 {
 
-struct InternalStrokeStyle
-{
-    LineCap cap;
-    LineJoin join;
-    float miter_cutoff_cosine;
-    float half_width;
-};
-
 struct LineStroker
 {
-    typedef treecore::int16 JointID;
-
-    struct HalfOutline
+    LineStroker(const StrokeStyle& pub_style)
+        : style{pub_style.cap, pub_style.join, std::cos(pub_style.miter_cutoff), pub_style.width / 2}
     {
-        void add(const Vec2f& vtx, JointID id)
-        {
-            jassert(outline.size() == joint_ids.size());
-            jassert(outline.size() == outline_bounds.size() + 1);
-            if (outline.size())
-                outline_bounds.add({outline.getLast(), vtx});
-            outline.add(vtx);
-            joint_ids.add(id);
-        }
-
-        void resize(int size)
-        {
-            jassert(size > 0);
-            outline.resize(size);
-            outline_bounds.resize(size - 1);
-            joint_ids.resize(size);
-        }
-
-        void salvage(const Vec2f& p1, const Vec2f& r_prev, JointID id)
-        {
-            if (sunken)
-            {
-                sunken = false;
-                add(p1 + r_prev * side, id);
-            }
-        }
-
-        void add_miter_point(const Vec2f& skeleton1,
-                             JointID id,
-                             const Vec2f& ortho_prev,
-                             const Vec2f& ortho_curr,
-                             const InternalStrokeStyle& style);
-
-        void add_round_points(const Vec2f& skeleton1,
-                              JointID id,
-                              const Vec2f& ortho_prev,
-                              const Vec2f& ortho_curr,
-                              const InternalStrokeStyle& style);
-
-        int find_cross_from_tail(const Vec2f& p1, const Vec2f& p2, Vec2f& result, int step_limit) const;
-
-        void process_inner(const HalfOutline& outer_peer,
-                           const Vec2f& skeleton1,
-                           JointID id1,
-                           const Vec2f& skeleton2,
-                           const Vec2f& ortho_curr,
-                           const InternalStrokeStyle& style);
-
-        treecore::Array<Vec2f> outline;
-        treecore::Array<BBox2f> outline_bounds;
-        treecore::Array<JointID> joint_ids;
-        float side; // 1 for left, -1 for right
-        bool sunken;
-    };
+    }
 
     void cap_begin(const Vec2f& skeleton, const Vec2f& direction);
     void cap_end(const Vec2f& skeleton, const Vec2f& direction);
 
     Vec2f extend_stroke(const Vec2f& v_prev, const Vec2f& p1, const Vec2f& p2, bool use_line_join);
 
-    void triangulate(treecore::Array<ShapeGenerator::StrokeVertex>& result_vertices, treecore::Array<IndexType>& result_indices);
+    void close_stroke(const Vec2f& v_prev, const Vec2f& p, const Vec2f& v_next);
 
+    void triangulate(treecore::Array<StrokeVertex>& result_vertices, treecore::Array<IndexType>& result_indices) const;
 
     HalfOutline part_left;
     HalfOutline part_right;

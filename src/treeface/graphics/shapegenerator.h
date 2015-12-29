@@ -23,23 +23,6 @@ public:
     static const VertexTemplate& StrokeTemplate();
     static const VertexTemplate& FillTemplate();
 
-    struct StrokeVertex
-    {
-        Vec2f position;
-        Vec2f normal;
-        float side;
-        float trip_local;
-        float trip_global;
-    };
-
-    struct StrokeStyle
-    {
-        LineCap cap;
-        LineJoin join;
-        float miter_cutoff;
-        float width;
-    };
-
     ShapeGenerator();
     virtual ~ShapeGenerator();
 

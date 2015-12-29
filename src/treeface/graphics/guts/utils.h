@@ -1,12 +1,26 @@
 #ifndef TREEFACE_GRAPHICS_GUTS_UTILS_H
 #define TREEFACE_GRAPHICS_GUTS_UTILS_H
 
-#include "treeface/math/vec2.h"
+#include "treeface/enums.h"
 #include "treeface/gl/type.h"
+#include "treeface/math/vec2.h"
+
 #include <treecore/Array.h>
+
+#define TAIL_FIND_LIMIT 5
 
 namespace treeface
 {
+
+typedef treecore::int16 JointID;
+
+struct InternalStrokeStyle
+{
+    LineCap cap;
+    LineJoin join;
+    float miter_cutoff_cosine;
+    float half_width;
+};
 
 double clockwise_accum(const treecore::Array<Vec2f>& vertices, IndexType i_begin, IndexType i_end) noexcept;
 
