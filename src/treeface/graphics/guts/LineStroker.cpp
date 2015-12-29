@@ -5,12 +5,14 @@
 #include "treeface/math/constants.h"
 #include "treeface/math/mat2.h"
 
+#define TAIL_FIND_LIMIT 5
+
 using namespace treecore;
 
 namespace treeface
 {
 
-int LineStroker::HalfOutline::find_cross_from_tail(const Vec2f& p1, const Vec2f& p2, Vec2f& p_cross) const
+int LineStroker::HalfOutline::find_cross_from_tail(const Vec2f& p1, const Vec2f& p2, Vec2f& p_cross, int step_limit) const
 {
     jassert(outline.size() > 1);
     jassert(outline.size() == outline_bounds.size() + 1);
@@ -21,6 +23,8 @@ int LineStroker::HalfOutline::find_cross_from_tail(const Vec2f& p1, const Vec2f&
 
     for (int i = outline.size() - 2; i >= 0; i--)
     {
+        if (outline.size() - i > step_limit) break;
+
         if (bound_input ^ outline_bounds[i])
         {
             const Vec2f& p3 = outline[i];
@@ -37,6 +41,9 @@ int LineStroker::HalfOutline::find_cross_from_tail(const Vec2f& p1, const Vec2f&
 
 void LineStroker::HalfOutline::add_miter_point(const Vec2f& skeleton1, JointID id, const Vec2f& ortho_prev, const Vec2f& ortho_curr, const InternalStrokeStyle& style)
 {
+    jassert(std::abs(ortho_prev.length2() - 1.0f) < 0.0001f);
+    jassert(std::abs(ortho_curr.length2() - 1.0f) < 0.0001f);
+
     // only do miter join if angle is not too sharp
     float turn_cosine = ortho_prev * ortho_curr;
     if (turn_cosine > style.miter_cutoff_cosine)
@@ -54,6 +61,9 @@ void LineStroker::HalfOutline::add_miter_point(const Vec2f& skeleton1, JointID i
 
 void LineStroker::HalfOutline::add_round_points(const Vec2f& skeleton1, JointID id, const Vec2f& ortho_prev, const Vec2f& ortho_curr, const InternalStrokeStyle& style)
 {
+    jassert(std::abs(ortho_prev.length2() - 1.0f) < 0.0001f);
+    jassert(std::abs(ortho_curr.length2() - 1.0f) < 0.0001f);
+
     // calculate step
     float turn_angle = std::acos(ortho_prev * ortho_curr);
     int num_step = turn_angle / PI * 32;
@@ -87,7 +97,7 @@ void LineStroker::HalfOutline::process_inner(const HalfOutline& outer_peer,
     Vec2f p2 = skeleton2 + r_curr;
 
     {
-        int i_self = find_cross_from_tail(p1, p2, p_cross);
+        int i_self = find_cross_from_tail(p1, p2, p_cross, TAIL_FIND_LIMIT);
         if (i_self >= 0)
         {
             resize(i_self+1);
@@ -99,7 +109,7 @@ void LineStroker::HalfOutline::process_inner(const HalfOutline& outer_peer,
     }
 
     {
-        int i_peer = outer_peer.find_cross_from_tail(p1, p2, p_cross);
+        int i_peer = outer_peer.find_cross_from_tail(p1, p2, p_cross, TAIL_FIND_LIMIT);
         if (i_peer >= 0)
         {
             add(p_cross, id1);
@@ -112,14 +122,105 @@ void LineStroker::HalfOutline::process_inner(const HalfOutline& outer_peer,
     sunken = true;
 }
 
-void LineStroker::extend_stroke(const Vec2f& p_prev, const Vec2f& p1, const Vec2f& p2, bool use_line_join)
+void LineStroker::cap_begin(const Vec2f& skeleton, const Vec2f& direction)
 {
-    jassert(p_prev != p1);
+    jassert(!stroke_done);
+    jassert(std::abs(direction.length2() - 1.0f) < 0.0001f);
+    Vec2f ortho = direction.get_ortholog();
+
+    const Vec2f r = ortho * style.half_width;
+    const Vec2f r_pre = direction * - style.half_width;
+
+    switch (style.cap)
+    {
+    case LINE_CAP_BUTT:
+        break;
+    case LINE_CAP_ROUND:
+    {
+        Vec2f r_tmp = r_pre;
+        Mat2f rot; rot.set_rotate(-PI / 16);
+        for (int i = 1; i <= 14; i++)
+        {
+            r_tmp = rot * r_tmp;
+            part_left.add(skeleton + r_tmp, 0);
+        }
+
+        r_tmp = r_pre;
+        rot.set_rotate(PI / 16);
+        for (int i = 1; i <= 14; i++)
+        {
+            r_tmp = rot * r_tmp;
+            part_right.add(skeleton + r_tmp, 0);
+        }
+
+        break;
+    }
+    case LINE_CAP_SQUARE:
+        part_left.add(skeleton + r + r_pre, 0);
+        part_right.add(skeleton - r + r_pre, 0);
+        break;
+    }
+
+    part_left.add(skeleton + r, 0);
+    part_right.add(skeleton - r, 0);
+    part_left.sunken = false;
+    part_right.sunken = false;
+}
+
+
+void LineStroker::cap_end(const Vec2f& skeleton, const Vec2f& direction)
+{
+    jassert(!stroke_done);
+    jassert(std::abs(direction.length2() - 1.0f) < 0.0001f);
+
+    JointID id = std::max(part_left.joint_ids.getLast(), part_right.joint_ids.getLast()) + 1;
+    Vec2f ortho = direction.get_ortholog();
+
+    const Vec2f r = ortho * style.half_width;
+
+    switch (style.cap)
+    {
+    case LINE_CAP_BUTT:
+        break;
+    case LINE_CAP_ROUND:
+    {
+        Vec2f r_tmp = r;
+        Mat2f rot; rot.set_rotate(-PI / 16);
+        for (int i = 1; i <= 14; i++)
+        {
+            r_tmp = rot * r_tmp;
+            part_left.add(skeleton + r_tmp, 0);
+        }
+
+        r_tmp = r * -1.0f;
+        rot.set_rotate(PI / 16);
+        for (int i = 1; i <= 14; i++)
+        {
+            r_tmp = rot * r_tmp;
+            part_right.add(skeleton + r_tmp, 0);
+        }
+
+        break;
+    }
+    case LINE_CAP_SQUARE:
+    {
+        const Vec2f r_post = direction * style.half_width;
+        part_left.add(skeleton + r + r_post, 0);
+        part_right.add(skeleton - r + r_post, 0);
+        break;
+    }
+    }
+
+    stroke_done = true;
+}
+
+Vec2f LineStroker::extend_stroke(const Vec2f& v_prev, const Vec2f& p1, const Vec2f& p2, bool use_line_join)
+{
+    jassert(!stroke_done);
+    jassert(std::abs(v_prev.length2() - 1.0f) < 0.0001f);
     jassert(p2 != p1);
 
-    Vec2f v_prev = p1 - p_prev;
     Vec2f v_curr = p2 - p1;
-    v_prev.normalize();
     v_curr.normalize();
     Vec2f ortho_prev = v_prev.get_ortholog();
     Vec2f ortho_curr = v_curr.get_ortholog();
@@ -128,7 +229,6 @@ void LineStroker::extend_stroke(const Vec2f& p_prev, const Vec2f& p1, const Vec2
     Vec2f r_curr = ortho_curr * style.half_width;
 
     float turn_sine = v_prev ^ v_curr;
-    float turn_cosine = v_prev * v_curr;
 
     JointID joint_id1 = std::max(part_left.joint_ids.getLast(), part_right.joint_ids.getLast());
     JointID joint_id2 = joint_id1 + 1;
@@ -181,6 +281,8 @@ void LineStroker::extend_stroke(const Vec2f& p_prev, const Vec2f& p1, const Vec2
         part_left.add(p2 + r_curr, joint_id2);
         part_right.add(p2 - r_curr, joint_id2);
     }
+
+    return v_curr;
 }
 
 } // namespace treeface

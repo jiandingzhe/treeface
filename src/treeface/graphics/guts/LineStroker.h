@@ -24,9 +24,6 @@ struct InternalStrokeStyle
 struct LineStroker
 {
     typedef treecore::int16 JointID;
-    void extend_stroke(const Vec2f& p_prev, const Vec2f& p1, const Vec2f& p2, bool use_line_join);
-
-    void triangulate(treecore::Array<ShapeGenerator::StrokeVertex>& result_vertices, treecore::Array<IndexType>& result_indices);
 
     struct HalfOutline
     {
@@ -69,7 +66,7 @@ struct LineStroker
                               const Vec2f& ortho_curr,
                               const InternalStrokeStyle& style);
 
-        int find_cross_from_tail(const Vec2f& p1, const Vec2f& p2, Vec2f& result) const;
+        int find_cross_from_tail(const Vec2f& p1, const Vec2f& p2, Vec2f& result, int step_limit) const;
 
         void process_inner(const HalfOutline& outer_peer,
                            const Vec2f& skeleton1,
@@ -85,9 +82,17 @@ struct LineStroker
         bool sunken;
     };
 
+    void cap_begin(const Vec2f& skeleton, const Vec2f& direction);
+    void cap_end(const Vec2f& skeleton, const Vec2f& direction);
+
+    Vec2f extend_stroke(const Vec2f& v_prev, const Vec2f& p1, const Vec2f& p2, bool use_line_join);
+
+    void triangulate(treecore::Array<ShapeGenerator::StrokeVertex>& result_vertices, treecore::Array<IndexType>& result_indices);
+
+
     HalfOutline part_left;
     HalfOutline part_right;
-
+    bool stroke_done = false;
     InternalStrokeStyle style;
 };
 

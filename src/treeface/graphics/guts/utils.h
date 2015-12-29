@@ -2,9 +2,13 @@
 #define TREEFACE_GRAPHICS_GUTS_UTILS_H
 
 #include "treeface/math/vec2.h"
+#include "treeface/gl/type.h"
+#include <treecore/Array.h>
 
 namespace treeface
 {
+
+double clockwise_accum(const treecore::Array<Vec2f>& vertices, IndexType i_begin, IndexType i_end) noexcept;
 
 inline float calc_step(float total, float step_size, int min_num_step)
 {

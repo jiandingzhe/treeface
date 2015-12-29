@@ -1,5 +1,6 @@
 #include "treeface/graphics/guts/shapegenerator_guts.h"
 #include "treeface/graphics/guts/HalfEdgeNetwork.h"
+#include "treeface/graphics/guts/utils.h"
 
 using namespace treecore;
 using namespace treeface;

@@ -5,6 +5,7 @@
 #include "treeface/math/constants.h"
 #include "treeface/math/mat2.h"
 #include "treeface/graphics/guts/geomsucker.h"
+#include "treeface/graphics/guts/utils.h"
 
 using namespace treecore;
 
@@ -59,30 +60,6 @@ struct IntermVtxSorter
     const Array<Vec2f>& vertices;
 };
 
-double clockwise_accum(const Array<Vec2f>& vertices, IndexType i_begin, IndexType i_end) noexcept
-{
-    jassert(i_end - i_begin > 2);
-    jassert(i_end <= vertices.size());
-
-    double sum = 0.0;
-
-    for (int i = i_begin + 1; i != i_end; i++)
-    {
-        const Vec2f& p_curr = vertices[i];
-        const Vec2f& p_prev = vertices[i - 1];
-        sum += (p_curr.x - p_prev.x) * (p_curr.y + p_prev.y);
-    }
-
-    {
-        const Vec2f& p_curr = vertices[i_begin];
-        const Vec2f& p_prev = vertices[i_end - 1];
-        sum += (p_curr.x - p_prev.x) * (p_curr.y + p_prev.y);
-    }
-
-    return sum;
-}
-
-
 ///
 /// \brief do triangulate
 /// \param idx_list  a list of all indices
@@ -125,10 +102,23 @@ void _triangulate_(const HalfEdgeNetwork& network, Array<IndexType>& result_indi
 
 
 void SubPath::stroke_complex(treecore::Array<ShapeGenerator::StrokeVertex>& result_vertices,
-                                  treecore::Array<IndexType>& result_indices,
-                                  ShapeGenerator::StrokeStyle style) const
+                             treecore::Array<IndexType>& result_indices,
+                             ShapeGenerator::StrokeStyle style) const
 {
+    for (int i_glyph = 0; i_glyph < glyphs.size(); i_glyph++)
+    {
+        const PathGlyph& glyph = glyphs[i_glyph];
 
+        // first
+        if (i_glyph == 0)
+        {
+            jassert(glyph.type == GLYPH_TYPE_LINE);
+        }
+        else
+        {
+
+        }
+    }
 }
 
 void ShapeGenerator::Guts::triangulate(treecore::Array<Vec2f>& result_vertices, treecore::Array<IndexType>& result_indices)
@@ -195,136 +185,6 @@ void ShapeGenerator::Guts::triangulate(treecore::Array<Vec2f>& result_vertices, 
     _triangulate_(network, result_indices);
 }
 
-int segment_arc(const PathGlyph& glyph, treecore::Array<Vec2f>& result_vertices)
-{
-    jassert(result_vertices.size() > 0);
-    const int n_vtx_old = result_vertices.size();
-
-    // roll to 0-360 degree
-    float angle_use = glyph.arc.angle;
-    while (angle_use < 0.0f) angle_use += 2.0f * PI;
-    while (angle_use > 2.0f * PI) angle_use -= 2.0f * PI;
-
-    // determine step
-    int num_step = std::round(angle_use / PI * 32);
-    if (num_step < 5 && angle_use > 0.0f) num_step = 5;
-    float step = angle_use / num_step;
-
-    // rotate from end point
-    Mat2f rot;
-    if (glyph.arc.is_cclw) rot.set_rotate(step);
-    else                   rot.set_rotate(-step);
-
-    // generate points
-    Vec2f v = result_vertices.getLast() - glyph.arc.center;
-
-    for (int i = 1; i < num_step; i--)
-    {
-        v = rot * v;
-        result_vertices.add(glyph.arc.center + v);
-    }
-
-    result_vertices.add(glyph.end);
-
-    return result_vertices.size() - n_vtx_old;
-}
-
-#define INTERPO(_a_, _frac_, _b_) _a_ * _frac_ + _b_ * (1.0f - _frac_)
-
-inline Vec2f _bessel3_interpo_(const Vec2f& p1, const Vec2f& p2, const Vec2f& p3, float frac)
-{
-    Vec2f tmp1 = INTERPO(p1, frac, p2);
-    Vec2f tmp2 = INTERPO(p2, frac, p3);
-    return INTERPO(tmp1, frac, tmp2);
-}
-
-inline Vec2f _bessel4_interpo_(const Vec2f& p1, const Vec2f& p2, const Vec2f& p3, const Vec2f& p4, float frac)
-{
-    Vec2f tmp_a1 = INTERPO(p1, frac, p2);
-    Vec2f tmp_a2 = INTERPO(p2, frac, p3);
-    Vec2f tmp_a3 = INTERPO(p3, frac, p4);
-
-    Vec2f tmp_b1 = INTERPO(tmp_a1, frac, tmp_a2);
-    Vec2f tmp_b2 = INTERPO(tmp_a2, frac, tmp_a3);
-
-    return INTERPO(tmp_b1, frac, tmp_b2);
-}
-
-int segment_bessel3(const PathGlyph& glyph, treecore::Array<Vec2f>& result_vertices)
-{
-    jassert(result_vertices.size() > 0);
-    const int n_vtx_old = result_vertices.size();
-
-    float step = 1.0f / 32;
-
-    const Vec2f& prev_end = result_vertices.getLast();
-
-    for (float frac = 0.0f; frac < 1.0f;)
-    {
-        const Vec2f& vtx_prev = result_vertices.getLast();
-        float step_use = step;
-
-        for (;;)
-        {
-            Vec2f vtx_estimator = _bessel3_interpo_(prev_end, glyph.bessel3.ctrl, glyph.end, frac + step_use / 2);
-            Vec2f vtx_curr      = _bessel3_interpo_(prev_end, glyph.bessel3.ctrl, glyph.end, frac + step_use);
-            jassert(vtx_prev != vtx_estimator);
-            jassert(vtx_estimator != vtx_curr);
-            jassert(vtx_curr != vtx_prev);
-
-            float cosine = (vtx_curr - vtx_estimator) * (vtx_estimator - vtx_prev);
-            if (cosine > 0.6f)
-            {
-                result_vertices.add(vtx_curr);
-                break;
-            }
-
-            step_use *= 0.67f;
-        }
-    }
-
-    result_vertices.add(glyph.end);
-
-    return result_vertices.size() - n_vtx_old;
-}
-
-int segment_bessel4(const PathGlyph& glyph, treecore::Array<Vec2f>& result_vertices)
-{
-    jassert(result_vertices.size() > 0);
-    const int n_vtx_old = result_vertices.size();
-
-    float step = 1.0f / 32;
-
-    const Vec2f& prev_end = result_vertices.getLast();
-
-    for (float frac = 0.0f; frac < 1.0f;)
-    {
-        const Vec2f& vtx_prev = result_vertices.getLast();
-        float step_use = step;
-
-        for (;;)
-        {
-            Vec2f vtx_estimator = _bessel4_interpo_(prev_end, glyph.bessel4.ctrl1, glyph.bessel4.ctrl2, glyph.end, frac + step_use / 2);
-            Vec2f vtx_curr      = _bessel4_interpo_(prev_end, glyph.bessel4.ctrl1, glyph.bessel4.ctrl2, glyph.end, frac + step_use);
-            jassert(vtx_prev != vtx_estimator);
-            jassert(vtx_estimator != vtx_curr);
-            jassert(vtx_curr != vtx_prev);
-
-            float cosine = (vtx_curr - vtx_estimator) * (vtx_estimator - vtx_prev);
-            if (cosine > 0.6f)
-            {
-                result_vertices.add(vtx_curr);
-                break;
-            }
-
-            step_use *= 0.67f;
-        }
-    }
-
-    result_vertices.add(glyph.end);
-
-    return result_vertices.size() - n_vtx_old;
-}
 
 
 } // namespace treeface
