@@ -10,10 +10,9 @@ namespace treeface
 struct StrokeVertex
 {
     Vec2f position;
-    Vec2f normal;
+    Vec2f tangent_unorm;
+    float trip;
     float side;
-    float trip_local;
-    float trip_global;
 };
 
 struct StrokeStyle

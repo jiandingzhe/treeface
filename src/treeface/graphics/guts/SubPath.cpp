@@ -56,7 +56,7 @@ void SubPath::stroke_complex(treecore::Array<StrokeVertex>& result_vertices,
     //
     // triangulate stroke outline, which provides final result
     //
-    stroker.triangulate(result_vertices, result_indices);
+    stroker.triangulate(result_vertices, result_indices, closed);
 }
 
 } // namespace treeface

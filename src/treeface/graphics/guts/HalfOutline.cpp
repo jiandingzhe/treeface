@@ -146,4 +146,12 @@ void HalfOutline::close_inner()
     }
 }
 
+void HalfOutline::accum_trip(treecore::Array<float>& results) const
+{
+    results.add(0.0f);
+
+    for (int i = 1; i < outline.size(); i++)
+        results.add((outline[i] - outline[i-1]).length() + results[i-1]);
+}
+
 } // namespace treeface

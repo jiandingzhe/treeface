@@ -69,6 +69,31 @@ struct HalfOutline
         return outline.size();
     }
 
+    Vec2f get_tangent_unorm(int i, bool path_is_closed) const
+    {
+        jassert(outline.size() > 1);
+        if (i == 0)
+        {
+            if (path_is_closed)
+                return outline[1] - outline[outline.size()-2];
+            else
+                return outline[1] - outline[0];
+        }
+        else if (i == outline.size() - 1)
+        {
+            if (path_is_closed)
+                return outline[1] - outline[outline.size()-2];
+            else
+                return outline[i] - outline[i-1];
+        }
+        else
+        {
+            return outline[i+1] - outline[i-1];
+        }
+    }
+
+    void accum_trip(treecore::Array<float>& results) const;
+
     treecore::Array<Vec2f> outline;
     treecore::Array<BBox2f> outline_bounds;
     treecore::Array<JointID> joint_ids;

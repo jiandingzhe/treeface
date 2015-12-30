@@ -189,6 +189,7 @@ void LineStroker::close_stroke(const Vec2f& v_prev, const Vec2f& p, const Vec2f&
     Vec2f r_next = ortho_next * style.half_width;
 
     JointID joint_id1 = std::max(part_left.joint_ids.getLast(), part_right.joint_ids.getLast());
+    JointID joint_id2 = joint_id1 + 1;
 
     float turn_sine = v_prev ^ v_next;
 
@@ -225,6 +226,8 @@ void LineStroker::close_stroke(const Vec2f& v_prev, const Vec2f& p, const Vec2f&
             break;
         }
 
+        part_outer->add(p + r_next * part_outer->side, joint_id2);
+
         // process inner side
         part_inner->close_inner();
     }
@@ -237,22 +240,150 @@ void LineStroker::close_stroke(const Vec2f& v_prev, const Vec2f& p, const Vec2f&
         if (!part_left.sunken)
         {
             jassert(part_left.outline.getFirst() == part_left.outline.getLast());
-            part_left.resize(part_left.size() - 1);
         }
 
         if (!part_right.sunken)
         {
             jassert(part_right.outline.getFirst() == part_right.outline.getLast());
-            part_right.resize(part_right.size() - 1);
         }
     }
 
     stroke_done = true;
 }
 
-void LineStroker::triangulate(treecore::Array<StrokeVertex>& result_vertices, treecore::Array<IndexType>& result_indices) const
+inline bool _should_advance_(const Array<JointID>& ids_self, const Array<JointID>& ids_peer, int i_self, int i_peer)
 {
+    if (i_self == ids_self.size() - 1)
+        return false;
 
+    if (i_peer == ids_peer.size() - 1)
+        return true;
+
+    if (ids_self[i_self + 1] == ids_self[i_self])
+        return true;
+
+    if (ids_peer[i_peer + 1] == ids_peer[i_peer])
+        return false;
+
+    // now both side have increasing next
+    if (ids_self[i_self] <= ids_peer[i_peer])
+    {
+        return true;
+    }
+    else
+    {
+        if (ids_self[i_self+1] <= ids_peer[i_peer+1])
+            return true;
+        else
+            return false;
+    }
+}
+
+void LineStroker::triangulate(treecore::Array<StrokeVertex>& result_vertices, treecore::Array<IndexType>& result_indices, bool path_is_closed) const
+{
+    jassert(stroke_done);
+
+    Array<float> trip_left;
+    Array<float> trip_right;
+    part_left.accum_trip(trip_left);
+    part_right.accum_trip(trip_right);
+
+    jassert(trip_left.size() == part_left.size());
+    jassert(trip_right.size() == part_right.size());
+
+    // initial state
+    int i_left_prev = 0;
+    int i_right_prev = 0;
+
+    const IndexType idx_left_begin = result_vertices.size();
+    result_vertices.add({part_left.outline[0],
+                         part_left.get_tangent_unorm(0, path_is_closed),
+                         trip_left[0] / trip_left.getLast(),
+                         0.0f});
+    const IndexType idx_right_begin = result_vertices.size();
+    result_vertices.add({part_right.outline[0],
+                         part_right.get_tangent_unorm(0, path_is_closed),
+                         trip_right[0] / trip_right.getLast(),
+                         1.0f});
+
+    IndexType idx_left_prev = idx_left_begin;
+    IndexType idx_right_prev = idx_right_begin;
+
+    // move on two sides
+    for (;;)
+    {
+        int i_left = i_left_prev;
+        int i_right = i_right_prev;
+
+        IndexType idx_left = idx_left_prev;
+        IndexType idx_right = idx_right_prev;
+
+        bool left_move_on = _should_advance_(part_left.joint_ids, part_right.joint_ids, i_left_prev, i_right_prev);
+        bool right_move_on = _should_advance_(part_right.joint_ids, part_left.joint_ids, i_right_prev, i_left_prev);
+
+        jassert(left_move_on || right_move_on);
+
+        // perform vertex move on
+        if (left_move_on)
+        {
+            i_left++;
+            idx_left = result_vertices.size();
+            result_vertices.add({part_left.outline[i_left],
+                                 part_left.get_tangent_unorm(i_left, path_is_closed),
+                                 trip_left[i_left] / trip_left.getLast(),
+                                 0.0f});
+        }
+
+        if (right_move_on)
+        {
+            i_right++;
+            idx_right = result_vertices.size();
+            result_vertices.add({part_right.outline[0],
+                                 part_right.get_tangent_unorm(i_right, path_is_closed),
+                                 trip_right[i_right] / trip_right.getLast(),
+                                 1.0f});
+        }
+
+        // generate triangle
+        if (left_move_on)
+        {
+            jassert(idx_left_prev < idx_left);
+            result_indices.add(idx_left_prev);
+            result_indices.add(idx_right_prev);
+            result_indices.add(idx_left);
+
+            if (right_move_on)
+            {
+                jassert(idx_right_prev < idx_right);
+                result_indices.add(idx_right_prev);
+                result_indices.add(idx_right);
+                result_indices.add(idx_left);
+            }
+        }
+        else
+        {
+            if (right_move_on)
+            {
+                jassert(idx_right_prev < idx_right);
+                result_indices.add(idx_left_prev);
+                result_indices.add(idx_right_prev);
+                result_indices.add(idx_right);
+            }
+            else
+            {
+                abort();
+            }
+        }
+
+        i_left_prev = i_left;
+        i_right_prev = i_right;
+        idx_left_prev = idx_left;
+        idx_right_prev = idx_right;
+
+        if (i_left  == part_left.size() - 1 &&
+            i_right == part_right.size() - 1)
+            break;
+    }
 }
 
 } // namespace treeface
