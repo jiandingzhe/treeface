@@ -13,7 +13,6 @@
 
 namespace treeface {
 
-
 /**
  * 4-dimentional vector class implemented with SIMD operations.
  *
@@ -26,28 +25,26 @@ struct Vec4
     typedef typename treecore::similar_float<T>::type FloatType;
     typedef treecore::SimdObject<T, 4> DataType;
 
-    TREECORE_ALIGNED_ALLOCATOR(Vec4);
+    TREECORE_ALIGNED_ALLOCATOR( Vec4 );
 
     /**
      * @brief default constructor
      *
      * values are initialized as zero point
      */
-    Vec4(): data(T(0), T(0), T(0), T(1))
-    {
-    }
+    Vec4(): data( T( 0 ), T( 0 ), T( 0 ), T( 1 ) ) {}
 
     /**
      * @brief constructor with values specified
      * @param value: a SIMDType containing x, y, z and w
      */
-    Vec4(const DataType& value): data(value) {}
+    Vec4( const DataType& value ): data( value ) {}
 
     /**
      * @brief copy constructor
      * @param other: another vector object
      */
-    Vec4(const Vec4& other): data(other.data) {}
+    Vec4( const Vec4& other ): data( other.data ) {}
 
     /**
      * @brief constructor with values specified separately
@@ -56,26 +53,26 @@ struct Vec4
      * @param z
      * @param w
      */
-    Vec4(T x, T y, T z, T w)
+    Vec4( T x, T y, T z, T w )
     {
-        data.set_all(x, y, z, w);
+        data.set_all( x, y, z, w );
     }
 
     /**
      * @brief constructor with values specified
      * @param values: an array storing reversed w, z, y, x
      */
-    Vec4(const T* values)
+    Vec4( const T* values )
     {
-        data.set_all(values);
+        data.set_all( values );
     }
 
     operator bool () const noexcept
     {
-        return data.template get<0>() != T(0) ||
-                data.template get<1>() != T(0) ||
-                data.template get<2>() != T(0) ||
-                data.template get<3>() != T(0);
+        return data.template get<0>() != T( 0 ) ||
+               data.template get<1>() != T( 0 ) ||
+               data.template get<2>() != T( 0 ) ||
+               data.template get<3>() != T( 0 );
     }
 
     /**
@@ -83,7 +80,7 @@ struct Vec4
      * @param other: another vector object
      * @return self
      */
-    Vec4& operator = (const Vec4& other)
+    Vec4& operator = ( const Vec4& other )
     {
         data = other.data;
         return *this;
@@ -96,28 +93,28 @@ struct Vec4
      * @param z
      * @param w
      */
-    void set(T x, T y, T z, T w)
+    void set( T x, T y, T z, T w )
     {
-        data.set_all(x, y, z, w);
+        data.set_all( x, y, z, w );
     }
 
     /**
      * @brief set vector contents
      * @param values: an array storing x, y, z and w
      */
-    void set(const T* values)
+    void set( const T* values )
     {
-        data.set_all(values);
+        data.set_all( values );
     }
 
-    void set_point(const Vec3<T>& value)
+    void set_point( const Vec3<T>& value )
     {
-        data.set_all(value.x, value.y, value.z, T(1));
+        data.set_all( value.x, value.y, value.z, T( 1 ) );
     }
 
-    void set_direction(const Vec3<T>& value)
+    void set_direction( const Vec3<T>& value )
     {
-        data.set_all(value.x, value.y, value.z, T(0));
+        data.set_all( value.x, value.y, value.z, T( 0 ) );
     }
 
     /**
@@ -160,36 +157,36 @@ struct Vec4
      * @brief set the value of 1st (x) component
      * @param value: the value to be set to x component
      */
-    void set_x(T value)
+    void set_x( T value )
     {
-        data.template set<0>(value);
+        data.template set<0>( value );
     }
 
     /**
      * @brief set the value of 2nd (y) component
      * @param value: the value to be set to y component
      */
-    void set_y(T value)
+    void set_y( T value )
     {
-        data.template set<1>(value);
+        data.template set<1>( value );
     }
 
     /**
      * @brief set the value of 3rd (z) component
      * @param value: the value to be set to z component
      */
-    void set_z(T value)
+    void set_z( T value )
     {
-        data.template set<2>(value);
+        data.template set<2>( value );
     }
 
     /**
      * @brief set the value of 4th (w) component
      * @param value: the value to be set to w component
      */
-    void set_w(T value)
+    void set_w( T value )
     {
-        data.template set<3>(value);
+        data.template set<3>( value );
     }
 
     /**
@@ -197,7 +194,7 @@ struct Vec4
      * @param other: the addend to be added to self
      * @return self
      */
-    Vec4& operator += (const Vec4& other)
+    Vec4& operator += ( const Vec4& other )
     {
         data += other.data;
         return *this;
@@ -208,7 +205,7 @@ struct Vec4
      * @param other: the subtrahend
      * @return self
      */
-    Vec4& operator -= (const Vec4& other)
+    Vec4& operator -= ( const Vec4& other )
     {
         data -= other.data;
         return *this;
@@ -219,9 +216,9 @@ struct Vec4
      * @param value: the scale
      * @return self
      */
-    Vec4& operator *= (T value)
+    Vec4& operator *= ( T value )
     {
-        data *= DataType(value);
+        data *= DataType( value );
         return *this;
     }
 
@@ -230,9 +227,9 @@ struct Vec4
      * @param value: the scale
      * @return self
      */
-    Vec4& operator /= (T value)
+    Vec4& operator /= ( T value )
     {
-        data /= DataType(value);
+        data /= DataType( value );
         return *this;
     }
 
@@ -243,7 +240,7 @@ struct Vec4
     FloatType normalize()
     {
         FloatType len = length();
-        data /= DataType(len);
+        data /= DataType( len );
         return len;
     }
 
@@ -253,7 +250,7 @@ struct Vec4
      */
     FloatType length() const
     {
-        return std::sqrt(length2());
+        return std::sqrt( length2() );
     }
 
     /**
@@ -262,7 +259,7 @@ struct Vec4
      */
     FloatType length2() const
     {
-        return FloatType((data * data).sum());
+        return FloatType( (data * data).sum() );
     }
 
     /**
@@ -282,7 +279,7 @@ struct Vec4
  * @return a new Vec4 object containing result
  */
 template<typename T>
-Vec4<T> operator + (const Vec4<T>& a, const Vec4<T>& b)
+Vec4<T> operator + ( const Vec4<T>& a, const Vec4<T>& b )
 {
     Vec4<T> result;
     result.data = a.data + b.data;
@@ -297,7 +294,7 @@ Vec4<T> operator + (const Vec4<T>& a, const Vec4<T>& b)
  * @return a new Vec4 object containing result
  */
 template<typename T>
-Vec4<T> operator - (const Vec4<T>& a, const Vec4<T>& b)
+Vec4<T> operator - ( const Vec4<T>& a, const Vec4<T>& b )
 {
     Vec4<T> result;
     result.data = a.data - b.data;
@@ -312,10 +309,10 @@ Vec4<T> operator - (const Vec4<T>& a, const Vec4<T>& b)
  * @return a new Vec4 object containing scaled values
  */
 template<typename T>
-Vec4<T> operator * (const Vec4<T>& a, T b)
+Vec4<T> operator * ( const Vec4<T>& a, T b )
 {
     Vec4<T> result;
-    result.data = a.data * typename Vec4<T>::DataType(b);
+    result.data = a.data * typename Vec4<T>::DataType( b );
     return result;
 }
 
@@ -327,10 +324,10 @@ Vec4<T> operator * (const Vec4<T>& a, T b)
  * @return a new Vec4 object containing shrinked values
  */
 template<typename T>
-Vec4<T> operator / (const Vec4<T>& a, T b)
+Vec4<T> operator / ( const Vec4<T>& a, T b )
 {
     Vec4<T> result;
-    result.data = a.data / typename Vec4<T>::DataType(b);
+    result.data = a.data / typename Vec4<T>::DataType( b );
     return result;
 }
 
@@ -342,7 +339,7 @@ Vec4<T> operator / (const Vec4<T>& a, T b)
  * @return a scalar value containing dot product
  */
 template<typename T>
-T operator * (const Vec4<T>& a, const Vec4<T>& b)
+T operator * ( const Vec4<T>& a, const Vec4<T>& b )
 {
     return (a.data * b.data).sum();
 }
@@ -354,7 +351,7 @@ T operator * (const Vec4<T>& a, const Vec4<T>& b)
  * @return a new Vec4 containing right-hand cross product
  */
 template<typename T, int SZ = sizeof(T)*4>
-Vec4<T> operator ^ (const Vec4<T>& a, const Vec4<T>& b)
+Vec4<T> operator ^ ( const Vec4<T>& a, const Vec4<T>& b )
 {
     // Res.ele[0] = A.ele[1] * B.ele[2] - A.ele[2] * B.ele[1];
     // Res.ele[1] = A.ele[2] * B.ele[0] - A.ele[0] * B.ele[2];
@@ -371,16 +368,16 @@ Vec4<T> operator ^ (const Vec4<T>& a, const Vec4<T>& b)
     v4.template shuffle<1, 2, 0, 0>();
 
     typename Vec4<T>::DataType re = v1 * v2 - v3 * v4;
-    re.template set<3>(T(0));
+    re.template set<3>( T( 0 ) );
 
-    return Vec4<T>(re);
+    return Vec4<T>( re );
 }
 
 /**
  * @brief test if two Vec4 objects are identical
  */
 template<typename T, int SZ = sizeof(T)*4>
-bool operator == (const Vec4<T>& a, const Vec4<T>& b)
+bool operator == ( const Vec4<T>& a, const Vec4<T>& b )
 {
     return a.data == b.data;
 }
@@ -389,7 +386,7 @@ bool operator == (const Vec4<T>& a, const Vec4<T>& b)
  * @brief test if two Vec4 objects are not identical
  */
 template<typename T, int SZ = sizeof(T)*4>
-bool operator != (const Vec4<T>& a, const Vec4<T>& b)
+bool operator != ( const Vec4<T>& a, const Vec4<T>& b )
 {
     return a.data != b.data;
 }

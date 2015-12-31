@@ -30,6 +30,7 @@ file(GLOB_RECURSE treeface_src_files "treeface/*.h" "treeface/*.cpp")
 
 add_library(treeface STATIC
     ${treeface_src_files}
+    ${PROJECT_SOURCE_DIR}/uncrustify.cfg
 )
 target_use_treecore(treeface)
 

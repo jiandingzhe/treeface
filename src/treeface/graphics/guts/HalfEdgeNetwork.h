@@ -12,7 +12,8 @@ namespace treeface
 
 struct HalfEdgeNetwork
 {
-    explicit HalfEdgeNetwork(const treecore::Array<Vec2f>& vertices): vertices(vertices) {}
+    explicit HalfEdgeNetwork(const treecore::Array<Vec2f>& vertices) : vertices(vertices) {
+    }
 
     void build_half_edges(const treecore::Array<IndexType>& subpath_begin, bool is_cclw);
 
@@ -38,11 +39,11 @@ struct HalfEdgeNetwork
 
     treecore::int16 mark_polygons(treecore::Array<treecore::int16>& edge_polygon_map) const;
 
-    void triangulate_monotone_polygons(const treecore::Array<IndexType>& edge_indices_by_y,
+    void triangulate_monotone_polygons(const treecore::Array<IndexType>&       edge_indices_by_y,
                                        const treecore::Array<treecore::int16>& edge_polygon_map,
-                                       treecore::int16 num_polygon,
-                                       const treecore::Array<VertexRole>& edge_roles,
-                                       treecore::Array<IndexType>& result_indices) const;
+                                       treecore::int16                         num_polygon,
+                                       const treecore::Array<VertexRole>&      edge_roles,
+                                       treecore::Array<IndexType>&             result_indices) const;
 
     const treecore::Array<Vec2f>& vertices;
     treecore::Array<HalfEdge> edges;

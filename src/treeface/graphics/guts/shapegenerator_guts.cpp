@@ -5,6 +5,7 @@
 #include "treeface/math/constants.h"
 #include "treeface/math/mat2.h"
 #include "treeface/graphics/guts/geomsucker.h"
+#include "treeface/graphics/guts/HalfEdgeNetwork.h"
 #include "treeface/graphics/guts/utils.h"
 
 using namespace treecore;
