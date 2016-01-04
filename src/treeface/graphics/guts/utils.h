@@ -35,11 +35,11 @@ inline bool cross_test_exc(const Vec2f& p1, const Vec2f& p2, const Vec2f& v12,
                            const Vec2f& p3, const Vec2f& p4, const Vec2f& v34,
                            Vec2f& result)
 {
-    float denom = v12 ^ v34;
+    float denom = v12 % v34;
     if (denom == 0.0f) return false;
 
-    float cross12 = p1 ^ p2;
-    float cross34 = p3 ^ p4;
+    float cross12 = p1 % p2;
+    float cross34 = p3 % p4;
 
     result.set((v12.x * cross34 - v34.x * cross12) / denom,
                (v12.y * cross34 - v34.y * cross12) / denom);

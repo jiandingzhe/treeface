@@ -123,7 +123,7 @@ struct Vec3
         return result.sum();
     }
 
-    Vec3 operator ^ (const Vec3& peer) const noexcept
+    Vec3 operator % (const Vec3& peer) const noexcept
     {
         TmpType v1(x, y, z, 0);
         TmpType v2(peer.x, peer.y, peer.z, 0);

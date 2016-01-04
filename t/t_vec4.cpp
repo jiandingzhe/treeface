@@ -141,7 +141,7 @@ void TestFramework::content()
     OK( "unit vector cross" );
     Vec4f v1( 1, 0, 0, 0 );
     Vec4f v2( 0, 1, 0, 0 );
-    Vec4f v3 = v1 ^ v2;
+    Vec4f v3 = v1 % v2;
     IS( v3.get_x(), 0 );
     IS( v3.get_y(), 0 );
     IS( v3.get_z(), 1 );
@@ -154,7 +154,7 @@ void TestFramework::content()
         IS_EPSILON( v.length(), 1.0f );
     }
 
-    Vec4f v4 = v2 ^ v3;
+    Vec4f v4 = v2 % v3;
     IS( v4.get_x(), 1 );
     IS( v4.get_y(), 0 );
     IS( v4.get_z(), 0 );

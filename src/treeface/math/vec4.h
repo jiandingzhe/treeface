@@ -367,7 +367,7 @@ T operator * ( const Vec4<T>& a, const Vec4<T>& b )
  * @return a new Vec4 containing right-hand cross product
  */
 template<typename T, int SZ = sizeof(T)*4>
-Vec4<T> operator ^ ( const Vec4<T>& a, const Vec4<T>& b )
+Vec4<T> operator % ( const Vec4<T>& a, const Vec4<T>& b )
 {
     // Res.ele[0] = A.ele[1] * B.ele[2] - A.ele[2] * B.ele[1];
     // Res.ele[1] = A.ele[2] * B.ele[0] - A.ele[0] * B.ele[2];

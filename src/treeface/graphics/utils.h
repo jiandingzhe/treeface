@@ -26,9 +26,9 @@ struct StrokeStyle
 inline bool vec_are_cclw(const Vec2f& v1, const Vec2f& v2, const Vec2f& v3)
 {
     int num_neg = 0;
-    if ((v1 ^ v2) < 0.0f) num_neg++;
-    if ((v2 ^ v3) < 0.0f) num_neg++;
-    if ((v3 ^ v1) < 0.0f) num_neg++;
+    if ((v1 % v2) < 0.0f) num_neg++;
+    if ((v2 % v3) < 0.0f) num_neg++;
+    if ((v3 % v1) < 0.0f) num_neg++;
     return num_neg < 2;
 }
 
@@ -39,7 +39,7 @@ inline bool is_below(const Vec2f& a, const Vec2f& b)
 
 inline bool is_convex(const Vec2f& edge1, const Vec2f& edge2) noexcept
 {
-    float cross = edge1 ^ edge2;
+    float cross = edge1 % edge2;
     return cross > 0;
 }
 

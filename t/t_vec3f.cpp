@@ -108,22 +108,22 @@ void TestFramework::content()
 
     {
         OK("outer product");
-        Vec3f cross = Vec3f( 1.0f, 0.0f, 0.0f ) ^ Vec3f( 0.0f, 1.0f, 0.0f );
+        Vec3f cross = Vec3f( 1.0f, 0.0f, 0.0f ) % Vec3f( 0.0f, 1.0f, 0.0f );
         IS( cross.x, 0.0f );
         IS( cross.y, 0.0f );
         IS( cross.z, 1.0f );
 
-        cross = Vec3f( 0.0f, 0.0f, 1.0f ) ^ Vec3f( 1.0f, 0.0f, 0.0f );
+        cross = Vec3f( 0.0f, 0.0f, 1.0f ) % Vec3f( 1.0f, 0.0f, 0.0f );
         IS( cross.x, 0.0f );
         IS( cross.y, 1.0f );
         IS( cross.z, 0.0f );
 
-        cross = Vec3f( 0.0f, 1.0f, 0.0f ) ^ Vec3f( 0.0f, 0.0f, 1.0f );
+        cross = Vec3f( 0.0f, 1.0f, 0.0f ) % Vec3f( 0.0f, 0.0f, 1.0f );
         IS( cross.x, 1.0f );
         IS( cross.y, 0.0f );
         IS( cross.z, 0.0f );
 
-        cross = Vec3f( 1.0f, 1.0f, 0.0f ) ^ Vec3f( -1.0f, 1.0f, 0.0f );
+        cross = Vec3f( 1.0f, 1.0f, 0.0f ) % Vec3f( -1.0f, 1.0f, 0.0f );
         IS( cross.x, 0.0f );
         IS( cross.y, 0.0f );
         IS( cross.z, 2.0f );

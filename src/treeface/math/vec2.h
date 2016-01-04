@@ -209,7 +209,7 @@ typename Vec2<T>::FloatType operator * ( const Vec2<T>& a, const Vec2<T>& b )
  * @return result in float type whose size is similar with T
  */
 template<typename T>
-typename Vec2<T>::FloatType operator ^ ( const Vec2<T>& a, const Vec2<T>& b )
+typename Vec2<T>::FloatType operator % ( const Vec2<T>& a, const Vec2<T>& b )
 {
     return typename Vec2<T>::FloatType( a.x ) * typename Vec2<T>::FloatType( b.y ) - typename Vec2<T>::FloatType( a.y ) * typename Vec2<T>::FloatType( b.x );
 }

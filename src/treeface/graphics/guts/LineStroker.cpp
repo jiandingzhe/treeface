@@ -148,7 +148,7 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
     Vec2f r_prev = ortho_prev * style.half_width;
     Vec2f r_curr = ortho_curr * style.half_width;
 
-    float turn_sine = v_prev ^ v_curr;
+    float turn_sine = v_prev % v_curr;
 
     JointID joint_id1;
     {
@@ -255,7 +255,7 @@ void LineStroker::close_stroke( const Vec2f& v_prev, const Vec2f& p, const Vec2f
     JointID joint_id1 = std::max( part_left.joint_ids.getLast(), part_right.joint_ids.getLast() );
     JointID joint_id2 = joint_id1 + 1;
 
-    float turn_sine = v_prev ^ v_next;
+    float turn_sine = v_prev % v_next;
 
     // is turning
     if (turn_sine != 0.0f)

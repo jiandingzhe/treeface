@@ -99,13 +99,13 @@ void TestFramework::content()
 
     // cross multiply
     {
-        float cross_result = v2f( 12.34f, 36.21f ) ^ v2f( 56.78f, 98.67f );
+        float cross_result = v2f( 12.34f, 36.21f ) % v2f( 56.78f, 98.67f );
         IS_EPSILON( cross_result, -838.416f );
 
-        cross_result = v2f( 1.0f, 0.0f ) ^ v2f( 0.0f, 1.0f );
+        cross_result = v2f( 1.0f, 0.0f ) % v2f( 0.0f, 1.0f );
         IS_EPSILON( cross_result, 1.0f );
 
-        cross_result = v2f( 0.0f, 1.0f ) ^ v2f( -1.0f, 0.0f );
+        cross_result = v2f( 0.0f, 1.0f ) % v2f( -1.0f, 0.0f );
         IS_EPSILON( cross_result, 1.0f );
     }
 }
