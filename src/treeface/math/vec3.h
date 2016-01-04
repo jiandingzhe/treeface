@@ -14,31 +14,26 @@ struct Vec3
     typedef treecore::SimdObject<T, 4> TmpType;
     typedef treecore::SimdObject<FloatType, 4> FloatTmpType;
 
-    Vec3() noexcept
-    {
-    }
+    Vec3() noexcept = default;
 
     Vec3(T x, T y, T z) noexcept: x(x), y(y), z(z)
     {
     }
 
-    Vec3(const Vec3& peer) noexcept: x(peer.x), y(peer.y), z(peer.z)
-    {
-    }
+    Vec3(const Vec3& peer) noexcept = default;
 
-    Vec3& operator = (const Vec3& peer) noexcept
-    {
-        x = peer.x;
-        y = peer.y;
-        z = peer.z;
-        return *this;
-    }
+    Vec3& operator = (const Vec3& peer) noexcept = default;
 
     void set(T x, T y, T z) noexcept
     {
         this->x = x;
         this->y = y;
         this->z = z;
+    }
+
+    Vec3 operator - () const noexcept
+    {
+        return Vec3(-x, -y, -z);
     }
 
     operator bool () const noexcept
@@ -184,6 +179,13 @@ struct Vec3
     T z{};
 };
 
+template<typename T>
+inline Vec3<T> operator * (T a, const Vec3<T>& b) noexcept
+{
+    Vec3<T> result(b);
+    result *= a;
+    return result;
+}
 
 template<typename T>
 inline bool operator == (const Vec3<T>& a, const Vec3<T>& b) noexcept

@@ -8,7 +8,7 @@
 namespace treeface
 {
 
-TREECORE_ALN_BEGIN(8)
+TREECORE_ALN_BEGIN( 8 )
 template<typename T>
 struct Vec2
 {
@@ -17,18 +17,18 @@ struct Vec2
     Vec2() noexcept
     {}
 
-    Vec2(T x, T y) noexcept
-        : x(x)
-        , y(y)
+    Vec2( T x, T y ) noexcept
+        : x( x )
+        , y( y )
     {}
 
-    Vec2(const Vec2& peer) noexcept = default;
+    Vec2( const Vec2& peer ) noexcept = default;
 
-    TREECORE_ALIGNED_ALLOCATOR(Vec2);
+    TREECORE_ALIGNED_ALLOCATOR( Vec2 );
 
-    Vec2& operator = (const Vec2& peer) noexcept = default;
+    Vec2& operator = ( const Vec2& peer ) noexcept = default;
 
-    void set(T x, T y) noexcept
+    void set( T x, T y ) noexcept
     {
         this->x = x;
         this->y = y;
@@ -36,18 +36,23 @@ struct Vec2
 
     Vec2 get_ortholog() const noexcept
     {
-        return Vec2(-y, x);
+        return Vec2( -y, x );
+    }
+
+    Vec2 operator - () const noexcept
+    {
+        return Vec2( -x, -y );
     }
 
     operator bool () const noexcept
     {
-        return x != T(0) || y != T(0);
+        return x != T( 0 ) || y != T( 0 );
     }
 
     /**
      * @brief perform vector add
      */
-    Vec2& operator += (const Vec2& value) noexcept
+    Vec2& operator += ( const Vec2& value ) noexcept
     {
         x += value.x;
         y += value.y;
@@ -57,7 +62,7 @@ struct Vec2
     /**
      * @brief perform vector subtract
      */
-    Vec2& operator -= (const Vec2& value) noexcept
+    Vec2& operator -= ( const Vec2& value ) noexcept
     {
         x -= value.x;
         y -= value.y;
@@ -68,7 +73,7 @@ struct Vec2
      * @breif multiply this vector with a single value
      */
     template<typename T2>
-    Vec2& operator *= (T2 value) noexcept
+    Vec2& operator *= ( T2 value ) noexcept
     {
         x *= value;
         y *= value;
@@ -79,7 +84,7 @@ struct Vec2
      * @brief divide this vector with a single value
      */
     template<typename T2>
-    Vec2& operator /= (T2 value) noexcept
+    Vec2& operator /= ( T2 value ) noexcept
     {
         x /= value;
         y /= value;
@@ -92,7 +97,7 @@ struct Vec2
      */
     FloatType length2() const noexcept
     {
-        return x*x + y*y;
+        return x * x + y * y;
     }
 
     /**
@@ -101,14 +106,14 @@ struct Vec2
      */
     FloatType length() const noexcept
     {
-        return std::sqrt(length2());
+        return std::sqrt( length2() );
     }
 
-    FloatType distance_from(const Vec2& start)
+    FloatType distance_from( const Vec2& start )
     {
-        FloatType dx(x - start.x);
-        FloatType dy(y - start.y);
-        return std::sqrt(dx * dx + dy * dy);
+        FloatType dx( x - start.x );
+        FloatType dy( y - start.y );
+        return std::sqrt( dx * dx + dy * dy );
     }
 
     /**
@@ -121,7 +126,7 @@ struct Vec2
     FloatType normalize() noexcept
     {
         FloatType len = (FloatType) length();
-        if (len == FloatType(0))
+        if ( len == FloatType( 0 ) )
             return len;
 
         x /= len;
@@ -131,15 +136,15 @@ struct Vec2
 
     T x{};
     T y{};
-} TREECORE_ALN_END(8);
+} TREECORE_ALN_END( 8 );
 
 /**
  * @brief vector add
  */
 template<typename T>
-Vec2<T> operator + (const Vec2<T>& a, const Vec2<T>& b)
+Vec2<T> operator + ( const Vec2<T>& a, const Vec2<T>& b )
 {
-    Vec2<T> result(a);
+    Vec2<T> result( a );
     result += b;
     return result;
 }
@@ -148,9 +153,9 @@ Vec2<T> operator + (const Vec2<T>& a, const Vec2<T>& b)
  * @brief vector subtract
  */
 template<typename T>
-Vec2<T> operator - (const Vec2<T>& a, const Vec2<T>& b)
+Vec2<T> operator - ( const Vec2<T>& a, const Vec2<T>& b )
 {
-    Vec2<T> result(a);
+    Vec2<T> result( a );
     result -= b;
     return result;
 }
@@ -159,9 +164,17 @@ Vec2<T> operator - (const Vec2<T>& a, const Vec2<T>& b)
  * @brief multiply vector with a single value
  */
 template<typename T>
-Vec2<T> operator * (const Vec2<T>& a, T b)
+Vec2<T> operator * (T a, const Vec2<T>& b)
 {
-    Vec2<T> result(a);
+    Vec2<T> result( b );
+    result *= a;
+    return result;
+}
+
+template<typename T>
+Vec2<T> operator * ( const Vec2<T>& a, T b )
+{
+    Vec2<T> result( a );
     result *= b;
     return result;
 }
@@ -170,9 +183,9 @@ Vec2<T> operator * (const Vec2<T>& a, T b)
  * @brief divide vector with a single value
  */
 template<typename T>
-Vec2<T> operator / (const Vec2<T>& a, T b)
+Vec2<T> operator / ( const Vec2<T>& a, T b )
 {
-    Vec2<T> result(a);
+    Vec2<T> result( a );
     result /= b;
     return result;
 }
@@ -185,9 +198,9 @@ Vec2<T> operator / (const Vec2<T>& a, T b)
  * @return result in float type whose size is similar with T
  */
 template<typename T>
-typename Vec2<T>::FloatType operator * (const Vec2<T>& a, const Vec2<T>& b)
+typename Vec2<T>::FloatType operator * ( const Vec2<T>& a, const Vec2<T>& b )
 {
-    return typename Vec2<T>::FloatType(a.x) * typename Vec2<T>::FloatType(b.x) + typename Vec2<T>::FloatType(a.y) * typename Vec2<T>::FloatType(b.y);
+    return typename Vec2<T>::FloatType( a.x ) * typename Vec2<T>::FloatType( b.x ) + typename Vec2<T>::FloatType( a.y ) * typename Vec2<T>::FloatType( b.y );
 }
 
 /**
@@ -196,19 +209,19 @@ typename Vec2<T>::FloatType operator * (const Vec2<T>& a, const Vec2<T>& b)
  * @return result in float type whose size is similar with T
  */
 template<typename T>
-typename Vec2<T>::FloatType operator ^ (const Vec2<T>& a, const Vec2<T>& b)
+typename Vec2<T>::FloatType operator ^ ( const Vec2<T>& a, const Vec2<T>& b )
 {
-    return typename Vec2<T>::FloatType(a.x) * typename Vec2<T>::FloatType(b.y) - typename Vec2<T>::FloatType(a.y) * typename Vec2<T>::FloatType(b.x);
+    return typename Vec2<T>::FloatType( a.x ) * typename Vec2<T>::FloatType( b.y ) - typename Vec2<T>::FloatType( a.y ) * typename Vec2<T>::FloatType( b.x );
 }
 
 template<typename T>
-bool operator == (const Vec2<T>& a, const Vec2<T>& b)
+bool operator == ( const Vec2<T>& a, const Vec2<T>& b )
 {
     return a.x == b.x && a.y == b.y;
 }
 
 template<typename T>
-bool operator != (const Vec2<T>& a, const Vec2<T>& b)
+bool operator != ( const Vec2<T>& a, const Vec2<T>& b )
 {
     return a.x != b.x || a.y != b.y;
 }

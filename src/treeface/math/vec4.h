@@ -10,6 +10,7 @@
 #include <treecore/PlatformDefs.h>
 #include <treecore/SimdObject.h>
 #include <treecore/FloatUtils.h>
+#include <treecore/IntUtils.h>
 
 namespace treeface {
 
@@ -23,6 +24,7 @@ template<typename T>
 struct Vec4
 {
     typedef typename treecore::similar_float<T>::type FloatType;
+    typedef typename treecore::similar_int<T>::type IntType;
     typedef treecore::SimdObject<T, 4> DataType;
 
     TREECORE_ALIGNED_ALLOCATOR( Vec4 );
@@ -67,6 +69,12 @@ struct Vec4
         data.set_all( values );
     }
 
+    Vec4 operator - () const noexcept
+    {
+        DataType result = data ^ treecore::SimdObject<IntType, 4>( treecore::float_sign_mask<T>::value );
+        return Vec4( result );
+    }
+
     operator bool () const noexcept
     {
         return data.template get<0>() != T( 0 ) ||
@@ -75,11 +83,11 @@ struct Vec4
                data.template get<3>() != T( 0 );
     }
 
-    /**
-     * @brief assignment operator
-     * @param other: another vector object
-     * @return self
-     */
+    ///
+    /// \brief assignment operator
+    /// \param other: another vector object
+    /// \return self
+    ///
     Vec4& operator = ( const Vec4& other )
     {
         data = other.data;
@@ -313,6 +321,14 @@ Vec4<T> operator * ( const Vec4<T>& a, T b )
 {
     Vec4<T> result;
     result.data = a.data * typename Vec4<T>::DataType( b );
+    return result;
+}
+
+template<typename T>
+Vec4<T> operator * ( T a, const Vec4<T>& b )
+{
+    Vec4<T> result;
+    result.data = b.data * typename Vec4<T>::DataType( a );
     return result;
 }
 
