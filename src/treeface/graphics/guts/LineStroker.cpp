@@ -56,6 +56,9 @@ void LineStroker::cap_begin( const Vec2f& skeleton, const Vec2f& direction )
         break;
     }
 
+    part_left.add( skeleton + r, 0 );
+    part_right.add( skeleton - r, 0 );
+
     part_left.sunken  = false;
     part_right.sunken = false;
 
@@ -147,7 +150,12 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
 
     float turn_sine = v_prev ^ v_curr;
 
-    JointID joint_id1 = std::max( part_left.joint_ids.getLast(), part_right.joint_ids.getLast() );
+    JointID joint_id1;
+    {
+        JointID prev_id_left  = part_left.joint_ids.size() > 0 ? part_left.joint_ids.getLast() : 0;
+        JointID prev_id_right = part_right.joint_ids.size() > 0 ? part_right.joint_ids.getLast() : 0;
+        joint_id1 = std::max( prev_id_left, prev_id_right );
+    }
     JointID joint_id2 = joint_id1 + 1;
 
     // is turning
@@ -160,7 +168,6 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
         if (turn_sine > 0.0f)
         {
             SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "turn left" );
-                           sucker.rgba( SUCKER_BLACK, 0.5f );
                            sucker.draw_outline( part_right );
             )
             part_inner = &part_left;
@@ -169,7 +176,6 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
         else
         {
             SUCK_GEOM_BLK( OutlineSucker sucker( part_right, "turn right" );
-                           sucker.rgba( SUCKER_BLACK, 0.5f );
                            sucker.draw_outline( part_left );
             )
             part_inner = &part_right;
@@ -198,7 +204,6 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
         part_outer->add( p2 + r_curr * part_outer->side, joint_id2 );
 
         SUCK_GEOM_BLK( OutlineSucker sucker( *part_outer, "plot last two points for outer part" );
-                       sucker.rgba( SUCKER_BLACK, 0.5f );
                        sucker.draw_outline( *part_inner );
                        sucker.rgb( SUCKER_GREEN );
                        sucker.draw_vtx( part_outer->outline.size() - 2 );
@@ -209,7 +214,6 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
         part_inner->process_inner( *part_outer, p1, joint_id1, p2, ortho_curr, style );
 
         SUCK_GEOM_BLK( OutlineSucker sucker( *part_inner, "inner part plotted" );
-                       sucker.rgba( SUCKER_BLACK, 0.5f );
                        sucker.draw_outline( *part_outer );
         )
     }
@@ -265,7 +269,6 @@ void LineStroker::close_stroke( const Vec2f& v_prev, const Vec2f& p, const Vec2f
             part_inner = &part_left;
             part_outer = &part_right;
             SUCK_GEOM_BLK( OutlineSucker sucker( *part_inner, "turn left" );
-                           sucker.rgba( SUCKER_BLACK, 0.5f );
                            sucker.draw_outline( *part_outer );
             )
         }
@@ -274,7 +277,6 @@ void LineStroker::close_stroke( const Vec2f& v_prev, const Vec2f& p, const Vec2f
             part_inner = &part_right;
             part_outer = &part_left;
             SUCK_GEOM_BLK( OutlineSucker sucker( *part_inner, "turn right" );
-                           sucker.rgba( SUCKER_BLACK, 0.5f );
                            sucker.draw_outline( *part_outer );
             )
         }
@@ -297,7 +299,6 @@ void LineStroker::close_stroke( const Vec2f& v_prev, const Vec2f& p, const Vec2f
         part_outer->add( p + r_next * part_outer->side, joint_id2 );
 
         SUCK_GEOM_BLK( OutlineSucker sucker( *part_outer, "last point of outer side" );
-                       sucker.rgba( SUCKER_BLACK, 0.5f );
                        sucker.draw_outline( *part_outer );
                        sucker.rgb( SUCKER_GREEN );
                        sucker.draw_vtx( part_outer->outline.size() - 1 );
@@ -306,7 +307,6 @@ void LineStroker::close_stroke( const Vec2f& v_prev, const Vec2f& p, const Vec2f
         // process inner side
         part_inner->close_inner();
         SUCK_GEOM_BLK( OutlineSucker sucker( *part_inner, "inner part plotted" );
-                       sucker.rgba( SUCKER_BLACK, 0.5f );
                        sucker.draw_outline( *part_outer );
         )
     }
@@ -342,23 +342,21 @@ inline bool _should_advance_( const Array<JointID>& ids_self, const Array<JointI
     if (i_peer == ids_peer.size() - 1)
         return true;
 
-    if (ids_self[i_self + 1] == ids_self[i_self])
-        return true;
-
-    if (ids_peer[i_peer + 1] == ids_peer[i_peer])
-        return false;
-
-    // now both side have increasing next
-    if (ids_self[i_self] <= ids_peer[i_peer])
+    // now both side have next thing
+    if (ids_self[i_self] < ids_peer[i_peer])
     {
         return true;
     }
-    else
+    else if (ids_self[i_self] == ids_peer[i_peer])
     {
         if (ids_self[i_self + 1] <= ids_peer[i_peer + 1])
             return true;
         else
             return false;
+    }
+    else
+    {
+        return false;
     }
 }
 
@@ -432,16 +430,16 @@ void LineStroker::triangulate( treecore::Array<StrokeVertex>& result_vertices, t
         {
             i_right++;
             idx_right = result_vertices.size();
-            result_vertices.add( {part_right.outline[0],
+            result_vertices.add( {part_right.outline[i_right],
                                   part_right.get_tangent_unorm( i_right, path_is_closed ),
                                   trip_right[i_right] / trip_right.getLast(),
                                   1.0f} );
 
-            SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "left move on" );
+            SUCK_GEOM_BLK( OutlineSucker sucker( part_right, "right move on" );
                            sucker.rgba( SUCKER_GREEN, 0.5f );
-                           sucker.draw_vtx( i_left_prev );
+                           sucker.draw_vtx( i_right_prev );
                            sucker.rgb( SUCKER_GREEN );
-                           sucker.draw_vtx( i_left );
+                           sucker.draw_vtx( i_right );
             )
         }
 
@@ -456,9 +454,9 @@ void LineStroker::triangulate( treecore::Array<StrokeVertex>& result_vertices, t
             SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "fill" );
                            sucker.draw_outline( part_right );
                            sucker.rgba( SUCKER_GREEN, 0.7f );
-                           sucker.draw_trig( part_left.outline[idx_left_prev],
-                                             part_right.outline[idx_right_prev],
-                                             part_left.outline[idx_left] );
+                           sucker.draw_trig( result_vertices[idx_left_prev].position,
+                                             result_vertices[idx_right_prev].position,
+                                             result_vertices[idx_left].position );
             )
 
             if (right_move_on)
@@ -471,9 +469,9 @@ void LineStroker::triangulate( treecore::Array<StrokeVertex>& result_vertices, t
                 SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "fill" );
                                sucker.draw_outline( part_right );
                                sucker.rgba( SUCKER_GREEN, 0.7f );
-                               sucker.draw_trig( part_right.outline[idx_right_prev],
-                                                 part_right.outline[idx_right],
-                                                 part_left.outline[idx_left] );
+                               sucker.draw_trig( result_vertices[idx_right_prev].position,
+                                                 result_vertices[idx_right].position,
+                                                 result_vertices[idx_left].position );
                 )
             }
         }
@@ -489,9 +487,9 @@ void LineStroker::triangulate( treecore::Array<StrokeVertex>& result_vertices, t
                 SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "fill" );
                                sucker.draw_outline( part_right );
                                sucker.rgba( SUCKER_GREEN, 0.7f );
-                               sucker.draw_trig( part_left.outline[idx_left_prev],
-                                                 part_right.outline[idx_right_prev],
-                                                 part_right.outline[idx_right] );
+                               sucker.draw_trig( result_vertices[idx_left_prev].position,
+                                                 result_vertices[idx_right_prev].position,
+                                                 result_vertices[idx_right].position );
                 )
             }
             else

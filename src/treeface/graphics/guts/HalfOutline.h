@@ -14,6 +14,8 @@ namespace treeface
 
 struct HalfOutline
 {
+    HalfOutline( float side ): side( side ) {}
+
     void add( const Vec2f& vtx, JointID id )
     {
         jassert( outline.size() == joint_ids.size() );
@@ -111,11 +113,11 @@ struct HalfOutline
 
     void accum_trip( treecore::Array<float>& results ) const;
 
-    treecore::Array<Vec2f> outline;
-    treecore::Array<BBox2f> outline_bounds;
+    treecore::Array<Vec2f>   outline;
+    treecore::Array<BBox2f>  outline_bounds;
     treecore::Array<JointID> joint_ids;
     float side; // 1 for left, -1 for right
-    bool sunken;
+    bool  sunken = false;
 };
 
 } // namespace treeface

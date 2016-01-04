@@ -147,7 +147,6 @@ void HalfOutline::process_inner( const HalfOutline&         outer_peer,
     Vec2f p2 = skeleton2 + r_curr;
 
     SUCK_GEOM_BLK( OutlineSucker sucker( *this, "process inner" );
-                   sucker.rgba( SUCKER_BLACK, 0.5 );
                    sucker.draw_outline( outer_peer );
                    sucker.rgb( SUCKER_BLACK );
                    sucker.draw_vtx( p1 );
@@ -164,7 +163,6 @@ void HalfOutline::process_inner( const HalfOutline&         outer_peer,
             sunken = false;
 
             SUCK_GEOM_BLK( OutlineSucker sucker( *this, "inner solved in same edge" );
-                           sucker.rgba( SUCKER_BLACK, 0.5 );
                            sucker.draw_outline( outer_peer );
                            sucker.rgb( SUCKER_GREEN );
                            sucker.draw_vtx( p_cross );
@@ -184,7 +182,6 @@ void HalfOutline::process_inner( const HalfOutline&         outer_peer,
             sunken = false;
 
             SUCK_GEOM_BLK( OutlineSucker sucker( *this, "inner solved in peer edge" );
-                           sucker.rgba( SUCKER_BLACK, 0.5 );
                            sucker.draw_outline( outer_peer );
                            sucker.rgb( SUCKER_GREEN );
                            sucker.draw_vtx( p_cross );
@@ -196,7 +193,6 @@ void HalfOutline::process_inner( const HalfOutline&         outer_peer,
     }
 
     SUCK_GEOM_BLK( OutlineSucker sucker( *this, "inner unsolved" );
-                   sucker.rgba( SUCKER_BLACK, 0.5 );
                    sucker.draw_outline( outer_peer );
                    sucker.rgb( SUCKER_RED );
                    sucker.draw_vtx( p1 );
@@ -238,10 +234,7 @@ void HalfOutline::close_inner()
         }
     }
 
-    SUCK_GEOM_BLK( OutlineSucker sucker( *this, "failed to close inner part" );
-                   sucker.rgb( SUCKER_RED );
-                   sucker.draw_outline( *this );
-    )
+    SUCK_GEOM_BLK( OutlineSucker sucker( *this, "failed to close inner part" ); )
 }
 
 void HalfOutline::accum_trip( treecore::Array<float>& results ) const

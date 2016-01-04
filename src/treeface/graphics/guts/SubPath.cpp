@@ -18,7 +18,6 @@ void SubPath::stroke_complex(treecore::Array<StrokeVertex>& result_vertices,
     //
     // generate stroke outline
     //
-    Array<Vec2f> skeleton;
     Vec2f v_begin;
     Vec2f v_prev;
 
@@ -27,24 +26,28 @@ void SubPath::stroke_complex(treecore::Array<StrokeVertex>& result_vertices,
     {
         const PathGlyph& glyph_prev = glyphs[i_glyph - 1];
         const PathGlyph& glyph = glyphs[i_glyph];
-        glyph.segment(glyph_prev.end, skeleton);
+
+        Array<Vec2f> curr_glyph_skeleton;
+        glyph.segment(glyph_prev.end, curr_glyph_skeleton);
+
+        jassert(curr_glyph_skeleton.size());
 
         // first
         if (i_glyph == 1)
         {
-            v_begin = skeleton.getFirst() - glyphs[0].end;
+            v_begin = curr_glyph_skeleton.getFirst() - glyphs[0].end;
             v_begin.normalize();
             v_prev = v_begin;
             if (!closed)
                 stroker.cap_begin(glyph_prev.end, v_begin);
         }
 
-        for (int i = 0; i < skeleton.size(); i++)
+        for (int i = 0; i < curr_glyph_skeleton.size(); i++)
         {
             if (i == 0)
-                v_prev = stroker.extend_stroke(v_prev, glyph_prev.end, skeleton[i], true);
+                v_prev = stroker.extend_stroke(v_prev, glyph_prev.end, curr_glyph_skeleton[i], true);
             else
-                v_prev = stroker.extend_stroke(v_prev, skeleton[i-1], skeleton[i], false);
+                v_prev = stroker.extend_stroke(v_prev, curr_glyph_skeleton[i-1], curr_glyph_skeleton[i], false);
         }
     }
 

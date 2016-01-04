@@ -90,6 +90,10 @@ add_executable(polygon_monotone polygon_monotone.cpp)
 target_use_treecore(polygon_monotone)
 target_link_libraries(polygon_monotone treeface)
 
+add_executable(line_stroke line_stroke.cpp)
+target_link_libraries(line_stroke treeface)
+target_use_treecore(line_stroke)
+
 add_executable(sdl_window_prop sdl_window_prop.cpp)
 target_link_libraries(sdl_window_prop
     ${SDL2_LIBRARY}

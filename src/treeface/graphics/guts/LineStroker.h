@@ -16,19 +16,20 @@ namespace treeface
 
 struct LineStroker
 {
-    LineStroker(const StrokeStyle& pub_style)
-        : style{pub_style.cap, pub_style.join, std::cos(pub_style.miter_cutoff), pub_style.width / 2}
-    {
-    }
+    LineStroker( const StrokeStyle& pub_style )
+        : style{ pub_style.cap, pub_style.join, std::cos( pub_style.miter_cutoff ), pub_style.width / 2 }
+        , part_left( 1.0f )
+        , part_right( -1.0f )
+    {}
 
-    void cap_begin(const Vec2f& skeleton, const Vec2f& direction);
-    void cap_end(const Vec2f& skeleton, const Vec2f& direction);
+    void cap_begin( const Vec2f& skeleton, const Vec2f& direction );
+    void cap_end( const Vec2f& skeleton, const Vec2f& direction );
 
-    Vec2f extend_stroke(const Vec2f& v_prev, const Vec2f& p1, const Vec2f& p2, bool use_line_join);
+    Vec2f extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Vec2f& p2, bool use_line_join );
 
-    void close_stroke(const Vec2f& v_prev, const Vec2f& p, const Vec2f& v_next);
+    void close_stroke( const Vec2f& v_prev, const Vec2f& p, const Vec2f& v_next );
 
-    void triangulate(treecore::Array<StrokeVertex>& result_vertices, treecore::Array<IndexType>& result_indices, bool path_is_closed) const;
+    void triangulate( treecore::Array<StrokeVertex>& result_vertices, treecore::Array<IndexType>& result_indices, bool path_is_closed ) const;
 
     HalfOutline part_left;
     HalfOutline part_right;

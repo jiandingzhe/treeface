@@ -385,17 +385,40 @@ OutlineSucker::OutlineSucker( const HalfOutline&      outline,
     float x_max = std::numeric_limits<float>::min();
     float y_max = std::numeric_limits<float>::min();
 
-    for (const Vec2f& vtx : outline.outline)
+    if (outline.outline.size() > 0)
     {
-        if (x_min > vtx.x) x_min = vtx.x;
-        if (y_min > vtx.y) y_min = vtx.y;
-        if (x_max < vtx.x) x_max = vtx.x;
-        if (y_max < vtx.y) y_max = vtx.y;
+        for (const Vec2f& vtx : outline.outline)
+        {
+            if (x_min > vtx.x) x_min = vtx.x;
+            if (y_min > vtx.y) y_min = vtx.y;
+            if (x_max < vtx.x) x_max = vtx.x;
+            if (y_max < vtx.y) y_max = vtx.y;
+        }
+    }
+    else
+    {
+        x_min = -1.0f;
+        x_max = 1.0f;
+        y_min = -1.0f;
+        y_max = 1.0f;
     }
 
     // get scales
-    width  = x_max - x_min;
-    height = y_max - y_min;
+    {
+        float content_w = x_max - x_min;
+        float content_h = y_max - y_min;
+
+        if (content_w <= 0.0f) content_w = 2.0f;
+        if (content_h <= 0.0f) content_h = 2.0f;
+
+        if (x_min > -content_w / 5) x_min = -content_w / 5;
+        if (x_max < content_w / 5) x_max = content_w / 5;
+        if (y_min > -content_h / 5) y_min = -content_h / 5;
+        if (y_max < content_h / 5) y_max = content_h / 5;
+
+        width  = x_max - x_min;
+        height = y_max - y_min;
+    }
 
     line_w = std::sqrt( width * height ) / 200;
 
@@ -410,12 +433,19 @@ OutlineSucker::OutlineSucker( const HalfOutline&      outline,
     }
 
     // create cairo stuffs
-    float border = std::min( width * 0.5, height * 0.5 );
-    surface = cairo_svg_surface_create( file_out.toRawUTF8(), (width + border * 2) * 5, (height + border * 2) * 5 );
+    float scale = 1.0f;
+    if (width * height < 40000.0f)
+    {
+        scale = sqrt( 40000.0f / width / height );
+        printf( "too small, enlarge %f\n", scale );
+    }
+
+    float border = std::max( width / 4, height / 4 );
+    surface = cairo_svg_surface_create( file_out.toRawUTF8(), (width + border * 2) * scale, (height + border * 2) * scale );
     context = cairo_create( surface );
 
     // set to initial state
-    cairo_scale( context, 5, 5 );
+    cairo_scale( context, scale, scale );
     cairo_translate( context, border,      border );
     cairo_translate( context,      -x_min, height + y_min );
 
@@ -444,12 +474,20 @@ OutlineSucker::OutlineSucker( const HalfOutline&      outline,
         cairo_text_extents_t ext;
         cairo_text_extents( context, title.toRawUTF8(), &ext );
 
-        cairo_move_to( context, (width - ext.width) / 2, -(height - ext.height) / 2 );
+        cairo_move_to( context, (x_min + x_max - ext.width) / 2, -(y_min + y_max - ext.height) / 2 );
         cairo_set_source_rgba( context, 0.0, 0.0, 0.0, 1.0 );
         cairo_show_text( context, title.toRawUTF8() );
     }
 
     cairo_restore( context );
+}
+
+OutlineSucker::~OutlineSucker()
+{
+    if (context)
+        cairo_destroy( context );
+    if (surface)
+        cairo_surface_destroy( surface );
 }
 
 void OutlineSucker::draw_vtx( int i_outline ) const
@@ -495,7 +533,7 @@ void OutlineSucker::draw_vector( const Vec2f& start, const Vec2f& end ) const
 
 void OutlineSucker::draw_unit_vector( const Vec2f& start, const Vec2f& v ) const
 {
-    Vec2f end = start + v * line_w * 10.0f;
+    Vec2f end = start + v * line_w * 20.0f;
     draw_vector( start, end );
 }
 
@@ -514,28 +552,63 @@ void OutlineSucker::text( const treecore::String& content, const Vec2f& position
 
 void OutlineSucker::draw_outline( const HalfOutline& content ) const
 {
+    if (content.outline.size() == 0)
+        return;
+
     cairo_save( context );
+
+    if (content.side > 0) cairo_set_source_rgb( context, SUCKER_ORANGE );
+    else cairo_set_source_rgb( context, SUCKER_CYAN );
+
+    // half outline skeleton
+    cairo_new_path( context );
 
     cairo_set_line_width( context, line_w );
 
-    for (const Vec2f& p : content.outline)
+    for (int i = 0; i < content.outline.size(); i++)
+    {
+        const Vec2f& p = content.outline[i];
         cairo_line_to( context, p.x, -p.y );
+    }
 
     cairo_stroke( context );
 
-    if (content.sunken)
-        cairo_set_source_rgb( context, SUCKER_RED );
-    else
-        cairo_set_source_rgb( context, SUCKER_GREEN );
+    // half outline joint IDs
+    cairo_save(context);
+    cairo_set_source_rgba(context, SUCKER_BLACK, 0.5f);
+    cairo_set_font_size(context, line_w * 5);
+    for (int i = 0; i < content.outline.size(); i++)
+    {
+        const Vec2f& p = content.outline[i];
+        cairo_move_to( context, p.x, -p.y );
+        cairo_show_text(context, String(content.joint_ids[i]).toRawUTF8());
+    }
+    cairo_restore(context);
 
-    cairo_arc( context, content.outline.getLast().x, -content.outline.getLast().y, line_w * 5, 0, treeface::PI * 2 );
-    cairo_close_path( context );
+    // end mark
+    const Vec2f& last = content.outline.getLast();
+    float mark_sz = line_w * 5;
+
+    cairo_new_path(context);
+    if (content.sunken)
+    {
+        cairo_move_to(context, last.x - mark_sz, -(last.y - mark_sz));
+        cairo_line_to(context, last.x + mark_sz, -(last.y + mark_sz));
+        cairo_move_to(context, last.x - mark_sz, -(last.y + mark_sz));
+        cairo_line_to(context, last.x + mark_sz, -(last.y - mark_sz));
+    }
+    else
+    {
+        cairo_arc( context, last.x, -last.y, line_w * 5, 0, treeface::PI * 2 );
+        cairo_close_path( context );
+    }
+
     cairo_stroke( context );
 
     cairo_restore( context );
 }
 
-void OutlineSucker::draw_trig(const Vec2f& p1, const Vec2f& p2, const Vec2f& p3) const
+void OutlineSucker::draw_trig( const Vec2f& p1, const Vec2f& p2, const Vec2f& p3 ) const
 {
     cairo_new_path( context );
     cairo_move_to( context, p1.x, -p1.y );
