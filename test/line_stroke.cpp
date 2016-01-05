@@ -1,4 +1,5 @@
 #include "treeface/graphics/guts/SubPath.h"
+#include "treeface/math/constants.h"
 
 #include <treecore/FileInputStream.h>
 #include <treecore/FileOutputStream.h>
@@ -66,7 +67,7 @@ treecore::String toString<LineJoin>( LineJoin join )
 LineJoin line_join = LINE_JOIN_BEVEL;
 LineCap line_cap   = LINE_CAP_BUTT;
 float line_width   = 1.0f;
-float miter_cutoff = 120;
+float miter_cutoff = 150;
 File file_in;
 File file_out;
 bool close_path = false;
@@ -204,7 +205,7 @@ int main( int argc, const char* argv[] )
     // do line stroke
     Array<StrokeVertex> vertices;
     Array<IndexType> indices;
-    path.stroke_complex( vertices, indices, StrokeStyle{line_cap, line_join, miter_cutoff, line_width} );
+    path.stroke_complex( vertices, indices, StrokeStyle{line_cap, line_join, miter_cutoff * treeface::PI / 180, line_width} );
 
     // write result
     file_out.deleteFile();

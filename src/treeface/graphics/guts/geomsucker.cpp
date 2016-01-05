@@ -440,7 +440,7 @@ OutlineSucker::OutlineSucker( const HalfOutline&      outline,
         printf( "too small, enlarge %f\n", scale );
     }
 
-    float border = std::max( width / 4, height / 4 );
+    float border = std::max( width / 2, height / 2 );
     surface = cairo_svg_surface_create( file_out.toRawUTF8(), (width + border * 2) * scale, (height + border * 2) * scale );
     context = cairo_create( surface );
 
