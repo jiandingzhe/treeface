@@ -240,7 +240,7 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
         part_outer->add( p1 + r_curr * part_outer->side, joint_id1 );
         part_outer->add( p2 + r_curr * part_outer->side, joint_id2 );
 
-        SUCK_GEOM_BLK( OutlineSucker sucker( *part_outer, "plot last two points for outer part" );
+        SUCK_GEOM_BLK( OutlineSucker sucker( *part_outer, "plotted last two points for outer part" );
                        sucker.draw_outline( *part_inner );
                        sucker.rgb( SUCKER_GREEN );
                        sucker.draw_vtx( part_outer->outline.size() - 2 );
@@ -272,31 +272,31 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
     return v_curr;
 }
 
-void LineStroker::close_stroke_end( const Vec2f& v_prev, const Vec2f& p, const Vec2f& v_next )
+void LineStroker::close_stroke_end( const Vec2f& skeleton_last, const Vec2f& skeleton_first, const Vec2f& v_begin )
 {
     jassert( !stroke_done );
     jassert( !(part_left.sunken && part_right.sunken) ); // beishuiyanmo, buzhisuocuo, tiqianshejing
-    jassert( std::abs( v_prev.length2() - 1.0f ) < 0.0001f );
-    jassert( std::abs( v_next.length2() - 1.0f ) < 0.0001f );
+    jassert( skeleton_last != skeleton_first );
+    jassert( std::abs( v_begin.length2() - 1.0f ) < 0.0001f );
 
     SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "close stroke" );
                    sucker.draw_outline( part_right );
-                   sucker.draw_vtx( p );
-                   sucker.draw_unit_vector( p, v_next );
-                   sucker.rgba( SUCKER_BLACK, 0.5f );
-                   sucker.draw_unit_vector( p, v_prev * -1.0f );
+                   sucker.draw_vtx( skeleton_last );
+                   sucker.draw_vtx( skeleton_first );
+                   sucker.draw_unit_vector( skeleton_first, v_begin );
     );
 
-    Vec2f ortho_prev = v_prev.get_ortholog();
-    Vec2f ortho_next = v_next.get_ortholog();
+    Vec2f v_curr = skeleton_first - skeleton_last;
+    float l_curr = v_curr.normalize();
 
-    Vec2f r_prev = ortho_prev * style.half_width;
-    Vec2f r_next = ortho_next * style.half_width;
+    Vec2f ortho_curr  = v_curr.get_ortholog();
+    Vec2f ortho_begin = v_begin.get_ortholog();
 
-    JointID joint_id1 = std::max( part_left.joint_ids.getLast(), part_right.joint_ids.getLast() );
-    JointID joint_id2 = joint_id1 + 1;
+    Vec2f r_curr  = ortho_curr * style.half_width;
+    Vec2f r_begin = ortho_begin * style.half_width;
 
-    float turn_sine = v_prev % v_next;
+    JointID end_id    = std::max( part_left.joint_ids.getLast(), part_right.joint_ids.getLast() );
+    float   turn_sine = v_curr % v_begin;
 
     // is turning
     if (turn_sine != 0.0f)
@@ -323,33 +323,87 @@ void LineStroker::close_stroke_end( const Vec2f& v_prev, const Vec2f& p, const V
         }
 
         // process outer side
-        part_outer->salvage( p, r_prev, joint_id1 );
+        part_outer->salvage( skeleton_first, r_curr, end_id );
 
         switch (style.join)
         {
         case LINE_JOIN_MITER:
-            part_outer->add_miter_point( p, joint_id1, ortho_prev, ortho_next, style );
+            part_outer->add_miter_point( skeleton_first, end_id, ortho_curr, ortho_begin, style );
             break;
         case LINE_JOIN_ROUND:
-            part_outer->add_round_points( p, joint_id1, ortho_prev, ortho_next, style );
+            part_outer->add_round_points( skeleton_first, end_id, ortho_curr, ortho_begin, style );
             break;
         case LINE_JOIN_BEVEL:
             break;
         }
 
-        part_outer->add( p + r_next * part_outer->side, joint_id2 );
+        part_outer->add( skeleton_first + r_begin * part_outer->side, end_id );
 
         SUCK_GEOM_BLK( OutlineSucker sucker( *part_outer, "last point of outer side" );
                        sucker.draw_outline( *part_outer );
                        sucker.rgb( SUCKER_GREEN );
-                       sucker.draw_vtx( part_outer->outline.size() - 1 );
-        )
+                       sucker.draw_vtx( part_outer->outline.getLast() );
+        );
 
         // process inner side
-        part_inner->close_inner();
-        SUCK_GEOM_BLK( OutlineSucker sucker( *part_inner, "inner part plotted" );
-                       sucker.draw_outline( *part_outer );
-        )
+        {
+            Vec2f head_cross;
+            int   i_head = part_inner->find_cross_from_head( skeleton_last + r_curr * part_inner->side,
+                                                             skeleton_first + r_curr * part_inner->side,
+                                                             head_cross,
+                                                             TAIL_FIND_LIMIT );
+
+            if (0 <= i_head && i_head < part_inner->size() - 2)
+            {
+                // process head
+                if (i_head > 0)
+                {
+                    SUCK_GEOM_BLK( OutlineSucker sucker( *part_inner, "shift from inner head" );
+                                   sucker.rgb( SUCKER_RED );
+                                   for (int i = 0; i < i_head; i++)
+                                       sucker.draw_vtx( i );
+                    );
+
+                    part_inner->outline.removeRange( 0, i_head );
+                    part_inner->joint_ids.removeRange( 0, i_head );
+                    part_inner->outline_bounds.removeRange( 0, i_head );
+
+                    SUCK_GEOM_BLK( OutlineSucker sucker( *part_inner, "after shift" ); );
+                }
+
+                part_inner->outline[0] = head_cross;
+                part_inner->outline_bounds[0] = BBox2f( part_inner->outline[0], part_inner->outline[1] );
+
+                SUCK_GEOM_BLK( OutlineSucker sucker( *part_inner, "inner head modified" );
+                               sucker.rgb( SUCKER_BLUE );
+                               sucker.draw_vtx( part_inner->outline.getFirst() );
+                );
+
+                // process tail
+                SUCK_GEOM_BLK( OutlineSucker sucker( *part_inner, "modify tail" );
+                               sucker.rgb( SUCKER_BLUE );
+                               sucker.draw_vtx( head_cross );
+                               sucker.draw_vector( part_inner->outline.getLast(), head_cross );
+                );
+
+                int last_i = part_inner->size() - 1;
+                part_inner->outline[last_i] = head_cross;
+                part_inner->outline_bounds.getLast() = BBox2f( part_inner->outline[last_i], part_inner->outline[last_i - 1] );
+
+                SUCK_GEOM_BLK( OutlineSucker sucker( *part_inner, "inner part closed" );
+                               sucker.draw_outline( *part_outer );
+                );
+            }
+            else
+            {
+                part_inner->add( skeleton_first + r_begin * part_inner->side, end_id );
+                SUCK_GEOM_BLK( OutlineSucker sucker( *part_inner, "inner part not closed, link back directly" );
+                               sucker.draw_outline( *part_outer );
+                               sucker.rgb( SUCKER_GREEN );
+                               sucker.draw_vtx( part_inner->outline.getLast() );
+                )
+            }
+        }
     }
     //
     // no turn

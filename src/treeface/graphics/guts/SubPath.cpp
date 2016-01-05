@@ -32,7 +32,7 @@ void SubPath::stroke_complex( treecore::Array<StrokeVertex>& result_vertices,
 
         jassert( curr_glyph_skeleton.size() );
 
-        // first
+        // first glyph, render cap
         if (i_glyph == 1)
         {
             v_begin = curr_glyph_skeleton.getFirst() - glyphs[0].end;
@@ -45,6 +45,7 @@ void SubPath::stroke_complex( treecore::Array<StrokeVertex>& result_vertices,
                 stroker.cap_begin( glyph_prev.end, v_begin );
         }
 
+        // render line segments of this glyph
         for (int i = 0; i < curr_glyph_skeleton.size(); i++)
         {
             if (i == 0)
@@ -52,19 +53,41 @@ void SubPath::stroke_complex( treecore::Array<StrokeVertex>& result_vertices,
             else
                 v_prev = stroker.extend_stroke( v_prev, curr_glyph_skeleton[i - 1], curr_glyph_skeleton[i], false );
         }
-
-        if (closed &&
-            i_glyph == glyphs.size() - 1 &&
-            curr_glyph_skeleton.getLast() != glyphs.getFirst().end)
-        {
-            v_prev = stroker.extend_stroke(v_prev, curr_glyph_skeleton.getLast(), glyphs.getFirst().end, true);
-        }
     }
 
     if (closed)
-        stroker.close_stroke_end( v_prev, glyphs.getFirst().end, v_begin );
+    {
+        const Vec2f& p_last  = glyphs.getLast().end;
+        const Vec2f& p_first = glyphs.getFirst().end;
+
+        if (p_last != p_first)
+        {
+            stroker.extend_stroke( v_prev, p_last, p_first, true );
+
+            SUCK_GEOM_BLK( OutlineSucker sucker( stroker.part_left, "going to close stroke using actual end" );
+                           sucker.draw_outline( stroker.part_right );
+                           sucker.draw_vtx( p_last );
+                           sucker.draw_vtx( p_first );
+                           sucker.draw_unit_vector( p_first, v_begin );
+            )
+            stroker.close_stroke_end( p_last, p_first, v_begin );
+        }
+        else
+        {
+            Vec2f p_prev_calc = p_first - v_prev * (style.width * 2);
+            SUCK_GEOM_BLK( OutlineSucker sucker( stroker.part_left, "end overlap start, going to close stroke using calculated end" );
+                           sucker.draw_outline( stroker.part_right );
+                           sucker.draw_vtx( p_prev_calc );
+                           sucker.draw_vtx( p_first );
+                           sucker.draw_unit_vector( p_first, v_begin );
+            )
+            stroker.close_stroke_end( p_prev_calc, p_first, v_begin );
+        }
+    }
     else
+    {
         stroker.cap_end( glyphs.getLast().end, v_prev );
+    }
 
     //
     // triangulate stroke outline, which provides final result

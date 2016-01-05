@@ -3,8 +3,74 @@
 #include "treeface/math/constants.h"
 #include "treeface/math/mat2.h"
 
+using namespace treecore;
+
 namespace treeface
 {
+
+int HalfOutline::find_cross_from_head( const Vec2f& p1, const Vec2f& p2, Vec2f& p_cross, int step_limit ) const
+{
+    jassert( outline.size() > 1 );
+    jassert( outline.size() == outline_bounds.size() + 1 );
+
+    SUCK_GEOM_BLK( OutlineSucker sucker( *this, "find cross from tail" );
+                   sucker.draw_vtx( p1 );
+                   sucker.draw_vtx( p2 );
+    );
+
+    const BBox2f bound_input( p1, p2 );
+
+    for (int i = 0; i < outline.size() && i < step_limit; i++)
+    {
+
+        if (bound_input ^ outline_bounds[i])
+        {
+            const Vec2f& p3 = outline[i];
+            const Vec2f& p4 = outline[i + 1];
+
+            if ( cross_test_inc( p1, p2, p3, p4, p_cross ) )
+            {
+                SUCK_GEOM_BLK( OutlineSucker sucker( *this, "got cross" );
+                               sucker.draw_vtx( p1 );
+                               sucker.draw_vtx( p2 );
+                               sucker.draw_vector( p1, p2 );
+                               sucker.rgb( SUCKER_GREEN );
+                               sucker.draw_vtx( i );
+                               sucker.draw_vtx( i + 1 );
+                               sucker.draw_vtx( p_cross );
+                )
+                return i;
+            }
+
+            SUCK_GEOM_BLK( OutlineSucker sucker( *this, "not cross" );
+                           sucker.draw_vtx( p1 );
+                           sucker.draw_vtx( p2 );
+                           sucker.rgb( SUCKER_RED );
+                           sucker.draw_vtx( i );
+                           sucker.draw_vtx( i + 1 );
+                           sucker.draw_vtx( p_cross );
+            )
+        }
+        else
+        {
+            SUCK_GEOM_BLK( OutlineSucker sucker( *this, "not cross by bbox" );
+                           sucker.draw_vtx( p1 );
+                           sucker.draw_vtx( p2 );
+                           sucker.rgb( SUCKER_RED );
+                           sucker.draw_vtx( i );
+                           sucker.draw_vtx( i + 1 );
+            )
+        }
+    }
+
+    SUCK_GEOM_BLK( OutlineSucker sucker( *this, "failed to find cross" );
+                   sucker.rgb( SUCKER_RED );
+                   sucker.draw_vtx( p1 );
+                   sucker.draw_vtx( p2 );
+    )
+
+    return -1;
+}
 
 int HalfOutline::find_cross_from_tail( const Vec2f& p1, const Vec2f& p2, Vec2f& p_cross, int step_limit ) const
 {
@@ -29,26 +95,35 @@ int HalfOutline::find_cross_from_tail( const Vec2f& p1, const Vec2f& p2, Vec2f& 
 
             if ( cross_test_inc( p1, p2, p3, p4, p_cross ) )
             {
-                SUCK_GEOM_BLK( OutlineSucker sucker( *this, "find cross from tail" );
+                SUCK_GEOM_BLK( OutlineSucker sucker( *this, "got cross" );
                                sucker.draw_vtx( p1 );
                                sucker.draw_vtx( p2 );
+                               sucker.draw_vector( p1, p2 );
                                sucker.rgb( SUCKER_GREEN );
                                sucker.draw_vtx( i );
                                sucker.draw_vtx( i + 1 );
                                sucker.draw_vtx( p_cross );
-                               sucker.text( "got cross", p_cross );
                 )
                 return i;
             }
 
-            SUCK_GEOM_BLK( OutlineSucker sucker( *this, "find cross from tail" );
+            SUCK_GEOM_BLK( OutlineSucker sucker( *this, "not cross" );
                            sucker.draw_vtx( p1 );
                            sucker.draw_vtx( p2 );
                            sucker.rgb( SUCKER_RED );
                            sucker.draw_vtx( i );
                            sucker.draw_vtx( i + 1 );
                            sucker.draw_vtx( p_cross );
-                           sucker.text( "not cross", p_cross );
+            )
+        }
+        else
+        {
+            SUCK_GEOM_BLK( OutlineSucker sucker( *this, "not cross by bbox" );
+                           sucker.draw_vtx( p1 );
+                           sucker.draw_vtx( p2 );
+                           sucker.rgb( SUCKER_RED );
+                           sucker.draw_vtx( i );
+                           sucker.draw_vtx( i + 1 );
             )
         }
     }
@@ -220,40 +295,6 @@ void HalfOutline::process_inner( const HalfOutline&         outer_peer,
     sunken = true;
 }
 
-void HalfOutline::close_inner()
-{
-    IndexType id_last = joint_ids.getLast();
-
-    SUCK_GEOM_BLK( OutlineSucker sucker( *this, "close inner part" ); )
-
-    for (int i = 0; i < TAIL_FIND_LIMIT && i < outline.size() - 1; i++)
-    {
-        Vec2f cross;
-        int   i_tail = find_cross_from_tail( outline[i], outline[i + 1], cross, TAIL_FIND_LIMIT );
-
-        if (i_tail >= 0 && i_tail > i)
-        {
-            // modify tail
-            resize( i_tail + 1 );
-            add( cross, id_last );
-
-            // modify head
-            outline.removeRange( 0, i );
-            outline_bounds.removeRange( 0, i );
-            joint_ids.removeRange( 0, i );
-
-            outline[0] = cross;
-            outline_bounds[0] = BBox2f( outline[0], outline[1] );
-            joint_ids[0] = 0;
-
-            SUCK_GEOM_BLK( OutlineSucker sucker( *this, "inner part closed" ); )
-
-            return;
-        }
-    }
-
-    SUCK_GEOM_BLK( OutlineSucker sucker( *this, "failed to close inner part" ); )
-}
 
 void HalfOutline::accum_trip( treecore::Array<float>& results ) const
 {

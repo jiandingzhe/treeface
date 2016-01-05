@@ -68,6 +68,7 @@ struct HalfOutline
                            const Vec2f&               ortho_curr,
                            const InternalStrokeStyle& style );
 
+    int find_cross_from_head( const Vec2f& p1, const Vec2f& p2, Vec2f& result, int step_limit ) const;
     int find_cross_from_tail( const Vec2f& p1, const Vec2f& p2, Vec2f& result, int step_limit ) const;
 
     void process_inner( const HalfOutline&         outer_peer,
@@ -76,8 +77,6 @@ struct HalfOutline
                         const Vec2f&               skeleton2,
                         const Vec2f&               ortho_curr,
                         const InternalStrokeStyle& style );
-
-    void close_inner();
 
     int size() const noexcept
     {
