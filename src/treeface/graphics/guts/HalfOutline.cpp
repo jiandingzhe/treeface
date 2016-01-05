@@ -107,7 +107,7 @@ void HalfOutline::add_round_points( const Vec2f& skeleton1, JointID id, const Ve
 
     // calculate step
     float turn_angle = std::acos( ortho_prev * ortho_curr );
-    int num_step = turn_angle / PI * STROKE_ROUNDNESS / 2;
+    int   num_step   = turn_angle / PI * STROKE_ROUNDNESS / 2;
     if (num_step < 5) num_step = 5;
     float step_angle = turn_angle / num_step;
 
@@ -189,6 +189,27 @@ void HalfOutline::process_inner( const HalfOutline&         outer_peer,
         }
     }
 
+    {
+        jassert( outline.size() > 0 );
+        jassert( outer_peer.size() > 0 );
+
+        if ( cross_test_inc( outline.getFirst(), outer_peer.outline.getFirst(), p1, p2, p_cross ) )
+        {
+            add( p_cross, id1 );
+            add( p2,      id2 );
+            sunken = false;
+
+            SUCK_GEOM_BLK( OutlineSucker sucker( *this, "inner solved in between inner edge and peer edge" );
+                           sucker.draw_outline( outer_peer );
+                           sucker.rgb( SUCKER_GREEN );
+                           sucker.draw_vtx( p_cross );
+                           sucker.draw_vtx( p2 );
+            )
+
+            return;
+        }
+    }
+
     SUCK_GEOM_BLK( OutlineSucker sucker( *this, "inner unsolved" );
                    sucker.draw_outline( outer_peer );
                    sucker.rgb( SUCKER_RED );
@@ -208,7 +229,7 @@ void HalfOutline::close_inner()
     for (int i = 0; i < TAIL_FIND_LIMIT && i < outline.size() - 1; i++)
     {
         Vec2f cross;
-        int i_tail = find_cross_from_tail( outline[i], outline[i + 1], cross, TAIL_FIND_LIMIT );
+        int   i_tail = find_cross_from_tail( outline[i], outline[i + 1], cross, TAIL_FIND_LIMIT );
 
         if (i_tail >= 0 && i_tail > i)
         {

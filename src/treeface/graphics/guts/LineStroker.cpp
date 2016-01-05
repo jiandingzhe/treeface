@@ -86,6 +86,9 @@ void LineStroker::cap_end( const Vec2f& skeleton, const Vec2f& direction )
 
     const Vec2f r = ortho * style.half_width;
 
+    part_left.salvage(skeleton, r, id);
+    part_right.salvage(skeleton, r, id);
+
     switch (style.cap)
     {
     case LINE_CAP_BUTT:
@@ -99,7 +102,7 @@ void LineStroker::cap_end( const Vec2f& skeleton, const Vec2f& direction )
         for (int i = 1; i <= (STROKE_ROUNDNESS / 4 - 1); i++)
         {
             r_tmp = rot * r_tmp;
-            part_left.add( skeleton + r_tmp, 0 );
+            part_left.add( skeleton + r_tmp, id );
         }
 
         r_tmp = r * -1.0f;
@@ -107,7 +110,7 @@ void LineStroker::cap_end( const Vec2f& skeleton, const Vec2f& direction )
         for (int i = 1; i <= (STROKE_ROUNDNESS / 4 - 1); i++)
         {
             r_tmp = rot * r_tmp;
-            part_right.add( skeleton + r_tmp, 0 );
+            part_right.add( skeleton + r_tmp, id );
         }
 
         break;
@@ -115,11 +118,13 @@ void LineStroker::cap_end( const Vec2f& skeleton, const Vec2f& direction )
     case LINE_CAP_SQUARE:
     {
         const Vec2f r_post = direction * style.half_width;
-        part_left.add( skeleton + r + r_post, 0 );
-        part_right.add( skeleton - r + r_post, 0 );
+        part_left.add( skeleton + r + r_post, id );
+        part_right.add( skeleton - r + r_post, id );
         break;
     }
     }
+
+
 
     stroke_done = true;
 

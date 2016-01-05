@@ -7,7 +7,7 @@
 
 #include <treecore/Array.h>
 
-#define TAIL_FIND_LIMIT 5
+#define TAIL_FIND_LIMIT 32
 #define STROKE_ROUNDNESS 32
 
 namespace treeface
