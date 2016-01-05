@@ -32,17 +32,19 @@ void LineStroker::cap_begin( const Vec2f& skeleton, const Vec2f& direction )
         break;
     case LINE_CAP_ROUND:
     {
+        float angle_step = PI / (STROKE_ROUNDNESS / 2);
+
         Vec2f r_tmp = r_pre;
-        Mat2f rot; rot.set_rotate( -PI / 16 );
-        for (int i = 1; i <= 14; i++)
+        Mat2f rot; rot.set_rotate( -angle_step );
+        for (int i = 1; i <= (STROKE_ROUNDNESS / 4 - 1); i++)
         {
             r_tmp = rot * r_tmp;
             part_left.add( skeleton + r_tmp, 0 );
         }
 
         r_tmp = r_pre;
-        rot.set_rotate( PI / 16 );
-        for (int i = 1; i <= 14; i++)
+        rot.set_rotate( angle_step );
+        for (int i = 1; i <= (STROKE_ROUNDNESS / 4 - 1); i++)
         {
             r_tmp = rot * r_tmp;
             part_right.add( skeleton + r_tmp, 0 );
@@ -62,7 +64,7 @@ void LineStroker::cap_begin( const Vec2f& skeleton, const Vec2f& direction )
     part_left.sunken  = false;
     part_right.sunken = false;
 
-    SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "begin cap" );
+    SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "begin cap done" );
                    sucker.draw_outline( part_right );
                    sucker.draw_unit_vector( skeleton, direction );
     )
@@ -90,17 +92,19 @@ void LineStroker::cap_end( const Vec2f& skeleton, const Vec2f& direction )
         break;
     case LINE_CAP_ROUND:
     {
+        float angle_step = PI / (STROKE_ROUNDNESS / 2);
+
         Vec2f r_tmp = r;
-        Mat2f rot; rot.set_rotate( -PI / 16 );
-        for (int i = 1; i <= 14; i++)
+        Mat2f rot; rot.set_rotate( -angle_step );
+        for (int i = 1; i <= (STROKE_ROUNDNESS / 4 - 1); i++)
         {
             r_tmp = rot * r_tmp;
             part_left.add( skeleton + r_tmp, 0 );
         }
 
         r_tmp = r * -1.0f;
-        rot.set_rotate( PI / 16 );
-        for (int i = 1; i <= 14; i++)
+        rot.set_rotate( angle_step );
+        for (int i = 1; i <= (STROKE_ROUNDNESS / 4 - 1); i++)
         {
             r_tmp = rot * r_tmp;
             part_right.add( skeleton + r_tmp, 0 );
@@ -119,7 +123,7 @@ void LineStroker::cap_end( const Vec2f& skeleton, const Vec2f& direction )
 
     stroke_done = true;
 
-    SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "end cap" );
+    SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "end cap done" );
                    sucker.draw_outline( part_right );
                    sucker.draw_unit_vector( skeleton, direction );
     )
@@ -136,6 +140,8 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
                    sucker.draw_outline( part_right );
                    sucker.draw_vtx( p1 );
                    sucker.draw_vtx( p2 );
+                   sucker.rgba( SUCKER_BLUE, 0.5f );
+                   sucker.draw_vector( p1, p2 );
                    sucker.rgba( SUCKER_BLACK, 0.5f );
                    sucker.draw_unit_vector( p1, v_prev * -1.0f );
     )
@@ -169,6 +175,10 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
         {
             SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "turn left" );
                            sucker.draw_outline( part_right );
+                           sucker.rgba( SUCKER_BLUE, 0.5f );
+                           sucker.draw_unit_vector( p1, v_curr );
+                           sucker.rgba( SUCKER_BLACK, 0.5f );
+                           sucker.draw_unit_vector( p1, -v_prev );
             )
             part_inner = &part_left;
             part_outer = &part_right;
@@ -177,6 +187,10 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
         {
             SUCK_GEOM_BLK( OutlineSucker sucker( part_right, "turn right" );
                            sucker.draw_outline( part_left );
+                           sucker.rgba( SUCKER_BLUE, 0.5f );
+                           sucker.draw_unit_vector( p1, v_curr );
+                           sucker.rgba( SUCKER_BLACK, 0.5f );
+                           sucker.draw_unit_vector( p1, -v_prev );
             )
             part_inner = &part_right;
             part_outer = &part_left;
@@ -225,6 +239,10 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
 
         SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "extend with no turn" );
                        sucker.draw_outline( part_right );
+                       sucker.rgb( SUCKER_GREEN );
+                       sucker.draw_vtx( part_left.outline.getLast() );
+                       sucker.draw_vtx( part_right.outline.getLast() );
+
         )
     }
 

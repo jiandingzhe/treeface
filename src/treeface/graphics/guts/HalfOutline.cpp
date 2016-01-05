@@ -16,8 +16,6 @@ int HalfOutline::find_cross_from_tail( const Vec2f& p1, const Vec2f& p2, Vec2f& 
                    sucker.draw_vtx( p2 );
     );
 
-    Vec2f v12 = p2 - p1;
-
     const BBox2f bound_input( p1, p2 );
 
     for (int i = outline.size() - 2; i >= 0; i--)
@@ -28,9 +26,8 @@ int HalfOutline::find_cross_from_tail( const Vec2f& p1, const Vec2f& p2, Vec2f& 
         {
             const Vec2f& p3 = outline[i];
             const Vec2f& p4 = outline[i + 1];
-            Vec2f v34 = p4 - p3;
 
-            if ( cross_test_exc( p1, p2, v12, p3, p4, v34, p_cross ) )
+            if ( cross_test_inc( p1, p2, p3, p4, p_cross ) )
             {
                 SUCK_GEOM_BLK( OutlineSucker sucker( *this, "find cross from tail" );
                                sucker.draw_vtx( p1 );
@@ -110,7 +107,7 @@ void HalfOutline::add_round_points( const Vec2f& skeleton1, JointID id, const Ve
 
     // calculate step
     float turn_angle = std::acos( ortho_prev * ortho_curr );
-    int num_step = turn_angle / PI * 32;
+    int num_step = turn_angle / PI * STROKE_ROUNDNESS / 2;
     if (num_step < 5) num_step = 5;
     float step_angle = turn_angle / num_step;
 
