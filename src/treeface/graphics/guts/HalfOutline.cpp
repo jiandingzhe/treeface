@@ -248,7 +248,7 @@ void HalfOutline::close_inner()
 
             SUCK_GEOM_BLK( OutlineSucker sucker( *this, "inner part closed" ); )
 
-            break;
+            return;
         }
     }
 

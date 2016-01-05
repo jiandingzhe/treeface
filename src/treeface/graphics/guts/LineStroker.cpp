@@ -70,6 +70,26 @@ void LineStroker::cap_begin( const Vec2f& skeleton, const Vec2f& direction )
     )
 }
 
+void LineStroker::close_stroke_begin( const Vec2f& skeleton, const Vec2f& direction )
+{
+    SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "begin closed stroke" );
+                   sucker.draw_outline( part_right );
+                   sucker.draw_unit_vector( skeleton, direction );
+    )
+
+    const Vec2f ortho = direction.get_ortholog();
+    const Vec2f r = ortho * style.half_width;
+    part_left.add( skeleton + r, 0 );
+    part_right.add( skeleton - r, 0 );
+    part_left.sunken  = false;
+    part_right.sunken = false;
+
+    SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "after beginning closed stroke" );
+                   sucker.draw_outline( part_right );
+                   sucker.draw_unit_vector( skeleton, direction );
+    )
+}
+
 void LineStroker::cap_end( const Vec2f& skeleton, const Vec2f& direction )
 {
     jassert( !stroke_done );
@@ -86,8 +106,8 @@ void LineStroker::cap_end( const Vec2f& skeleton, const Vec2f& direction )
 
     const Vec2f r = ortho * style.half_width;
 
-    part_left.salvage(skeleton, r, id);
-    part_right.salvage(skeleton, r, id);
+    part_left.salvage( skeleton, r, id );
+    part_right.salvage( skeleton, r, id );
 
     switch (style.cap)
     {
@@ -123,8 +143,6 @@ void LineStroker::cap_end( const Vec2f& skeleton, const Vec2f& direction )
         break;
     }
     }
-
-
 
     stroke_done = true;
 
@@ -254,7 +272,7 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
     return v_curr;
 }
 
-void LineStroker::close_stroke( const Vec2f& v_prev, const Vec2f& p, const Vec2f& v_next )
+void LineStroker::close_stroke_end( const Vec2f& v_prev, const Vec2f& p, const Vec2f& v_next )
 {
     jassert( !stroke_done );
     jassert( !(part_left.sunken && part_right.sunken) ); // beishuiyanmo, buzhisuocuo, tiqianshejing
