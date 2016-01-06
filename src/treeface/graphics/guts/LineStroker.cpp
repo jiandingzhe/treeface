@@ -23,7 +23,7 @@ void LineStroker::cap_begin( const Vec2f& skeleton, const Vec2f& direction )
 
     Vec2f ortho = direction.get_ortholog();
 
-    const Vec2f r = ortho * style.half_width;
+    const Vec2f r     = ortho * style.half_width;
     const Vec2f r_pre = direction * -style.half_width;
 
     switch (style.cap)
@@ -371,7 +371,7 @@ void LineStroker::close_stroke_end( const Vec2f& skeleton_last, const Vec2f& ske
                     SUCK_GEOM_BLK( OutlineSucker sucker( *part_inner, "after shift" ); );
                 }
 
-                part_inner->outline[0] = head_cross;
+                part_inner->outline[0]        = head_cross;
                 part_inner->outline_bounds[0] = BBox2f( part_inner->outline[0], part_inner->outline[1] );
 
                 SUCK_GEOM_BLK( OutlineSucker sucker( *part_inner, "inner head modified" );

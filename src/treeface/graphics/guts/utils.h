@@ -118,9 +118,9 @@ inline bool cross_test_inc( const Vec2f& p1, const Vec2f& p2,
     // do 1-dimensional overlap test
     if (denom == 0.0f)
     {
-        Vec2f v12_norm    = v12;
-        const float len12 = v12_norm.normalize();
-        const float len34 = v34.length();
+        Vec2f       v12_norm = v12;
+        const float len12    = v12_norm.normalize();
+        const float len34    = v34.length();
 
         const float line_dist = (p3 - p1) % v12_norm;
 

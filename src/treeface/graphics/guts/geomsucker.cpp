@@ -57,8 +57,8 @@ GeomSucker::GeomSucker( const HalfEdgeNetwork& network, const treecore::String& 
 
     // set to initial state
     cairo_scale( context, 5, 5 );
-    cairo_translate( context, border,      border );
-    cairo_translate( context,      -x_min, height + y_min );
+    cairo_translate( context, border, border );
+    cairo_translate( context, -x_min, height + y_min );
 
     cairo_set_line_width( context, line_w );
     cairo_set_line_cap( context, CAIRO_LINE_CAP_ROUND );
@@ -152,8 +152,8 @@ void GeomSucker::draw_vector( const Vec2f& start, const Vec2f& end ) const
     Vec2f ortho( -v.y, v.x );
     Vec2f p_arrow_root  = end - v * (arrow_sz * 3.0f);
     Vec2f p_arrow_root2 = end - v * (arrow_sz * 2.0f);
-    Vec2f p_arrow1 = p_arrow_root + ortho * arrow_sz;
-    Vec2f p_arrow2 = p_arrow_root + ortho * -arrow_sz;
+    Vec2f p_arrow1      = p_arrow_root + ortho * arrow_sz;
+    Vec2f p_arrow2      = p_arrow_root + ortho * -arrow_sz;
 
     cairo_move_to( context, start.x, -start.y );
     cairo_line_to( context, end.x, -end.y );
@@ -161,9 +161,9 @@ void GeomSucker::draw_vector( const Vec2f& start, const Vec2f& end ) const
     cairo_stroke( context );
 
     cairo_move_to( context, end.x, -end.y );
-    cairo_line_to( context,      p_arrow1.x, -p_arrow1.y );
+    cairo_line_to( context, p_arrow1.x,      -p_arrow1.y );
     cairo_line_to( context, p_arrow_root2.x, -p_arrow_root2.y );
-    cairo_line_to( context,      p_arrow2.x, -p_arrow2.y );
+    cairo_line_to( context, p_arrow2.x,      -p_arrow2.y );
     cairo_fill( context );
 
     cairo_restore( context );
@@ -186,9 +186,9 @@ void GeomSucker::draw_roled_vtx( IndexType vtx_idx, VertexRole role ) const
 void GeomSucker::draw_merge_vtx( IndexType vtx_idx ) const
 {
     const Vec2f& vtx = network.vertices[vtx_idx];
-    Vec2f p1 = vtx - Vec2f( 0.0f, line_w * 2 );
-    Vec2f p2 = vtx + Vec2f( line_w * 2, line_w * 2 );
-    Vec2f p3 = vtx + Vec2f( -line_w * 2, line_w * 2 );
+    Vec2f        p1  = vtx - Vec2f( 0.0f, line_w * 2 );
+    Vec2f        p2  = vtx + Vec2f( line_w * 2, line_w * 2 );
+    Vec2f        p3  = vtx + Vec2f( -line_w * 2, line_w * 2 );
 
     cairo_move_to( context, p1.x, -p1.y );
     cairo_line_to( context, p2.x, -p2.y );
@@ -199,9 +199,9 @@ void GeomSucker::draw_merge_vtx( IndexType vtx_idx ) const
 void GeomSucker::draw_split_vtx( IndexType vtx_idx ) const
 {
     const Vec2f& vtx = network.vertices[vtx_idx];
-    Vec2f p1 = vtx + Vec2f( 0.0f, line_w * 2 );
-    Vec2f p2 = vtx + Vec2f( line_w * 2, -line_w * 2 );
-    Vec2f p3 = vtx + Vec2f( -line_w * 2, -line_w * 2 );
+    Vec2f        p1  = vtx + Vec2f( 0.0f, line_w * 2 );
+    Vec2f        p2  = vtx + Vec2f( line_w * 2, -line_w * 2 );
+    Vec2f        p3  = vtx + Vec2f( -line_w * 2, -line_w * 2 );
 
     cairo_move_to( context, p1.x, -p1.y );
     cairo_line_to( context, p2.x, -p2.y );
@@ -212,10 +212,10 @@ void GeomSucker::draw_split_vtx( IndexType vtx_idx ) const
 void GeomSucker::draw_start_vtx( IndexType vtx_idx ) const
 {
     const Vec2f& vtx = network.vertices[vtx_idx];
-    Vec2f p1 = vtx + Vec2f( line_w * 1.5, line_w * 1.5 );
-    Vec2f p2 = vtx + Vec2f( -line_w * 1.5, line_w * 1.5 );
-    Vec2f p3 = vtx + Vec2f( -line_w * 1.5, -line_w * 1.5 );
-    Vec2f p4 = vtx + Vec2f( line_w * 1.5, -line_w * 1.5 );
+    Vec2f        p1  = vtx + Vec2f( line_w * 1.5, line_w * 1.5 );
+    Vec2f        p2  = vtx + Vec2f( -line_w * 1.5, line_w * 1.5 );
+    Vec2f        p3  = vtx + Vec2f( -line_w * 1.5, -line_w * 1.5 );
+    Vec2f        p4  = vtx + Vec2f( line_w * 1.5, -line_w * 1.5 );
 
     cairo_move_to( context, p1.x, -p1.y );
     cairo_line_to( context, p2.x, -p2.y );
@@ -228,10 +228,10 @@ void GeomSucker::draw_start_vtx( IndexType vtx_idx ) const
 void GeomSucker::draw_end_vtx( IndexType vtx_idx ) const
 {
     const Vec2f& vtx = network.vertices[vtx_idx];
-    Vec2f p1 = vtx + Vec2f( line_w * 1.5, line_w * 1.5 );
-    Vec2f p2 = vtx + Vec2f( -line_w * 1.5, line_w * 1.5 );
-    Vec2f p3 = vtx + Vec2f( -line_w * 1.5, -line_w * 1.5 );
-    Vec2f p4 = vtx + Vec2f( line_w * 1.5, -line_w * 1.5 );
+    Vec2f        p1  = vtx + Vec2f( line_w * 1.5, line_w * 1.5 );
+    Vec2f        p2  = vtx + Vec2f( -line_w * 1.5, line_w * 1.5 );
+    Vec2f        p3  = vtx + Vec2f( -line_w * 1.5, -line_w * 1.5 );
+    Vec2f        p4  = vtx + Vec2f( line_w * 1.5, -line_w * 1.5 );
 
     cairo_move_to( context, p1.x, -p1.y );
     cairo_line_to( context, p2.x, -p2.y );
@@ -264,11 +264,11 @@ void GeomSucker::draw_regular_right_vtx( IndexType vtx_idx ) const
 
 void GeomSucker::draw_edge( const IndexType i_edge, float offset_rate ) const
 {
-    const HalfEdge& edge = network.edges[i_edge];
-    const Vec2f& p_start = edge.get_vertex( network.vertices );
-    const Vec2f& p_end   = edge.get_next( network.edges ).get_vertex( network.vertices );
-    const Vec2f& p_prev  = edge.get_prev( network.edges ).get_vertex( network.vertices );
-    const Vec2f& p_next  = edge.get_next( network.edges ).get_next( network.edges ).get_vertex( network.vertices );
+    const HalfEdge& edge    = network.edges[i_edge];
+    const Vec2f&    p_start = edge.get_vertex( network.vertices );
+    const Vec2f&    p_end   = edge.get_next( network.edges ).get_vertex( network.vertices );
+    const Vec2f&    p_prev  = edge.get_prev( network.edges ).get_vertex( network.vertices );
+    const Vec2f&    p_next  = edge.get_next( network.edges ).get_next( network.edges ).get_vertex( network.vertices );
 
     Vec2f v_prev = p_start - p_prev;
     Vec2f v_curr = p_end - p_start;
@@ -279,18 +279,18 @@ void GeomSucker::draw_edge( const IndexType i_edge, float offset_rate ) const
     float l_next = v_next.normalize();
 
     float offset = line_w * offset_rate;
-    Vec2f p1 = p_start - v_prev * (l_prev / 3.0f) + v_curr * offset;
-    Vec2f p2 = p_start + (v_curr - v_prev) * offset;
-    Vec2f p3 = p_end   + (v_next - v_curr) * offset;
-    Vec2f p4 = p_end   + v_next * (l_next / 3.0f) - v_curr * offset;
+    Vec2f p1     = p_start - v_prev * (l_prev / 3.0f) + v_curr * offset;
+    Vec2f p2     = p_start + (v_curr - v_prev) * offset;
+    Vec2f p3     = p_end   + (v_next - v_curr) * offset;
+    Vec2f p4     = p_end   + v_next * (l_next / 3.0f) - v_curr * offset;
 
     // arrow
     float arrow_sz = line_w * 2;
     Vec2f ortho_next( -v_next.y, v_next.x );
     Vec2f p_arrow_root  = p4 - v_next * (arrow_sz * 3.0f);
     Vec2f p_arrow_root2 = p4 - v_next * (arrow_sz * 2.0f);
-    Vec2f p_arrow1 = p_arrow_root + ortho_next * arrow_sz;
-    Vec2f p_arrow2 = p_arrow_root + ortho_next * -arrow_sz;
+    Vec2f p_arrow1      = p_arrow_root + ortho_next * arrow_sz;
+    Vec2f p_arrow2      = p_arrow_root + ortho_next * -arrow_sz;
 
     // do_drawing
     cairo_new_path( context );
@@ -304,8 +304,8 @@ void GeomSucker::draw_edge( const IndexType i_edge, float offset_rate ) const
     cairo_stroke( context );
 
     cairo_move_to( context, p_arrow1.x, -p_arrow1.y );
-    cairo_line_to( context,            p4.x, -p4.y );
-    cairo_line_to( context,      p_arrow2.x, -p_arrow2.y );
+    cairo_line_to( context, p4.x,            -p4.y );
+    cairo_line_to( context, p_arrow2.x,      -p_arrow2.y );
     cairo_line_to( context, p_arrow_root2.x, -p_arrow_root2.y );
     cairo_fill( context );
 
@@ -446,8 +446,8 @@ OutlineSucker::OutlineSucker( const HalfOutline&      outline,
 
     // set to initial state
     cairo_scale( context, scale, scale );
-    cairo_translate( context, border,      border );
-    cairo_translate( context,      -x_min, height + y_min );
+    cairo_translate( context, border, border );
+    cairo_translate( context, -x_min, height + y_min );
 
     cairo_set_line_width( context, line_w );
     cairo_set_line_cap( context, CAIRO_LINE_CAP_ROUND );
@@ -514,8 +514,8 @@ void OutlineSucker::draw_vector( const Vec2f& start, const Vec2f& end ) const
     Vec2f ortho( -v.y, v.x );
     Vec2f p_arrow_root  = end - v * (arrow_sz * 3.0f);
     Vec2f p_arrow_root2 = end - v * (arrow_sz * 2.0f);
-    Vec2f p_arrow1 = p_arrow_root + ortho * arrow_sz;
-    Vec2f p_arrow2 = p_arrow_root + ortho * -arrow_sz;
+    Vec2f p_arrow1      = p_arrow_root + ortho * arrow_sz;
+    Vec2f p_arrow2      = p_arrow_root + ortho * -arrow_sz;
 
     cairo_move_to( context, start.x, -start.y );
     cairo_line_to( context, end.x, -end.y );
@@ -523,9 +523,9 @@ void OutlineSucker::draw_vector( const Vec2f& start, const Vec2f& end ) const
     cairo_stroke( context );
 
     cairo_move_to( context, end.x, -end.y );
-    cairo_line_to( context,      p_arrow1.x, -p_arrow1.y );
+    cairo_line_to( context, p_arrow1.x,      -p_arrow1.y );
     cairo_line_to( context, p_arrow_root2.x, -p_arrow_root2.y );
-    cairo_line_to( context,      p_arrow2.x, -p_arrow2.y );
+    cairo_line_to( context, p_arrow2.x,      -p_arrow2.y );
     cairo_fill( context );
 
     cairo_restore( context );
@@ -574,28 +574,28 @@ void OutlineSucker::draw_outline( const HalfOutline& content ) const
     cairo_stroke( context );
 
     // half outline joint IDs
-    cairo_save(context);
-    cairo_set_source_rgba(context, SUCKER_BLACK, 0.5f);
-    cairo_set_font_size(context, line_w * 5);
+    cairo_save( context );
+    cairo_set_source_rgba( context, SUCKER_BLACK, 0.5f );
+    cairo_set_font_size( context, line_w * 5 );
     for (int i = 0; i < content.outline.size(); i++)
     {
         const Vec2f& p = content.outline[i];
         cairo_move_to( context, p.x, -p.y );
-        cairo_show_text(context, String(content.joint_ids[i]).toRawUTF8());
+        cairo_show_text( context, String( content.joint_ids[i] ).toRawUTF8() );
     }
-    cairo_restore(context);
+    cairo_restore( context );
 
     // end mark
-    const Vec2f& last = content.outline.getLast();
-    float mark_sz = line_w * 5;
+    const Vec2f& last    = content.outline.getLast();
+    float        mark_sz = line_w * 5;
 
-    cairo_new_path(context);
+    cairo_new_path( context );
     if (content.sunken)
     {
-        cairo_move_to(context, last.x - mark_sz, -(last.y - mark_sz));
-        cairo_line_to(context, last.x + mark_sz, -(last.y + mark_sz));
-        cairo_move_to(context, last.x - mark_sz, -(last.y + mark_sz));
-        cairo_line_to(context, last.x + mark_sz, -(last.y - mark_sz));
+        cairo_move_to( context, last.x - mark_sz, -(last.y - mark_sz) );
+        cairo_line_to( context, last.x + mark_sz, -(last.y + mark_sz) );
+        cairo_move_to( context, last.x - mark_sz, -(last.y + mark_sz) );
+        cairo_line_to( context, last.x + mark_sz, -(last.y - mark_sz) );
     }
     else
     {

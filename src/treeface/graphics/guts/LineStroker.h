@@ -23,18 +23,18 @@ struct LineStroker
     {}
 
     void cap_begin( const Vec2f& skeleton, const Vec2f& direction );
-    void close_stroke_begin( const Vec2f& skeleton, const Vec2f& direction);
+    void close_stroke_begin( const Vec2f& skeleton, const Vec2f& direction );
 
     Vec2f extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Vec2f& p2, bool use_line_join );
 
     void cap_end( const Vec2f& skeleton, const Vec2f& direction );
-    void close_stroke_end(const Vec2f& skeleton_last, const Vec2f& skeleton_first, const Vec2f& v_begin );
+    void close_stroke_end( const Vec2f& skeleton_last, const Vec2f& skeleton_first, const Vec2f& v_begin );
 
     void triangulate( treecore::Array<StrokeVertex>& result_vertices, treecore::Array<IndexType>& result_indices, bool path_is_closed ) const;
 
     HalfOutline part_left;
     HalfOutline part_right;
-    bool stroke_done = false;
+    bool        stroke_done = false;
     InternalStrokeStyle style;
 };
 
