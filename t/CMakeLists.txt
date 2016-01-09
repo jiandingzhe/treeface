@@ -1,6 +1,10 @@
 add_library(TestFramework TestFramework.cpp)
 target_include_directories(TestFramework PUBLIC ${TREECORE_INCLUDE_DIR})
 
+add_executable(t_steaking_array t_steaking_array.cpp)
+target_link_libraries(t_steaking_array TestFramework)
+target_use_treecore(t_steaking_array)
+
 add_executable(t_vec4 t_vec4.cpp)
 target_use_treecore(t_vec4)
 target_link_libraries(t_vec4
