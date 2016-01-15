@@ -18,22 +18,21 @@ struct Sampler: public treecore::RefCountObject
     virtual ~Sampler();
 
     // invalidate copy and move
-    TREECORE_DECLARE_NON_COPYABLE(Sampler);
-    TREECORE_DECLARE_NON_MOVABLE(Sampler);
+    TREECORE_DECLARE_NON_COPYABLE( Sampler );
+    TREECORE_DECLARE_NON_MOVABLE( Sampler );
 
-    void use(GLuint unit) const noexcept
+    void bind( GLuint unit ) const noexcept
     {
-        glBindSampler(unit, m_sampler);
+        glBindSampler( unit, m_sampler );
     }
 
-    static void unuse(GLuint unit) noexcept
+    static void unbind( GLuint unit ) noexcept
     {
-        glBindSampler(unit, 0);
+        glBindSampler( unit, 0 );
     }
 
     GLuint m_sampler = 0;
 };
-
 
 } // namespace treeface
 

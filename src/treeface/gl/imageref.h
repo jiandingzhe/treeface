@@ -3,8 +3,7 @@
 
 #include "treeface/common.h"
 
-#define GLEW_STATIC
-#include <GL/glew.h>
+#include "treeface/gl/enums.h"
 
 namespace treeface {
 
@@ -15,13 +14,36 @@ namespace treeface {
  * data is not owned by ImageRef, and will be kept untouched when ImageRef is
  * destroyed.
  */
-struct ImageRef
+struct TextureCompatibleImageRef
 {
-    GLenum format;
-    GLenum type;
-    int width;
-    int height;
-    void* data;
+    GLImageFormat format;
+    GLInternalImageFormat internal_format;
+    GLImageDataType  type;
+    GLsizei width;
+    GLsizei height;
+    void*   data;
+};
+
+struct TextureCompatibleImageArrayRef
+{
+    GLImageFormat format;
+    GLInternalImageFormat internal_format;
+    GLImageDataType  type;
+    GLsizei width;
+    GLsizei height;
+    GLsizei num_frame;
+    void*   data;
+};
+
+struct TextureCompatibleVoxelBlockRef
+{
+    GLImageFormat format;
+    GLInternalImageFormat internal_format;
+    GLImageDataType  type;
+    GLsizei width;
+    GLsizei height;
+    GLsizei depth;
+    void*   data;
 };
 
 } // namespace treeface

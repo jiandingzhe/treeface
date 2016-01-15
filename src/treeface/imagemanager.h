@@ -18,7 +18,7 @@ public:
     TREECORE_DECLARE_NON_MOVABLE(ImageManager);
     juce_DeclareSingleton(ImageManager, false);
 
-    treecore::Result get_image(const treecore::String& name, Image** img);
+    Image* get_image(const treecore::String& name);
     bool image_is_cached(const treecore::String& name) const;
     bool release_image_hold(const treecore::String& name);
 

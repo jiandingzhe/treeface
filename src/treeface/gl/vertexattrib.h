@@ -4,6 +4,7 @@
 #include "treeface/common.h"
 
 #include "treeface/gl/type.h"
+#include "treeface/gl/enums.h"
 
 #include <treecore/String.h>
 
@@ -14,47 +15,46 @@ namespace treeface {
 
 struct VertexAttrib
 {
-    VertexAttrib(const treecore::String& name, treecore::int32 n_elem, GLenum type)
-        : name(name)
-        , n_elem(n_elem)
-        , type(type)
-    {
-    }
+    VertexAttrib( const treecore::String& name, treecore::int32 n_elem, GLType type )
+        : name( name )
+        , n_elem( n_elem )
+        , type( type )
+    {}
 
-    inline size_t get_elem_offset(treecore::int32 index) const noexcept
+    VertexAttrib( const VertexAttrib& peer ) = default;
+
+    virtual ~VertexAttrib() = default;
+
+    inline size_t get_elem_offset( treecore::int32 index ) const noexcept
     {
-        jassert(index < n_elem);
-        return index * size_of_gl_type(type);
+        jassert( 0 <= index && index < n_elem );
+        return index * size_of_gl_type( type );
     }
 
     inline size_t size() const noexcept
     {
-        return n_elem * size_of_gl_type(type);
+        return n_elem * size_of_gl_type( type );
     }
 
-    treecore::String name;
-    treecore::int32 n_elem;
-    GLenum type;
+    const treecore::String name;
+    const treecore::int32  n_elem;
+    const GLType type;
 };
 
 struct HostVertexAttrib: VertexAttrib
 {
-    HostVertexAttrib(const VertexAttrib& attr, GLsizei offset, bool normalize)
-        : VertexAttrib(attr)
-        , offset(offset)
-        , normalize(normalize)
-    {
-    }
+    HostVertexAttrib( const VertexAttrib& attr, GLsizei offset, bool normalize )
+        : VertexAttrib( attr )
+        , offset( offset )
+        , normalize( normalize )
+    {}
 
-    HostVertexAttrib(const treecore::String& name, GLsizei n_elem, GLenum type, GLsizei offset, bool normalize)
-        : VertexAttrib(name, n_elem, type)
-        , offset(offset)
-        , normalize(normalize)
-    {
-    }
+    HostVertexAttrib( const HostVertexAttrib& peer ) = default;
 
-    GLsizei offset;
-    bool normalize;
+    virtual ~HostVertexAttrib() = default;
+
+    const GLsizei offset;
+    const bool    normalize;
 };
 
 } // namespace treeface

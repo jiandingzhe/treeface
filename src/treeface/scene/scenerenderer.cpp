@@ -1,6 +1,5 @@
 #include "treeface/scene/scenerenderer.h"
 
-#include "treeface/gl/vertexindexbuffer.h"
 #include "treeface/gl/program.h"
 #include "treeface/gl/vertexarray.h"
 
@@ -100,44 +99,41 @@ void SceneRenderer::render(const Mat4f& matrix_proj,
 
     for (int i = 0; i < m_impl->combs.size(); i++)
     {
-        ItemCombination comb = m_impl->combs[i];
-        Program* prog = comb.mat->get_program();
-        Geometry* geom = comb.item->get_geometry();
+        ItemCombination curr_render = m_impl->combs[i];
+        Program* prog = curr_render.mat->get_program();
+        Geometry* geom = curr_render.item->get_geometry();
 
-        if (comb.mat != prev_mat)
+        if (curr_render.mat != prev_mat)
         {
-            prev_mat = comb.mat;
-            comb.mat->use();
+            prev_mat = curr_render.mat;
+            curr_render.mat->bind();
 
-            prog->instant_set_uniform(comb.mat->m_uni_proj,          matrix_proj);
-            prog->instant_set_uniform(comb.mat->m_uni_light_direct,  light_direct_in_view);
-            prog->instant_set_uniform(comb.mat->m_uni_light_color,   scene->get_global_light_color());
-            prog->instant_set_uniform(comb.mat->m_uni_light_ambient, scene->get_global_light_ambient());
+            prog->set_uniform(curr_render.mat->m_uni_proj,          matrix_proj);
+            prog->set_uniform(curr_render.mat->m_uni_light_direct,  light_direct_in_view);
+            prog->set_uniform(curr_render.mat->m_uni_light_color,   scene->get_global_light_color());
+            prog->set_uniform(curr_render.mat->m_uni_light_ambient, scene->get_global_light_ambient());
         }
 
-        if (comb.item != prev_item)
+        if (curr_render.item != prev_item)
         {
-            prev_item = comb.item;
-
-            comb.item->get_vertex_array()->use();
-            geom->get_buffer()->use();
+            prev_item = curr_render.item;
+            curr_render.item->get_vertex_array()->bind();
         }
 
-        const Mat4f& mat_model = comb.trans->get_global_transform();
+        const Mat4f& mat_model = curr_render.trans->get_global_transform();
         const Mat4f mat_model_view = matrix_view * mat_model;
         const Mat4f mat_model_view_proj = matrix_proj * mat_model_view;
 
-        prog->instant_set_uniform(comb.mat->m_uni_model_view, mat_model_view);
-        prog->instant_set_uniform(comb.mat->m_uni_model_view_proj, mat_model_view_proj);
-        prog->instant_set_uniform(comb.mat->m_uni_norm, mat_model_view.get_normal_matrix());
+        prog->set_uniform(curr_render.mat->m_uni_model_view, mat_model_view);
+        prog->set_uniform(curr_render.mat->m_uni_model_view_proj, mat_model_view_proj);
+        prog->set_uniform(curr_render.mat->m_uni_norm, mat_model_view.get_normal_matrix());
 
         // do draw
-        geom->get_buffer()->draw(geom->get_primitive());
+        curr_render.item->render();
     }
 
-    VertexArray::unuse();
-    VertexIndexBuffer::unuse();
-    Program::unuse();
+    VertexArray::unbind();
+    prev_mat->unbind();
 }
 
 treecore::Result SceneRenderer::traverse_begin() noexcept

@@ -1,6 +1,5 @@
 #include "treeface/graphics/shapegenerator.h"
 
-#include "treeface/gl/vertexindexbuffer.h"
 #include "treeface/gl/vertextemplate.h"
 
 #include "treeface/graphics/guts/shapegenerator_guts.h"

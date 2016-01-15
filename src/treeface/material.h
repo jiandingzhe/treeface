@@ -30,16 +30,16 @@ public:
 
     virtual ~Material();
 
-    Program* get_program() noexcept;
+    Program*        get_program() noexcept;
     treecore::int32 get_num_textures() const noexcept;
-    Texture* get_texture(treecore::int32 layer_idx) noexcept;
-    Texture* get_texture(treecore::StringRef name) noexcept;
+    Texture*        get_texture( treecore::int32 layer_idx ) noexcept;
+    Texture*        get_texture( treecore::StringRef name ) noexcept;
 
-    void use() noexcept;
-    void unuse() noexcept;
+    void bind() noexcept;
+    void unbind() noexcept;
 
-    TREECORE_DECLARE_NON_COPYABLE(Material);
-    TREECORE_DECLARE_NON_MOVABLE(Material);
+    TREECORE_DECLARE_NON_COPYABLE( Material );
+    TREECORE_DECLARE_NON_MOVABLE( Material );
 
 protected:
     treecore::RefCountHolder<Program> m_program;
@@ -48,7 +48,7 @@ private:
     struct Impl;
 
     Impl* m_impl = nullptr;
-}; // class Material
+};  // class Material
 
 } // namespace treeface
 

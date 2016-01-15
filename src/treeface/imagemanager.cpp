@@ -31,45 +31,21 @@ ImageManager::~ImageManager()
         delete m_impl;
 }
 
-Result ImageManager::get_image(const String& name, Image** img)
+Image* ImageManager::get_image(const String& name)
 {
     if (m_impl->items.contains(name))
     {
-        *img = m_impl->items[name].get();
-        return Result::ok();
+        return m_impl->items[name];
     }
 
     MemoryBlock data;
-    Result item_re = PackageManager::getInstance()->get_item_data(name, data);
-    if (!item_re)
-    {
-        *img = nullptr;
-        return Result::fail("failed to get image data:\n" +
-                            item_re.getErrorMessage());
-    }
+    if (!PackageManager::getInstance()->get_item_data(name, data, false))
+        return nullptr;
 
-    FIMEMORY* mem_stream = FreeImage_OpenMemory((BYTE*)data.getData(), data.getSize()-1);
-    if (!mem_stream)
-    {
-        *img = nullptr;
-        return Result::fail("failed to create FreeImage memory handle from data of \""+name+"\"");
-    }
+    Image* img = new Image(data);
+    m_impl->items.set(name, img);
 
-    FREE_IMAGE_FORMAT format = FreeImage_GetFileTypeFromMemory(mem_stream);
-    FIBITMAP* fi_img = FreeImage_LoadFromMemory(format, mem_stream);
-
-    FreeImage_CloseMemory(mem_stream);
-
-    if (!fi_img)
-    {
-        *img =  nullptr;
-        return Result::fail("failed to load FreeImage from data of \""+name+"\" (format is "+to_string(format)+")");
-    }
-
-    *img = new Image(fi_img);
-    m_impl->items.set(name, *img);
-
-    return Result::ok();
+    return img;
 }
 
 bool ImageManager::image_is_cached(const String& name) const

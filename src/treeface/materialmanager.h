@@ -25,11 +25,9 @@ public:
 
     virtual ~MaterialManager();
 
-    treecore::Result build_material(const treecore::var& data, treecore::RefCountHolder<Material>& mat);
+    void build_material(const treecore::String& name, const treecore::var& data, Material* mat);
 
-    treecore::Result get_material(const treecore::String& name, Material** mat_pp);
-
-    treecore::Result get_material(const treecore::String& name, treecore::RefCountHolder<Material>& mat);
+    Material* get_material(const treecore::String& name);
 
     bool material_is_cached(const treecore::String& name);
     bool release_material_hold(const treecore::String& name);

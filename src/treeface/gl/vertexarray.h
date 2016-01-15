@@ -3,9 +3,12 @@
 
 #include "treeface/common.h"
 
+#include "treeface/gl/glbuffer.h"
 #include "treeface/gl/vertexattrib.h"
+#include "treeface/gl/vertextemplate.h"
 
 #include <treecore/ArrayRef.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/RefCountObject.h>
 #include <treecore/Result.h>
 #include <treecore/String.h>
@@ -15,9 +18,8 @@
 
 namespace treeface {
 
-class VertexIndexBuffer;
 class Program;
-
+class GLBuffer;
 class VertexTemplate;
 
 /**
@@ -25,25 +27,21 @@ class VertexTemplate;
  *
  * It is a bridge between vertex buffer data and program vertex attributes.
  */
-struct VertexArray: public treecore::RefCountObject
+class VertexArray: public treecore::RefCountObject
 {
+public:
+    class BindScope
+    {
+    public:
+        BindScope( VertexArray& vertex_array ): m_array( vertex_array ) { m_array.bind();   }
+        ~BindScope()                                                    { m_array.unbind(); }
+    private:
+        VertexArray& m_array;
+    };
+
     /**
-     * @brief create an empty VertexArray object. OpenGL VAO ID will be
+     * @brief
      *        allocated.
-     */
-    VertexArray();
-
-    /**
-     * @brief The underlying VAO ID will also be released.
-     */
-    virtual ~VertexArray();
-
-    // disable copy and move
-    TREECORE_DECLARE_NON_COPYABLE(VertexArray);
-    TREECORE_DECLARE_NON_MOVABLE(VertexArray);
-
-    /**
-     * @brief build vertex array
      *
      * If vertex info contain any attribute that the program don't have, it will
      * be simply ignored.
@@ -52,51 +50,71 @@ struct VertexArray: public treecore::RefCountObject
      *                will be bind.
      * @param vertex_info: it holds a series of vertex attribute metadata.
      * @param program: it should have been compiled and linked.
-     *
-     * @return ok if success, fail if any error occurred.
      */
-    treecore::Result build(const VertexIndexBuffer* buffer,
-                           const VertexTemplate& vertex_info,
-                           const Program* program);
+
+    ///
+    /// \brief create OpenGL vertex array object
+    ///
+    /// \param vertex_buffer
+    /// \param index_buffer
+    /// \param vertex_info    metadata for vertex composition
+    /// \param program        vertex attribute will be fetched from this program
+    ///
+    VertexArray( GLBuffer* vertex_buffer,
+                 GLBuffer* index_buffer,
+                 const VertexTemplate& vertex_info,
+                 Program* program );
 
     /**
-     * @brief build one vertex attribute
-     *
-     * If this vertex attribute is not exist in the program, it will be ignored.
-     *
-     * @param buffer: a VertexIndexBuffer object, from which the vertex buffer
-     *                will be bind.
-     * @param attrib: the vertex attribute to be bind.
-     * @param stride: the size in bytes of one vertex.
-     * @param program: it should have been compiled and linked.
-     *
-     * @return ok if success, fail if any error occurred.
+     * @brief The underlying VAO object will also be released.
      */
-    treecore::Result build_one(const VertexIndexBuffer* buffer,
-                               HostVertexAttrib attrib,
-                               GLsizei stride,
-                               const Program* program);
+    virtual ~VertexArray();
+
+    // disable copy and move
+    TREECORE_DECLARE_NON_COPYABLE( VertexArray );
+    TREECORE_DECLARE_NON_MOVABLE( VertexArray );
 
     /**
      * @brief bind the underlying GL VAO
      */
-    inline void use() const noexcept
+    void bind() const noexcept
     {
-        glBindVertexArray(m_array);
+        glBindVertexArray( m_array );
     }
 
     /**
      * @brief bind zero
      */
-    inline static void unuse() noexcept
+    static void unbind() noexcept
     {
-        glBindVertexArray(0);
+        glBindVertexArray( 0 );
     }
 
+    bool is_bound() const noexcept { return get_current_bound_vertex_array() == m_array; }
+
+    void draw( GLPrimitive primitive, GLsizei num_idx ) noexcept
+    {
+        jassert( is_bound() );
+        glDrawElements( primitive, num_idx, GLTypeEnumHelper<IndexType>::value, nullptr );
+    }
+
+    GLuint get_gl_handle() const noexcept { return m_array; }
+
+    const VertexTemplate& get_vertex_template() noexcept { return m_vtx_info; }
+    GLBuffer*             get_vertex_buffer()   noexcept { return m_buf_vtx; }
+    GLBuffer*             get_index_buffer()    noexcept { return m_buf_idx; }
+    Program*              get_program()         noexcept { return m_program; }
+
+    static GLuint get_current_bound_vertex_array();
+protected:
     /**
      * @brief the index of OpenGL vertex array object
      */
     GLuint m_array = 0;
+    const VertexTemplate m_vtx_info;
+    treecore::RefCountHolder<GLBuffer> m_buf_vtx;
+    treecore::RefCountHolder<GLBuffer> m_buf_idx;
+    treecore::RefCountHolder<Program>  m_program;
 };
 
 } // namespace treeface

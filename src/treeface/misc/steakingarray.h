@@ -192,16 +192,31 @@ public:
         m_used_byte = 0;
     }
 
-    void clear_quick()
+    void clear_quick() noexcept
     {
         _LOCK_THIS_OBJ_;
         m_used_byte = 0;
+    }
+
+    void* get_raw_data_ptr() noexcept
+    {
+        return m_data.elements;
     }
 
     int32 size() const noexcept
     {
         jassert( m_used_byte % m_blk_size == 0 );
         return m_used_byte / m_blk_size;
+    }
+
+    int32 num_byte() const noexcept
+    {
+        return m_used_byte;
+    }
+
+    int32 block_size() const noexcept
+    {
+        return m_blk_size;
     }
 
 protected:

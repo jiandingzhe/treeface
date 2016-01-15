@@ -2,6 +2,7 @@
 #define TREEFACE_GL_TEXTURE_H
 
 #include "treeface/common.h"
+#include "treeface/gl/enums.h"
 #include "treeface/gl/imageref.h"
 
 #include <treecore/ArrayRef.h>
@@ -26,164 +27,195 @@ extern const GLenum TEXTURE_UNITS[32];
 class Texture: public treecore::RefCountObject
 {
 public:
-    Texture();
-    virtual ~Texture();
+    class BindScope
+    {
+    public:
+        BindScope( Texture& texture ): m_texture( texture ) { m_texture.bind();   }
+        ~BindScope()                                        { m_texture.unbind(); }
+    private:
+        Texture& m_texture;
+    };
+
+    ///
+    /// \brief Create 2D texture using one image.
+    ///
+    /// \param image          the image to be set
+    /// \param internal_fmt   device-side image format
+    /// \param num_gen_mipmap number of extra mipmap levels to generate. Set to
+    ///                       N means N+1 levels of mipmaps in total.
+    ///
+    Texture( TextureCompatibleImageRef image, treecore::uint32 num_gen_mipmap );
+
+    ///
+    /// \brief Create 2D texture with all mipmap levels explicitly specified
+    ///
+    /// \param images        images for all mipmap levels
+    /// \param internal_fmt  device-side image format
+    ///
+    Texture( treecore::ArrayRef<TextureCompatibleImageRef> images );
+
+    ///
+    /// \brief Create empty immutable 2D texture object
+    ///
+    /// \param width         texture width
+    /// \param height        texture width
+    /// \param levels        number of mipmap levels
+    /// \param internal_fmt  device-side image format
+    ///
+    Texture( GLsizei width, GLsizei height, GLsizei levels, GLInternalImageFormat internal_fmt );
+
+    ///
+    /// \brief Create 2D texture array
+    ///
+    /// \param images         images to be set for each frame
+    /// \param internal_fmt   device-side image format
+    /// \param num_gen_mipmap number of extra mipmap levels to generate. Set to
+    ///                       N means N+1 levels of mipmaps in total.
+    ///
+    Texture( TextureCompatibleImageArrayRef images, treecore::uint32 num_gen_mipmap );
+
+    ///
+    /// \brief Create cube map texture
+    ///
+    /// \param img_x_plus     image at x+ direction
+    /// \param img_x_minus    image at x- direction
+    /// \param img_y_plus     image at y+ direction
+    /// \param img_y_minus    image at y- direction
+    /// \param img_z_plus     image at z+ direction
+    /// \param img_z_minus    image at z- direction
+    /// \param internal_fmt   device-side image format
+    /// \param num_gen_mipmap number of extra mipmap levels to generate. Set to
+    ///                       N means N+1 levels of mipmaps in total.
+    ///
+    Texture( TextureCompatibleImageRef img_x_plus, TextureCompatibleImageRef img_x_minus,
+             TextureCompatibleImageRef img_y_plus, TextureCompatibleImageRef img_y_minus,
+             TextureCompatibleImageRef img_z_plus, TextureCompatibleImageRef img_z_minus,
+             treecore::uint32 num_gen_mipmap );
+
+    ///
+    /// \brief Create 3D texture
+    ///
+    /// \param voxel          data to be set
+    /// \param internal_fmt   device-side image format
+    /// \param num_gen_mipmap number of extra mipmap levels to generate. Set to
+    ///                       N means N+1 levels of mipmaps in total.
+    ///
+    Texture( TextureCompatibleVoxelBlockRef voxel, treecore::uint32 num_gen_mipmap );
+
+    ///
+    /// \brief create Texture object using JSON nodes
+    ///
+    /// \param texture_root_node
+    ///
+    Texture( const treecore::var& texture_root_node );
 
     // disable copy and move
-    TREECORE_DECLARE_NON_COPYABLE(Texture);
-    TREECORE_DECLARE_NON_MOVABLE(Texture);
+    TREECORE_DECLARE_NON_COPYABLE( Texture );
+    TREECORE_DECLARE_NON_MOVABLE( Texture );
 
-    /**
-     * @brief Set image data.
-     *
-     * @param image: the image to be set
-     * @param internal_fmt: device-side image format
-     * @param gen_mipmap: if set to true, a series of mipmaps will be generated
-     *        using GLU; otherwise only use single level of texture, and set
-     *        mipmap base and max levels to zero.
-     *
-     * @return ok if success, otherwise false.
-     */
-    treecore::Result set_image_data(ImageRef image, GLint internal_fmt, bool gen_mipmap) noexcept;
+    virtual ~Texture();
 
-    /**
-     * @brief Specify image data for all mipmap levels explicitly.
-     *
-     * Mipmap base level and max level will be automatically adjusted. But you
-     * still need to manually modify filter_min to those mipmap-enabled modes.
-     *
-     * @param images: images to be set for all mipmap levels
-     * @param internal_fmt: device-side image format
-     *
-     * @return ok if success, otherwise false.
-     */
-    treecore::Result set_image_data(treecore::ArrayRef<ImageRef> images, GLint internal_fmt) noexcept;
-
-    /**
-     * @brief build texture from JSON data
-     *
-     * @param texture_root_node
-     *
-     * @return ok if success, otherwise false.
-     */
-    treecore::Result build(const treecore::var& texture_root_node);
-
-    inline float get_min_lod() const noexcept
-    { return m_min_lod; }
-
-    inline void set_min_lod(float value) noexcept
+    float get_min_lod() const noexcept
     {
-        if (m_min_lod != value)
-        {
-            m_param_changed = true;
-            m_min_lod = value;
-        }
+        jassert( is_bound() );
+        float re = std::numeric_limits<float>::signaling_NaN();
+        glGetTexParameterfv( m_type, GL_TEXTURE_MIN_LOD, &re );
+        return re;
     }
 
-    inline float get_max_lod() const noexcept
-    { return m_max_lod; }
-
-    inline void set_max_lod(float value) noexcept
+    void set_min_lod( float value ) noexcept
     {
-        if (m_max_lod != value)
-        {
-            m_param_changed = true;
-            m_max_lod = value;
-        }
+        jassert( is_bound() );
+        glTexParameterf( m_type, GL_TEXTURE_MIN_LOD, value );
     }
 
-    inline GLenum get_wrap_s() const noexcept
-    { return m_wrap_s; }
-
-    inline void set_wrap_s(GLenum value) noexcept
+    float get_max_lod() const noexcept
     {
-        if (m_wrap_s != value)
-        {
-            m_param_changed = true;
-            m_wrap_s = value;
-        }
+        jassert( is_bound() );
+        float re = std::numeric_limits<float>::signaling_NaN();
+        glGetTexParameterfv( m_type, GL_TEXTURE_MAX_LOD, &re );
+        return re;
     }
 
-    inline GLenum get_wrap_t() const noexcept
-    { return m_wrap_t; }
-
-    inline void set_wrap_t(GLenum value) noexcept
+    void set_max_lod( float value ) noexcept
     {
-        if (m_wrap_t != value)
-        {
-            m_param_changed = true;
-            m_wrap_t = value;
-        }
+        jassert( is_bound() );
+        glTexParameterf( m_type, GL_TEXTURE_MAX_LOD, value );
     }
 
-    inline GLenum get_min_filter() const noexcept
-    { return m_min_filter; }
-
-    inline void set_min_filter(GLenum value) noexcept
+    GLTextureWrap get_wrap_s() const noexcept
     {
-        if (m_min_filter != value)
-        {
-            m_param_changed = true;
-            m_min_filter = value;
-        }
+        jassert( is_bound() );
+        GLint re = -1;
+        glGetTexParameteriv( m_type, GL_TEXTURE_WRAP_S, &re );
+        return GLTextureWrap( re );
     }
 
-    inline GLenum get_mag_filter() const noexcept
-    { return m_mag_filter; }
-
-    inline void set_mag_filter(GLenum value) noexcept
+    void set_wrap_s( GLTextureWrap value ) noexcept
     {
-        if (m_mag_filter != value)
-        {
-            m_param_changed = true;
-            m_mag_filter = value;
-        }
+        jassert( is_bound() );
+        glTexParameteri( m_type, GL_TEXTURE_WRAP_S, value );
     }
 
-    /**
-     * @brief bind texture
-     *
-     * If any cached texture parameter is modified, they will be uploaded to the
-     * device.
-     */
-    inline void use() noexcept
+    GLTextureWrap get_wrap_t() const noexcept
     {
-        glBindTexture(GL_TEXTURE_2D, m_texture);
-
-        if (m_param_changed)
-        {
-            m_param_changed = false;
-
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, m_min_lod);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, m_max_lod);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_wrap_s);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_wrap_t);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_min_filter);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_mag_filter);
-        }
+        jassert( is_bound() );
+        GLint re = -1;
+        glGetTexParameteriv( m_type, GL_TEXTURE_WRAP_T, &re );
+        return GLTextureWrap( re );
     }
+
+    void set_wrap_t( GLTextureWrap value ) noexcept
+    {
+        jassert( is_bound() );
+        glTexParameteri( m_type, GL_TEXTURE_WRAP_T, value );
+    }
+
+    GLTextureFilter get_min_filter() const noexcept
+    {
+        jassert( is_bound() );
+        GLint re = -1;
+        glGetTexParameteriv( m_type, GL_TEXTURE_MIN_FILTER, &re );
+        return GLTextureFilter( re );
+    }
+
+    void set_min_filter( GLTextureFilter value ) noexcept
+    {
+        jassert( is_bound() );
+        glTexParameteri( m_type, GL_TEXTURE_MIN_FILTER, value );
+    }
+
+    GLTextureFilter get_mag_filter() const noexcept
+    {
+        jassert( is_bound() );
+        GLint re = -1;
+        glGetTexParameteriv( m_type, GL_TEXTURE_MAG_FILTER, &re );
+        return GLTextureFilter( re );
+    }
+
+    void set_mag_filter( GLTextureFilter value ) noexcept
+    {
+        jassert( is_bound() );
+        glTexParameteri( m_type, GL_TEXTURE_MAG_FILTER, value );
+    }
+
+    void bind() noexcept { glBindTexture( m_type, m_texture ); }
 
     /**
      * @brief bind zero
      */
-    static inline void unuse() noexcept
-    {
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
+    void unbind() noexcept { glBindTexture( m_type, 0 ); }
+
+    bool is_bound() const noexcept { return get_current_bound_texture( m_type ) == m_texture; }
+
+    GLuint get_gl_handle() const noexcept { return m_texture; }
+
+    static GLuint get_current_bound_texture( GLTextureType type ) noexcept;
 
 protected:
-    GLuint m_texture;
-
-    // texture parameters
-    // If modified, will be uploaded to device on call to use().
-
-    bool m_param_changed = true;
-    float m_min_lod = -1000;
-    float m_max_lod = 1000;
-    GLenum m_wrap_s = GL_REPEAT;
-    GLenum m_wrap_t = GL_REPEAT;
-    GLenum m_min_filter = GL_NEAREST;
-    GLenum m_mag_filter = GL_NEAREST;
+    GLuint m_texture = 0;
+    GLTextureType m_type;
+    bool m_immutable = false;
 };
 
 } // namespace treeface

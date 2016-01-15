@@ -23,7 +23,7 @@ public:
 
     virtual ~GeometryManager();
 
-    treecore::Result get_geometry(const treecore::String& name, treecore::RefCountHolder<Geometry>& result);
+    Geometry* get_geometry(const treecore::String& name);
 
     bool geometry_is_cached(const treecore::String& name) const noexcept;
     bool release_geometry_hold(const treecore::String& name);

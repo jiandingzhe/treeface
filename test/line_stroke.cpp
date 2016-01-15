@@ -9,61 +9,6 @@
 using namespace treecore;
 using namespace treeface;
 
-namespace treecore
-{
-
-template<>
-bool fromString<LineCap>( const String& str, LineCap& result )
-{
-    String value_lc = str.toLowerCase();
-
-    bool re = true;
-    if ( value_lc.contains( "butt" ) ) result = LINE_CAP_BUTT;
-    else if ( value_lc.contains( "round" ) ) result = LINE_CAP_ROUND;
-    else if ( value_lc.contains( "square" ) ) result = LINE_CAP_SQUARE;
-    else re = false;
-
-    return re;
-}
-
-template<>
-bool fromString<LineJoin>( const String& str, LineJoin& result )
-{
-    String value_lc = str.toLowerCase();
-
-    bool re = true;
-    if ( value_lc.contains( "bevel" ) ) result = LINE_JOIN_BEVEL;
-    else if ( value_lc.contains( "miter" ) ) result = LINE_JOIN_MITER;
-    else if ( value_lc.contains( "round" ) ) result = LINE_JOIN_ROUND;
-    else re = false;
-
-    return re;
-}
-
-template<>
-treecore::String toString<LineCap>( LineCap cap )
-{
-    switch (cap)
-    {
-    case LINE_CAP_BUTT: return "butt";
-    case LINE_CAP_ROUND: return "round";
-    case LINE_CAP_SQUARE: return "square";
-    }
-}
-
-template<>
-treecore::String toString<LineJoin>( LineJoin join )
-{
-    switch (join)
-    {
-    case LINE_JOIN_BEVEL: return "bevel";
-    case LINE_JOIN_MITER: return "miter";
-    case LINE_JOIN_ROUND: return "round";
-    }
-}
-
-} // namespace treecore
-
 LineJoin line_join = LINE_JOIN_BEVEL;
 LineCap line_cap   = LINE_CAP_BUTT;
 float line_width   = 1.0f;

@@ -29,8 +29,7 @@ public:
 
     virtual ~SceneNodeManager();
 
-    treecore::Result add_nodes(const treecore::var& data, SceneNode** root_node_pp);
-    treecore::Result add_nodes(const treecore::var& data, treecore::RefCountHolder<SceneNode>& root_node);
+    SceneNode* add_nodes(const treecore::var& data);
 
     /**
      * @brief
@@ -38,8 +37,7 @@ public:
      * @return
      * @see add_nodes(const treecore::var& data)
      */
-    treecore::Result add_nodes(const treecore::String& data_name, SceneNode** root_node_pp);
-    treecore::Result add_nodes(const treecore::String& data_name, treecore::RefCountHolder<SceneNode>& root_node);
+    SceneNode* add_nodes(const treecore::String& data_name);
 
     /**
      * @brief get named node object
@@ -50,8 +48,8 @@ public:
     SceneNode* get_node(const treecore::String& name);
 
 protected:
-    treecore::Result build_visual_item(const treecore::var& data, VisualObject* visual_item);
-    treecore::Result build_node(const treecore::var& data, SceneNode* node);
+    VisualObject* create_visual_object(const treecore::var& data);
+    void build_node(const treecore::var& data, SceneNode* node);
 
 private:
     struct Impl;

@@ -3,6 +3,7 @@
 
 #include "treeface/common.h"
 
+
 namespace treeface {
 
 typedef enum
@@ -15,7 +16,7 @@ typedef enum
 
 typedef enum
 {
-    EVENT_USER         = 0,
+    EVENT_USER = 0,
     EVENT_KEYBOARD     = 1,
     EVENT_MOUSE_BUTTON = 2,
     EVENT_MOUSE_MOTION = 3,
@@ -62,6 +63,28 @@ typedef enum
     FILL_NON_ZERO,
     FILL_EVEN_ODD,
 } FillRule;
+
+typedef enum
+{
+    TEXTURE_IMAGE_SOLO_AS_RED,
+    TEXTURE_IMAGE_SOLO_AS_LUMINANCE,
+    TEXTURE_IMAGE_SOLO_AS_ALPHA,
+    TEXTURE_IMAGE_SOLO_AS_DEPTH,
+} TextureImageSoloChannelPolicy;
+
+typedef enum
+{
+    TEXTURE_IMAGE_DUAL_AS_RED_GREEN,
+    TEXTURE_IMAGE_DUAL_AS_LUMINANCE_ALPHA,
+    TEXTURE_IMAGE_DUAL_AS_DEPTH_STENCIL,
+} TextureImageDualChannelPolicy;
+
+typedef enum
+{
+    TEXTURE_IMAGE_INT_TO_FLOAT,
+    TEXTURE_IMAGE_INT_AS_SIGNED,
+    TEXTURE_IMAGE_INT_AS_UNSIGNED,
+} TextureImageIntDataPolicy;
 
 } // namespace treeface
 

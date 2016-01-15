@@ -18,11 +18,11 @@ public:
     SceneGraphMaterial();
     virtual ~SceneGraphMaterial();
 
-    void instant_set_matrix_model_view(const Mat4f& mat) const noexcept;
-    void instant_set_matrix_proj(const Mat4f& mat) const noexcept;
-    void instant_set_matrix_model_view_proj(const Mat4f& mat) const noexcept;
-    void instant_set_matrix_norm(const Mat4f& mat) const noexcept;
-    void instant_set_light(const Vec4f& direction, const Vec4f& color, const Vec4f& ambient) const noexcept;
+    void set_matrix_model_view(const Mat4f& mat) const noexcept;
+    void set_matrix_proj(const Mat4f& mat) const noexcept;
+    void set_matrix_model_view_proj(const Mat4f& mat) const noexcept;
+    void set_matrix_norm(const Mat4f& mat) const noexcept;
+    void set_light(const Vec4f& direction, const Vec4f& color, const Vec4f& ambient) const noexcept;
 
     bool is_translucent() const noexcept
     {

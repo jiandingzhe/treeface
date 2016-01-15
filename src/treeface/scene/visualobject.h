@@ -19,17 +19,16 @@ struct VertexArray;
 class VisualObject: public SceneItem
 {
 public:
-    VisualObject();
+    VisualObject(Geometry* geom, SceneGraphMaterial* mat);
     virtual ~VisualObject();
 
     TREECORE_DECLARE_NON_COPYABLE(VisualObject);
     TREECORE_DECLARE_NON_MOVABLE(VisualObject);
 
-    treecore::Result build(Geometry* geom, SceneGraphMaterial* mat) noexcept;
-
     SceneGraphMaterial* get_material() noexcept;
     Geometry* get_geometry() noexcept;
     VertexArray* get_vertex_array() noexcept;
+    void render() noexcept;
 
 protected:
     struct Impl;

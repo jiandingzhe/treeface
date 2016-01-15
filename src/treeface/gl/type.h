@@ -10,19 +10,14 @@
 
 namespace treeface {
 
-///
-/// \brief type of vertex index
-///
-/// 16 bit seems enough for us
-///
-typedef treecore::uint16 IndexType;
-
 /**
  * @brief helper class to get type at compile time from OpenGL type enums.
  */
 template<GLenum GL_TYPE_ENUM_VALUE>
-struct GLTypeHelper
-{};
+struct GLTypeHelper;
+
+template<typename T>
+struct GLTypeEnumHelper;
 
 template<>
 struct GLTypeHelper<GL_BOOL>
@@ -78,8 +73,55 @@ struct GLTypeHelper<GL_DOUBLE>
     typedef GLdouble Type;
 };
 
-int size_of_gl_type(GLenum type);
+int size_of_gl_type( GLenum type );
 
+template<>
+struct GLTypeEnumHelper<GLbyte>
+{
+    static const GLenum value = GL_BYTE;
+};
+
+template<>
+struct GLTypeEnumHelper<GLubyte>
+{
+    static const GLenum value = GL_UNSIGNED_BYTE;
+};
+
+template<>
+struct GLTypeEnumHelper<GLshort>
+{
+    static const GLenum value = GL_SHORT;
+};
+
+template<>
+struct GLTypeEnumHelper<GLushort>
+{
+    static const GLenum value = GL_UNSIGNED_SHORT;
+};
+
+template<>
+struct GLTypeEnumHelper<GLint>
+{
+    static const GLenum value = GL_INT;
+};
+
+template<>
+struct GLTypeEnumHelper<GLuint>
+{
+    static const GLenum value = GL_UNSIGNED_INT;
+};
+
+template<>
+struct GLTypeEnumHelper<GLfloat>
+{
+    static const GLenum value = GL_FLOAT;
+};
+
+template<>
+struct GLTypeEnumHelper<GLdouble>
+{
+    static const GLenum value = GL_DOUBLE;
+};
 
 } // namespace treeface
 

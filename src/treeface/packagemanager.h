@@ -13,9 +13,10 @@ class TestFramework;
 namespace treecore {
 class File;
 class InputStream;
-class Result;
-class ZipFile;
 class MemoryBlock;
+class Result;
+class var;
+class ZipFile;
 } // namespace treecore
 
 namespace treeface {
@@ -32,10 +33,10 @@ public:
         USE_NEWER
     } PackageItemConflictPolicy;
 
-    juce_DeclareSingleton(PackageManager, false);
+    juce_DeclareSingleton( PackageManager, false );
 
-    TREECORE_DECLARE_NON_COPYABLE(PackageManager);
-    TREECORE_DECLARE_NON_MOVABLE(PackageManager);
+    TREECORE_DECLARE_NON_COPYABLE( PackageManager );
+    TREECORE_DECLARE_NON_MOVABLE( PackageManager );
 
     /**
      * @brief add a zip package into resource manager
@@ -46,7 +47,7 @@ public:
      * @param pol: how to act when the name of an item in the newly added
      *        package already exists in the resource manager.
      */
-    void add_package(treecore::ZipFile* pkg, PackageItemConflictPolicy pol);
+    void add_package( treecore::ZipFile* pkg, PackageItemConflictPolicy pol );
 
     /**
      * @brief add a zip package by specifying zip data in memory.
@@ -55,7 +56,7 @@ public:
      * @param pol: how to act when the name of an item in the newly added
      *        package already exists in the resource manager.
      */
-    void add_package(const void* zip_data, size_t zip_data_size, PackageItemConflictPolicy pol);
+    void add_package( const void* zip_data, size_t zip_data_size, PackageItemConflictPolicy pol );
 
     /**
      * @brief add a zip package by specifying zip file.
@@ -63,30 +64,36 @@ public:
      * @param pol: how to act when the name of an item in the newly added
      *        package already exists in the resource manager.
      */
-    void add_package(const treecore::File& zip_file, PackageItemConflictPolicy pol);
+    void add_package( const treecore::File& zip_file, PackageItemConflictPolicy pol );
 
-    /**
-     * @brief get a stream which can used for reading an item
-     * @param name: item name
-     * @return a stream from which data can be accessed. User is resposible for
-     *         delete the stream object when it is no longer needed.
-     */
-    treecore::InputStream* get_item_stream(const treecore::String& name);
+    ///
+    /// \brief get a stream which can be used for reading an item
+    ///
+    /// \param name  item name
+    ///
+    /// \return a stream from which data can be accessed, or nullptr if there is
+    ///         no corresponding item name. User is resposible for delete the
+    ///         returned stream object when it is no longer needed.
+    ///
+    treecore::InputStream* get_item_stream( const treecore::String& name );
 
-    /**
-     * @brief get the raw data of an item
-     * @param name: item name
-     * @param data: the place to store data. Existing data in this memory block
-     *              object will be erased. A trailing '0' will be appended after
-     *              the end of data, so that it can be directly used as a C
-     *              string. As a result, the size of memory block will be set to
-     *              data size + 1, be careful with that.
-     * @return ok if success, otherwise fail.
-     */
-    treecore::Result get_item_data(const treecore::String& name,
-                                   treecore::MemoryBlock& data);
+    ///
+    /// \brief get the raw data of an item
+    ///
+    /// \param name         item name
+    /// \param data         the place to store data. Existing data in this
+    ///                     memory block object will be erased.
+    /// \param append_zero  append one additional zero byte at the end of data,
+    ///                     so that data can be used directly as null-terminated
+    ///                     string. Note this would modify data length by one.
+    ///
+    /// \return true if success, false if there is no corresponding item name.
+    ///
+    bool get_item_data( const treecore::String& name, treecore::MemoryBlock& data, bool append_zero );
 
-    bool has_resource(const treecore::String& name) const noexcept;
+    treecore::var get_item_json( const treecore::String& name );
+
+    bool has_resource( const treecore::String& name ) const noexcept;
 
 protected:
     PackageManager();
@@ -95,7 +102,7 @@ protected:
     struct Impl;
 
     Impl* m_impl = nullptr;
-}; // class ResourceManage
+};  // class ResourceManage
 
 } // namespace treeface
 

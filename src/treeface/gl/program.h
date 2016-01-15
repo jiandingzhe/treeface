@@ -16,6 +16,8 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
+#include <stdexcept>
+
 namespace treeface {
 
 class Material;
@@ -23,24 +25,21 @@ struct VertexArray;
 
 struct UniformInfo: public VertexAttrib
 {
-    UniformInfo(const treecore::String& name, treecore::int32 n_elem, GLenum type, GLint location)
-        : VertexAttrib(name, n_elem, type)
-        , location(location)
-    {
-    }
+    UniformInfo( const treecore::String& name, treecore::int32 n_elem, GLType type, GLint location )
+        : VertexAttrib( name, n_elem, type )
+        , location( location )
+    {}
 
-    GLint location = -1;
+    const GLint location;
 };
 
 /**
  * @brief The Program class represents a GLSL program with vertex shader and
  *        fragment shader.
  *
- * The program object is initially empty. The build() method will construct the
- * program with vertex and fragment source code. The metadata of all vertex
- * attributes and uniforms will be enumerated, and can be accessed by
- * get_attribute_index(), get_attribute_info(), get_uniform_index(),
- * get_uniform_info() methods.
+ * The metadata of all vertex attributes and uniforms will be enumerated during
+ * build time, and can be accessed by get_attribute_index(),
+ * get_attribute_info(), get_uniform_index(), get_uniform_info() methods.
  *
  * The geometry shader is not included, as OpenGL ES do not support it.
  *
@@ -53,111 +52,140 @@ class Program: public treecore::RefCountObject
     friend struct VertexArray;
 
 public:
-    /**
-     * @brief create an empty Program object
-     *
-     * GL shader and program object indices will be allocated
-     */
-    Program();
+    class BindScope
+    {
+    public:
+        BindScope( Program& program ): m_program( program ) { m_program.bind(); }
+        ~BindScope()                                        { Program::unbind(); }
+    private:
+        Program& m_program;
+    };
+
+    ///
+    /// \brief create Program object
+    ///
+    /// The OpenGL shader objects will be created using specified vertex and
+    /// fragment source code, and the OpenGL program object will be linked.
+    ///
+    /// In addition, all vertex attribute and uniform information will be
+    /// retrieved and stored in some data structure. They can be acquired using
+    /// get_uniform_XXX and get_attribute_XXX methods, and don't need program
+    /// binding.
+    ///
+    Program( const char* src_vert, const char* src_frag );
 
     // invalidate copy and move
-    TREECORE_DECLARE_NON_COPYABLE(Program);
-    TREECORE_DECLARE_NON_MOVABLE(Program);
+    TREECORE_DECLARE_NON_COPYABLE( Program );
+    TREECORE_DECLARE_NON_MOVABLE( Program );
 
-    /**
-     * @brief the GL shader and program objects will also be released
-     */
     virtual ~Program();
 
-    /**
-     * @brief compile source, link
-     * @param src_vert: source code of vertex shader
-     * @param src_frag: source code of fragment shader
-     * @return ok if success, fail if any compilation and link error occurred.
-     */
-    treecore::Result build(const char* src_vert, const char* src_frag);
+    ///
+    /// \brief bind program
+    ///
+    void bind() noexcept { glUseProgram( m_program ); }
 
-    inline bool usable() const noexcept
-    {
-        return compiled_and_linked;
-    }
+    ///
+    /// \brief unbind program
+    ///
+    static void unbind() { glUseProgram( 0 ); }
 
-    /**
-     * @brief bind program, upload outdated cached uniforms
-     */
-    void use() noexcept;
+    bool is_bound() const noexcept { return get_current_bound_program() == m_program; }
 
-    /**
-     * @brief bind zero
-     */
-    inline static void unuse() noexcept
-    {
-        glUseProgram(0);
-    }
+    void set_uniform( GLint uni_loc, GLint value ) const noexcept;
+    void set_uniform( GLint uni_loc, GLuint value ) const noexcept;
+    void set_uniform( GLint uni_loc, GLfloat value ) const noexcept;
+    void set_uniform( GLint uni_loc, const Sampler& sampler ) const noexcept;
+    void set_uniform( GLint uni_loc, const Vec4f& value ) const noexcept;
+    void set_uniform( GLint uni_loc, const Mat4f& value ) const noexcept;
 
-    void instant_set_uniform(GLint uni_loc, GLint value) const noexcept;
-    void instant_set_uniform(GLint uni_loc, GLuint value) const noexcept;
-    void instant_set_uniform(GLint uni_loc, GLfloat value) const noexcept;
-    void instant_set_uniform(GLint uni_loc, const Sampler& sampler) const noexcept;
-    void instant_set_uniform(GLint uni_loc, const Vec4f& value) const noexcept;
-    void instant_set_uniform(GLint uni_loc, const Mat4f& value) const noexcept;
+    ///
+    /// \brief get vertex attribute index by name
+    ///
+    /// \param name  attribute name
+    /// \return attribute index. -1 will be returned if the name does not exist
+    ///         in program.
+    ///
+    /// \see get_attribute
+    ///
+    int get_attribute_index( const treecore::String& name ) const noexcept;
 
-    /**
-     * @brief get vertex attribute index by name
-     * @param name: attribute name
-     * @return attribute index. -1 will be returned if the name does not exist
-     * in program.
-     */
-    int get_attribute_index(const treecore::String& name) const noexcept;
-
-    /**
-     * @brief get vertex attribute info by index
-     * @param i_attr: attribute index
-     * @return attribute information
-     */
-    const VertexAttrib& get_attribute_info(int i_attr) const noexcept;
+    ///
+    /// \brief get vertex attribute info by index
+    ///
+    /// \param i_attr: attribute index
+    /// \return attribute information
+    ///
+    /// \see get_attribute_index
+    ///
+    const VertexAttrib& get_attribute( int i_attr ) const noexcept;
 
     /**
-     * @brief get uniform index by name
-     * @param name: uniform name
-     * @return uniform index. -1 will be returned if name not exist.
-     */
-    int get_uniform_index(const treecore::String& name) const noexcept;
-
-    /**
-     * @brief get uniform index by location
-     * @param uni_loc: uniform location
-     * @return uniform index. -1 will be returned if location not exist.
-     */
-    int get_uniform_index(const GLint uni_loc) const noexcept;
-
-    /**
-     * @brief get uniform info by index
-     * @param i_attr: uniform index
-     * @return uniform information
-     */
-    const UniformInfo& get_uniform_info(int i_uni) const noexcept;
-
-    /**
+     * \brief get uniform index by name
      *
+     * Note that uniform index is different from uniform location!
      *
+     * \param name  uniform name
+     * \return uniform index. -1 will be returned if name not exist.
+     *
+     * \see get_uniform
      */
-    GLint get_uniform_location(const treecore::String& name) const noexcept;
+    int get_uniform_index( const treecore::String& name ) const noexcept;
+
+    ///
+    /// \brief get uniform index by location
+    ///
+    /// Note that uniform index is different from uniform location!
+    ///
+    /// \param uni_loc: uniform location
+    /// \return uniform index. -1 will be returned if location not exist.
+    ///
+    /// \see get_uniform
+    ///
+    int get_uniform_index( const GLint uni_loc ) const noexcept;
+
+    ///
+    /// \brief get uniform info by index
+    ///
+    /// \param i_attr: uniform index
+    /// \return uniform information
+    ///
+    /// \see get_uniform_index
+    ///
+    const UniformInfo& get_uniform( int i_uni ) const noexcept;
+
+    ///
+    /// \brief get uniform location by name
+    ///
+    /// Note that uniform location is used by OpenGL uniform accession, which
+    /// different from uniform index!
+    ///
+    /// \param name  uniform name
+    /// \return uniform location
+    /// \see set_uniform
+    ///
+    GLint get_uniform_location( const treecore::String& name ) const noexcept;
+
+    GLuint get_gl_handle() const noexcept { return m_program; }
+
+    static GLuint get_current_bound_program() noexcept
+    {
+        GLint result = -1;
+        glGetIntegerv( GL_CURRENT_PROGRAM, &result );
+        return GLuint( result );
+    }
 protected:
     struct Impl;
 
-    treecore::Result fetch_shader_error_log(GLuint shader);
+    treecore::Result fetch_shader_error_log( GLuint shader );
     treecore::Result fetch_program_error_log();
 
-    unsigned int m_program = 0;
-    unsigned int m_shader_vert = 0;
-    unsigned int m_shader_frag = 0;
-
-    bool compiled_and_linked = false;
+    GLuint m_program     = 0;
+    GLuint m_shader_vert = 0;
+    GLuint m_shader_frag = 0;
 
     Impl* m_impl = nullptr;
 };
-
 
 } // namespace treeface
 

@@ -5,6 +5,7 @@
 #include "treeface/gl/vertexattrib.h"
 
 #include <treecore/IntTypes.h>
+#include <treecore/RefCountObject.h>
 
 namespace treecore {
 class var;
@@ -19,64 +20,36 @@ namespace treeface {
  * GPU buffers are bare byte data, so we need meta data to describe how vertices
  * organize.
  */
-class VertexTemplate
+class VertexTemplate: public treecore::RefCountObject
 {
 public:
-    /**
-     * @brief create an empty VertexTemplate object.
-     */
+    ///
+    /// \brief create an empty VertexTemplate object.
+    ///
     VertexTemplate();
 
     ///
-    /// \brief copy constructor
+    /// \brief create VertexTemplate from config information
+    /// \param list_node
     ///
+    VertexTemplate(const treecore::var& list_node);
+
     VertexTemplate(const VertexTemplate& other);
-
-    /**
-     * @brief move constructor.
-     * @param other
-     */
-    VertexTemplate(VertexTemplate&& other): m_impl(other.m_impl)
-    {
-        other.m_impl = nullptr;
-    }
-
-    ///
-    /// \brief assignment operator
-    ///
     VertexTemplate& operator = (const VertexTemplate& other);
 
-    /**
-     * @brief assignment operator using rvalue
-     */
-    VertexTemplate& operator = (VertexTemplate&& other)
-    {
-        jassert(m_impl == nullptr);
+    TREECORE_DECLARE_NON_MOVABLE(VertexTemplate);
 
-        m_impl = other.m_impl;
-        other.m_impl = nullptr;
+    virtual ~VertexTemplate();
 
-        return *this;
-    }
-
-    /**
-     * @brief add one vertex attribute into vertex template.
-     *
-     * @param attr: the attribute to be added.
-     *
-     * @param normalize: whether this attribute should be normalized when
-     *        sending to GL device side.
-     */
-    void add_attrib(const VertexAttrib& attr, bool normalize);
-
-    /**
-     * @brief add several attributes from parsed JSON content.
-     *
-     * @param list_node: a JSON node which should be an array of attributes.
-     *
-     * @return ok if success, fail if any error occurred.
-     */
-    treecore::Result add_attribs(const treecore::var& list_node);
+    ///
+    /// \brief add one vertex attribute into vertex template.
+    ///
+    /// \param attr       the attribute to be added.
+    /// \param normalize  whether this attribute should be normalized when sent
+    ///                   to GL device side. Only affects integral types.
+    /// \param align      attribute alignment
+    ///
+    void add_attrib(const VertexAttrib& attr, bool normalize, treecore::uint32 align);
 
     /**
      * @brief get the byte size of a single vertex
@@ -151,7 +124,7 @@ public:
      *
      * @return the OpenGL type enum of specified element.
      */
-    GLenum get_elem_type(int i_elem) const noexcept;
+    GLType get_elem_type(int i_elem) const noexcept;
 
     /**
      * @brief get byte size of the element at specified index.
@@ -165,7 +138,7 @@ public:
      *
      * @return the byte size of specified element.
      */
-    GLenum get_elem_size(int i_elem) const noexcept;
+    treecore::int32 get_elem_size(int i_elem) const noexcept;
 
     /**
      * @brief get specified vertex attribute.
@@ -193,7 +166,7 @@ public:
      * @param i_elem: the element index.
      * @param value: the value to be set.
      */
-    void set_value_at(void* vertex, int i_elem, const treecore::var& value) noexcept;
+    void set_value_at(void* vertex, int i_elem, const treecore::var& value) const noexcept;
 
 protected:
     struct Impl;
