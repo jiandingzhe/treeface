@@ -18,18 +18,14 @@ namespace treeface {
 
 inline GLsizei _expand_to_align_( GLsizei value, GLsizei align )
 {
-    if (value < align)
-    {
-        return align;
-    }
+    if (align == 0)
+        return value;
+
+    GLsizei rem = value % align;
+    if (rem > 0)
+        return value - rem + align;
     else
-    {
-        GLsizei rem = value % align;
-        if (rem > 0)
-            return value - rem + align;
-        else
-            return value;
-    }
+        return value;
 }
 
 struct VertexTemplate::Impl
@@ -113,7 +109,7 @@ VertexTemplate::VertexTemplate( const VertexTemplate& other ): m_impl( new Impl(
     *m_impl = *other.m_impl;
 }
 
-VertexTemplate& VertexTemplate::operator = ( const VertexTemplate& other )
+VertexTemplate& VertexTemplate::operator =( const VertexTemplate& other )
 {
     *m_impl = *other.m_impl;
     return *this;
