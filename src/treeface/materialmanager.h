@@ -25,7 +25,7 @@ public:
 
     virtual ~MaterialManager();
 
-    void build_material(const treecore::String& name, const treecore::var& data, Material* mat);
+    Material* build_material(const treecore::String& name, const treecore::var& data);
 
     Material* get_material(const treecore::String& name);
 

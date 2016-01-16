@@ -2,6 +2,7 @@
 
 #include "treeface/imagemanager.h"
 #include "treeface/material.h"
+#include "treeface/scene/scenegraphmaterial.h"
 #include "treeface/materialmanager.h"
 #include "treeface/packagemanager.h"
 
@@ -75,6 +76,8 @@ void TestFramework::content()
 
         IS( mat1->get_num_textures(), 1 );
         OK( img_mgr->image_is_cached( "moon.jpg" ) );
+        SceneGraphMaterial* scene_mat1 = dynamic_cast<SceneGraphMaterial*>(mat1);
+        OK( scene_mat1 != nullptr );
     }
 
     // material 2

@@ -99,13 +99,8 @@ public:
 };
 juce_ImplementSingleton( MaterialPropertyValidator )
 
-void MaterialManager::build_material( const treecore::String& name, const treecore::var& data, Material* mat )
+Material* MaterialManager::build_material( const treecore::String& name, const treecore::var& data)
 {
-    jassert(mat != nullptr);
-
-    // store material
-    m_impl->materials.set(name, mat);
-
     // validate data
     if ( !data.isObject() )
         throw ConfigParseError( "Material root node is not KV" );
@@ -151,6 +146,7 @@ void MaterialManager::build_material( const treecore::String& name, const treeco
 
     // create material object by type
     // and preprocess shader source
+    Material* mat = nullptr;
     String src_vert;
     String src_frag;
 
@@ -236,6 +232,11 @@ void MaterialManager::build_material( const treecore::String& name, const treeco
                 warn( "program don't have texture unit named %s", tex_name.toRawUTF8() );
         }
     }
+
+    // store material
+    m_impl->materials.set(name, mat);
+
+    return mat;
 }
 
 Material* MaterialManager::get_material( const String& name )
@@ -261,10 +262,7 @@ Material* MaterialManager::get_material( const String& name )
     }
 
     // build material from JSON structure
-    Material* result = new Material();
-    build_material( name, mat_root_node, result );
-
-    return result;
+    return build_material( name, mat_root_node );
 }
 
 bool MaterialManager::material_is_cached( const treecore::String& name )

@@ -5,8 +5,8 @@
     [
         {
             "name": "tex",
+            "type": "2d",
             "image": "moon.jpg",
-            "internal_format": "rgb"
         }
     ]
 }

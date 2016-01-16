@@ -227,6 +227,7 @@ Texture::Texture( TextureCompatibleVoxelBlockRef voxel, uint32 num_gen_mipmap )
     glBindTexture( m_type, 0 );
 }
 
+#define KEY_NAME          "name"
 #define KEY_IMG           "image"
 #define KEY_MAG_LINEAR    "mag_filter_linear"
 #define KEY_MIN_LINEAR    "min_filter_linear"
@@ -246,6 +247,7 @@ Result _validate_keys_( NamedValueSet& kv )
     if (!validator)
     {
         validator = new PropertyValidator();
+        validator->add_item( KEY_NAME,          PropertyValidator::ITEM_SCALAR,                                 true );
         validator->add_item( KEY_IMG,           PropertyValidator::ITEM_SCALAR | PropertyValidator::ITEM_ARRAY, true );
         validator->add_item( KEY_MAG_LINEAR,    PropertyValidator::ITEM_SCALAR,                                 false );
         validator->add_item( KEY_MIN_LINEAR,    PropertyValidator::ITEM_SCALAR,                                 false );

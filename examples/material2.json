@@ -5,13 +5,13 @@
     [
         {
             "name": "tex1",
+            "type": "2d",
             "image": "moon.jpg",
-            "internal_format": "rgb",
         },
         {
             "name": "tex2",
+            "type": "2d",
             "image": "earth.png",
-            "internal_format": "rgba"
         }
     ]
 }
