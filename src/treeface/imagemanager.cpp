@@ -14,8 +14,6 @@ using namespace treecore;
 
 namespace treeface {
 
-juce_ImplementSingleton(ImageManager);
-
 struct ImageManager::Impl
 {
     HashMap<String, RefCountHolder<Image> > items;

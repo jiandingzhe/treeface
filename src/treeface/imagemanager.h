@@ -4,23 +4,25 @@
 #include "treeface/common.h"
 
 #include <treecore/Result.h>
-#include <treecore/Singleton.h>
+#include <treecore/RefCountObject.h>
+#include <treecore/RefCountSingleton.h>
 #include <treecore/String.h>
 
 namespace treeface {
 
 class Image;
 
-class ImageManager
+class ImageManager: public treecore::RefCountObject, public treecore::RefCountSingleton<ImageManager>
 {
-public:
-    TREECORE_DECLARE_NON_COPYABLE(ImageManager);
-    TREECORE_DECLARE_NON_MOVABLE(ImageManager);
-    juce_DeclareSingleton(ImageManager, false);
+    friend class treecore::RefCountSingleton<ImageManager>;
 
-    Image* get_image(const treecore::String& name);
-    bool image_is_cached(const treecore::String& name) const;
-    bool release_image_hold(const treecore::String& name);
+public:
+    TREECORE_DECLARE_NON_COPYABLE( ImageManager );
+    TREECORE_DECLARE_NON_MOVABLE( ImageManager );
+
+    Image* get_image( const treecore::String& name );
+    bool   image_is_cached( const treecore::String& name ) const;
+    bool   release_image_hold( const treecore::String& name );
 
 protected:
     struct Impl;

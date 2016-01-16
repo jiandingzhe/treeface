@@ -22,6 +22,7 @@
 #include <treecore/MemoryBlock.h>
 #include <treecore/NamedValueSet.h>
 #include <treecore/Result.h>
+#include <treecore/Singleton.h>
 #include <treecore/Variant.h>
 
 using namespace treecore;

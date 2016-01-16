@@ -2,7 +2,8 @@
 #define TREEFACE_PACKAGE_MANAGER_H
 
 #include <treecore/MathsFunctions.h>
-#include <treecore/Singleton.h>
+#include <treecore/RefCountObject.h>
+#include <treecore/RefCountSingleton.h>
 #include <treecore/String.h>
 #include <treecore/Time.h>
 
@@ -21,8 +22,9 @@ class ZipFile;
 
 namespace treeface {
 
-class PackageManager
+class PackageManager: public treecore::RefCountObject, public treecore::RefCountSingleton<PackageManager>
 {
+    friend class treecore::RefCountSingleton<PackageManager>;
     friend class ::TestFramework;
 public:
     typedef enum
@@ -32,8 +34,6 @@ public:
         USE_OLDER,
         USE_NEWER
     } PackageItemConflictPolicy;
-
-    juce_DeclareSingleton( PackageManager, false );
 
     TREECORE_DECLARE_NON_COPYABLE( PackageManager );
     TREECORE_DECLARE_NON_MOVABLE( PackageManager );

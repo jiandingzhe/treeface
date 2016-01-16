@@ -88,8 +88,8 @@ void TestFramework::content()
     }
 
     // suppress valgrind warnings
-    PackageManager::deleteInstance();
-    ImageManager::deleteInstance();
+    PackageManager::releaseInstance();
+    ImageManager::releaseInstance();
 
     SDL_GL_DeleteContext( context );
     SDL_Quit();

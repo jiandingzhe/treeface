@@ -29,6 +29,10 @@ void TestFramework::content()
         Image* img = img_mgr->get_image( "earth.png" );
         OK( img != nullptr );
         OK( img_mgr->image_is_cached( "earth.png" ) );
+        IS( img->get_num_channel(), 4 );
+        IS( img->get_data_type(),   TFGL_IMAGE_DATA_UNSIGNED_BYTE );
+        IS( img->get_width(),       2048 );
+        IS( img->get_height(),      1024 );
 
         {
             TextureCompatibleImageRef ref_img = img->get_texture_compatible_2d();
@@ -57,6 +61,10 @@ void TestFramework::content()
         Image* img = img_mgr->get_image( "moon.jpg" );
         OK( img != nullptr );
         OK( img_mgr->image_is_cached( "moon.jpg" ) );
+        IS( img->get_num_channel(), 3 );
+        IS( img->get_data_type(),   TFGL_IMAGE_DATA_UNSIGNED_BYTE );
+        IS( img->get_width(),       2048 );
+        IS( img->get_height(),      1024 );
 
         {
             TextureCompatibleImageRef ref_img = img->get_texture_compatible_2d();
@@ -86,11 +94,16 @@ void TestFramework::content()
         OK( img != nullptr );
         OK( img_mgr->image_is_cached( "moon.pfm" ) );
 
+        IS( img->get_num_channel(), 3 );
+        IS( img->get_data_type(),   TFGL_IMAGE_DATA_FLOAT );
+        IS( img->get_width(),       2048 );
+        IS( img->get_height(),      1024 );
+
         {
             TextureCompatibleImageRef ref_img = img->get_texture_compatible_2d();
             IS( ref_img.format,          TFGL_IMAGE_FORMAT_RGB );
             IS( ref_img.type,            TFGL_IMAGE_DATA_FLOAT );
-            IS( ref_img.internal_format, TFGL_INTERNAL_IMAGE_FORMAT_RGBA32F );
+            IS( ref_img.internal_format, TFGL_INTERNAL_IMAGE_FORMAT_RGB32F );
         }
     }
 
@@ -99,6 +112,10 @@ void TestFramework::content()
         Image* img = img_mgr->get_image( "moonbump.jpg" );
         OK( img != nullptr );
         OK( img_mgr->image_is_cached( "moonbump.jpg" ) );
+        IS( img->get_num_channel(), 1 );
+        IS( img->get_data_type(),   TFGL_IMAGE_DATA_UNSIGNED_BYTE );
+        IS( img->get_width(),       2048 );
+        IS( img->get_height(),      1024 );
 
         {
             TextureCompatibleImageRef ref_img = img->get_texture_compatible_2d_solo( TEXTURE_IMAGE_SOLO_AS_RED );
@@ -141,6 +158,10 @@ void TestFramework::content()
         Image* img = img_mgr->get_image( "moonbump.pfm" );
         OK( img != nullptr );
         OK( img_mgr->image_is_cached( "moonbump.pfm" ) );
+        IS( img->get_num_channel(), 1 );
+        IS( img->get_data_type(),   TFGL_IMAGE_DATA_FLOAT );
+        IS( img->get_width(),       2048 );
+        IS( img->get_height(),      1024 );
 
         {
             TextureCompatibleImageRef ref_img = img->get_texture_compatible_2d_solo( TEXTURE_IMAGE_SOLO_AS_RED );
@@ -159,6 +180,6 @@ void TestFramework::content()
 
     // delete managers, which will release object hold
     // otherwise valgrind will report many possible losts
-    PackageManager::deleteInstance();
-    ImageManager::deleteInstance();
+    PackageManager::releaseInstance();
+    ImageManager::releaseInstance();
 }

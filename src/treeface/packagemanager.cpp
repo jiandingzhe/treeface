@@ -31,8 +31,6 @@ struct PackageManager::Impl
     treecore::HashMap<treecore::String, PackageEntryPoint> m_name_pkg_map;
 };
 
-juce_ImplementSingleton( PackageManager )
-
 void PackageManager::add_package( treecore::ZipFile* pkg, PackageItemConflictPolicy pol )
 {
     if ( !m_impl->m_packages.insert( pkg ) )
