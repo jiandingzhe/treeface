@@ -137,7 +137,6 @@ Geometry::Geometry( const treecore::var& geom_root_node )
     {
         size_t vtx_size   = m_impl->vtx_temp.vertex_size();
         int    n_vtx_elem = m_impl->vtx_temp.n_elems();
-        DBG( "geometry vertex size: " + String( vtx_size ) + ", elems: " + String( n_vtx_elem ) );
 
         m_impl->host_data_vtx.resize( vtx_nodes->size() );
         int8* vtx_data = (int8*) m_impl->host_data_vtx.get_raw_data_ptr();

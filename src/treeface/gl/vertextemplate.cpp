@@ -95,7 +95,7 @@ VertexTemplate::VertexTemplate( const treecore::var& list_node ): m_impl( new Im
 
         VertexAttrib attr_kern( attr_kv[KEY_NAME].toString(), n_elem, type );
 
-        uint32 align = attr_kern.size();
+        uint32 align = size_of_gl_type( type );
         if ( attr_kv.contains( KEY_ALN ) && !fromString( attr_kv[KEY_ALN], align ) )
             throw ConfigParseError( "failed to parse attribute alignment from: " + attr_kv[KEY_N_ELEM].toString() );
 

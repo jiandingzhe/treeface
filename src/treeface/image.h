@@ -60,6 +60,8 @@ public:
 
     int32           get_num_channel() const noexcept { return m_num_channel; }
     GLImageDataType get_data_type()   const noexcept { return m_gl_type; }
+    int32           get_width() const noexcept       { return (int32) FreeImage_GetWidth( m_fi_img ); }
+    int32           get_height() const noexcept      { return (int32) FreeImage_GetHeight( m_fi_img ); }
 
     /**
      * @brief set the underlying FreeImage image object and get the original one.

@@ -68,7 +68,7 @@ void TestFramework::content()
         Geometry::HostVertexCache& data_vtx = geom->get_host_vertex_cache();
         GLbyte* data_p = (GLbyte*) data_vtx.get_raw_data_ptr();
 
-        IS( data_vtx.size(),           96 );
+        IS( data_vtx.size(),           4 );
 
         IS( *(float*) (data_p + 0),    0 );
         IS( *(float*) (data_p + 4),    0 );
