@@ -167,6 +167,17 @@ target_link_libraries(t_geometry
 )
 target_use_treecore(t_geometry)
 
+add_executable(t_geometry_load_align t_geometry_load_align.cpp)
+target_link_libraries(t_geometry_load_align
+    treeface
+    TestFramework
+    ${SDL2_LIBRARY}
+    ${GLEW_LIBRARY}
+    ${OPENGL_gl_LIBRARY}
+    ${OPENGL_glu_LIBRARY}
+)
+target_use_treecore(t_geometry_load_align)
+
 add_executable(t_node_manager t_node_manager.cpp)
 target_link_libraries(t_node_manager
     treeface

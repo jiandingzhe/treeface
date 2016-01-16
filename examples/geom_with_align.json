@@ -1,0 +1,28 @@
+{
+    "primitive": "triangle_strip",
+    "attributes":
+    [
+        {
+            "name": "position",
+            "type": "float",
+            "n_elem": 3
+        },
+        {
+            "name": "tex_position",
+            "type": "float",
+            "n_elem": 2,
+            "align": 8
+        }
+    ],
+    "vertices":
+    [
+        [-0.5, -0.5, 0,  0, 0],
+        [ 0.5, -0.5, 0,  1, 0],
+        [-0.5,  0.5, 0,  0, 1],
+        [ 0.5,  0.5, 0,  1, 1]
+    ],
+    "indices":
+    [
+        0,1,2,3
+    ]
+}

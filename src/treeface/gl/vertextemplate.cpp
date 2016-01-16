@@ -139,7 +139,8 @@ void VertexTemplate::add_attrib( const VertexAttrib& attr, bool normalize, uint3
         elem_offset += elem_size;
     }
 
-    m_impl->size += _expand_to_align_( attr.size(), align );
+    // update vertex size
+    m_impl->size = attr_offset + _expand_to_align_( attr.size(), align );
 }
 
 size_t VertexTemplate::vertex_size() const noexcept
