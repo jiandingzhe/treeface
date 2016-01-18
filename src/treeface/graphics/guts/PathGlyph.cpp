@@ -27,12 +27,12 @@ void PathGlyph::segment_arc( const Vec2f& prev_end, treecore::Array<Vec2f>& resu
     else             rot.set_rotate( -step );
 
     // generate points
-    Vec2f v = prev_end - arc.center;
+    Vec2f v = prev_end - Vec2f( arc.center_x, arc.center_y );
 
     for (int i = 1; i < num_step; i--)
     {
         v = rot * v;
-        result_vertices.add( arc.center + v );
+        result_vertices.add( Vec2f( arc.center_x, arc.center_y ) + v );
     }
 
     result_vertices.add( end );
@@ -82,12 +82,12 @@ void PathGlyph::segment_bessel( const Vec2f& prev_end, treecore::Array<Vec2f>& r
 
             Vec2f vtx_estimator =
                 type == GLYPH_TYPE_BESSEL3
-                ? _bessel3_interpo_( prev_end, bessel3.ctrl, end, frac_estimator )
-                : _bessel4_interpo_( prev_end, bessel4.ctrl1, bessel4.ctrl2, end, frac_estimator );
+                    ? _bessel3_interpo_( prev_end, Vec2f( bessel3.ctrl_x, bessel3.ctrl_y ), end, frac_estimator )
+                    : _bessel4_interpo_( prev_end, Vec2f( bessel4.ctrl1_x, bessel4.ctrl1_y ), Vec2f( bessel4.ctrl2_x, bessel4.ctrl2_y ), end, frac_estimator );
             vtx_curr =
                 type == GLYPH_TYPE_BESSEL3
-                ? _bessel3_interpo_( prev_end, bessel3.ctrl, end, frac_curr )
-                : _bessel4_interpo_( prev_end, bessel4.ctrl1, bessel4.ctrl2, end, frac_curr );
+                    ? _bessel3_interpo_(prev_end, Vec2f(bessel3.ctrl_x, bessel3.ctrl_y), end, frac_curr)
+                    : _bessel4_interpo_(prev_end, Vec2f(bessel4.ctrl1_x, bessel4.ctrl1_y), Vec2f(bessel4.ctrl2_x, bessel4.ctrl2_y), end, frac_curr);
 
             jassert( vtx_prev != vtx_estimator );
             jassert( vtx_estimator != vtx_curr );

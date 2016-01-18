@@ -1,4 +1,9 @@
 #include <SDL.h>
+#include <stdio.h>
+
+#ifdef main
+#  undef main
+#endif
 
 void show_key_mod(Uint16 mask)
 {
@@ -61,5 +66,7 @@ int main(int argc, char** argv)
 
         SDL_Delay(20);
     }
+
+    return 0;
 }
 

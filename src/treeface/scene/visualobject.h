@@ -14,7 +14,7 @@ namespace treeface {
 
 class SceneGraphMaterial;
 class Geometry;
-struct VertexArray;
+class VertexArray;
 
 class VisualObject: public SceneItem
 {

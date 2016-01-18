@@ -1,10 +1,15 @@
 #include <SDL.h>
-
+#include <stdio.h>
 #define GLEW_STATIC
 #include <GL/glew.h>
 
 int window_w = 200;
 int window_h = 150;
+
+#ifdef main
+#  undef main
+#endif
+
 
 void build_up_sdl(SDL_Window** window, SDL_GLContext* context)
 {

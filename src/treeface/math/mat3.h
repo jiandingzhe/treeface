@@ -29,7 +29,7 @@ struct Mat3
         data[8] = T(1);
     }
 
-    Mat3(const Mat3& peer) noexcept = default;
+    Mat3(const Mat3& peer) = default;
 
     Mat3(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8) noexcept
     {

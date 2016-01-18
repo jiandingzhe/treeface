@@ -14,15 +14,15 @@ struct Vec3
     typedef treecore::SimdObject<T, 4> TmpType;
     typedef treecore::SimdObject<FloatType, 4> FloatTmpType;
 
-    Vec3() noexcept = default;
+    Vec3() = default;
 
     Vec3(T x, T y, T z) noexcept: x(x), y(y), z(z)
     {
     }
 
-    Vec3(const Vec3& peer) noexcept = default;
+    Vec3(const Vec3& peer) = default;
 
-    Vec3& operator = (const Vec3& peer) noexcept = default;
+    Vec3& operator = (const Vec3& peer) = default;
 
     void set(T x, T y, T z) noexcept
     {

@@ -53,7 +53,7 @@ struct Face::Guts
         matrix_view.set(1.0, 0.0, 0.0, 0.0,
                         0.0, 1.0, 0.0, 0.0,
                         0.0, 0.0, 1.0, 0.0,
-                        -width/2, -height/2, -project_dist, 1.0);
+                        -float(width / 2), -float(height / 2), -project_dist, 1.0);
         matrix_view_dirty = false;
     }
 
@@ -65,7 +65,7 @@ struct Face::Guts
         if (matrix_ortho_dirty)
             update_matrix_ortho();
 
-        matrix_frust.set_perspective(width, height, project_dist, project_depth);
+        matrix_frust.set_perspective(float(width), float(height), project_dist, project_depth);
 
         matrix_frust_dirty = false;
     }
@@ -78,7 +78,7 @@ struct Face::Guts
         matrix_ortho.set(2/width, 0, 0, 0,
                          0, 2/height, 0, 0,
                          0, 0, -2/project_depth, 0,
-                         0, 0, 0, 1);
+                         0, 0, 0, 1.0f);
         matrix_ortho_dirty = false;
     }
 };

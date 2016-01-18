@@ -2,6 +2,7 @@
 #define TREEFACE_NODE_PRIVATE_H
 
 #include "treeface/scene/scenenode.h"
+#include "treeface/scene/sceneitem.h"
 #include "treeface/math/mat4.h"
 
 #include <treecore/AlignedMalloc.h>

@@ -9,7 +9,7 @@ namespace treeface
 template<typename T>
 struct BBox2
 {
-    BBox2() noexcept = default;
+    BBox2() = default;
 
     BBox2(const Vec2<T>& p1, const Vec2<T>& p2) noexcept
     {

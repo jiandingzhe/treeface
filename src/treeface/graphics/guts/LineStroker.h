@@ -17,7 +17,7 @@ namespace treeface
 struct LineStroker
 {
     LineStroker( const StrokeStyle& pub_style )
-        : style{ pub_style.cap, pub_style.join, std::cos( pub_style.miter_cutoff ), pub_style.width / 2 }
+        : style(InternalStrokeStyle{ pub_style.cap, pub_style.join, std::cos(pub_style.miter_cutoff), pub_style.width / 2 })
         , part_left( 1.0f )
         , part_right( -1.0f )
     {}

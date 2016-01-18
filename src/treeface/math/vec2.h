@@ -8,25 +8,23 @@
 namespace treeface
 {
 
-TREECORE_ALN_BEGIN( 8 )
 template<typename T>
 struct Vec2
 {
     typedef typename treecore::similar_float<T>::type FloatType;
 
-    Vec2() noexcept
-    {}
+    Vec2() = default;
 
     Vec2( T x, T y ) noexcept
         : x( x )
         , y( y )
     {}
 
-    Vec2( const Vec2& peer ) noexcept = default;
+    Vec2( const Vec2& peer ) = default;
 
     TREECORE_ALIGNED_ALLOCATOR( Vec2 );
 
-    Vec2& operator = ( const Vec2& peer ) noexcept = default;
+    Vec2& operator = ( const Vec2& peer ) = default;
 
     void set( T x, T y ) noexcept
     {
@@ -136,7 +134,7 @@ struct Vec2
 
     T x{};
     T y{};
-} TREECORE_ALN_END( 8 );
+};
 
 /**
  * @brief vector add

@@ -52,6 +52,7 @@ Geometry* ShapeGenerator::fill_simple_preserve()
     //result->get_buffer()->set_host_data(ArrayRef<const Vec2f>(vertices), ArrayRef<const IndexType>(indices));
     //
     //return result;
+    return nullptr;
 }
 
 void ShapeGenerator::line_to(const Vec2f& position)

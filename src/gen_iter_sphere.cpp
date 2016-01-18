@@ -101,7 +101,7 @@ int main(int argc, char** argv)
     int n_iter = -1;
     {
         int re = std::sscanf(argv[1], "%d", &n_iter);
-        if (n_iter < 0 or re != 1)
+        if (n_iter < 0 || re != 1)
             show_usage_and_exit();
     }
 

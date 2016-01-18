@@ -3,12 +3,11 @@
 #include "treeface/packagemanager.h"
 #include "treeface/misc/stringcast.h"
 
-#include <FreeImage.h>
 
+#include <FreeImage.h>
 #include <treecore/HashMap.h>
 #include <treecore/RefCountHolder.h>
 #include <treecore/MemoryBlock.h>
-#include <treecore/ScopedPointer.h>
 
 using namespace treecore;
 

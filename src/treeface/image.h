@@ -7,6 +7,10 @@
 
 #include <treecore/RefCountObject.h>
 
+#ifdef TREECORE_OS_WINDOWS
+#  include <Windows.h>
+#endif
+
 #include <FreeImage.h>
 
 #define GLEW_STATIC

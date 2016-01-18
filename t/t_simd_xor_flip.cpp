@@ -7,7 +7,7 @@ using namespace treecore;
 
 void TestFramework::content()
 {
-    typedef typename similar_int<float>::type IntT;
+    typedef treecore::similar_int<float>::type IntT;
     SimdObject<float, 4> result =
             SimdObject<float, 4>(123.456f, -789.123f, -444.222f, 333.111f)
             ^

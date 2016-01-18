@@ -1,5 +1,9 @@
 #include <SDL.h>
+#include <stdio.h>
 
+#ifdef main
+#  undef main
+#endif
 
 int window_w = 200;
 int window_h = 150;

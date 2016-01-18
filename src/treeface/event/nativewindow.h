@@ -119,7 +119,7 @@ public:
     void ungrab();
 
 private:
-    class Impl;
+    struct Impl;
     Impl* m_impl;
 };
 

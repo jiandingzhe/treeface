@@ -111,6 +111,7 @@ if(TREEFACE_OS STREQUAL "WINDOWS")
         freeimage_format
         sdl_event
         sdl_window_prop
+        sdl_text
     PROPERTIES
         WIN32_EXECUTABLE 0
     )

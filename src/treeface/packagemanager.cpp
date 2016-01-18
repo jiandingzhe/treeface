@@ -113,7 +113,7 @@ bool PackageManager::get_item_data( const treecore::String& name, treecore::Memo
     else
         data.ensureSize( size, false );
 
-    int size_got = stream->read( data.getData(), size );
+    int size_got = stream->read( data.getData(), int32(size) );
     if (size_got != size)
         die( "PackageManager item %s size %lu bytes, but only got %d bytes",
              name.toRawUTF8(), size, size_got );

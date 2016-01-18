@@ -174,7 +174,7 @@ Image::Image()
 
 Image::Image( MemoryBlock& data )
 {
-    FIMEMORY* mem_stream = FreeImage_OpenMemory( (BYTE*) data.getData(), data.getSize() );
+    FIMEMORY* mem_stream = FreeImage_OpenMemory( (BYTE*) data.getData(), (int32) data.getSize() );
     if (!mem_stream)
         throw ImageLoadError( "failed to create FreeImage memory handle" );
 

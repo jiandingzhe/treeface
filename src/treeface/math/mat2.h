@@ -21,14 +21,14 @@ struct Mat2
     {
     }
 
-    Mat2(const Mat2& peer) noexcept = default;
+    Mat2(const Mat2& peer) = default;
 
     Mat2(T col0_0, T col0_1, T col1_0, T col1_1) noexcept
         : data(col0_0, col0_1, col1_0, col1_1)
     {
     }
 
-    Mat2& operator = (const Mat2& peer) noexcept = default;
+    Mat2& operator = (const Mat2& peer) = default;
 
     void set_rotate(T angle_rad) noexcept
     {

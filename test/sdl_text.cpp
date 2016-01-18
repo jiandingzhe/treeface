@@ -1,4 +1,9 @@
 #include <SDL.h>
+#include <stdio.h>
+
+#ifdef main
+#  undef main
+#endif
 
 int main(int argc, char** argv)
 {
@@ -35,5 +40,7 @@ int main(int argc, char** argv)
     }
 
     SDL_StopTextInput();
+
+    return 0;
 }
 
