@@ -94,19 +94,11 @@ public:
     void host_draw_end_no_change();
 
     ///
-    /// \brief direct draw call on element array
-    ///
-    /// This is intend to be used internally by the scene, which have already
-    /// bound some material and VAO properly before draw call.
-    ///
-
-protected:
-    ///
     /// \brief upload data to device side if data is dirty
     ///
-    /// This is intend to be used internally by the scene
-    ///
     void upload_data();
+
+protected:
 
     struct Impl;
     Impl* m_impl = nullptr;

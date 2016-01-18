@@ -11,6 +11,7 @@
 #include "treeface/scene/geometrymanager.h"
 #include "treeface/scene/scenegraphmaterial.h"
 
+#include "treeface/gl/glbuffer.h"
 #include "treeface/gl/program.h"
 #include "treeface/gl/texture.h"
 #include "treeface/gl/vertexarray.h"
@@ -94,8 +95,24 @@ void build_up_gl()
 
     geo_b = geo_mgr->get_geometry( name_geo_b );
     if (!geo_b)
-        die( "no geometry named \"%s\"", name_geo_b.toRawUTF8() );
+        die("no geometry named \"%s\"", name_geo_b.toRawUTF8());
 
+    // manually upload geometry data
+    {
+        geo_a->get_vertex_buffer()->bind();
+        geo_a->get_index_buffer()->bind();
+        geo_a->upload_data();
+        geo_a->get_vertex_buffer()->unbind();
+        geo_a->get_index_buffer()->unbind();
+
+        geo_b->get_vertex_buffer()->bind();
+        geo_b->get_index_buffer()->bind();
+        geo_b->upload_data();
+        geo_b->get_vertex_buffer()->unbind();
+        geo_b->get_index_buffer()->unbind();
+    }
+
+    // create material
     {
         Material* mat = mat_mgr->get_material( name_mat_a );
         if (mat == nullptr)

@@ -11,6 +11,7 @@
 #include "treeface/guts/material_guts.h"
 #include "treeface/guts/scene_guts.h"
 
+#include <treecore/HashSet.h>
 #include <treecore/HashMap.h>
 #include <treecore/HashMultiMap.h>
 #include <treecore/Result.h>
@@ -89,6 +90,26 @@ void SceneRenderer::render(const Mat4f& matrix_proj,
 
     ItemCombinationSorter sorter;
     m_impl->combs.sort(sorter);
+
+    // upload geometry data
+    {
+        HashSet<Geometry*>  dirty_geoms;
+        for (int i = 0; i < m_impl->combs.size(); i++)
+        {
+            Geometry* geom = m_impl->combs[i].item->get_geometry();
+            if (geom->is_dirty()) dirty_geoms.insert(geom);
+        }
+
+        HashSet<Geometry*>::Iterator i_dirty(dirty_geoms);
+        while (i_dirty.next())
+        {
+            i_dirty.content()->get_vertex_buffer()->bind();
+            i_dirty.content()->get_index_buffer()->bind();
+            i_dirty.content()->upload_data();
+            i_dirty.content()->get_vertex_buffer()->unbind();
+            i_dirty.content()->get_index_buffer()->unbind();
+        }
+    }
 
     // light direction in model-view coordinate
     Vec4f light_direct_in_view = matrix_view * scene->get_global_light_direction();

@@ -60,6 +60,8 @@ Geometry::Impl::Impl( const VertexTemplate& vtx_temp, GLPrimitive primitive, boo
 void Geometry::Impl::upload_data()
 {
     jassert( !drawing );
+    jassert( buf_vtx->is_bound() );
+    jassert( buf_idx->is_bound() );
 
     if (dirty)
     {
@@ -248,5 +250,7 @@ void Geometry::host_draw_end_no_change()
     m_impl->drawing = false;
     m_impl->dirty   = false;
 }
+
+void Geometry::upload_data() { m_impl->upload_data(); }
 
 } // namespace treeface
