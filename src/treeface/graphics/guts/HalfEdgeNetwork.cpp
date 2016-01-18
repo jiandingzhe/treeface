@@ -2,7 +2,6 @@
 #include "treeface/graphics/guts/geomsucker.h"
 #include "treeface/graphics/utils.h"
 
-
 using namespace treecore;
 
 namespace treeface
@@ -10,19 +9,18 @@ namespace treeface
 
 struct HalfEdgeIndexVerticalSorter
 {
-    HalfEdgeIndexVerticalSorter( const treecore::Array<Vec2f>&      vertices,
+    HalfEdgeIndexVerticalSorter( const Geometry::HostVertexCache&   vertices,
                                  const treecore::Array<HalfEdge>&   edges,
                                  const treecore::Array<VertexRole>& edge_roles )
         : vertices( vertices )
         , edges( edges )
         , edge_roles( edge_roles )
-    {
-    }
+    {}
 
     int compareElements( IndexType a, IndexType b ) const noexcept
     {
-        const Vec2f& p1 = vertices[edges[a].idx_vertex];
-        const Vec2f& p2 = vertices[edges[b].idx_vertex];
+        const Vec2f& p1 = vertices.get<Vec2f>(edges[a].idx_vertex);
+        const Vec2f& p2 = vertices.get<Vec2f>(edges[b].idx_vertex);
 
         if (p1.y < p2.y)
         {
@@ -47,8 +45,8 @@ struct HalfEdgeIndexVerticalSorter
         }
     }
 
-    const treecore::Array<Vec2f>& vertices;
-    const treecore::Array<HalfEdge>& edges;
+    const Geometry::HostVertexCache&   vertices;
+    const treecore::Array<HalfEdge>&   edges;
     const treecore::Array<VertexRole>& edge_roles;
 };
 
@@ -107,18 +105,17 @@ struct HelpEdgeStore
     ///
     IndexType find_nearest_left_edge( const Vec2f& position )
     {
-        IndexType result = std::numeric_limits<IndexType>::max();
-        float min_x_dist = std::numeric_limits<float>::max();
+        IndexType result     = std::numeric_limits<IndexType>::max();
+        float     min_x_dist = std::numeric_limits<float>::max();
 
-        IndexType result_rev = std::numeric_limits<IndexType>::max();
-        float min_x_dist_rev = std::numeric_limits<float>::max();
-
+        IndexType result_rev     = std::numeric_limits<IndexType>::max();
+        float     min_x_dist_rev = std::numeric_limits<float>::max();
 
         for (IndexType i_edge : i_left_edges)
         {
             const HalfEdge& edge = network.edges[i_edge];
-            const Vec2f& p1 = edge.get_vertex( network.vertices );
-            const Vec2f& p2 = edge.get_next( network.edges ).get_vertex( network.vertices );
+            const Vec2f&    p1   = edge.get_vertex( network.vertices );
+            const Vec2f&    p2   = edge.get_next( network.edges ).get_vertex( network.vertices );
 
             jassert( p2.y <= p1.y );
 
@@ -128,9 +125,9 @@ struct HelpEdgeStore
             if (edge_v.y == 0)
                 continue;
 
-            float slope_inv = edge_v.x / edge_v.y;
-            float dy = position.y - p1.y;
-            float dx = dy * slope_inv;
+            float slope_inv     = edge_v.x / edge_v.y;
+            float dy            = position.y - p1.y;
+            float dx            = dy * slope_inv;
             float cross_point_x = p1.x + dx;
 
             float x_dist = position.x - cross_point_x;
@@ -139,7 +136,7 @@ struct HelpEdgeStore
             {
                 if (x_dist < min_x_dist)
                 {
-                    result = i_edge;
+                    result     = i_edge;
                     min_x_dist = x_dist;
                 }
             }
@@ -148,7 +145,7 @@ struct HelpEdgeStore
                 x_dist *= -1;
                 if (x_dist < min_x_dist_rev)
                 {
-                    result_rev = i_edge;
+                    result_rev     = i_edge;
                     min_x_dist_rev = x_dist;
                 }
             }
@@ -167,11 +164,10 @@ struct HelpEdgeStore
         }
     }
 
-    Array<IndexType> edge_helper_edge_map; // edge idx => helper edge idx
-    Array<IndexType> i_left_edges;
+    Array<IndexType>       edge_helper_edge_map; // edge idx => helper edge idx
+    Array<IndexType>       i_left_edges;
     const HalfEdgeNetwork& network;
 };
-
 
 void HalfEdgeNetwork::build_half_edges( const treecore::Array<IndexType>& subpath_begin, bool is_cclw )
 {
@@ -179,9 +175,9 @@ void HalfEdgeNetwork::build_half_edges( const treecore::Array<IndexType>& subpat
     {
 
         IndexType i_vtx_begin = subpath_begin[i_subpath];
-        IndexType i_vtx_end = i_subpath == subpath_begin.size() - 1
-                              ? vertices.size()
-                              : subpath_begin[i_subpath + 1];
+        IndexType i_vtx_end   = i_subpath == subpath_begin.size() - 1
+                                ? vertices.size()
+                                : subpath_begin[i_subpath + 1];
 
         IndexType i_vtx_last = i_vtx_end - 1;
 
@@ -210,7 +206,7 @@ void HalfEdgeNetwork::build_half_edges( const treecore::Array<IndexType>& subpat
                               : i_vtx - 1;
             }
 
-            edges.add( HalfEdge{i_vtx, i_edge_prev, i_edge_next, std::numeric_limits<IndexType>::max()} );
+            edges.add( HalfEdge{ i_vtx, i_edge_prev, i_edge_next, std::numeric_limits<IndexType>::max() } );
         }
     }
 }
@@ -221,13 +217,13 @@ void HalfEdgeNetwork::connect( IndexType i_edge1, IndexType i_edge2 )
     IndexType i_edge_1_2 = edges.size();
     IndexType i_edge_2_1 = i_edge_1_2 + 1;
 
-    HalfEdge& edge1 = edges[i_edge1];
+    HalfEdge& edge1        = edges[i_edge1];
     IndexType i_edge1_prev = edge1.idx_prev_edge;
-    HalfEdge& edge1_prev = edges[i_edge1_prev];
+    HalfEdge& edge1_prev   = edges[i_edge1_prev];
 
-    HalfEdge& edge2 = edges[i_edge2];
+    HalfEdge& edge2        = edges[i_edge2];
     IndexType i_edge2_prev = edge2.idx_prev_edge;
-    HalfEdge& edge2_prev = edges[i_edge2_prev];
+    HalfEdge& edge2_prev   = edges[i_edge2_prev];
 
     SUCK_GEOM_BLK(
         GeomSucker sucker( *this, "going to link" );
@@ -238,12 +234,11 @@ void HalfEdgeNetwork::connect( IndexType i_edge1, IndexType i_edge2 )
         sucker.draw_edge( i_edge2_prev, 3.0f );
     )
 
-
     // modify existing edges' connection
     jassert( edge1_prev.idx_next_edge == i_edge1 );
     jassert( edge2_prev.idx_next_edge == i_edge2 );
-    edge1.idx_prev_edge = i_edge_2_1;
-    edge2.idx_prev_edge = i_edge_1_2;
+    edge1.idx_prev_edge      = i_edge_2_1;
+    edge2.idx_prev_edge      = i_edge_1_2;
     edge1_prev.idx_next_edge = i_edge_1_2;
     edge2_prev.idx_next_edge = i_edge_2_1;
 
@@ -275,12 +270,12 @@ void HalfEdgeNetwork::connect( IndexType i_edge1, IndexType i_edge2 )
 IndexType HalfEdgeNetwork::get_next_edge_diff_vtx( const IndexType i_edge_search_base ) const
 {
     const HalfEdge& edge_from = edges[i_edge_search_base];
-    const Vec2f& vtx_from = edge_from.get_vertex( vertices );
+    const Vec2f&    vtx_from  = edge_from.get_vertex( vertices );
 
     for (IndexType i_edge = edge_from.idx_next_edge; i_edge != i_edge_search_base; )
     {
         const HalfEdge& edge = edges[i_edge];
-        const Vec2f& vtx = edge.get_vertex( vertices );
+        const Vec2f&    vtx  = edge.get_vertex( vertices );
 
         if (vtx != vtx_from)
         {
@@ -297,13 +292,12 @@ IndexType HalfEdgeNetwork::get_next_edge_diff_vtx( const IndexType i_edge_search
 IndexType HalfEdgeNetwork::get_prev_edge_diff_vtx( const IndexType i_edge_search_base ) const
 {
     const HalfEdge& edge_from = edges[i_edge_search_base];
-    const Vec2f& vtx_from = edge_from.get_vertex( vertices );
-
+    const Vec2f&    vtx_from  = edge_from.get_vertex( vertices );
 
     for (IndexType i_edge = edge_from.idx_prev_edge; i_edge != i_edge_search_base; )
     {
         const HalfEdge& edge = edges[i_edge];
-        const Vec2f& vtx = edge.get_vertex( vertices );
+        const Vec2f&    vtx  = edge.get_vertex( vertices );
         if (vtx != vtx_from)
         {
             return i_edge;
@@ -319,8 +313,8 @@ IndexType HalfEdgeNetwork::get_prev_edge_diff_vtx( const IndexType i_edge_search
 bool HalfEdgeNetwork::fan_is_facing( const Vec2f& vec_ref, IndexType i_edge ) const
 {
     const Vec2f& vtx_fan_base = edges[i_edge].get_vertex( vertices );
-    const Vec2f& vtx_next = edges[get_next_edge_diff_vtx( i_edge )].get_vertex( vertices );
-    const Vec2f& vtx_prev = edges[get_prev_edge_diff_vtx( i_edge )].get_vertex( vertices );
+    const Vec2f& vtx_next     = edges[get_next_edge_diff_vtx( i_edge )].get_vertex( vertices );
+    const Vec2f& vtx_prev     = edges[get_prev_edge_diff_vtx( i_edge )].get_vertex( vertices );
 
     Vec2f v_next = vtx_next - vtx_fan_base;
     Vec2f v_prev = vtx_prev - vtx_fan_base;
@@ -353,8 +347,8 @@ void HalfEdgeNetwork::get_edge_role( treecore::Array<VertexRole>& result_roles )
         const Vec2f& vtx_curr = edges[i_edge].get_vertex( vertices );
         const Vec2f& vtx_prev = edges[i_prev].get_vertex( vertices );
         const Vec2f& vtx_next = edges[i_next].get_vertex( vertices );
-        Vec2f v1 = vtx_curr - vtx_prev;
-        Vec2f v2 = vtx_next - vtx_curr;
+        Vec2f        v1       = vtx_curr - vtx_prev;
+        Vec2f        v2       = vtx_next - vtx_curr;
 
         VertexRole role = VTX_ROLE_INVALID;
 
@@ -401,7 +395,7 @@ void HalfEdgeNetwork::iter_edge_to_facing_fan( const IndexType i_edge_ref, Index
         {
             IndexType i_edge_ref_next = get_next_edge_diff_vtx( i_edge_ref );
             IndexType i_edge_ref_prev = get_prev_edge_diff_vtx( i_edge_ref );
-            vtx_ref_use = edges[i_edge_ref_next].get_vertex( vertices ) + edges[i_edge_ref_prev].get_vertex( vertices );
+            vtx_ref_use  = edges[i_edge_ref_next].get_vertex( vertices ) + edges[i_edge_ref_prev].get_vertex( vertices );
             vtx_ref_use /= 2;
         }
 
@@ -523,7 +517,7 @@ int16 HalfEdgeNetwork::mark_polygons( Array<int16>& edge_polygon_map ) const
 
 void HalfEdgeNetwork::triangulate_monotone_polygons( const Array<IndexType>&  edge_indices_by_y,
                                                      const Array<int16>&      edge_polygon_map,
-                                                     int16                    num_polygon,
+                                                     int16 num_polygon,
                                                      const Array<VertexRole>& edge_roles,
                                                      Array<IndexType>&        result_indices ) const
 {
@@ -536,7 +530,7 @@ void HalfEdgeNetwork::triangulate_monotone_polygons( const Array<IndexType>&  ed
         int count = 0;
 
         IndexType i_edge_first = std::numeric_limits<IndexType>::max();
-        IndexType i_edge_prev = std::numeric_limits<IndexType>::max();
+        IndexType i_edge_prev  = std::numeric_limits<IndexType>::max();
 
         //
         // traverse by decreasing Y coord
@@ -546,8 +540,8 @@ void HalfEdgeNetwork::triangulate_monotone_polygons( const Array<IndexType>&  ed
             if (edge_polygon_map[i_edge] != i_polygon) continue;
 
             const VertexRole role = edge_roles[i_edge];
-            const HalfEdge& edge = edges[i_edge];
-            const Vec2f& vtx = edge.get_vertex( vertices );
+            const HalfEdge&  edge = edges[i_edge];
+            const Vec2f&     vtx  = edge.get_vertex( vertices );
 
             DBGCODE( if (count == 0) jassert( role == VTX_ROLE_START ); )
 
@@ -644,14 +638,13 @@ void HalfEdgeNetwork::triangulate_monotone_polygons( const Array<IndexType>&  ed
                             sucker.text( "remove stack top", edges[popped_edges.getLast()].idx_vertex );
                         )
 
-
                         //PSEUDOCODE Pop the other vertices from S as long as the diagonals from u(j) to them are inside P.
                         while (edge_stack.size() > 0)
                         {
                             const IndexType i_edge_stack_top = edge_stack.getLast();
-                            const Vec2f& vtx_stack_top = edges[i_edge_stack_top].get_vertex( vertices );
-                            const IndexType i_edge_popped = popped_edges.getLast();
-                            const Vec2f& vtx_popped = edges[i_edge_popped].get_vertex( vertices );
+                            const Vec2f&    vtx_stack_top    = edges[i_edge_stack_top].get_vertex( vertices );
+                            const IndexType i_edge_popped    = popped_edges.getLast();
+                            const Vec2f&    vtx_popped       = edges[i_edge_popped].get_vertex( vertices );
 
                             bool diag_is_inside;
                             if (edge_roles[i_edge] == VTX_ROLE_LEFT)
@@ -769,7 +762,7 @@ void HalfEdgeNetwork::triangulate_monotone_polygons( const Array<IndexType>&  ed
             i_edge_prev = i_edge;
             count++;
         }
-    } // polygon cycle
+    }   // polygon cycle
 }
 
 void HalfEdgeNetwork::partition_polygon_monotone( HalfEdgeNetwork& result_network ) const
@@ -795,9 +788,9 @@ void HalfEdgeNetwork::partition_polygon_monotone( HalfEdgeNetwork& result_networ
     for (IndexType i_edge_curr : edge_idx_by_y)
     {
         const HalfEdge& edge_curr = edges[i_edge_curr];
-        const Vec2f& vtx_curr = edge_curr.get_vertex( vertices );
-        const Vec2f& vtx_prev = edge_curr.get_prev( edges ).get_vertex( vertices );
-        const Vec2f& vtx_next = edge_curr.get_next( edges ).get_vertex( vertices );
+        const Vec2f&    vtx_curr  = edge_curr.get_vertex( vertices );
+        const Vec2f&    vtx_prev  = edge_curr.get_prev( edges ).get_vertex( vertices );
+        const Vec2f&    vtx_next  = edge_curr.get_next( edges ).get_vertex( vertices );
         Vec2f v1 = vtx_curr - vtx_prev;
         Vec2f v2 = vtx_next - vtx_curr;
 

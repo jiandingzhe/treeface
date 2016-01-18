@@ -7,9 +7,9 @@ using namespace treecore;
 namespace treeface
 {
 
-void SubPath::stroke_complex( treecore::Array<StrokeVertex>& result_vertices,
-                              treecore::Array<IndexType>&    result_indices,
-                              StrokeStyle                    style ) const
+void SubPath::stroke_complex( Geometry::HostVertexCache&  result_vertices,
+                              treecore::Array<IndexType>& result_indices,
+                              StrokeStyle style ) const
 {
     jassert( glyphs[0].type == GLYPH_TYPE_LINE );
 
@@ -25,7 +25,7 @@ void SubPath::stroke_complex( treecore::Array<StrokeVertex>& result_vertices,
     for (int i_glyph = 1; i_glyph < glyphs.size(); i_glyph++)
     {
         const PathGlyph& glyph_prev = glyphs[i_glyph - 1];
-        const PathGlyph& glyph = glyphs[i_glyph];
+        const PathGlyph& glyph      = glyphs[i_glyph];
 
         Array<Vec2f> curr_glyph_skeleton;
         glyph.segment( glyph_prev.end, curr_glyph_skeleton );

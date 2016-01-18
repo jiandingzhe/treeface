@@ -455,7 +455,7 @@ inline bool _should_advance_( const Array<JointID>& ids_self, const Array<JointI
     }
 }
 
-void LineStroker::triangulate( treecore::Array<StrokeVertex>& result_vertices, treecore::Array<IndexType>& result_indices, bool path_is_closed ) const
+void LineStroker::triangulate( Geometry::HostVertexCache& result_vertices, treecore::Array<IndexType>& result_indices, bool path_is_closed ) const
 {
     jassert( stroke_done );
 
@@ -476,15 +476,15 @@ void LineStroker::triangulate( treecore::Array<StrokeVertex>& result_vertices, t
     int i_right_prev = 0;
 
     const IndexType idx_left_begin = result_vertices.size();
-    result_vertices.add( {part_left.outline[0],
-                          part_left.get_tangent_unorm( 0, path_is_closed ),
-                          trip_left[0] / trip_left.getLast(),
-                          0.0f} );
+    result_vertices.add( StrokeVertex{ part_left.outline[0],
+                                       part_left.get_tangent_unorm( 0, path_is_closed ),
+                                       trip_left[0] / trip_left.getLast(),
+                                       0.0f } );
     const IndexType idx_right_begin = result_vertices.size();
-    result_vertices.add( {part_right.outline[0],
-                          part_right.get_tangent_unorm( 0, path_is_closed ),
-                          trip_right[0] / trip_right.getLast(),
-                          1.0f} );
+    result_vertices.add( StrokeVertex{ part_right.outline[0],
+                                       part_right.get_tangent_unorm( 0, path_is_closed ),
+                                       trip_right[0] / trip_right.getLast(),
+                                       1.0f } );
 
     IndexType idx_left_prev  = idx_left_begin;
     IndexType idx_right_prev = idx_right_begin;
@@ -508,10 +508,10 @@ void LineStroker::triangulate( treecore::Array<StrokeVertex>& result_vertices, t
         {
             i_left++;
             idx_left = result_vertices.size();
-            result_vertices.add( {part_left.outline[i_left],
-                                  part_left.get_tangent_unorm( i_left, path_is_closed ),
-                                  trip_left[i_left] / trip_left.getLast(),
-                                  0.0f} );
+            result_vertices.add( StrokeVertex{ part_left.outline[i_left],
+                                               part_left.get_tangent_unorm( i_left, path_is_closed ),
+                                               trip_left[i_left] / trip_left.getLast(),
+                                               0.0f } );
 
             SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "left move on" );
                            sucker.rgba( SUCKER_GREEN, 0.5f );
@@ -525,10 +525,10 @@ void LineStroker::triangulate( treecore::Array<StrokeVertex>& result_vertices, t
         {
             i_right++;
             idx_right = result_vertices.size();
-            result_vertices.add( {part_right.outline[i_right],
-                                  part_right.get_tangent_unorm( i_right, path_is_closed ),
-                                  trip_right[i_right] / trip_right.getLast(),
-                                  1.0f} );
+            result_vertices.add( StrokeVertex{ part_right.outline[i_right],
+                                               part_right.get_tangent_unorm( i_right, path_is_closed ),
+                                               trip_right[i_right] / trip_right.getLast(),
+                                               1.0f } );
 
             SUCK_GEOM_BLK( OutlineSucker sucker( part_right, "right move on" );
                            sucker.rgba( SUCKER_GREEN, 0.5f );
@@ -549,9 +549,9 @@ void LineStroker::triangulate( treecore::Array<StrokeVertex>& result_vertices, t
             SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "fill" );
                            sucker.draw_outline( part_right );
                            sucker.rgba( SUCKER_GREEN, 0.7f );
-                           sucker.draw_trig( result_vertices[idx_left_prev].position,
-                                             result_vertices[idx_right_prev].position,
-                                             result_vertices[idx_left].position );
+                           sucker.draw_trig( result_vertices.get<StrokeVertex>( idx_left_prev ).position,
+                                             result_vertices.get<StrokeVertex>( idx_right_prev ).position,
+                                             result_vertices.get<StrokeVertex>( idx_left ).position );
             )
 
             if (right_move_on)
@@ -564,9 +564,9 @@ void LineStroker::triangulate( treecore::Array<StrokeVertex>& result_vertices, t
                 SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "fill" );
                                sucker.draw_outline( part_right );
                                sucker.rgba( SUCKER_GREEN, 0.7f );
-                               sucker.draw_trig( result_vertices[idx_right_prev].position,
-                                                 result_vertices[idx_right].position,
-                                                 result_vertices[idx_left].position );
+                               sucker.draw_trig( result_vertices.get<StrokeVertex>( idx_right_prev ).position,
+                                                 result_vertices.get<StrokeVertex>( idx_right ).position,
+                                                 result_vertices.get<StrokeVertex>( idx_left ).position );
                 )
             }
         }
@@ -582,9 +582,9 @@ void LineStroker::triangulate( treecore::Array<StrokeVertex>& result_vertices, t
                 SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "fill" );
                                sucker.draw_outline( part_right );
                                sucker.rgba( SUCKER_GREEN, 0.7f );
-                               sucker.draw_trig( result_vertices[idx_left_prev].position,
-                                                 result_vertices[idx_right_prev].position,
-                                                 result_vertices[idx_right].position );
+                               sucker.draw_trig( result_vertices.get<StrokeVertex>( idx_left_prev ).position,
+                                                 result_vertices.get<StrokeVertex>( idx_right_prev ).position,
+                                                 result_vertices.get<StrokeVertex>( idx_right ).position );
                 )
             }
             else

@@ -26,8 +26,9 @@ GeomSucker::GeomSucker( const HalfEdgeNetwork& network, const treecore::String& 
     float x_max = std::numeric_limits<float>::min();
     float y_max = std::numeric_limits<float>::min();
 
-    for (const Vec2f& vtx : network.vertices)
+    for (int i = 0; i < network.vertices.size(); i++)
     {
+        const Vec2f& vtx = network.vertices.get<Vec2f>( i );
         if (x_min > vtx.x) x_min = vtx.x;
         if (y_min > vtx.y) y_min = vtx.y;
         if (x_max < vtx.x) x_max = vtx.x;
@@ -129,7 +130,7 @@ GeomSucker::~GeomSucker()
 
 void GeomSucker::draw_vtx( IndexType vtx_idx ) const
 {
-    const Vec2f& vtx = network.vertices[vtx_idx];
+    const Vec2f& vtx = network.vertices.get<Vec2f>( vtx_idx );
     draw_vtx( vtx );
 }
 
@@ -185,7 +186,7 @@ void GeomSucker::draw_roled_vtx( IndexType vtx_idx, VertexRole role ) const
 
 void GeomSucker::draw_merge_vtx( IndexType vtx_idx ) const
 {
-    const Vec2f& vtx = network.vertices[vtx_idx];
+    const Vec2f& vtx = network.vertices.get<Vec2f>( vtx_idx );
     Vec2f        p1  = vtx - Vec2f( 0.0f, line_w * 2 );
     Vec2f        p2  = vtx + Vec2f( line_w * 2, line_w * 2 );
     Vec2f        p3  = vtx + Vec2f( -line_w * 2, line_w * 2 );
@@ -198,7 +199,7 @@ void GeomSucker::draw_merge_vtx( IndexType vtx_idx ) const
 
 void GeomSucker::draw_split_vtx( IndexType vtx_idx ) const
 {
-    const Vec2f& vtx = network.vertices[vtx_idx];
+    const Vec2f& vtx = network.vertices.get<Vec2f>( vtx_idx );
     Vec2f        p1  = vtx + Vec2f( 0.0f, line_w * 2 );
     Vec2f        p2  = vtx + Vec2f( line_w * 2, -line_w * 2 );
     Vec2f        p3  = vtx + Vec2f( -line_w * 2, -line_w * 2 );
@@ -211,7 +212,7 @@ void GeomSucker::draw_split_vtx( IndexType vtx_idx ) const
 
 void GeomSucker::draw_start_vtx( IndexType vtx_idx ) const
 {
-    const Vec2f& vtx = network.vertices[vtx_idx];
+    const Vec2f& vtx = network.vertices.get<Vec2f>( vtx_idx );
     Vec2f        p1  = vtx + Vec2f( line_w * 1.5, line_w * 1.5 );
     Vec2f        p2  = vtx + Vec2f( -line_w * 1.5, line_w * 1.5 );
     Vec2f        p3  = vtx + Vec2f( -line_w * 1.5, -line_w * 1.5 );
@@ -227,7 +228,7 @@ void GeomSucker::draw_start_vtx( IndexType vtx_idx ) const
 
 void GeomSucker::draw_end_vtx( IndexType vtx_idx ) const
 {
-    const Vec2f& vtx = network.vertices[vtx_idx];
+    const Vec2f& vtx = network.vertices.get<Vec2f>( vtx_idx );
     Vec2f        p1  = vtx + Vec2f( line_w * 1.5, line_w * 1.5 );
     Vec2f        p2  = vtx + Vec2f( -line_w * 1.5, line_w * 1.5 );
     Vec2f        p3  = vtx + Vec2f( -line_w * 1.5, -line_w * 1.5 );
@@ -244,7 +245,7 @@ void GeomSucker::draw_regular_left_vtx( IndexType vtx_idx ) const
 {
     draw_vtx( vtx_idx );
 
-    const Vec2f& vtx = network.vertices[vtx_idx];
+    const Vec2f& vtx = network.vertices.get<Vec2f>( vtx_idx );
     cairo_new_path( context );
     cairo_move_to( context, vtx.x - line_w * 2, -vtx.y - line_w * 5 );
     cairo_line_to( context, vtx.x - line_w * 2, -vtx.y + line_w * 5 );
@@ -255,7 +256,7 @@ void GeomSucker::draw_regular_right_vtx( IndexType vtx_idx ) const
 {
     draw_vtx( vtx_idx );
 
-    const Vec2f& vtx = network.vertices[vtx_idx];
+    const Vec2f& vtx = network.vertices.get<Vec2f>( vtx_idx );
     cairo_new_path( context );
     cairo_move_to( context, vtx.x + line_w * 2, -vtx.y - line_w * 5 );
     cairo_line_to( context, vtx.x + line_w * 2, -vtx.y + line_w * 5 );
@@ -372,7 +373,7 @@ void GeomSucker::text( const treecore::String& text, const Vec2f& position ) con
 
 void GeomSucker::text( const treecore::String& text, IndexType i_vtx ) const
 {
-    this->text( text, network.vertices[i_vtx] );
+    this->text( text, network.vertices.get<Vec2f>( i_vtx ) );
 }
 
 OutlineSucker::OutlineSucker( const HalfOutline&      outline,

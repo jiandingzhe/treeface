@@ -21,7 +21,7 @@ struct ShapeGenerator::Guts
 {
     treecore::Array<SubPath> subpaths;
 
-    void triangulate(treecore::Array<Vec2f>& result_vertices, treecore::Array<IndexType>& result_indices);
+    void triangulate(Geometry::HostVertexCache& result_vertices, treecore::Array<IndexType>& result_indices);
 };
 
 } // namespace treeface

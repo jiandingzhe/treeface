@@ -20,10 +20,11 @@ class ShapeGenerator: public treecore::RefCountObject, public treecore::RefCount
     friend class ::TestFramework;
 
 public:
-    static const VertexTemplate& StrokeTemplate();
-    static const VertexTemplate& FillTemplate();
-
     ShapeGenerator();
+
+    TREECORE_DECLARE_NON_COPYABLE(ShapeGenerator);
+    TREECORE_DECLARE_NON_MOVABLE(ShapeGenerator);
+
     virtual ~ShapeGenerator();
 
     void clear();
@@ -35,18 +36,19 @@ public:
     ///
     /// If shape has self-intersections, fill result could be not correct
     ///
+    /// \return
     /// \return a new Geometry object containing triangulated result
     ///
-    Geometry* fill_simple();
+    void fill_simple(Geometry* geom);
 
     ///
     /// \brief do simple fill without clearing current path state
     /// \see fill_simple(float)
-    Geometry* fill_simple_preserve();
+    void fill_simple_preserve(Geometry* geom);
 
-    Geometry* fill_complicated();
+    void stroke_complicated(LineCap cap_style, LineJoin join_style, float line_width, Geometry* geom);
 
-    Geometry* fill_complicated_preserve();
+    void stroke_complicated_preserve(LineCap cap_style, LineJoin join_style, float line_width, Geometry* geom);
 
     void line_to(const Vec2f& position);
 
@@ -56,12 +58,11 @@ public:
 
     void move_to_rel(const Vec2f& offset);
 
-    Geometry* stroke_complicated(LineCap cap_style, LineJoin join_style, float line_width);
+    Geometry* create_simple_stroke_geometry();
+    Geometry* create_complicated_stroke_geometry();
 
-    Geometry* stroke_complicated_preserve(LineCap cap_style, LineJoin join_style, float line_width);
-
-    TREECORE_DECLARE_NON_COPYABLE(ShapeGenerator);
-    TREECORE_DECLARE_NON_MOVABLE(ShapeGenerator);
+    static const VertexTemplate& VERTEX_TEMPLATE_STROKE();
+    static const VertexTemplate& VERTEX_TEMPLATE_FILL();
 
 private:
     struct Guts;

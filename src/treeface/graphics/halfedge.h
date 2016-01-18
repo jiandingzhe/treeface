@@ -3,6 +3,7 @@
 
 #include "treeface/gl/type.h"
 #include "treeface/math/vec2.h"
+#include "treeface/scene/geometry.h"
 
 #include <treecore/Array.h>
 
@@ -16,10 +17,10 @@ struct HalfEdge
     IndexType idx_next_edge;
     IndexType idx_peer_edge;
 
-    const Vec2f& get_vertex(const treecore::Array<Vec2f>& store) const { return store[idx_vertex]; }
-    const HalfEdge& get_prev(const treecore::Array<HalfEdge>& store) const { return store[idx_prev_edge]; }
-    const HalfEdge& get_next(const treecore::Array<HalfEdge>& store) const { return store[idx_next_edge]; }
-    const HalfEdge& get_peer(const treecore::Array<HalfEdge>& store) const { return store[idx_peer_edge]; }
+    const Vec2f&    get_vertex( const Geometry::HostVertexCache& store ) const { return store.get<Vec2f>( idx_vertex ); }
+    const HalfEdge& get_prev( const treecore::Array<HalfEdge>& store ) const   { return store[idx_prev_edge]; }
+    const HalfEdge& get_next( const treecore::Array<HalfEdge>& store ) const   { return store[idx_next_edge]; }
+    const HalfEdge& get_peer( const treecore::Array<HalfEdge>& store ) const   { return store[idx_peer_edge]; }
 };
 
 } // namespace treeface

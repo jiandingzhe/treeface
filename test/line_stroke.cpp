@@ -9,14 +9,14 @@
 using namespace treecore;
 using namespace treeface;
 
-LineJoin line_join = LINE_JOIN_BEVEL;
-LineCap line_cap   = LINE_CAP_BUTT;
-float line_width   = 1.0f;
-float miter_cutoff = 150;
-File file_in;
-File file_out;
-bool close_path = false;
-bool show_help  = false;
+LineJoin line_join    = LINE_JOIN_BEVEL;
+LineCap  line_cap     = LINE_CAP_BUTT;
+float    line_width   = 1.0f;
+float    miter_cutoff = 150;
+File     file_in;
+File     file_out;
+bool     close_path = false;
+bool     show_help  = false;
 
 Option opt_file_in( "in", 'i', "Input/Output",
                     &file_in, 0,
@@ -148,16 +148,16 @@ int main( int argc, const char* argv[] )
     if (close_path) path.closed = true;
 
     // do line stroke
-    Array<StrokeVertex> vertices;
+    Geometry::HostVertexCache vertices( sizeof(StrokeVertex) );
     Array<IndexType> indices;
-    path.stroke_complex( vertices, indices, StrokeStyle{line_cap, line_join, miter_cutoff * treeface::PI / 180, line_width} );
+    path.stroke_complex( vertices, indices, StrokeStyle{ line_cap, line_join, miter_cutoff * treeface::PI / 180, line_width } );
 
     // write result
     file_out.deleteFile();
-    FileOutputStream fh_out(file_out);
+    FileOutputStream fh_out( file_out );
     for (IndexType idx : indices)
     {
-        const Vec2f& pos = vertices[idx].position;
+        const Vec2f& pos = vertices.get<StrokeVertex>( idx ).position;
         fh_out << pos.x << "\t" << pos.y << "\n";
     }
 }

@@ -4,6 +4,7 @@
 #include "treeface/enums.h"
 #include "treeface/gl/type.h"
 #include "treeface/math/vec2.h"
+#include "treeface/scene/geometry.h"
 
 #include <treecore/Array.h>
 
@@ -23,7 +24,7 @@ struct InternalStrokeStyle
     float    half_width;
 };
 
-double clockwise_accum( const treecore::Array<Vec2f>& vertices, IndexType i_begin, IndexType i_end ) noexcept;
+double clockwise_accum( const Geometry::HostVertexCache& vertices, IndexType i_begin, IndexType i_end ) noexcept;
 
 inline float calc_step( float total, float step_size, int min_num_step )
 {

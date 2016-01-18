@@ -84,11 +84,19 @@ target_link_libraries(sdl_text
 
 add_executable(polygon_triangle polygon_triangle.cpp)
 target_use_treecore(polygon_triangle)
-target_link_libraries(polygon_triangle treeface)
+target_link_libraries(polygon_triangle
+    treeface
+    ${GLEW_LIBRARY}
+    ${OPENGL_gl_LIBRARY}
+)
 
 add_executable(polygon_monotone polygon_monotone.cpp)
 target_use_treecore(polygon_monotone)
-target_link_libraries(polygon_monotone treeface)
+target_link_libraries(polygon_monotone
+    treeface
+    ${GLEW_LIBRARY}
+    ${OPENGL_gl_LIBRARY}
+)
 
 add_executable(line_stroke line_stroke.cpp)
 target_link_libraries(line_stroke treeface)

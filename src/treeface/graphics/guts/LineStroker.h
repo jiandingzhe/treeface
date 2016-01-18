@@ -30,7 +30,7 @@ struct LineStroker
     void cap_end( const Vec2f& skeleton, const Vec2f& direction );
     void close_stroke_end( const Vec2f& skeleton_last, const Vec2f& skeleton_first, const Vec2f& v_begin );
 
-    void triangulate( treecore::Array<StrokeVertex>& result_vertices, treecore::Array<IndexType>& result_indices, bool path_is_closed ) const;
+    void triangulate( Geometry::HostVertexCache& result_vertices, treecore::Array<IndexType>& result_indices, bool path_is_closed ) const;
 
     HalfOutline part_left;
     HalfOutline part_right;

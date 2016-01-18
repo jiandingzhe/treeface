@@ -4,6 +4,7 @@
 #include "treeface/gl/type.h"
 #include "treeface/graphics/guts/PathGlyph.h"
 #include "treeface/graphics/utils.h"
+#include "treeface/scene/geometry.h"
 
 namespace treeface
 {
@@ -22,21 +23,21 @@ struct SubPath
     {
         if (closed)
         {
-            jassert(glyphs.size() > 1);
+            jassert( glyphs.size() > 1 );
             const PathGlyph& first_glyph = glyphs.getFirst();
-            jassert(first_glyph.type == GLYPH_TYPE_LINE);
-            glyphs.add(first_glyph);
+            jassert( first_glyph.type == GLYPH_TYPE_LINE );
+            glyphs.add( first_glyph );
             closed = false;
         }
     }
 
     // generates line strip directly, do not support join and cap shape at all
-    void stroke_simple(treecore::Array<StrokeVertex>& result_vertices,
-                       treecore::Array<IndexType>&    result_indices) const;
+    void stroke_simple( Geometry::HostVertexCache&  result_vertices,
+                        treecore::Array<IndexType>& result_indices ) const;
 
-    void stroke_complex(treecore::Array<StrokeVertex>& result_vertices,
-                        treecore::Array<IndexType>&    result_indices,
-                        StrokeStyle style) const;
+    void stroke_complex( Geometry::HostVertexCache&  result_vertices,
+                         treecore::Array<IndexType>& result_indices,
+                         StrokeStyle style ) const;
 };
 
 } // namespace treeface
