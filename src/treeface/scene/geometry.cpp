@@ -36,7 +36,7 @@ struct Geometry::Impl
     const bool dynamic;
     bool       drawing = false;
     bool       dirty   = false;
-    int32      num_idx = -1;
+    int32      num_idx = 0;
     const GLPrimitive primitive;
 
     const VertexTemplate vtx_temp;

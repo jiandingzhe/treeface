@@ -37,7 +37,7 @@ struct SubPath
 
     void stroke_complex( Geometry::HostVertexCache&  result_vertices,
                          treecore::Array<IndexType>& result_indices,
-                         StrokeStyle style ) const;
+                         const StrokeStyle& style ) const;
 };
 
 } // namespace treeface

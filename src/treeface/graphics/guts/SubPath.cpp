@@ -9,7 +9,7 @@ namespace treeface
 
 void SubPath::stroke_complex( Geometry::HostVertexCache&  result_vertices,
                               treecore::Array<IndexType>& result_indices,
-                              StrokeStyle style ) const
+                              const StrokeStyle& style ) const
 {
     jassert( glyphs[0].type == GLYPH_TYPE_LINE );
 

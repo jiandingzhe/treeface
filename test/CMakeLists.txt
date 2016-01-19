@@ -107,6 +107,17 @@ target_link_libraries(sdl_window_prop
     ${SDL2_LIBRARY}
 )
 
+add_executable(curve_edit curve_edit.cpp)
+target_link_libraries(curve_edit
+    treeface
+    ${GLEW_LIBRARY}
+    ${FreeImage_LIBRARIES}
+    ${OPENGL_gl_LIBRARY}
+    ${OPENGL_glu_LIBRARY}
+    ${SDL2_LIBRARY}
+)
+target_use_treecore(curve_edit)
+
 if(TREEFACE_OS STREQUAL "WINDOWS")
     set_target_properties(
         interact

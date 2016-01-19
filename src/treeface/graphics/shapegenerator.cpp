@@ -39,9 +39,23 @@ void ShapeGenerator::fill_simple( Geometry* geom )
     clear();
 }
 
-void ShapeGenerator::fill_simple_preserve( Geometry* geom )
+void ShapeGenerator::fill_simple_preserve( Geometry* geom ) const
 {
-    abort(); // TODO: implement me
+    m_guts->triangulate( geom->get_host_vertex_cache(), geom->get_host_index_cache() );
+}
+
+void ShapeGenerator::stroke_complicated( const StrokeStyle& style, Geometry* geom )
+{
+    stroke_complicated_preserve( style, geom );
+    clear();
+}
+
+void ShapeGenerator::stroke_complicated_preserve( const StrokeStyle& style, Geometry* geom ) const
+{
+    for (const SubPath& path : m_guts->subpaths)
+    {
+        path.stroke_complex( geom->get_host_vertex_cache(), geom->get_host_index_cache(), style );
+    }
 }
 
 void ShapeGenerator::line_to( const Vec2f& position )
@@ -98,6 +112,34 @@ void ShapeGenerator::move_to_rel( const Vec2f& offset )
     move_to( pos );
 }
 
+void ShapeGenerator::curve_to( const Vec2f& ctrl, const Vec2f& end )
+{
+    if (m_guts->subpaths.size() == 0)
+        m_guts->subpaths.add( SubPath() );
+
+    SubPath& curr_path = m_guts->subpaths.getLast();
+    curr_path.try_reopen_closed_path();
+
+    if (curr_path.glyphs.size() == 0)
+        curr_path.glyphs.add( PathGlyph( Vec2f() ) );
+
+    curr_path.glyphs.add( PathGlyph( ctrl, end ) );
+}
+
+void ShapeGenerator::curve_to( const Vec2f& ctrl1, const Vec2f& ctrl2, const Vec2f& end )
+{
+    if (m_guts->subpaths.size() == 0)
+        m_guts->subpaths.add( SubPath() );
+
+    SubPath& curr_path = m_guts->subpaths.getLast();
+    curr_path.try_reopen_closed_path();
+
+    if (curr_path.glyphs.size() == 0)
+        curr_path.glyphs.add( PathGlyph( Vec2f() ) );
+
+    curr_path.glyphs.add( PathGlyph( ctrl1, ctrl2, end ) );
+}
+
 Geometry* ShapeGenerator::create_simple_stroke_geometry()
 {
     return new Geometry( VERTEX_TEMPLATE_STROKE(), TFGL_PRIMITIVE_LINE_STRIP, TFGL_BUFFER_DYNAMIC_DRAW );
@@ -106,6 +148,11 @@ Geometry* ShapeGenerator::create_simple_stroke_geometry()
 Geometry* ShapeGenerator::create_complicated_stroke_geometry()
 {
     return new Geometry( VERTEX_TEMPLATE_STROKE(), TFGL_PRIMITIVE_TRIANGLES, TFGL_BUFFER_DYNAMIC_DRAW );
+}
+
+Geometry* ShapeGenerator::create_fill_geometry()
+{
+    return new Geometry( VERTEX_TEMPLATE_FILL(), TFGL_PRIMITIVE_TRIANGLES, TFGL_BUFFER_DYNAMIC_DRAW );
 }
 
 struct StrokeTemplateHelper: public treecore::RefCountObject, public treecore::RefCountSingleton<StrokeTemplateHelper>

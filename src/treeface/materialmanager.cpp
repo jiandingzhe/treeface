@@ -99,7 +99,7 @@ public:
 };
 juce_ImplementSingleton( MaterialPropertyValidator )
 
-Material* MaterialManager::build_material( const treecore::String& name, const treecore::var& data)
+Material * MaterialManager::build_material( const treecore::String & name, const treecore::var & data )
 {
     // validate data
     if ( !data.isObject() )
@@ -147,8 +147,8 @@ Material* MaterialManager::build_material( const treecore::String& name, const t
     // create material object by type
     // and preprocess shader source
     Material* mat = nullptr;
-    String src_vert;
-    String src_frag;
+    String    src_vert;
+    String    src_frag;
 
     switch (mat_type)
     {
@@ -158,6 +158,7 @@ Material* MaterialManager::build_material( const treecore::String& name, const t
         src_frag = String( _src_addition_raw_ ) + (const char*) src_frag_raw.getData();
         break;
     case MATERIAL_SCENE_GRAPH:
+    case MATERIAL_LINE_STROKE:
         mat      = new SceneGraphMaterial();
         src_vert = String( _src_addition_scene_graph_ ) + (const char*) src_vert_raw.getData();
         src_frag = String( _src_addition_scene_graph_ ) + (const char*) src_frag_raw.getData();
@@ -227,14 +228,14 @@ Material* MaterialManager::build_material( const treecore::String& name, const t
             int    uni_idx  = mat->m_program->get_uniform_location( tex_name );
 
             if (uni_idx >= 0)
-                mat->m_impl->layers.add( {tex_name, tex_obj, sampler_obj, uni_idx} );
+                mat->m_impl->layers.add( { tex_name, tex_obj, sampler_obj, uni_idx } );
             else
                 warn( "program don't have texture unit named %s", tex_name.toRawUTF8() );
         }
     }
 
     // store material
-    m_impl->materials.set(name, mat);
+    m_impl->materials.set( name, mat );
 
     return mat;
 }

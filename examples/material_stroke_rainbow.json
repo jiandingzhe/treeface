@@ -1,0 +1,4 @@
+{
+    "program": ["vert_line_simple.glsl", "frag_line_rainbow.glsl"],
+    "type": "line_stroke"
+}
