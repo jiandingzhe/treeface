@@ -35,7 +35,7 @@ RefCountHolder<VisualObject> curve_fill_visual;
 RefCountHolder<VisualObject> handle_visual;
 RefCountHolder<Scene>        scene;
 
-StrokeStyle style_thick{ LINE_CAP_BUTT, LINE_JOIN_ROUND, treeface::PI * 0.75f, 6.67f };
+StrokeStyle style_thick{ LINE_CAP_BUTT, LINE_JOIN_BEVEL, treeface::PI * 0.75f, 15.0f };
 
 struct MouseHandleRect: public RefCountObject
 {
@@ -208,9 +208,9 @@ void update_curve()
 
         gen->stroke_complicated_preserve(style_thick, curve_stroke_geom);
 
-        gen->line_to(Vec2f(float(window_w), 0.0f));
-        gen->line_to(Vec2f(0.0f, 0.0f));
-        gen->fill_simple(curve_fill_geom);
+        gen->line_to(Vec2f(float(window_w), float(window_h)));
+        gen->line_to(Vec2f(0.0f, float(window_h)));
+//        gen->fill_simple(curve_fill_geom);
     }
 
     curve_stroke_geom->host_draw_end();

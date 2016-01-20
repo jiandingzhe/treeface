@@ -48,10 +48,25 @@ void SubPath::stroke_complex( Geometry::HostVertexCache&  result_vertices,
         // render line segments of this glyph
         for (int i = 0; i < curr_glyph_skeleton.size(); i++)
         {
+            bool use_line_join;
+            Vec2f p1;
+            Vec2f p2;
+
             if (i == 0)
-                v_prev = stroker.extend_stroke( v_prev, glyph_prev.end, curr_glyph_skeleton[i], true );
+            {
+                p1 = glyph_prev.end;
+                p2 = curr_glyph_skeleton[i];
+                use_line_join = true;
+            }
             else
-                v_prev = stroker.extend_stroke( v_prev, curr_glyph_skeleton[i - 1], curr_glyph_skeleton[i], false );
+            {
+                p1 = curr_glyph_skeleton[i - 1];
+                p2 = curr_glyph_skeleton[i];
+                use_line_join = false;
+            }
+
+            if (p1 != p2)
+                v_prev = stroker.extend_stroke(v_prev, p1, p2, use_line_join);
         }
     }
 

@@ -42,18 +42,19 @@ struct PathGlyph
     PathGlyph( const Vec2f& center, const Vec2f& end, float angle, bool is_cclw )
         : type( GLYPH_TYPE_ARC )
         , end( end )
-        , arc(PathGlyphArc{ center.x, center.y, angle, is_cclw })
+        , arc( PathGlyphArc { center.x, center.y, angle, is_cclw } )
     {}
 
     PathGlyph( const Vec2f& ctrl, const Vec2f& end )
         : type( GLYPH_TYPE_BESSEL3 )
         , end( end )
-        , bessel3(PathGlyphBessel3{ ctrl.x, ctrl.y })
+        , bessel3( PathGlyphBessel3 { ctrl.x, ctrl.y } )
     {}
 
     PathGlyph( const Vec2f& ctrl1, const Vec2f& ctrl2, const Vec2f& end )
         : type( GLYPH_TYPE_BESSEL4 )
-        , bessel4(PathGlyphBessel4{ ctrl1.x, ctrl1.y, ctrl2.x, ctrl2.y })
+        , end( end )
+        , bessel4( PathGlyphBessel4 { ctrl1.x, ctrl1.y, ctrl2.x, ctrl2.y } )
     {}
 
     void segment( const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices ) const
@@ -74,10 +75,10 @@ struct PathGlyph
     void segment_bessel( const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices ) const;
 
     GlyphType type;
-    Vec2f end;
+    Vec2f     end;
     union
     {
-        PathGlyphArc arc;
+        PathGlyphArc     arc;
         PathGlyphBessel3 bessel3;
         PathGlyphBessel4 bessel4;
     };
