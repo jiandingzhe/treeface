@@ -174,16 +174,13 @@ inline bool cross_test_inc( const Vec2f& p1, const Vec2f& p2,
     result.set( (v12.x * cross34 - v34.x * cross12) / denom,
                 (v12.y * cross34 - v34.y * cross12) / denom );
 
-    Vec2f v1c = result - p1;
-    Vec2f v3c = result - p3;
+    float rule_34_on_12 = ( (p3 - p1) % v12 ) * ( (p4 - p1) % v12 );
+    float rule_12_on_34 = ( (p1 - p3) % v34 ) * ( (p2 - p3) % v34 );
 
-    if ( v1c * v12 >= 0.0f      &&
-         v1c.length2() <= v12.length2() &&
-         v3c * v34 >= 0.0f      &&
-         v3c.length2() <= v34.length2() )
-    {
+    if (rule_34_on_12 <= 0 && rule_12_on_34 <= 0)
         return true;
-    }
+    else
+        return false;
 }
 
 } // namespace treeface
