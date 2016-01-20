@@ -22,19 +22,20 @@ using namespace treeface;
 using namespace treecore;
 using namespace std;
 
-const int   window_w  = 400;
-const int   window_h  = 400;
-const float handle_sz = 20;
+const int   window_w  = 1024;
+const int   window_h  = 768;
+const float handle_sz = 15;
 
 SDL_Window*   window  = nullptr;
 SDL_GLContext context = nullptr;
-RefCountHolder<Geometry>     curve_geom;
-RefCountHolder<VisualObject> curve_visual;
+RefCountHolder<Geometry>     curve_stroke_geom;
+RefCountHolder<VisualObject> curve_stroke_visual;
+RefCountHolder<Geometry>     curve_fill_geom;
+RefCountHolder<VisualObject> curve_fill_visual;
 RefCountHolder<VisualObject> handle_visual;
 RefCountHolder<Scene>        scene;
 
-StrokeStyle style_thick{ LINE_CAP_BUTT, LINE_JOIN_MITER, treeface::PI * 0.75f, 3.0f };
-StrokeStyle style_thin{ LINE_CAP_BUTT, LINE_JOIN_MITER, treeface::PI * 0.75f, 1.0f };
+StrokeStyle style_thick{ LINE_CAP_BUTT, LINE_JOIN_ROUND, treeface::PI * 0.75f, 6.67f };
 
 struct MouseHandleRect: public RefCountObject
 {
@@ -46,7 +47,10 @@ struct MouseHandleRect: public RefCountObject
         _update_node_trans_();
         scene->get_root_node()->add_child( node );
     }
-    virtual ~MouseHandleRect() = default;
+    virtual ~MouseHandleRect()
+    {
+        scene->get_root_node()->remove_child(node);
+    }
 
     bool is_inside( Vec2f& value )
     {
@@ -142,9 +146,12 @@ void setup_scene()
     handle_visual = new VisualObject( geom, mat_sg );
 
     // create curve
-    curve_geom   = ShapeGenerator::create_complicated_stroke_geometry();
-    curve_visual = new VisualObject( curve_geom, mat_sg );
-    scene->get_root_node()->add_item( curve_visual );
+    curve_stroke_geom   = ShapeGenerator::create_complicated_stroke_geometry();
+    curve_fill_geom = ShapeGenerator::create_fill_geometry();
+    curve_stroke_visual = new VisualObject( curve_stroke_geom, mat_sg );
+    curve_fill_visual = new VisualObject(curve_fill_geom, mat_sg);
+    scene->get_root_node()->add_item( curve_stroke_visual );
+    scene->get_root_node()->add_item(curve_fill_visual);
 }
 
 struct MouseHandleSorter
@@ -161,10 +168,14 @@ struct MouseHandleSorter
 
 void update_curve()
 {
-    curve_geom->host_draw_begin();
+    Logger::writeToLog("update curve");
+    curve_stroke_geom->host_draw_begin();
+    curve_fill_geom->host_draw_begin();
 
-    curve_geom->get_host_vertex_cache().clear_quick();
-    curve_geom->get_host_index_cache().clearQuick();
+    curve_stroke_geom->get_host_vertex_cache().clear_quick();
+    curve_stroke_geom->get_host_index_cache().clearQuick();
+    curve_fill_geom->get_host_vertex_cache().clear_quick();
+    curve_fill_geom->get_host_index_cache().clearQuick();
 
     if (mouse_handles.size() > 0)
     {
@@ -180,21 +191,30 @@ void update_curve()
 
         Vec2f p_prev( 0.0f, handles_sort[0]->position.y );
         gen->move_to( p_prev );
+        //Logger::writeToLog("  " + String(p_prev.x) + "," + String(p_prev.y));
 
         for (const MouseHandleRect* curr_handle : handles_sort)
         {
             float x_avg = (p_prev.x + curr_handle->position.x) / 2;
             Vec2f ctrl1( x_avg, p_prev.y );
             Vec2f ctrl2( x_avg, curr_handle->position.y );
-            gen->curve_to( ctrl1, ctrl2, curr_handle->position );
+            gen->line_to(curr_handle->position);
+            //gen->curve_to( ctrl1, ctrl2, curr_handle->position );
+            //Logger::writeToLog("  " + String(curr_handle->position.x) + "," + String(curr_handle->position.y));
         }
 
         gen->line_to( Vec2f( float(window_w), handles_sort.getLast()->position.y ) );
+        //Logger::writeToLog("  " + String(window_w) + "," + String(handles_sort.getLast()->position.y));
 
-        gen->stroke_complicated( style_thick, curve_geom );
+        gen->stroke_complicated_preserve(style_thick, curve_stroke_geom);
+
+        gen->line_to(Vec2f(float(window_w), 0.0f));
+        gen->line_to(Vec2f(0.0f, 0.0f));
+        gen->fill_simple(curve_fill_geom);
     }
 
-    curve_geom->host_draw_end();
+    curve_stroke_geom->host_draw_end();
+    curve_fill_geom->host_draw_end();
 }
 
 void on_mouse_motion( SDL_MouseMotionEvent& e )
@@ -202,6 +222,7 @@ void on_mouse_motion( SDL_MouseMotionEvent& e )
     Vec2f mouse_pos( float(e.x), float(e.y) );
     Vec2f mouse_delta( float(e.xrel), float(e.yrel) );
 
+    bool handle_moved = false;
     for (int i = 0; i < mouse_handles.size(); i++)
     {
         MouseHandleRect* curr = mouse_handles[i];
@@ -209,10 +230,13 @@ void on_mouse_motion( SDL_MouseMotionEvent& e )
             curr->active = true;
 
         if (curr->pressed)
+        {
+            handle_moved = true;
             curr->move( mouse_delta );
+        }
     }
 
-    update_curve();
+    if (handle_moved) update_curve();
 }
 
 void on_mouse_down( SDL_MouseButtonEvent& e )
@@ -279,8 +303,8 @@ int main( int argc, char** argv )
     SceneRenderer renderer;
 
     Mat4f mat_view;
-    mat_view.set_scale( 1.0f / window_w, 1.0f / window_h, 0.01 );
-    mat_view.set_translate( -0.5f, -0.5f, 0.0f );
+    mat_view.set_scale( 2.0f / window_w, -2.0f / window_h, 0.01 );
+    mat_view.set_translate( -1.0f, 1.0f, 0.0f );
 
     // main loop
     while (1)

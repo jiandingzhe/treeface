@@ -158,7 +158,6 @@ Material * MaterialManager::build_material( const treecore::String & name, const
         src_frag = String( _src_addition_raw_ ) + (const char*) src_frag_raw.getData();
         break;
     case MATERIAL_SCENE_GRAPH:
-    case MATERIAL_LINE_STROKE:
         mat      = new SceneGraphMaterial();
         src_vert = String( _src_addition_scene_graph_ ) + (const char*) src_vert_raw.getData();
         src_frag = String( _src_addition_scene_graph_ ) + (const char*) src_frag_raw.getData();

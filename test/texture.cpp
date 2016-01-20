@@ -157,8 +157,10 @@ void build_up_gl()
 
     glActiveTexture( GL_TEXTURE1 );
     texture = new Texture( img_texture1, 0 );
+    texture->bind();
     texture->set_min_filter( TFGL_TEXTURE_NEAREST );
     texture->set_mag_filter( TFGL_TEXTURE_NEAREST );
+    texture->unbind();
 
     VertexAttrib   attr1{ "position",     4, TFGL_TYPE_FLOAT };
     VertexAttrib   attr2{ "tex_position", 2, TFGL_TYPE_FLOAT };

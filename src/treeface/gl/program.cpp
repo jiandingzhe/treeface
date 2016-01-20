@@ -78,8 +78,8 @@ Program::Program( const char* src_vert, const char* src_frag ): m_impl( new Impl
     {
         treecore::Result re = fetch_program_error_log();
         if (!re)
-            throw ProgramLinkError( "failed to link shader:\n" +
-                                    re.getErrorMessage() + "\n" );
+            throw ProgramLinkError("failed to link shader:\n" +
+                re.getErrorMessage() + "\n");
     }
 
     // extract program attributes

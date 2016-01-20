@@ -1,5 +1,5 @@
-in mediump float trip;
-in mediump float side;
+in mediump float frag_trip;
+in mediump float frag_side;
 
 out mediump vec4 frag_color;
 
@@ -25,5 +25,6 @@ mediump vec3 hsv2rgb(mediump vec3 hsv)
 
 void main()
 {
-    frag_color = vec4(hsv2rgb(vec3(trip, side, 1.0)), 1.0);
+    frag_color = vec4(hsv2rgb(vec3(frag_trip, frag_side, 1.0)), 1.0);
+    //frag_color = vec4(1.0, 1.0, 1.0, 1.0);
 }

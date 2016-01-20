@@ -14,7 +14,6 @@ bool fromString<treeface::MaterialType>( const treecore::String& string, treefac
     if      (str_lc == "raw")           result = treeface::MATERIAL_RAW;
     else if (str_lc == "scene_graph")   result = treeface::MATERIAL_SCENE_GRAPH;
     else if (str_lc == "screen_space")  result = treeface::MATERIAL_SCREEN_SPACE;
-    else if (str_lc == "line_stroke")   result = treeface::MATERIAL_LINE_STROKE;
     else return false;
 
     return true;
@@ -28,7 +27,6 @@ treecore::String toString<treeface::MaterialType>( treeface::MaterialType value 
     case treeface::MATERIAL_RAW:          return "raw";
     case treeface::MATERIAL_SCENE_GRAPH:  return "scene_graph";
     case treeface::MATERIAL_SCREEN_SPACE: return "screen_space";
-    case treeface::MATERIAL_LINE_STROKE:  return "line_stroke";
     default:
         throw std::invalid_argument( ( "invalid treeface material type enum: " + String( int(value) ) ).toRawUTF8() );
     }
