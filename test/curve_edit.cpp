@@ -35,7 +35,7 @@ RefCountHolder<VisualObject> curve_fill_visual;
 RefCountHolder<VisualObject> handle_visual;
 RefCountHolder<Scene>        scene;
 
-StrokeStyle style_thick{ LINE_CAP_BUTT, LINE_JOIN_BEVEL, treeface::PI * 0.75f, 15.0f };
+StrokeStyle style_thick{ LINE_CAP_BUTT, LINE_JOIN_BEVEL, treeface::PI * 0.75f, 5.0f };
 
 struct MouseHandleRect: public RefCountObject
 {
@@ -49,7 +49,7 @@ struct MouseHandleRect: public RefCountObject
     }
     virtual ~MouseHandleRect()
     {
-        scene->get_root_node()->remove_child(node);
+        scene->get_root_node()->remove_child( node );
     }
 
     bool is_inside( Vec2f& value )
@@ -147,11 +147,11 @@ void setup_scene()
 
     // create curve
     curve_stroke_geom   = ShapeGenerator::create_complicated_stroke_geometry();
-    curve_fill_geom = ShapeGenerator::create_fill_geometry();
+    curve_fill_geom     = ShapeGenerator::create_fill_geometry();
     curve_stroke_visual = new VisualObject( curve_stroke_geom, mat_sg );
-    curve_fill_visual = new VisualObject(curve_fill_geom, mat_sg);
+    curve_fill_visual   = new VisualObject( curve_fill_geom, mat_sg );
     scene->get_root_node()->add_item( curve_stroke_visual );
-    scene->get_root_node()->add_item(curve_fill_visual);
+    scene->get_root_node()->add_item( curve_fill_visual );
 }
 
 struct MouseHandleSorter
@@ -168,7 +168,7 @@ struct MouseHandleSorter
 
 void update_curve()
 {
-    Logger::writeToLog("update curve");
+    Logger::writeToLog( "update curve" );
     curve_stroke_geom->host_draw_begin();
     curve_fill_geom->host_draw_begin();
 
@@ -191,26 +191,25 @@ void update_curve()
 
         Vec2f p_prev( 0.0f, handles_sort[0]->position.y );
         gen->move_to( p_prev );
-        //Logger::writeToLog("  " + String(p_prev.x) + "," + String(p_prev.y));
+//        printf( "  move to %f %f\n", p_prev.x, p_prev.y );
 
         for (const MouseHandleRect* curr_handle : handles_sort)
         {
             float x_avg = (p_prev.x + curr_handle->position.x) / 2;
             Vec2f ctrl1( x_avg, p_prev.y );
             Vec2f ctrl2( x_avg, curr_handle->position.y );
-            gen->line_to(curr_handle->position);
-            //gen->curve_to( ctrl1, ctrl2, curr_handle->position );
-            //Logger::writeToLog("  " + String(curr_handle->position.x) + "," + String(curr_handle->position.y));
+            gen->curve_to( ctrl1, ctrl2, curr_handle->position );
+//            printf( "  bessel4 %f %f %f %f %f %f\n", ctrl1.x, ctrl1.y, ctrl2.x, ctrl2.y, curr_handle->position.x, curr_handle->position.y );
+            p_prev = curr_handle->position;
         }
 
         gen->line_to( Vec2f( float(window_w), handles_sort.getLast()->position.y ) );
-        //Logger::writeToLog("  " + String(window_w) + "," + String(handles_sort.getLast()->position.y));
+//        printf( "  line %f %f\n", float(window_w), handles_sort.getLast()->position.y );
 
-        gen->stroke_complicated_preserve(style_thick, curve_stroke_geom);
+        gen->stroke_complicated_preserve( style_thick, curve_stroke_geom );
 
-        gen->line_to(Vec2f(float(window_w), float(window_h)));
-        gen->line_to(Vec2f(0.0f, float(window_h)));
-//        gen->fill_simple(curve_fill_geom);
+        gen->line_to( Vec2f( float(window_w), float(window_h) ) );
+        gen->line_to( Vec2f( 0.0f, float(window_h) ) );
     }
 
     curve_stroke_geom->host_draw_end();
@@ -252,7 +251,7 @@ void on_mouse_down( SDL_MouseButtonEvent& e )
             MouseHandleRect* curr = mouse_handles[i];
             if ( curr->is_inside( mouse_pos ) )
             {
-                Logger::writeToLog( "  intersection with widget " + String( pointer_sized_int(curr) ) );
+                Logger::writeToLog( "  intersection with widget " + String( pointer_sized_int( curr ) ) );
                 curr->pressed = true;
                 num_select++;
             }
@@ -274,7 +273,7 @@ void on_mouse_down( SDL_MouseButtonEvent& e )
             MouseHandleRect* curr = mouse_handles[i];
             if ( curr->is_inside( mouse_pos ) )
             {
-                Logger::writeToLog( "  remove widget " + String( pointer_sized_int(curr) ) );
+                Logger::writeToLog( "  remove widget " + String( pointer_sized_int( curr ) ) );
                 mouse_handles.remove( i );
                 i--;
             }

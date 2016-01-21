@@ -188,7 +188,7 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
     JointID joint_id2 = joint_id1 + 1;
 
     // is turning
-    if (turn_sine != 0.0f)
+    if (std::abs(turn_sine) > 0.05f)
     {
         HalfOutline* part_inner;
         HalfOutline* part_outer;
