@@ -7,14 +7,14 @@
 #include "treeface/material.h"
 
 #include <treecore/Array.h>
+#include <treecore/Identifier.h>
 #include <treecore/RefCountHolder.h>
-#include <treecore/String.h>
 
 namespace treeface {
 
 struct TextureLayer
 {
-    treecore::String name;
+    treecore::Identifier name;
     treecore::RefCountHolder<Texture> gl_texture;
     treecore::RefCountHolder<Sampler> gl_sampler;
     GLint program_uniform_loc;

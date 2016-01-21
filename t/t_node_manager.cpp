@@ -72,7 +72,12 @@ void TestFramework::content()
 
     pkg_mgr->add_package( File::getCurrentWorkingDirectory().getChildFile( "../examples/resource.zip" ), PackageManager::KEEP_EXISTING );
 
-    RefCountHolder<SceneNode> root_node = node_mgr->add_nodes( String( "nodes.json" ) );
+    RefCountHolder<SceneNode> root_node;
+    {
+        var root_data = pkg_mgr->get_item_json( "nodes.json" );
+        OK( root_data );
+        root_node = node_mgr->add_nodes( root_data );
+    }
     OK( root_node != nullptr );
 
     SceneNode* node_a = node_mgr->get_node( "a" );

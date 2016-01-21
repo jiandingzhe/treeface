@@ -6,7 +6,7 @@
 #include "treeface/gl/type.h"
 #include "treeface/gl/enums.h"
 
-#include <treecore/String.h>
+#include <treecore/Identifier.h>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -15,7 +15,7 @@ namespace treeface {
 
 struct VertexAttrib
 {
-    VertexAttrib( const treecore::String& name, treecore::int32 n_elem, GLType type )
+    VertexAttrib( const treecore::Identifier& name, treecore::int32 n_elem, GLType type )
         : name( name )
         , n_elem( n_elem )
         , type( type )
@@ -36,7 +36,7 @@ struct VertexAttrib
         return n_elem * size_of_gl_type( type );
     }
 
-    const treecore::String name;
+    const treecore::Identifier name;
     const treecore::int32  n_elem;
     const GLType type;
 };

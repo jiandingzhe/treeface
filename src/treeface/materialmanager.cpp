@@ -17,11 +17,10 @@
 
 #include <treecore/DynamicObject.h>
 #include <treecore/HashMap.h>
-#include <treecore/RefCountHolder.h>
 #include <treecore/MemoryBlock.h>
 #include <treecore/JSON.h>
+#include <treecore/RefCountHolder.h>
 #include <treecore/Singleton.h>
-#include <treecore/String.h>
 #include <treecore/Variant.h>
 
 #if defined TREEFACE_GL_3_0
@@ -40,7 +39,7 @@ namespace treeface {
 
 struct MaterialManager::Impl
 {
-    HashMap<String, RefCountHolder<Material> > materials;
+    HashMap<Identifier, RefCountHolder<Material> > materials;
 };
 
 MaterialManager::MaterialManager()
@@ -60,6 +59,14 @@ MaterialManager::~MaterialManager()
 #define KEY_TRANSLUSCENT "transluscent"
 #define KEY_TEXTURE      "textures"
 
+#define NAME_MAT_MV       "matrix_model_view"
+#define NAME_MAT_PROJ     "matrix_project"
+#define NAME_MAT_MVP      "matrix_model_view_project"
+#define NAME_MAT_NORM     "matrix_normal"
+#define NAME_GLB_L_DIRECT "global_light_direction"
+#define NAME_GLB_L_COLOR  "global_light_color"
+#define NAME_GLB_L_AMB    "global_light_ambient"
+
 const char* _src_addition_raw_ =
     TREEFACE_GLSL_VERSION_DEF
 ;
@@ -70,13 +77,13 @@ const char* _src_addition_screen_space_ =
 
 const char* _src_addition_scene_graph_ =
     TREEFACE_GLSL_VERSION_DEF
-    "uniform highp mat4 matrix_model_view;\n"
-    "uniform highp mat4 matrix_project;\n"
-    "uniform highp mat4 matrix_model_view_project;\n"
-    "uniform highp mat4 matrix_normal;\n"
-    "uniform mediump vec4 global_light_direction;\n"
-    "uniform mediump vec4 global_light_color;\n"
-    "uniform mediump vec4 global_light_ambient;\n"
+    "uniform highp mat4 " NAME_MAT_MV ";\n"
+    "uniform highp mat4 " NAME_MAT_PROJ ";\n"
+    "uniform highp mat4 " NAME_MAT_MVP ";\n"
+    "uniform highp mat4 " NAME_MAT_NORM ";\n"
+    "uniform mediump vec4 " NAME_GLB_L_DIRECT ";\n"
+    "uniform mediump vec4 " NAME_GLB_L_COLOR ";\n"
+    "uniform mediump vec4 " NAME_GLB_L_AMB ";\n"
     "\n"
 ;
 
@@ -99,7 +106,7 @@ public:
 };
 juce_ImplementSingleton( MaterialPropertyValidator )
 
-Material * MaterialManager::build_material( const treecore::String & name, const treecore::var & data )
+Material * MaterialManager::build_material( const treecore::Identifier & name, const treecore::var & data )
 {
     // validate data
     if ( !data.isObject() )
@@ -184,13 +191,13 @@ Material * MaterialManager::build_material( const treecore::String & name, const
         const Program* prog = mat->m_program;
 
         SceneGraphMaterial* sgmat = dynamic_cast<SceneGraphMaterial*>( mat );
-        sgmat->m_uni_model_view      = prog->get_uniform_location( "matrix_model_view" );
-        sgmat->m_uni_proj            = prog->get_uniform_location( "matrix_project" );
-        sgmat->m_uni_model_view_proj = prog->get_uniform_location( "matrix_model_view_project" );
-        sgmat->m_uni_norm            = prog->get_uniform_location( "matrix_normal" );
-        sgmat->m_uni_light_direct    = prog->get_uniform_location( "global_light_direction" );
-        sgmat->m_uni_light_color     = prog->get_uniform_location( "global_light_color" );
-        sgmat->m_uni_light_ambient   = prog->get_uniform_location( "global_light_ambient" );
+        sgmat->m_uni_model_view      = prog->get_uniform_location( NAME_MAT_MV );
+        sgmat->m_uni_proj            = prog->get_uniform_location( NAME_MAT_PROJ );
+        sgmat->m_uni_model_view_proj = prog->get_uniform_location( NAME_MAT_MVP );
+        sgmat->m_uni_norm            = prog->get_uniform_location( NAME_MAT_NORM );
+        sgmat->m_uni_light_direct    = prog->get_uniform_location( NAME_GLB_L_DIRECT );
+        sgmat->m_uni_light_color     = prog->get_uniform_location( NAME_GLB_L_COLOR );
+        sgmat->m_uni_light_ambient   = prog->get_uniform_location( NAME_GLB_L_AMB );
 
         // scene properties
         if ( data_kv.contains( KEY_PROJ_SHADOW ) )
@@ -239,38 +246,26 @@ Material * MaterialManager::build_material( const treecore::String & name, const
     return mat;
 }
 
-Material* MaterialManager::get_material( const String& name )
+Material* MaterialManager::get_material( const Identifier& name )
 {
     if ( m_impl->materials.contains( name ) )
         return m_impl->materials[name];
 
-    // get material source by name
-    MemoryBlock mat_data;
-    if ( !PackageManager::getInstance()->get_item_data( name, mat_data, true ) )
-        return nullptr;
-
-    // parse JSON
-    var    mat_root_node;
-    Result json_re = JSON::parse( (char*) mat_data.getData(), mat_root_node );
-    if (!json_re)
-    {
-        throw ConfigParseError( String( "failed to parse material JSON content for \"" ) + name + String( "\":\n" ) +
-                                json_re.getErrorMessage() + String( "\n" ) +
-                                "==== material JSON content ====\n\n" +
-                                String( (const char*) mat_data.getData() ) + "\n" +
-                                "==== end of JSON content ====\n\n" );
-    }
+    // get item JSON
+    var mat_root_node = PackageManager::getInstance()->get_item_json( name );
+    if (!mat_root_node)
+        throw ConfigParseError( "no material named \"" + name.toString() + "\"" );
 
     // build material from JSON structure
     return build_material( name, mat_root_node );
 }
 
-bool MaterialManager::material_is_cached( const treecore::String& name )
+bool MaterialManager::material_is_cached( const treecore::Identifier& name )
 {
     return m_impl->materials.contains( name );
 }
 
-bool MaterialManager::release_material_hold( const treecore::String& name )
+bool MaterialManager::release_material_hold( const treecore::Identifier& name )
 {
     if ( m_impl->materials.contains( name ) )
     {

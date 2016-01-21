@@ -6,7 +6,7 @@
 #include <treecore/Result.h>
 #include <treecore/RefCountObject.h>
 #include <treecore/RefCountSingleton.h>
-#include <treecore/String.h>
+#include <treecore/Identifier.h>
 
 namespace treeface {
 
@@ -20,9 +20,9 @@ public:
     TREECORE_DECLARE_NON_COPYABLE( ImageManager );
     TREECORE_DECLARE_NON_MOVABLE( ImageManager );
 
-    Image* get_image( const treecore::String& name );
-    bool   image_is_cached( const treecore::String& name ) const;
-    bool   release_image_hold( const treecore::String& name );
+    Image* get_image( const treecore::Identifier& name );
+    bool   image_is_cached( const treecore::Identifier& name ) const;
+    bool   release_image_hold( const treecore::Identifier& name );
 
 protected:
     struct Impl;

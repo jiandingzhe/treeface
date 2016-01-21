@@ -11,7 +11,6 @@
 #include <treecore/HashMap.h>
 #include <treecore/RefCountObject.h>
 #include <treecore/Result.h>
-#include <treecore/String.h>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -25,7 +24,7 @@ struct VertexArray;
 
 struct UniformInfo: public VertexAttrib
 {
-    UniformInfo( const treecore::String& name, treecore::int32 n_elem, GLType type, GLint location )
+    UniformInfo( const treecore::Identifier& name, treecore::int32 n_elem, GLType type, GLint location )
         : VertexAttrib( name, n_elem, type )
         , location( location )
     {}
@@ -108,7 +107,7 @@ public:
     ///
     /// \see get_attribute
     ///
-    int get_attribute_index( const treecore::String& name ) const noexcept;
+    int get_attribute_index( const treecore::Identifier& name ) const noexcept;
 
     ///
     /// \brief get vertex attribute info by index
@@ -130,7 +129,7 @@ public:
      *
      * \see get_uniform
      */
-    int get_uniform_index( const treecore::String& name ) const noexcept;
+    int get_uniform_index( const treecore::Identifier& name ) const noexcept;
 
     ///
     /// \brief get uniform index by location
@@ -164,7 +163,7 @@ public:
     /// \return uniform location
     /// \see set_uniform
     ///
-    GLint get_uniform_location( const treecore::String& name ) const noexcept;
+    GLint get_uniform_location( const treecore::Identifier& name ) const noexcept;
 
     GLuint get_gl_handle() const noexcept { return m_program; }
 

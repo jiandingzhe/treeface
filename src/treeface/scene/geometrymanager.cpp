@@ -19,7 +19,7 @@ namespace treeface {
 
 struct GeometryManager::Impl
 {
-    HashMap<String, RefCountHolder<Geometry> > items;
+    HashMap<Identifier, RefCountHolder<Geometry> > items;
 };
 
 GeometryManager::GeometryManager(): m_impl( new Impl() )
@@ -31,7 +31,7 @@ GeometryManager::~GeometryManager()
         delete m_impl;
 }
 
-Geometry* GeometryManager::get_geometry( const treecore::String& name )
+Geometry* GeometryManager::get_geometry( const treecore::Identifier& name )
 {
     if ( m_impl->items.contains( name ) )
         return m_impl->items[name];
@@ -46,7 +46,7 @@ Geometry* GeometryManager::get_geometry( const treecore::String& name )
     {
         Result json_re = JSON::parse( (const char*) config_src.getData(), geom_root_node );
         if (!json_re)
-            throw ConfigParseError( String( "failed to parse geometry JSON content for \"" ) + name + String( "\":\n" ) +
+            throw ConfigParseError( String( "failed to parse geometry JSON content for \"" ) + name.toString() + String( "\":\n" ) +
                                     json_re.getErrorMessage() + String( "\n" ) +
                                     (const char*) config_src.getData() );
     }
@@ -56,12 +56,12 @@ Geometry* GeometryManager::get_geometry( const treecore::String& name )
     return result;
 }
 
-bool GeometryManager::geometry_is_cached( const treecore::String& name ) const noexcept
+bool GeometryManager::geometry_is_cached( const treecore::Identifier& name ) const noexcept
 {
     return m_impl->items.contains( name );
 }
 
-bool GeometryManager::release_geometry_hold( const treecore::String& name )
+bool GeometryManager::release_geometry_hold( const treecore::Identifier& name )
 {
     if ( m_impl->items.contains( name ) )
     {

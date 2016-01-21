@@ -6,6 +6,7 @@
 #include "treeface/scene/scenenode.h"
 
 #include <treecore/HashMap.h>
+#include <treecore/Identifier.h>
 #include <treecore/RefCountHolder.h>
 #include <treecore/SortedSet.h>
 #include <treecore/String.h>

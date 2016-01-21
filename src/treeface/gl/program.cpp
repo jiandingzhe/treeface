@@ -17,12 +17,12 @@ namespace treeface {
 
 struct Program::Impl
 {
-    treecore::Array<VertexAttrib>    attr_info;
-    treecore::HashMap<String, int32> attr_idx_by_name;
+    treecore::Array<VertexAttrib> attr_info;
+    treecore::HashMap<Identifier, int32> attr_idx_by_name;
 
-    treecore::Array<UniformInfo>     uni_store;
-    treecore::HashMap<String, int32> uni_idx_by_name; // name => index
-    treecore::HashMap<GLint,  int32> uni_idx_by_loc;  // location => index
+    treecore::Array<UniformInfo> uni_store;
+    treecore::HashMap<Identifier, int32> uni_idx_by_name; // name => index
+    treecore::HashMap<GLint,  int32>     uni_idx_by_loc; // location => index
 };
 
 Program::Program( const char* src_vert, const char* src_frag ): m_impl( new Impl() )
@@ -78,8 +78,8 @@ Program::Program( const char* src_vert, const char* src_frag ): m_impl( new Impl
     {
         treecore::Result re = fetch_program_error_log();
         if (!re)
-            throw ProgramLinkError("failed to link shader:\n" +
-                re.getErrorMessage() + "\n");
+            throw ProgramLinkError( "failed to link shader:\n" +
+                                    re.getErrorMessage() + "\n" );
     }
 
     // extract program attributes
@@ -106,8 +106,8 @@ Program::Program( const char* src_vert, const char* src_frag ): m_impl( new Impl
         if (attr_name_len >= 255)
             die( "attribute %d name is too long", i_attr );
 
-        m_impl->attr_info.add( { treecore::String( attr_name ), attr_size, GLType( attr_type ) } );
-        m_impl->attr_idx_by_name.set( treecore::String( attr_name ), i_attr );
+        m_impl->attr_info.add( { Identifier( attr_name ), attr_size, GLType( attr_type ) } );
+        m_impl->attr_idx_by_name.set( Identifier( attr_name ), i_attr );
     }
 
     // extract program uniforms
@@ -141,8 +141,8 @@ Program::Program( const char* src_vert, const char* src_frag ): m_impl( new Impl
         DBG( "  uniform " + String( i_uni ) + " " + String( uni_name ) + " at " + String( uni_loc ) + ": type " + toString( GLType( uni_type ) ) + ", size " + String( uni_size ) );
 
         // store uniform info
-        m_impl->uni_store.add( { uni_name, uni_size, GLType( uni_type ), uni_loc } );
-        m_impl->uni_idx_by_name.set( uni_name, i_uni );
+        m_impl->uni_store.add( { Identifier( uni_name ), uni_size, GLType( uni_type ), uni_loc } );
+        m_impl->uni_idx_by_name.set( Identifier( uni_name ), i_uni );
         m_impl->uni_idx_by_loc.set( uni_loc, i_uni );
     }
 }
@@ -326,7 +326,7 @@ void Program::set_uniform( GLint uni_loc, const Mat4f& value ) const noexcept
     glUniformMatrix4fv( uni_loc, 1, false, (const float*) &value );
 }
 
-int Program::get_attribute_index( const treecore::String& name ) const noexcept
+int Program::get_attribute_index( const treecore::Identifier& name ) const noexcept
 {
     if ( m_impl->attr_idx_by_name.contains( name ) )
         return m_impl->attr_idx_by_name[name];
@@ -339,7 +339,7 @@ const VertexAttrib& Program::get_attribute( int i_attr ) const noexcept
     return m_impl->attr_info[i_attr];
 }
 
-int Program::get_uniform_index( const treecore::String& name ) const noexcept
+int Program::get_uniform_index( const treecore::Identifier& name ) const noexcept
 {
     if ( m_impl->uni_idx_by_name.contains( name ) )
         return m_impl->uni_idx_by_name[name];
@@ -360,7 +360,7 @@ const UniformInfo& Program::get_uniform( int i_uni ) const noexcept
     return m_impl->uni_store[i_uni];
 }
 
-GLint Program::get_uniform_location( const treecore::String& name ) const noexcept
+GLint Program::get_uniform_location( const treecore::Identifier& name ) const noexcept
 {
     if ( m_impl->uni_idx_by_name.contains( name ) )
     {

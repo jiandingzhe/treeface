@@ -365,12 +365,12 @@ Texture::Texture( const treecore::var& tex_node )
             if (image_name_nodes->size() != 6)
                 throw ConfigParseError( "invalid number of image for 2D cube map texture: " + String( image_name_nodes->size() ) );
 
-            Image* img_xp = ImageManager::getInstance()->get_image( (*image_name_nodes)[0] );
-            Image* img_xn = ImageManager::getInstance()->get_image( (*image_name_nodes)[1] );
-            Image* img_yp = ImageManager::getInstance()->get_image( (*image_name_nodes)[2] );
-            Image* img_yn = ImageManager::getInstance()->get_image( (*image_name_nodes)[3] );
-            Image* img_zp = ImageManager::getInstance()->get_image( (*image_name_nodes)[4] );
-            Image* img_zn = ImageManager::getInstance()->get_image( (*image_name_nodes)[5] );
+            Image* img_xp = ImageManager::getInstance()->get_image( (*image_name_nodes)[0].toString() );
+            Image* img_xn = ImageManager::getInstance()->get_image( (*image_name_nodes)[1].toString() );
+            Image* img_yp = ImageManager::getInstance()->get_image( (*image_name_nodes)[2].toString() );
+            Image* img_yn = ImageManager::getInstance()->get_image( (*image_name_nodes)[3].toString() );
+            Image* img_zp = ImageManager::getInstance()->get_image( (*image_name_nodes)[4].toString() );
+            Image* img_zn = ImageManager::getInstance()->get_image( (*image_name_nodes)[5].toString() );
 
             // set texture image
             _gl_tex_image_( GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, img_xp->get_texture_compatible_2d( pol_solo, pol_dual, pol_int ) );
@@ -415,7 +415,7 @@ Texture::Texture( const treecore::var& tex_node )
         glTexParameteri( m_type, GL_TEXTURE_MAX_LEVEL,  num_gen_mipmap );
 
         // get image data
-        Image* img = ImageManager::getInstance()->get_image( tex_kv[KEY_IMG] );
+        Image* img = ImageManager::getInstance()->get_image( tex_kv[KEY_IMG].toString() );
 
         // set texture image
         if (m_type == TFGL_TEXTURE_2D)

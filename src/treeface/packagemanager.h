@@ -4,7 +4,7 @@
 #include <treecore/MathsFunctions.h>
 #include <treecore/RefCountObject.h>
 #include <treecore/RefCountSingleton.h>
-#include <treecore/String.h>
+#include <treecore/Identifier.h>
 #include <treecore/Time.h>
 
 #include "treeface/common.h"
@@ -75,7 +75,7 @@ public:
     ///         no corresponding item name. User is resposible for delete the
     ///         returned stream object when it is no longer needed.
     ///
-    treecore::InputStream* get_item_stream( const treecore::String& name );
+    treecore::InputStream* get_item_stream( const treecore::Identifier& name );
 
     ///
     /// \brief get the raw data of an item
@@ -89,11 +89,11 @@ public:
     ///
     /// \return true if success, false if there is no corresponding item name.
     ///
-    bool get_item_data( const treecore::String& name, treecore::MemoryBlock& data, bool append_zero );
+    bool get_item_data( const treecore::Identifier& name, treecore::MemoryBlock& data, bool append_zero );
 
-    treecore::var get_item_json( const treecore::String& name );
+    treecore::var get_item_json( const treecore::Identifier& name );
 
-    bool has_resource( const treecore::String& name ) const noexcept;
+    bool has_resource( const treecore::Identifier& name ) const noexcept;
 
 protected:
     PackageManager();

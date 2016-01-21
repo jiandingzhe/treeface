@@ -6,7 +6,7 @@
 #include <treecore/RefCountHolder.h>
 #include <treecore/RefCountObject.h>
 #include <treecore/Result.h>
-#include <treecore/String.h>
+#include <treecore/Identifier.h>
 
 namespace treecore {
 class var;
@@ -25,12 +25,12 @@ public:
 
     virtual ~MaterialManager();
 
-    Material* build_material(const treecore::String& name, const treecore::var& data);
+    Material* build_material(const treecore::Identifier& name, const treecore::var& data);
 
-    Material* get_material(const treecore::String& name);
+    Material* get_material(const treecore::Identifier& name);
 
-    bool material_is_cached(const treecore::String& name);
-    bool release_material_hold(const treecore::String& name);
+    bool material_is_cached(const treecore::Identifier& name);
+    bool release_material_hold(const treecore::Identifier& name);
 
 protected:
     struct Impl;

@@ -35,7 +35,7 @@ struct SceneNodeManager::Impl
     RefCountHolder<GeometryManager> geo_mgr;
     RefCountHolder<MaterialManager> mat_mgr;
 
-    HashMap<String, RefCountHolder<SceneNode> > nodes;
+    HashMap<Identifier, RefCountHolder<SceneNode> > nodes;
 };
 
 SceneNodeManager::SceneNodeManager( GeometryManager* geo_mgr, MaterialManager* mat_mgr )
@@ -58,21 +58,16 @@ SceneNode* SceneNodeManager::add_nodes( const treecore::var& data )
     return root_node;
 }
 
-SceneNode* SceneNodeManager::add_nodes( const treecore::String& name )
-{
-    var data_root = PackageManager::getInstance()->get_item_json( name );
-    if (!data_root)
-        throw ConfigParseError( "no package item named \"" + name + "\"" );
-    return add_nodes( data_root );
-}
-
-SceneNode* SceneNodeManager::get_node( const treecore::String& name )
+SceneNode* SceneNodeManager::get_node( const treecore::Identifier& name )
 {
     if ( m_impl->nodes.contains( name ) )
         return m_impl->nodes[name].get();
 
     // build node object
-    return add_nodes( name );
+    var data_root = PackageManager::getInstance()->get_item_json( name );
+    if (!data_root)
+        throw ConfigParseError( "no package item named \"" + name.toString() + "\"" );
+    return add_nodes( data_root );
 }
 
 #define KEY_VISUAL_MAT "material"
@@ -106,7 +101,7 @@ VisualObject * SceneNodeManager::create_visual_object( const var &data )
     }
 
     // get material and geometry
-    Material* mat = m_impl->mat_mgr->get_material( data_kv[KEY_VISUAL_MAT] );
+    Material* mat = m_impl->mat_mgr->get_material( data_kv[KEY_VISUAL_MAT].toString() );
     if (mat == nullptr)
         throw ConfigParseError( "no material named \"" + data_kv[KEY_VISUAL_MAT].toString() + "\"" );
 
@@ -114,7 +109,7 @@ VisualObject * SceneNodeManager::create_visual_object( const var &data )
     if (!scene_mat)
         throw ConfigParseError( "material \"" + data_kv[KEY_VISUAL_MAT].toString() + "\" is not a scene graph material" );
 
-    Geometry* geom = m_impl->geo_mgr->get_geometry( data_kv[KEY_VISUAL_GEO] );
+    Geometry* geom = m_impl->geo_mgr->get_geometry( data_kv[KEY_VISUAL_GEO].toString() );
     if (geom == nullptr)
         throw ConfigParseError( "no geometry named \"" + data_kv[KEY_VISUAL_GEO].toString() + "\"" );
 

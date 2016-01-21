@@ -8,6 +8,7 @@
 #include <treecore/Logger.h>
 #include <treecore/StringArray.h>
 #include <treecore/StringRef.h>
+#include <treecore/Identifier.h>
 
 using namespace treecore;
 
@@ -18,7 +19,7 @@ void _build_one_( HostVertexAttrib attr, GLsizei stride, Program* program )
     int attr_idx = program->get_attribute_index( attr.name );
     if (attr_idx != -1)
     {
-        DBG( "  connect with attr " + attr.name + " at " + String( attr_idx ) + ", size " + String( attr.n_elem ) + " offset " + String( uint64( attr.offset ) ) );
+        DBG( "  connect with attr " + attr.name.toString() + " at " + String( attr_idx ) + ", size " + String( attr.n_elem ) + " offset " + String( uint64( attr.offset ) ) );
         glEnableVertexAttribArray( attr_idx );
         glVertexAttribPointer( attr_idx,
                                attr.n_elem,
@@ -29,7 +30,7 @@ void _build_one_( HostVertexAttrib attr, GLsizei stride, Program* program )
     }
     else
     {
-        treecore::Logger::writeToLog( "ignore attibute \"" + attr.name + "\" which do not exist in program" );
+        treecore::Logger::writeToLog( "ignore attibute \"" + attr.name.toString() + "\" which do not exist in program" );
     }
 }
 

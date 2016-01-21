@@ -28,7 +28,7 @@ struct PackageEntryPoint
 struct PackageManager::Impl
 {
     treecore::HashSet<RefCountHolder<ZipFile> > m_packages;
-    treecore::HashMap<treecore::String, PackageEntryPoint> m_name_pkg_map;
+    treecore::HashMap<treecore::Identifier, PackageEntryPoint> m_name_pkg_map;
 };
 
 void PackageManager::add_package( treecore::ZipFile* pkg, PackageItemConflictPolicy pol )
@@ -88,7 +88,7 @@ void PackageManager::add_package( const treecore::File& zip_file, PackageItemCon
     add_package( pkg, pol );
 }
 
-treecore::InputStream* PackageManager::get_item_stream( const treecore::String& name )
+treecore::InputStream* PackageManager::get_item_stream( const treecore::Identifier& name )
 {
     if ( m_impl->m_name_pkg_map.contains( name ) )
     {
@@ -101,7 +101,7 @@ treecore::InputStream* PackageManager::get_item_stream( const treecore::String& 
     }
 }
 
-bool PackageManager::get_item_data( const treecore::String& name, treecore::MemoryBlock& data, bool append_zero )
+bool PackageManager::get_item_data( const treecore::Identifier& name, treecore::MemoryBlock& data, bool append_zero )
 {
     InputStream* stream = get_item_stream( name );
     if (!stream)
@@ -113,10 +113,10 @@ bool PackageManager::get_item_data( const treecore::String& name, treecore::Memo
     else
         data.ensureSize( size, false );
 
-    int size_got = stream->read( data.getData(), int32(size) );
+    int size_got = stream->read( data.getData(), int32( size ) );
     if (size_got != size)
         die( "PackageManager item %s size %lu bytes, but only got %d bytes",
-             name.toRawUTF8(), size, size_got );
+             name.getPtr(), size, size_got );
 
     // assign a zero on tail of data, so that it can be directly used as C string
     if (append_zero)
@@ -126,7 +126,7 @@ bool PackageManager::get_item_data( const treecore::String& name, treecore::Memo
     return true;
 }
 
-treecore::var PackageManager::get_item_json( const treecore::String& name )
+treecore::var PackageManager::get_item_json( const treecore::Identifier& name )
 {
     // load JSON string data
     treecore::MemoryBlock json_src;
@@ -148,7 +148,7 @@ treecore::var PackageManager::get_item_json( const treecore::String& name )
     return root_node;
 }
 
-bool PackageManager::has_resource( const treecore::String& name ) const noexcept
+bool PackageManager::has_resource( const treecore::Identifier& name ) const noexcept
 {
     return m_impl->m_name_pkg_map.contains( name );
 }

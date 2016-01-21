@@ -3,7 +3,6 @@
 #include "treeface/packagemanager.h"
 #include "treeface/misc/stringcast.h"
 
-
 #include <FreeImage.h>
 #include <treecore/HashMap.h>
 #include <treecore/RefCountHolder.h>
@@ -15,12 +14,11 @@ namespace treeface {
 
 struct ImageManager::Impl
 {
-    HashMap<String, RefCountHolder<Image> > items;
+    HashMap<Identifier, RefCountHolder<Image> > items;
 };
 
-ImageManager::ImageManager(): m_impl(new Impl())
-{
-}
+ImageManager::ImageManager(): m_impl( new Impl() )
+{}
 
 ImageManager::~ImageManager()
 {
@@ -28,33 +26,33 @@ ImageManager::~ImageManager()
         delete m_impl;
 }
 
-Image* ImageManager::get_image(const String& name)
+Image* ImageManager::get_image( const Identifier& name )
 {
-    if (m_impl->items.contains(name))
+    if ( m_impl->items.contains( name ) )
     {
         return m_impl->items[name];
     }
 
     MemoryBlock data;
-    if (!PackageManager::getInstance()->get_item_data(name, data, false))
+    if ( !PackageManager::getInstance()->get_item_data( name, data, false ) )
         return nullptr;
 
-    Image* img = new Image(data);
-    m_impl->items.set(name, img);
+    Image* img = new Image( data );
+    m_impl->items.set( name, img );
 
     return img;
 }
 
-bool ImageManager::image_is_cached(const String& name) const
+bool ImageManager::image_is_cached( const Identifier& name ) const
 {
-    return m_impl->items.contains(name);
+    return m_impl->items.contains( name );
 }
 
-bool ImageManager::release_image_hold(const String& name)
+bool ImageManager::release_image_hold( const Identifier& name )
 {
-    if (m_impl->items.contains(name))
+    if ( m_impl->items.contains( name ) )
     {
-        m_impl->items.remove(name);
+        m_impl->items.remove( name );
         return true;
     }
     else
