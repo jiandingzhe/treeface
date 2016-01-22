@@ -42,7 +42,7 @@ struct Vec2
         return Vec2( -x, -y );
     }
 
-    operator bool () const noexcept
+    bool is_zero() const noexcept
     {
         return x != T( 0 ) || y != T( 0 );
     }

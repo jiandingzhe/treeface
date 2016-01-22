@@ -1,5 +1,5 @@
 #include "treeface/scene/scene.h"
-#include "treeface/guts/scene_guts.h"
+#include "treeface/scene/guts/scene_guts.h"
 
 #include "treeface/scene/geometry.h"
 #include "treeface/scene/geometrymanager.h"

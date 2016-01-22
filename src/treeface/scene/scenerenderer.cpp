@@ -9,7 +9,7 @@
 #include "treeface/scene/visualobject.h"
 
 #include "treeface/guts/material_guts.h"
-#include "treeface/guts/scene_guts.h"
+#include "treeface/scene/guts/scene_guts.h"
 
 #include <treecore/HashSet.h>
 #include <treecore/HashMap.h>

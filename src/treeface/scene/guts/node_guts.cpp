@@ -1,4 +1,4 @@
-#include "treeface/guts/node_guts.h"
+#include "treeface/scene/guts/node_guts.h"
 
 namespace treeface {
 

@@ -20,6 +20,7 @@
 namespace treeface {
 
 class Material;
+class UniversalValue;
 struct VertexArray;
 
 struct UniformInfo: public VertexAttrib
@@ -94,9 +95,13 @@ public:
     void set_uniform( GLint uni_loc, GLint value ) const noexcept;
     void set_uniform( GLint uni_loc, GLuint value ) const noexcept;
     void set_uniform( GLint uni_loc, GLfloat value ) const noexcept;
-    void set_uniform( GLint uni_loc, const Sampler& sampler ) const noexcept;
+    void set_uniform( GLint uni_loc, const Vec2f& value ) const noexcept;
+    void set_uniform( GLint uni_loc, const Vec3f& value ) const noexcept;
     void set_uniform( GLint uni_loc, const Vec4f& value ) const noexcept;
+    void set_uniform( GLint uni_loc, const Mat2f& value ) const noexcept;
+    void set_uniform( GLint uni_loc, const Mat3f& value ) const noexcept;
     void set_uniform( GLint uni_loc, const Mat4f& value ) const noexcept;
+    void set_uniform( GLint uni_loc, const UniversalValue& value ) const noexcept;
 
     ///
     /// \brief get vertex attribute index by name

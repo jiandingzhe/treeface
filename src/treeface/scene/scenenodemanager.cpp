@@ -11,7 +11,7 @@
 #include "treeface/misc/error.h"
 #include "treeface/misc/propertyvalidator.h"
 
-#include "treeface/guts/node_guts.h"
+#include "treeface/scene/guts/node_guts.h"
 
 #include "treeface/materialmanager.h"
 #include "treeface/packagemanager.h"

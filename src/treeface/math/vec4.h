@@ -24,8 +24,8 @@ template<typename T>
 struct Vec4
 {
     typedef typename treecore::similar_float<T>::type FloatType;
-    typedef typename treecore::similar_int<T>::type IntType;
-    typedef treecore::SimdObject<T, 4> DataType;
+    typedef typename treecore::similar_int<T>::type   IntType;
+    typedef treecore::SimdObject<T, 4>                DataType;
 
     TREECORE_ALIGNED_ALLOCATOR( Vec4 );
 
@@ -69,13 +69,13 @@ struct Vec4
         data.set_all( values );
     }
 
-    Vec4 operator - () const noexcept
+    Vec4 operator -() const noexcept
     {
         DataType result = data ^ treecore::SimdObject<IntType, 4>( treecore::float_sign_mask<T>::value );
         return Vec4( result );
     }
 
-    operator bool () const noexcept
+    bool is_zero() const noexcept
     {
         return data.template get<0>() != T( 0 ) ||
                data.template get<1>() != T( 0 ) ||
@@ -88,7 +88,7 @@ struct Vec4
     /// \param other: another vector object
     /// \return self
     ///
-    Vec4& operator = ( const Vec4& other )
+    Vec4& operator =( const Vec4& other )
     {
         data = other.data;
         return *this;
@@ -202,7 +202,7 @@ struct Vec4
      * @param other: the addend to be added to self
      * @return self
      */
-    Vec4& operator += ( const Vec4& other )
+    Vec4& operator +=( const Vec4& other )
     {
         data += other.data;
         return *this;
@@ -213,7 +213,7 @@ struct Vec4
      * @param other: the subtrahend
      * @return self
      */
-    Vec4& operator -= ( const Vec4& other )
+    Vec4& operator -=( const Vec4& other )
     {
         data -= other.data;
         return *this;
@@ -224,7 +224,7 @@ struct Vec4
      * @param value: the scale
      * @return self
      */
-    Vec4& operator *= ( T value )
+    Vec4& operator *=( T value )
     {
         data *= DataType( value );
         return *this;
@@ -235,7 +235,7 @@ struct Vec4
      * @param value: the scale
      * @return self
      */
-    Vec4& operator /= ( T value )
+    Vec4& operator /=( T value )
     {
         data /= DataType( value );
         return *this;
@@ -287,7 +287,7 @@ struct Vec4
  * @return a new Vec4 object containing result
  */
 template<typename T>
-Vec4<T> operator + ( const Vec4<T>& a, const Vec4<T>& b )
+Vec4<T> operator +( const Vec4<T>& a, const Vec4<T>& b )
 {
     Vec4<T> result;
     result.data = a.data + b.data;
@@ -302,7 +302,7 @@ Vec4<T> operator + ( const Vec4<T>& a, const Vec4<T>& b )
  * @return a new Vec4 object containing result
  */
 template<typename T>
-Vec4<T> operator - ( const Vec4<T>& a, const Vec4<T>& b )
+Vec4<T> operator -( const Vec4<T>& a, const Vec4<T>& b )
 {
     Vec4<T> result;
     result.data = a.data - b.data;
@@ -317,7 +317,7 @@ Vec4<T> operator - ( const Vec4<T>& a, const Vec4<T>& b )
  * @return a new Vec4 object containing scaled values
  */
 template<typename T>
-Vec4<T> operator * ( const Vec4<T>& a, T b )
+Vec4<T> operator *( const Vec4<T>& a, T b )
 {
     Vec4<T> result;
     result.data = a.data * typename Vec4<T>::DataType( b );
@@ -325,7 +325,7 @@ Vec4<T> operator * ( const Vec4<T>& a, T b )
 }
 
 template<typename T>
-Vec4<T> operator * ( T a, const Vec4<T>& b )
+Vec4<T> operator *( T a, const Vec4<T>& b )
 {
     Vec4<T> result;
     result.data = b.data * typename Vec4<T>::DataType( a );
@@ -340,7 +340,7 @@ Vec4<T> operator * ( T a, const Vec4<T>& b )
  * @return a new Vec4 object containing shrinked values
  */
 template<typename T>
-Vec4<T> operator / ( const Vec4<T>& a, T b )
+Vec4<T> operator /( const Vec4<T>& a, T b )
 {
     Vec4<T> result;
     result.data = a.data / typename Vec4<T>::DataType( b );
@@ -355,7 +355,7 @@ Vec4<T> operator / ( const Vec4<T>& a, T b )
  * @return a scalar value containing dot product
  */
 template<typename T>
-T operator * ( const Vec4<T>& a, const Vec4<T>& b )
+T operator *( const Vec4<T>& a, const Vec4<T>& b )
 {
     return (a.data * b.data).sum();
 }
@@ -367,7 +367,7 @@ T operator * ( const Vec4<T>& a, const Vec4<T>& b )
  * @return a new Vec4 containing right-hand cross product
  */
 template<typename T, int SZ = sizeof(T)*4>
-Vec4<T> operator % ( const Vec4<T>& a, const Vec4<T>& b )
+Vec4<T> operator %( const Vec4<T>& a, const Vec4<T>& b )
 {
     // Res.ele[0] = A.ele[1] * B.ele[2] - A.ele[2] * B.ele[1];
     // Res.ele[1] = A.ele[2] * B.ele[0] - A.ele[0] * B.ele[2];
@@ -393,7 +393,7 @@ Vec4<T> operator % ( const Vec4<T>& a, const Vec4<T>& b )
  * @brief test if two Vec4 objects are identical
  */
 template<typename T, int SZ = sizeof(T)*4>
-bool operator == ( const Vec4<T>& a, const Vec4<T>& b )
+bool operator ==( const Vec4<T>& a, const Vec4<T>& b )
 {
     return a.data == b.data;
 }
@@ -402,12 +402,12 @@ bool operator == ( const Vec4<T>& a, const Vec4<T>& b )
  * @brief test if two Vec4 objects are not identical
  */
 template<typename T, int SZ = sizeof(T)*4>
-bool operator != ( const Vec4<T>& a, const Vec4<T>& b )
+bool operator !=( const Vec4<T>& a, const Vec4<T>& b )
 {
     return a.data != b.data;
 }
 
-typedef Vec4<float> Vec4f;
+typedef Vec4<float>           Vec4f;
 typedef Vec4<treecore::int32> Vec4i;
 
 } // namespace treeface

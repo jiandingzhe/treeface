@@ -4,6 +4,7 @@
 #include "treeface/gl/vertexattrib.h"
 
 #include "treeface/misc/stringcast.h"
+#include "treeface/misc/universalvalue.h"
 
 #include <treecore/Logger.h>
 #include <treecore/StringRef.h>
@@ -278,7 +279,7 @@ void Program::set_uniform( GLint uni_loc, GLfloat value ) const noexcept
     glUniform1f( uni_loc, value );
 }
 
-void Program::set_uniform( GLint uni_loc, const Sampler& sampler ) const noexcept
+void Program::set_uniform( GLint uni_loc, const Vec2f& value ) const noexcept
 {
     jassert( is_bound() );
     if (uni_loc == -1) return;
@@ -287,15 +288,23 @@ void Program::set_uniform( GLint uni_loc, const Sampler& sampler ) const noexcep
     jassert( i_uni >= 0 );
     const UniformInfo& uni_info = m_impl->uni_store[i_uni];
     jassert( uni_info.n_elem == 1 );
-    jassert( uni_info.type == GL_SAMPLER_2D ||
-             uni_info.type == GL_SAMPLER_3D ||
-             uni_info.type == GL_SAMPLER_CUBE ||
-             uni_info.type == GL_SAMPLER_2D_SHADOW ||
-             uni_info.type == GL_SAMPLER_2D_ARRAY ||
-             uni_info.type == GL_SAMPLER_2D_ARRAY_SHADOW ||
-             uni_info.type == GL_SAMPLER_CUBE_SHADOW );
+    jassert( uni_info.type == TFGL_TYPE_VEC2F );
 #endif
-    glUniform1i( uni_loc, sampler.m_sampler );
+    glUniform2fv( uni_loc, 1, (const float*) &value );
+}
+
+void Program::set_uniform( GLint uni_loc, const Vec3f& value ) const noexcept
+{
+    jassert( is_bound() );
+    if (uni_loc == -1) return;
+#ifdef JUCE_DEBUG
+    int i_uni = get_uniform_index( uni_loc );
+    jassert( i_uni >= 0 );
+    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
+    jassert( uni_info.n_elem == 1 );
+    jassert( uni_info.type == TFGL_TYPE_VEC3F );
+#endif
+    glUniform3fv( uni_loc, 1, (const float*) &value );
 }
 
 void Program::set_uniform( GLint uni_loc, const Vec4f& value ) const noexcept
@@ -307,9 +316,37 @@ void Program::set_uniform( GLint uni_loc, const Vec4f& value ) const noexcept
     jassert( i_uni >= 0 );
     const UniformInfo& uni_info = m_impl->uni_store[i_uni];
     jassert( uni_info.n_elem == 1 );
-    jassert( uni_info.type == GL_FLOAT_VEC4 );
+    jassert( uni_info.type == TFGL_TYPE_VEC4F );
 #endif
     glUniform4fv( uni_loc, 1, (const float*) &value );
+}
+
+void Program::set_uniform( GLint uni_loc, const Mat2f& value ) const noexcept
+{
+    jassert( is_bound() );
+    if (uni_loc == -1) return;
+#ifdef JUCE_DEBUG
+    int i_uni = get_uniform_index( uni_loc );
+    jassert( i_uni >= 0 );
+    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
+    jassert( uni_info.n_elem == 1 );
+    jassert( uni_info.type == TFGL_TYPE_MAT2F );
+#endif
+    glUniformMatrix2fv( uni_loc, 1, false, (const float*) &value );
+}
+
+void Program::set_uniform( GLint uni_loc, const Mat3f& value ) const noexcept
+{
+    jassert( is_bound() );
+    if (uni_loc == -1) return;
+#ifdef JUCE_DEBUG
+    int i_uni = get_uniform_index( uni_loc );
+    jassert( i_uni >= 0 );
+    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
+    jassert( uni_info.n_elem == 1 );
+    jassert( uni_info.type == TFGL_TYPE_MAT3F );
+#endif
+    glUniformMatrix3fv( uni_loc, 1, false, (const float*) &value );
 }
 
 void Program::set_uniform( GLint uni_loc, const Mat4f& value ) const noexcept
@@ -321,9 +358,39 @@ void Program::set_uniform( GLint uni_loc, const Mat4f& value ) const noexcept
     jassert( i_uni >= 0 );
     const UniformInfo& uni_info = m_impl->uni_store[i_uni];
     jassert( uni_info.n_elem == 1 );
-    jassert( uni_info.type == GL_FLOAT_MAT4 );
+    jassert( uni_info.type == TFGL_TYPE_MAT4F );
 #endif
     glUniformMatrix4fv( uni_loc, 1, false, (const float*) &value );
+}
+
+void Program::set_uniform( GLint uni_loc, const UniversalValue& value ) const noexcept
+{
+    if (uni_loc == -1) return;
+
+    switch (value.type)
+    {
+    case TFGL_TYPE_BYTE:          set_uniform( uni_loc, GLbyte( value ) );  break;
+    case TFGL_TYPE_BOOL:
+    case TFGL_TYPE_UNSIGNED_BYTE: set_uniform( uni_loc, GLubyte( value ) ); break;
+    case TFGL_TYPE_SAMPLER_2D:
+    case TFGL_TYPE_SAMPLER_2D_ARRAY:
+    case TFGL_TYPE_SAMPLER_2D_SHADOW:
+    case TFGL_TYPE_SAMPLER_2D_ARRAY_SHADOW:
+    case TFGL_TYPE_SAMPLER_CUBE:
+    case TFGL_TYPE_SAMPLER_CUBE_SHADOW:
+    case TFGL_TYPE_SAMPLER_3D:
+    case TFGL_TYPE_INT:           set_uniform( uni_loc, GLint( value ) );   break;
+    case TFGL_TYPE_UNSIGNED_INT:  set_uniform( uni_loc, GLuint( value ) );  break;
+    case TFGL_TYPE_FLOAT:         set_uniform( uni_loc, GLfloat( value ) ); break;
+    case TFGL_TYPE_VEC2F:         set_uniform( uni_loc, Vec2f( value ) );   break;
+    case TFGL_TYPE_VEC3F:         set_uniform( uni_loc, Vec3f( value ) );   break;
+    case TFGL_TYPE_VEC4F:         set_uniform( uni_loc, Vec4f( value ) );   break;
+    case TFGL_TYPE_MAT2F:         set_uniform( uni_loc, Mat2f( value ) );   break;
+    case TFGL_TYPE_MAT3F:         set_uniform( uni_loc, Mat3f( value ) );   break;
+    case TFGL_TYPE_MAT4F:         set_uniform( uni_loc, Mat4f( value ) );   break;
+    default:
+        throw std::logic_error( "UniversalValue type is not supported to be set as uniform value" );
+    }
 }
 
 int Program::get_attribute_index( const treecore::Identifier& name ) const noexcept

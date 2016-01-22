@@ -61,7 +61,7 @@ Texture* Material::get_texture( treecore::StringRef name ) noexcept
 
 void Material::bind() noexcept
 {
-    // use materials
+    // use textures
     for (int i_layer = 0; i_layer < m_impl->layers.size(); i_layer++)
     {
         TextureLayer& curr_layer = m_impl->layers[i_layer];
