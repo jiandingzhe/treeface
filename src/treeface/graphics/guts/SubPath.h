@@ -4,6 +4,7 @@
 #include "treeface/gl/type.h"
 #include "treeface/graphics/guts/PathGlyph.h"
 #include "treeface/graphics/utils.h"
+#include "treeface/math/bbox2.h"
 #include "treeface/scene/geometry.h"
 
 namespace treeface
@@ -33,10 +34,14 @@ struct SubPath
 
     // generates line strip directly, do not support join and cap shape at all
     void stroke_simple( Geometry::HostVertexCache&  result_vertices,
+                        Vec2f& result_skeleton_min,
+                        Vec2f& result_skeleton_max,
                         treecore::Array<IndexType>& result_indices ) const;
 
     void stroke_complex( Geometry::HostVertexCache&  result_vertices,
                          treecore::Array<IndexType>& result_indices,
+                         Vec2f& result_skeleton_min,
+                         Vec2f& result_skeleton_max,
                          const StrokeStyle& style ) const;
 };
 

@@ -16,6 +16,14 @@ namespace treeface
 
 typedef treecore::int16 JointID;
 
+inline void update_bound( const Vec2f& p, Vec2f& result_min, Vec2f& result_max )
+{
+    if (p.x < result_min.x) result_min.x = p.x;
+    if (p.y < result_min.y) result_min.y = p.y;
+    if (p.x > result_max.x) result_max.x = p.x;
+    if (p.y > result_max.y) result_max.y = p.y;
+}
+
 struct InternalStrokeStyle
 {
     LineCap  cap;

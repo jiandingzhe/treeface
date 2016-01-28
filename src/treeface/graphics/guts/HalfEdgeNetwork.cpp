@@ -1,6 +1,7 @@
 #include "treeface/graphics/guts/HalfEdgeNetwork.h"
 #include "treeface/graphics/guts/geomsucker.h"
 #include "treeface/graphics/utils.h"
+#include "treeface/graphics/guts/utils.h"
 
 using namespace treecore;
 
@@ -19,8 +20,8 @@ struct HalfEdgeIndexVerticalSorter
 
     int compareElements( IndexType a, IndexType b ) const noexcept
     {
-        const Vec2f& p1 = vertices.get<Vec2f>(edges[a].idx_vertex);
-        const Vec2f& p2 = vertices.get<Vec2f>(edges[b].idx_vertex);
+        const Vec2f& p1 = vertices.get<Vec2f>( edges[a].idx_vertex );
+        const Vec2f& p2 = vertices.get<Vec2f>( edges[b].idx_vertex );
 
         if (p1.y < p2.y)
         {
@@ -519,7 +520,9 @@ void HalfEdgeNetwork::triangulate_monotone_polygons( const Array<IndexType>&  ed
                                                      const Array<int16>&      edge_polygon_map,
                                                      int16 num_polygon,
                                                      const Array<VertexRole>& edge_roles,
-                                                     Array<IndexType>&        result_indices ) const
+                                                     Array<IndexType>&        result_indices,
+                                                     Vec2f& result_skeleton_min,
+                                                     Vec2f& result_skeleton_max ) const
 {
     SUCK_GEOM_BLK( GeomSucker sucker( *this, "input for triangulation" ); );
 
@@ -543,7 +546,10 @@ void HalfEdgeNetwork::triangulate_monotone_polygons( const Array<IndexType>&  ed
             const HalfEdge&  edge = edges[i_edge];
             const Vec2f&     vtx  = edge.get_vertex( vertices );
 
-            DBGCODE( if (count == 0) jassert( role == VTX_ROLE_START ); )
+            DBGCODE( if (count == 0) jassert( role == VTX_ROLE_START ); );
+
+            // update bound
+            update_bound( vtx, result_skeleton_min, result_skeleton_max );
 
             if (count < 2)
             {

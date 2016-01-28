@@ -1,6 +1,7 @@
 #ifndef TREEFACE_SHAPE_GENERATOR_H
 #define TREEFACE_SHAPE_GENERATOR_H
 
+#include <treecore/Identifier.h>
 #include <treecore/RefCountObject.h>
 #include <treecore/RefCountSingleton.h>
 
@@ -24,6 +25,10 @@ class ShapeGenerator: public treecore::RefCountObject, public treecore::RefCount
 public:
     TREECORE_DECLARE_NON_COPYABLE( ShapeGenerator );
     TREECORE_DECLARE_NON_MOVABLE( ShapeGenerator );
+
+    static const treecore::Identifier UNIFORM_LINE_WIDTH;
+    static const treecore::Identifier UNIFORM_SKELETON_MIN;
+    static const treecore::Identifier UNIFORM_SKELETON_MAX;
 
     void clear();
 

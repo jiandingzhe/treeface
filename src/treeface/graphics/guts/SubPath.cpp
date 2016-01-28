@@ -9,6 +9,8 @@ namespace treeface
 
 void SubPath::stroke_complex( Geometry::HostVertexCache&  result_vertices,
                               treecore::Array<IndexType>& result_indices,
+                              Vec2f& result_skeleton_min,
+                              Vec2f& result_skeleton_max,
                               const StrokeStyle& style ) const
 {
     jassert( glyphs[0].type == GLYPH_TYPE_LINE );
@@ -43,12 +45,15 @@ void SubPath::stroke_complex( Geometry::HostVertexCache&  result_vertices,
                 stroker.close_stroke_begin( glyph_prev.end, v_begin );
             else
                 stroker.cap_begin( glyph_prev.end, v_begin );
+
+            // update skeleton bound
+            update_bound( glyph_prev.end, result_skeleton_min, result_skeleton_max );
         }
 
         // render line segments of this glyph
         for (int i = 0; i < curr_glyph_skeleton.size(); i++)
         {
-            bool use_line_join;
+            bool  use_line_join;
             Vec2f p1;
             Vec2f p2;
 
@@ -66,7 +71,10 @@ void SubPath::stroke_complex( Geometry::HostVertexCache&  result_vertices,
             }
 
             if (p1 != p2)
-                v_prev = stroker.extend_stroke(v_prev, p1, p2, use_line_join);
+            {
+                v_prev = stroker.extend_stroke( v_prev, p1, p2, use_line_join );
+                update_bound( p2, result_skeleton_min, result_skeleton_max );
+            }
         }
     }
 

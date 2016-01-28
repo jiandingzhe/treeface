@@ -45,7 +45,9 @@ struct HalfEdgeNetwork
                                         const treecore::Array<treecore::int16>& edge_polygon_map,
                                         treecore::int16 num_polygon,
                                         const treecore::Array<VertexRole>&      edge_roles,
-                                        treecore::Array<IndexType>&             result_indices ) const;
+                                        treecore::Array<IndexType>&             result_indices,
+                                        Vec2f& result_skeleton_min,
+                                        Vec2f& result_skeleton_max ) const;
 
     const Geometry::HostVertexCache& vertices;
     treecore::Array<HalfEdge>        edges;

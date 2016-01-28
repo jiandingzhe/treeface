@@ -13,6 +13,10 @@ using namespace treecore;
 namespace treeface
 {
 
+const treecore::String UNI_NAME_LINE_WIDTH( "line_width" );
+const treecore::String UNI_NAME_SKLT_MIN( "skeleton_min" );
+const treecore::String UNI_NAME_SKLT_MAX( "skeleton_max" );
+
 struct EdgeRebuildTmp
 {
     EdgeRebuildTmp( IndexType idx_begin, IndexType idx_end, const Array<Vec2f>& vertices )
@@ -66,7 +70,10 @@ struct IntermVtxSorter
 /// \param vertices  vertex list that all index values should be valid in it
 /// \param indices   result triangle indices will be filled to here
 ///
-void _triangulate_( const HalfEdgeNetwork& network, Array<IndexType>& result_indices )
+void _triangulate_( const HalfEdgeNetwork& network,
+                    Array<IndexType>& result_indices,
+                    Vec2f& result_skeleton_min,
+                    Vec2f& result_skeleton_max )
 {
     HalfEdgeNetwork network_monotone( network.vertices );
     network.partition_polygon_monotone( network_monotone );
@@ -98,10 +105,19 @@ void _triangulate_( const HalfEdgeNetwork& network, Array<IndexType>& result_ind
         }
     );
 
-    network_monotone.triangulate_monotone_polygons( edge_monotone_by_y, edge_polygon_map, num_polygon, monotone_edge_roles, result_indices );
+    network_monotone.triangulate_monotone_polygons( edge_monotone_by_y,
+                                                    edge_polygon_map,
+                                                    num_polygon,
+                                                    monotone_edge_roles,
+                                                    result_indices,
+                                                    result_skeleton_min,
+                                                    result_skeleton_max );
 }
 
-void ShapeGenerator::Guts::triangulate( Geometry::HostVertexCache& result_vertices, treecore::Array<IndexType>& result_indices )
+void ShapeGenerator::Guts::triangulate( Geometry::HostVertexCache& result_vertices,
+                                        treecore::Array<IndexType>& result_indices,
+                                        Vec2f& result_skeleton_min,
+                                        Vec2f& result_skeleton_max )
 {
     jassert( result_vertices.block_size() == sizeof(Vec2f) );
 
@@ -164,7 +180,7 @@ void ShapeGenerator::Guts::triangulate( Geometry::HostVertexCache& result_vertic
     network.build_half_edges( subpath_begin_indices, clw_accum_global < 0.0 );
 
     // do triangulation
-    _triangulate_( network, result_indices );
+    _triangulate_( network, result_indices, result_skeleton_min, result_skeleton_max );
 }
 
 } // namespace treeface

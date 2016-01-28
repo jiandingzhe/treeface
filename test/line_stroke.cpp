@@ -150,7 +150,9 @@ int main( int argc, const char* argv[] )
     // do line stroke
     Geometry::HostVertexCache vertices( sizeof(StrokeVertex) );
     Array<IndexType> indices;
-    path.stroke_complex( vertices, indices, StrokeStyle{ line_cap, line_join, miter_cutoff * treeface::PI / 180, line_width } );
+    Vec2f skeleton_min( std::numeric_limits<float>::max(), std::numeric_limits<float>::max() );
+    Vec2f skeleton_max( std::numeric_limits<float>::min(), std::numeric_limits<float>::min() );
+    path.stroke_complex( vertices, indices, skeleton_min, skeleton_max, StrokeStyle{ line_cap, line_join, miter_cutoff * treeface::PI / 180, line_width } );
 
     // write result
     file_out.deleteFile();

@@ -1,5 +1,6 @@
 #include "treeface/graphics/guts/shapegenerator_guts.h"
 #include "treeface/scene/geometry.h"
+#include "treeface/math/vec2.h"
 
 class TestFramework
 {
@@ -29,7 +30,9 @@ public:
 
         treeface::Geometry::HostVertexCache  result_vertices( sizeof(treeface::Vec2f) );
         treecore::Array<treeface::IndexType> result_indices;
-        generator.m_guts->triangulate( result_vertices, result_indices );
+        treeface::Vec2f skeleton_min( std::numeric_limits<float>::max(), std::numeric_limits<float>::max() );
+        treeface::Vec2f skeleton_max( std::numeric_limits<float>::min(), std::numeric_limits<float>::min() );
+        generator.m_guts->triangulate( result_vertices, result_indices, skeleton_min, skeleton_max );
 
         FILE* fh_out = fopen( file_out, "wb" );
         if (!fh_out)
