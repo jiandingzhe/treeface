@@ -3,8 +3,9 @@
 
 #include "treeface/scene/scenenode.h"
 #include "treeface/scene/sceneitem.h"
+#include "treeface/scene/guts/utils.h"
+
 #include "treeface/math/mat4.h"
-#include "treeface/misc/universalvalue.h"
 
 #include <treecore/AlignedMalloc.h>
 #include <treecore/HashMap.h>
@@ -12,7 +13,6 @@
 #include <treecore/SortedSet.h>
 namespace treeface {
 
-typedef treecore::HashMap<treecore::Identifier, UniversalValue> UniformMap;
 
 TREECORE_ALN_BEGIN( 16 )
 struct SceneNode::Impl
@@ -26,13 +26,22 @@ struct SceneNode::Impl
 
     bool trans_dirty  = true;
     bool global_dirty = true;
+    bool uniform_cache_dirty = true;
+
     treecore::SortedSet<treecore::RefCountHolder<SceneNode> > child_nodes;
     SceneNode* parent = nullptr;
+
+    UniformMap self_uniforms;
+    UniformMap cached_descendent_uniforms;
 
     treecore::SortedSet<treecore::RefCountHolder<SceneItem> > items;
 
     void update_trans_descendent();
     void update_global_descendent();
+
+    void update_uniform_cache();
+    void recur_update_uniform_cache_from_parent();
+    void recur_invalidate_uniform_cache_to_child();
 } TREECORE_ALN_END( 16 );
 
 } // namespace treeface

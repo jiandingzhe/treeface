@@ -12,6 +12,7 @@
 #include "treeface/misc/steakingarray.h"
 
 namespace treecore {
+class Identifier;
 class MemoryBlock;
 class Result;
 class var;
@@ -20,6 +21,7 @@ class var;
 namespace treeface {
 
 class GLBuffer;
+class UniversalValue;
 class VertexIndexBuffer;
 class VertexTemplate;
 
@@ -73,6 +75,10 @@ public:
 
     GLBuffer* get_vertex_buffer() noexcept;
     GLBuffer* get_index_buffer() noexcept;
+
+    bool get_uniform_value( const treecore::Identifier& name, UniversalValue& result ) const noexcept;
+    void set_uniform_value( const treecore::Identifier& name, const UniversalValue& value );
+    bool has_uniform( const treecore::Identifier& name ) const noexcept;
 
     void host_draw_begin();
 

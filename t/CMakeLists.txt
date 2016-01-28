@@ -208,3 +208,10 @@ target_link_libraries(t_widget_hierarchy
     TestFramework
 )
 target_use_treecore(t_widget_hierarchy)
+
+add_executable(t_node_uniform_hier t_node_uniform_hier.cpp)
+target_link_libraries(t_node_uniform_hier
+    treeface
+    TestFramework
+)
+target_use_treecore(t_node_uniform_hier)

@@ -367,7 +367,7 @@ void Program::set_uniform( GLint uni_loc, const UniversalValue& value ) const no
 {
     if (uni_loc == -1) return;
 
-    switch (value.type)
+    switch ( value.get_type() )
     {
     case TFGL_TYPE_BYTE:          set_uniform( uni_loc, GLbyte( value ) );  break;
     case TFGL_TYPE_BOOL:

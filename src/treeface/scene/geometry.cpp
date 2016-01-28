@@ -10,6 +10,8 @@
 #include "treeface/misc/propertyvalidator.h"
 #include "treeface/misc/stringcast.h"
 
+#include "treeface/scene/guts/utils.h"
+
 #include <treecore/Array.h>
 #include <treecore/ArrayRef.h>
 #include <treecore/CriticalSection.h>
@@ -43,6 +45,8 @@ struct Geometry::Impl
 
     RefCountHolder<GLBuffer> buf_vtx;
     RefCountHolder<GLBuffer> buf_idx;
+
+    UniformMap uniforms;
 
     HostVertexCache  host_data_vtx;
     Array<IndexType> host_data_idx;
@@ -139,7 +143,7 @@ Geometry::Geometry( const treecore::var& geom_root_node )
     {
         size_t vtx_size   = m_impl->vtx_temp.vertex_size();
         int    n_vtx_elem = m_impl->vtx_temp.n_elems();
-//        DBG( "geometry vertex size: " + String( vtx_size ) + ", elems: " + String( n_vtx_elem ) );
+        //        DBG( "geometry vertex size: " + String( vtx_size ) + ", elems: " + String( n_vtx_elem ) );
 
         m_impl->host_data_vtx.resize( vtx_nodes->size() );
         int8* vtx_data = (int8*) m_impl->host_data_vtx.get_raw_data_ptr();
@@ -147,7 +151,7 @@ Geometry::Geometry( const treecore::var& geom_root_node )
         for (int i_vtx = 0; i_vtx < vtx_nodes->size(); i_vtx++)
         {
             // get and validate vertex node
-//            DBG( "vertex " + String( i_vtx ) );
+            //            DBG( "vertex " + String( i_vtx ) );
             const var& vtx_node = (*vtx_nodes)[i_vtx];
 
             if ( !vtx_node.isArray() )
@@ -161,7 +165,7 @@ Geometry::Geometry( const treecore::var& geom_root_node )
             // fill data
             for (int i_elem = 0; i_elem < n_vtx_elem; i_elem++)
             {
-//                DBG( "  vertex element " +  String( i_elem ) + ": " + (*vtx_elems)[i_elem].toString() );
+                //                DBG( "  vertex element " +  String( i_elem ) + ": " + (*vtx_elems)[i_elem].toString() );
                 m_impl->vtx_temp.set_value_at( vtx_data, i_elem, (*vtx_elems)[i_elem] );
             }
 
@@ -208,6 +212,30 @@ GLBuffer* Geometry::get_vertex_buffer() noexcept
 GLBuffer* Geometry::get_index_buffer() noexcept
 {
     return m_impl->buf_idx;
+}
+
+bool Geometry::get_uniform_value( const treecore::Identifier& name, UniversalValue& result ) const noexcept
+{
+    UniformMap::ConstIterator i( m_impl->uniforms );
+    if ( m_impl->uniforms.select( name, i ) )
+    {
+        result = i.value();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void Geometry::set_uniform_value( const treecore::Identifier& name, const UniversalValue& value )
+{
+    m_impl->uniforms.set( name, value );
+}
+
+bool Geometry::has_uniform( const treecore::Identifier& name ) const noexcept
+{
+    return m_impl->uniforms.contains( name );
 }
 
 void Geometry::host_draw_begin()

@@ -2,6 +2,7 @@
 
 #include "treeface/scene/geometry.h"
 #include "treeface/scene/scenegraphmaterial.h"
+#include "treeface/scene/guts/utils.h"
 
 #include "treeface/gl/vertexarray.h"
 
@@ -22,6 +23,7 @@ struct VisualObject::Impl
     RefCountHolder<SceneGraphMaterial> material     = nullptr;
     RefCountHolder<Geometry>           geometry     = nullptr;
     RefCountHolder<VertexArray>        vertex_array = nullptr;
+    UniformMap uniforms;
 };
 
 VisualObject::VisualObject( Geometry* geom, SceneGraphMaterial* mat ): m_impl( new Impl() )
@@ -35,6 +37,30 @@ VisualObject::~VisualObject()
 {
     if (m_impl)
         delete m_impl;
+}
+
+void VisualObject::set_uniform_value( const treecore::Identifier& name, const UniversalValue& value )
+{
+    m_impl->uniforms.set( name, value );
+}
+
+bool VisualObject::get_uniform_value( const treecore::Identifier& name, UniversalValue& result ) const noexcept
+{
+    UniformMap::ConstIterator i( m_impl->uniforms );
+    if ( m_impl->uniforms.select( name, i ) )
+    {
+        result = i.value();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool VisualObject::has_uniform( const treecore::Identifier& name ) const noexcept
+{
+    return m_impl->uniforms.contains( name );
 }
 
 SceneGraphMaterial* VisualObject::get_material() noexcept
