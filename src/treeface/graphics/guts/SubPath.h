@@ -1,11 +1,11 @@
 #ifndef TREEFACE_SUB_PATH_H
 #define TREEFACE_SUB_PATH_H
 
-#include "treeface/gl/type.h"
+#include "treeface/gl/TypeUtils.h"
 #include "treeface/graphics/guts/PathGlyph.h"
-#include "treeface/graphics/utils.h"
-#include "treeface/math/bbox2.h"
-#include "treeface/scene/geometry.h"
+#include "treeface/graphics/Utils.h"
+#include "treeface/graphics/BBox2.h"
+#include "treeface/scene/Geometry.h"
 
 namespace treeface
 {

@@ -1,7 +1,7 @@
 #ifndef TREEFACE_TEST_FRAMEWORK
 #define TREEFACE_TEST_FRAMEWORK
 
-#include "treeface/common.h"
+#include "treeface/base/Common.h"
 
 #include <treecore/Common.h>
 

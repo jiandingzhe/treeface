@@ -1,4 +1,4 @@
-#include "treeface/math/mat3.h"
+#include "treeface/math/Mat3.h"
 #include "TestFramework.h"
 
 using namespace treecore;

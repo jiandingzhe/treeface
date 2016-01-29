@@ -3,10 +3,10 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-#include "treeface/scene/geometrymanager.h"
-#include "treeface/packagemanager.h"
+#include "treeface/scene/GeometryManager.h"
+#include "treeface/base/PackageManager.h"
 
-#include "treeface/scene/geometry.h"
+#include "treeface/scene/Geometry.h"
 
 #include <treecore/File.h>
 #include <treecore/StringRef.h>

@@ -1,13 +1,13 @@
 #ifndef TREEFACE_LINE_STROKER_H
 #define TREEFACE_LINE_STROKER_H
 
-#include "treeface/gl/type.h"
+#include "treeface/gl/TypeUtils.h"
 #include "treeface/graphics/guts/HalfOutline.h"
-#include "treeface/graphics/utils.h"
-#include "treeface/graphics/shapegenerator.h"
-#include "treeface/math/bbox2.h"
-#include "treeface/math/constants.h"
-#include "treeface/math/mat2.h"
+#include "treeface/graphics/Utils.h"
+#include "treeface/graphics/ShapeGenerator.h"
+#include "treeface/graphics/BBox2.h"
+#include "treeface/math/Constants.h"
+#include "treeface/math/Mat2.h"
 
 #include <treecore/Array.h>
 

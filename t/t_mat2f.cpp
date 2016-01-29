@@ -1,6 +1,6 @@
 #include "TestFramework.h"
 
-#include "treeface/math/mat2.h"
+#include "treeface/math/Mat2.h"
 
 void TestFramework::content()
 {

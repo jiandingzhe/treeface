@@ -1,6 +1,6 @@
-#include "treeface/graphics/guts/shapegenerator_guts.h"
-#include "treeface/scene/geometry.h"
-#include "treeface/math/vec2.h"
+#include "treeface/graphics/guts/ShapeGenerator_guts.h"
+#include "treeface/scene/Geometry.h"
+#include "treeface/math/Vec2.h"
 
 class TestFramework
 {

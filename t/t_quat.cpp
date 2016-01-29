@@ -1,5 +1,5 @@
 #include "TestFramework.h"
-#include "treeface/math/quat.h"
+#include "treeface/math/Quat.h"
 
 using namespace treeface;
 

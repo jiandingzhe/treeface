@@ -21,7 +21,7 @@ else()
 	message(FATAL_ERROR "unsupported OpenGL version ${TREEFACE_GL_VERSION}")
 endif()
 
-configure_file(treeface/config.h.in treeface/config.h @ONLY)
+configure_file(treeface/Config.h.in treeface/Config.h @ONLY)
 
 #
 # treeface

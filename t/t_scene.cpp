@@ -1,14 +1,14 @@
 #include "TestFramework.h"
 
-#include "treeface/scene/geometry.h"
-#include "treeface/scene/geometrymanager.h"
-#include "treeface/scene/scene.h"
-#include "treeface/scene/scenegraphmaterial.h"
-#include "treeface/scene/scenenode.h"
-#include "treeface/scene/visualobject.h"
+#include "treeface/scene/Geometry.h"
+#include "treeface/scene/GeometryManager.h"
+#include "treeface/scene/Scene.h"
+#include "treeface/scene/SceneGraphMaterial.h"
+#include "treeface/scene/SceneNode.h"
+#include "treeface/scene/VisualObject.h"
 
-#include "treeface/materialmanager.h"
-#include "treeface/packagemanager.h"
+#include "treeface/scene/MaterialManager.h"
+#include "treeface/base/PackageManager.h"
 
 #include <treecore/File.h>
 #include <treecore/Result.h>

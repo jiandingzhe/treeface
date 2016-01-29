@@ -1,12 +1,12 @@
 #ifndef TREEFACE_HALF_EDGE_NETWORK_H
 #define TREEFACE_HALF_EDGE_NETWORK_H
 
-#include "treeface/graphics/halfedge.h"
-#include "treeface/graphics/guts/enums.h"
+#include "treeface/graphics/HalfEdge.h"
+#include "treeface/graphics/guts/Enums.h"
 
-#include "treeface/math/vec2.h"
+#include "treeface/math/Vec2.h"
 
-#include "treeface/scene/geometry.h"
+#include "treeface/scene/Geometry.h"
 
 #include <treecore/Array.h>
 

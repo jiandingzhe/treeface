@@ -1,8 +1,8 @@
 #include "TestFramework.h"
 
-#include "treeface/misc/steakingarray.h"
-#include "treeface/math/vec2.h"
-#include "treeface/math/vec4.h"
+#include "treeface/misc/SteakingArray.h"
+#include "treeface/math/Vec2.h"
+#include "treeface/math/Vec4.h"
 
 using namespace treeface;
 

@@ -1,5 +1,5 @@
 #include "TestFramework.h"
-#include "treeface/math/mat4.h"
+#include "treeface/math/Mat4.h"
 
 using namespace treeface;
 

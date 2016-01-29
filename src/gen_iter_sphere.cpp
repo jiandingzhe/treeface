@@ -1,4 +1,4 @@
-#include "treeface/math/vec4.h"
+#include "treeface/math/Vec4.h"
 
 #include <treecore/Array.h>
 #include <cstdio>

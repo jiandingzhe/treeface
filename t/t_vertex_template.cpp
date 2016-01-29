@@ -1,7 +1,7 @@
 #include "TestFramework.h"
 
-#include "treeface/gl/vertexattrib.h"
-#include "treeface/gl/vertextemplate.h"
+#include "treeface/gl/VertexAttrib.h"
+#include "treeface/gl/VertexTemplate.h"
 
 #include <treecore/Array.h>
 #include <treecore/ArrayRef.h>

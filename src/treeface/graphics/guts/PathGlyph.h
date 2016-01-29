@@ -1,9 +1,9 @@
 #ifndef TREEFACE_PATH_GLYPH_H
 #define TREEFACE_PATH_GLYPH_H
 
-#include "treeface/enums.h"
-#include "treeface/graphics/guts/enums.h"
-#include "treeface/math/vec2.h"
+#include "treeface/base/Enums.h"
+#include "treeface/graphics/guts/Enums.h"
+#include "treeface/math/Vec2.h"
 
 #include <treecore/Array.h>
 

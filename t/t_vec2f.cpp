@@ -1,5 +1,5 @@
 #include "TestFramework.h"
-#include "treeface/math/vec2.h"
+#include "treeface/math/Vec2.h"
 
 typedef treeface::Vec2f v2f;
 

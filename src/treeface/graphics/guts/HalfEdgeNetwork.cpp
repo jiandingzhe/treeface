@@ -1,7 +1,7 @@
 #include "treeface/graphics/guts/HalfEdgeNetwork.h"
-#include "treeface/graphics/guts/geomsucker.h"
-#include "treeface/graphics/utils.h"
-#include "treeface/graphics/guts/utils.h"
+#include "treeface/graphics/guts/GeomSucker.h"
+#include "treeface/graphics/Utils.h"
+#include "treeface/graphics/guts/Utils.h"
 
 using namespace treecore;
 

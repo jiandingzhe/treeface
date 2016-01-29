@@ -1,10 +1,10 @@
 #include "TestFramework.h"
 
-#include "treeface/imagemanager.h"
-#include "treeface/material.h"
-#include "treeface/scene/scenegraphmaterial.h"
-#include "treeface/materialmanager.h"
-#include "treeface/packagemanager.h"
+#include "treeface/graphics/ImageManager.h"
+#include "treeface/scene/Material.h"
+#include "treeface/scene/SceneGraphMaterial.h"
+#include "treeface/scene/MaterialManager.h"
+#include "treeface/base/PackageManager.h"
 
 #include <treecore/File.h>
 #include <treecore/JSON.h>

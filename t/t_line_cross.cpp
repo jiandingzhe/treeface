@@ -1,5 +1,5 @@
 #include "TestFramework.h"
-#include "treeface/graphics/guts/utils.h"
+#include "treeface/graphics/guts/Utils.h"
 
 using treeface::Vec2f;
 

@@ -1,7 +1,7 @@
-#include "treeface/image.h"
-#include "treeface/gl/imageref.h"
-#include "treeface/packagemanager.h"
-#include "treeface/imagemanager.h"
+#include "treeface/graphics/Image.h"
+#include "treeface/gl/ImageRef.h"
+#include "treeface/base/PackageManager.h"
+#include "treeface/graphics/ImageManager.h"
 
 #include <treecore/File.h>
 

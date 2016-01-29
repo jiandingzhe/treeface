@@ -1,5 +1,5 @@
 #include "treeface/graphics/guts/SubPath.h"
-#include "treeface/math/constants.h"
+#include "treeface/math/Constants.h"
 
 #include <treecore/FileInputStream.h>
 #include <treecore/FileOutputStream.h>

@@ -1,4 +1,4 @@
-#include "treeface/math/vec3.h"
+#include "treeface/math/Vec3.h"
 #include "TestFramework.h"
 
 using namespace treeface;

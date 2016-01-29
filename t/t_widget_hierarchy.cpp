@@ -1,7 +1,7 @@
 #include "TestFramework.h"
 
-#include "treeface/ui/widget.h"
-#include "treeface/guts/widget_guts.h"
+#include "treeface/ui/Widget.h"
+#include "treeface/ui/guts/Widget_guts.h"
 
 #include <treecore/RefCountHolder.h>
 

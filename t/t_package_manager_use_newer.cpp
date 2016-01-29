@@ -1,6 +1,6 @@
 #include "TestFramework.h"
 
-#include "treeface/packagemanager.h"
+#include "treeface/base/PackageManager.h"
 
 #include "resources.h"
 

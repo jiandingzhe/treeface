@@ -1,9 +1,9 @@
 #include "treeface/graphics/guts/LineStroker.h"
 
-#include "treeface/graphics/guts/utils.h"
+#include "treeface/graphics/guts/Utils.h"
 
-#include "treeface/math/constants.h"
-#include "treeface/math/mat2.h"
+#include "treeface/math/Constants.h"
+#include "treeface/math/Mat2.h"
 
 using namespace treecore;
 

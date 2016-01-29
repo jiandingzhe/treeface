@@ -1,11 +1,11 @@
 #ifndef TREEFACE_HALF_OUTLINE_H
 #define TREEFACE_HALF_OUTLINE_H
 
-#include "treeface/math/bbox2.h"
-#include "treeface/math/vec2.h"
-#include "treeface/graphics/guts/utils.h"
+#include "treeface/graphics/BBox2.h"
+#include "treeface/math/Vec2.h"
+#include "treeface/graphics/guts/Utils.h"
 
-#include "treeface/graphics/guts/geomsucker.h"
+#include "treeface/graphics/guts/GeomSucker.h"
 
 #include <treecore/String.h>
 

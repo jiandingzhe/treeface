@@ -10,11 +10,11 @@
 
 #include <set>
 
-#include "treeface/gl/glbuffer.h"
-#include "treeface/gl/program.h"
-#include "treeface/gl/vertexarray.h"
-#include "treeface/gl/vertexattrib.h"
-#include "treeface/gl/vertextemplate.h"
+#include "treeface/gl/GLBuffer.h"
+#include "treeface/gl/Program.h"
+#include "treeface/gl/VertexArray.h"
+#include "treeface/gl/VertexAttrib.h"
+#include "treeface/gl/VertexTemplate.h"
 
 #include <treecore/AlignedMalloc.h>
 

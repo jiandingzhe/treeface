@@ -3,16 +3,16 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-#include "treeface/graphics/shapegenerator.h"
-#include "treeface/materialmanager.h"
-#include "treeface/math/constants.h"
-#include "treeface/scene/geometry.h"
-#include "treeface/scene/scene.h"
-#include "treeface/scene/scenegraphmaterial.h"
-#include "treeface/scene/scenenode.h"
-#include "treeface/scene/scenerenderer.h"
-#include "treeface/scene/visualobject.h"
-#include "treeface/packagemanager.h"
+#include "treeface/graphics/ShapeGenerator.h"
+#include "treeface/scene/MaterialManager.h"
+#include "treeface/math/Constants.h"
+#include "treeface/scene/Geometry.h"
+#include "treeface/scene/Scene.h"
+#include "treeface/scene/SceneGraphMaterial.h"
+#include "treeface/scene/SceneNode.h"
+#include "treeface/scene/SceneRenderer.h"
+#include "treeface/scene/VisualObject.h"
+#include "treeface/base/PackageManager.h"
 #include <set>
 
 #include <treecore/File.h>

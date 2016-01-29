@@ -1,5 +1,5 @@
 #include "TestFramework.h"
-#include "treeface/misc/propertyvalidator.h"
+#include "treeface/misc/PropertyValidator.h"
 
 #include <treecore/Array.h>
 #include <treecore/RefCountHolder.h>

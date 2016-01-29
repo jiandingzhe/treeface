@@ -1,5 +1,5 @@
 #include "TestFramework.h"
-#include "treeface/common.h"
+#include "treeface/base/Common.h"
 
 #define GLEW_STATIC
 #include <GL/glew.h>

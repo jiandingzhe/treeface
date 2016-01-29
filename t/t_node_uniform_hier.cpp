@@ -2,8 +2,8 @@
 
 #include <treecore/RefCountHolder.h>
 #include <treecore/Identifier.h>
-#include "treeface/scene/scenenode.h"
-#include "treeface/misc/universalvalue.h"
+#include "treeface/scene/SceneNode.h"
+#include "treeface/misc/UniversalValue.h"
 
 using namespace treecore;
 using namespace treeface;

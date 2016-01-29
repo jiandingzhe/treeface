@@ -1,7 +1,7 @@
 #include "treeface/graphics/guts/HalfOutline.h"
 
-#include "treeface/math/constants.h"
-#include "treeface/math/mat2.h"
+#include "treeface/math/Constants.h"
+#include "treeface/math/Mat2.h"
 
 using namespace treecore;
 
