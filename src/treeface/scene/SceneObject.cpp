@@ -2,11 +2,11 @@
 
 namespace treeface {
 
-SceneItem::SceneItem()
+SceneObject::SceneObject()
 {
 }
 
-SceneItem::~SceneItem()
+SceneObject::~SceneObject()
 {
 }
 

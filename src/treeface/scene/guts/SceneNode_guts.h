@@ -32,9 +32,9 @@ struct SceneNode::Impl
     SceneNode* parent = nullptr;
 
     UniformMap self_uniforms;
-    UniformMap cached_descendent_uniforms;
+    UniformMap cached_inherit_uniforms;
 
-    treecore::SortedSet<treecore::RefCountHolder<SceneItem> > items;
+    treecore::SortedSet<treecore::RefCountHolder<SceneObject> > items;
 
     void update_trans_descendent();
     void update_global_descendent();

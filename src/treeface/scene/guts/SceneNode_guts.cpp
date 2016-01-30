@@ -38,20 +38,20 @@ void SceneNode::Impl::update_uniform_cache()
     if (parent != nullptr)
     {
         // parent self
-        cached_descendent_uniforms = parent->m_impl->self_uniforms;
+        cached_inherit_uniforms = parent->m_impl->self_uniforms;
 
         // parent inherit
         jassert( !parent->m_impl->uniform_cache_dirty );
-        UniformMap::ConstIterator it_parent( parent->m_impl->cached_descendent_uniforms );
+        UniformMap::ConstIterator it_parent( parent->m_impl->cached_inherit_uniforms );
         while ( it_parent.next() )
         {
-            UniformMap::Iterator dull( cached_descendent_uniforms );
-            cached_descendent_uniforms.insertOrSelect( it_parent.key(), it_parent.value(), dull );
+            UniformMap::Iterator dull( cached_inherit_uniforms );
+            cached_inherit_uniforms.insertOrSelect( it_parent.key(), it_parent.value(), dull );
         }
     }
     else
     {
-        cached_descendent_uniforms.clear();
+        cached_inherit_uniforms.clear();
     }
 
     uniform_cache_dirty = false;

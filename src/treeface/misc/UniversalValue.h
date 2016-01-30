@@ -18,7 +18,7 @@ namespace treeface
 
 class UniversalValue
 {
-    friend ::TestFramework;
+    friend class ::TestFramework;
 
     union UniversalValueData
     {
@@ -56,6 +56,8 @@ class UniversalValue
     };
 
 public:
+    UniversalValue() noexcept {}
+
     UniversalValue( GLType type ) noexcept: m_type( type ) {}
 
     UniversalValue( bool value ) noexcept

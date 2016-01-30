@@ -18,7 +18,7 @@ class Geometry;
 class UniversalValue;
 class VertexArray;
 
-class VisualObject: public SceneItem
+class VisualObject: public SceneObject
 {
 public:
     VisualObject( Geometry* geom, SceneGraphMaterial* mat );

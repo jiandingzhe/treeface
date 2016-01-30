@@ -54,7 +54,7 @@ void SceneNode::set_transform( const Mat4f& value ) noexcept
     m_impl->trans       = value;
 }
 
-bool SceneNode::add_item( SceneItem* obj )
+bool SceneNode::add_item( SceneObject* obj )
 {
     if ( m_impl->items.add( obj ) )
     {
@@ -67,12 +67,12 @@ bool SceneNode::add_item( SceneItem* obj )
     }
 }
 
-bool SceneNode::has_item( SceneItem* obj ) const noexcept
+bool SceneNode::has_item( SceneObject* obj ) const noexcept
 {
     return m_impl->items.contains( obj );
 }
 
-bool SceneNode::remove_item( SceneItem* obj )
+bool SceneNode::remove_item( SceneObject* obj )
 {
     if ( m_impl->items.contains( obj ) )
     {
@@ -86,12 +86,12 @@ bool SceneNode::remove_item( SceneItem* obj )
     }
 }
 
-int SceneNode::get_num_items() const noexcept
+int32 SceneNode::get_num_items() const noexcept
 {
     return m_impl->items.size();
 }
 
-SceneItem* SceneNode::get_item_at( int idx ) noexcept
+SceneObject* SceneNode::get_item_at( int idx ) noexcept
 {
     return m_impl->items[idx].get();
 }
@@ -121,8 +121,8 @@ bool SceneNode::get_uniform_value( const treecore::Identifier& name, UniversalVa
         if (m_impl->uniform_cache_dirty)
             m_impl->recur_update_uniform_cache_from_parent();
 
-        UniformMap::ConstIterator i_cache( m_impl->cached_descendent_uniforms );
-        if ( m_impl->cached_descendent_uniforms.select( name, i_cache ) )
+        UniformMap::ConstIterator i_cache( m_impl->cached_inherit_uniforms );
+        if ( m_impl->cached_inherit_uniforms.select( name, i_cache ) )
         {
             result = i_cache.value();
             return true;
@@ -164,7 +164,32 @@ bool SceneNode::has_uniform( const treecore::Identifier& name )
     if (m_impl->uniform_cache_dirty)
         m_impl->recur_update_uniform_cache_from_parent();
 
-    return m_impl->cached_descendent_uniforms.contains( name );
+    return m_impl->cached_inherit_uniforms.contains( name );
+}
+
+int32 SceneNode::collect_uniforms( UniformMap& result )
+{
+    UniformMap::Iterator i_result(result);
+    int32 num_got = 0;
+
+    // fetch self uniforms
+    for (UniformMap::ConstIterator i( m_impl->self_uniforms ); i.next(); )
+    {
+        if (result.insertOrSelect( i.key(), i.value(), i_result ))
+            num_got++;
+    }
+
+    // fetch inherited uniforms
+    if (m_impl->uniform_cache_dirty)
+        m_impl->recur_update_uniform_cache_from_parent();
+
+    for (UniformMap::ConstIterator i( m_impl->cached_inherit_uniforms ); i.next(); )
+    {
+        if (result.insertOrSelect( i.key(), i.value(), i_result ))
+            num_got++;
+    }
+
+    return num_got;
 }
 
 bool SceneNode::add_child( SceneNode* child )
@@ -195,7 +220,7 @@ bool SceneNode::remove_child( SceneNode* child ) noexcept
     if ( m_impl->child_nodes.contains( child ) )
     {
         m_impl->child_nodes.removeValue( child );
-        child->m_impl->parent = nullptr;
+        child->m_impl->parent       = nullptr;
         child->m_impl->global_dirty = true;
 
         child->m_impl->uniform_cache_dirty = true;
@@ -208,7 +233,7 @@ bool SceneNode::remove_child( SceneNode* child ) noexcept
     }
 }
 
-int SceneNode::get_num_children() const noexcept
+int32 SceneNode::get_num_children() const noexcept
 {
     return m_impl->child_nodes.size();
 }

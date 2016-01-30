@@ -8,17 +8,17 @@ namespace treeface {
 
 class SceneNode;
 
-class SceneItem: public treecore::RefCountObject
+class SceneObject: public treecore::RefCountObject
 {
     friend class SceneNode;
 
 public:
-    SceneItem();
+    SceneObject();
 
-    TREECORE_DECLARE_NON_COPYABLE(SceneItem);
-    TREECORE_DECLARE_NON_MOVABLE(SceneItem);
+    TREECORE_DECLARE_NON_COPYABLE(SceneObject)
+    TREECORE_DECLARE_NON_MOVABLE(SceneObject)
 
-    virtual ~SceneItem();
+    virtual ~SceneObject();
 
     inline SceneNode* get_node()
     {

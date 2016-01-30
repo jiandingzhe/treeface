@@ -24,6 +24,31 @@ void TestFramework::content()
     OK( !node0->has_self_uniform( baz ) );
     OK( !node0->has_uniform( baz ) );
 
+    OK( "fetch uniform store" );
+    {
+        HashMap<Identifier, UniversalValue> uni_store;
+        IS( node0->collect_uniforms( uni_store ), 2 );
+        IS( uni_store.size(),                     2 );
+        OK( uni_store.contains( foo ) );
+        OK( uni_store.contains( bar ) );
+        IS( uni_store[foo].get_type(), TFGL_TYPE_INT );
+        IS( int32( uni_store[foo] ),   123 );
+        IS( uni_store[bar].get_type(), TFGL_TYPE_FLOAT );
+        IS( float(uni_store[bar]),     456.0f );
+
+        uni_store.clear();
+        uni_store[foo] = UniversalValue( uint16( 12345 ) );
+
+        IS( node0->collect_uniforms( uni_store ), 1 );
+        IS( uni_store.size(),                     2 );
+        OK( uni_store.contains( foo ) );
+        OK( uni_store.contains( bar ) );
+        IS( uni_store[foo].get_type(), TFGL_TYPE_UNSIGNED_SHORT );
+        IS( uint16( uni_store[foo] ),  12345 );
+        IS( uni_store[bar].get_type(), TFGL_TYPE_FLOAT );
+        IS( float(uni_store[bar]),     456.0f );
+    }
+
     OK( "add node 1 to node 0" );
     RefCountHolder<SceneNode> node1 = new SceneNode();
     node1->set_uniform_value( foo, Vec2f( 1.2f, 3.4f ) );
@@ -83,6 +108,19 @@ void TestFramework::content()
         IS( uint8( node2_baz ),   48 );
     }
 
+    OK( "fetch uniform store" );
+    {
+        HashMap<Identifier, UniversalValue> uni_store;
+        IS( node1->collect_uniforms( uni_store ), 2 );
+        OK( uni_store.contains( foo ) );
+        OK( uni_store.contains( bar ) );
+        IS( uni_store[foo].get_type(), TFGL_TYPE_VEC2F );
+        IS( Vec2f( uni_store[foo] ).x, 1.2f );
+        IS( Vec2f( uni_store[foo] ).y, 3.4f );
+        IS( uni_store[bar].get_type(), TFGL_TYPE_FLOAT );
+        IS( float(uni_store[bar]),     456.0f );
+    }
+
     OK( "modify node hierarchy structure" );
     OK( node0->remove_child( node1 ) );
 
@@ -92,6 +130,5 @@ void TestFramework::content()
     OK( node2->has_uniform( foo ) );
     OK( !node2->has_uniform( bar ) );
     OK( node2->has_uniform( baz ) );
-
 
 }

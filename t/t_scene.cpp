@@ -60,7 +60,7 @@ void TestFramework::content()
     pkg_mgr->add_package( File::getCurrentWorkingDirectory().getChildFile( "../examples/resource.zip" ), PackageManager::KEEP_EXISTING );
 
     // build scene
-    RefCountHolder<Scene> scene = new Scene( "scene.json" );
+    RefCountHolder<Scene> scene = new Scene( String("scene.json") );
 
     RefCountHolder<MaterialManager> mat_mgr = scene->get_material_manager();
     RefCountHolder<GeometryManager> geo_mgr = scene->get_geometry_manager();
