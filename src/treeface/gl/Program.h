@@ -169,7 +169,7 @@ public:
     /// different from uniform index!
     ///
     /// \param name  uniform name
-    /// \return uniform location
+    /// \return uniform location, or -1 if no such uniform
     /// \see set_uniform
     ///
     GLint get_uniform_location( const treecore::Identifier& name ) const noexcept;

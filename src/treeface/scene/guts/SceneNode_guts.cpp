@@ -4,7 +4,7 @@ using namespace treecore;
 
 namespace treeface {
 
-void SceneNode::Impl::update_trans_descendent()
+void SceneNode::Guts::update_trans_descendent()
 {
     trans_inv = trans;
     trans_inv.inverse();
@@ -14,7 +14,7 @@ void SceneNode::Impl::update_trans_descendent()
     update_global_descendent();
 }
 
-void SceneNode::Impl::update_global_descendent()
+void SceneNode::Guts::update_global_descendent()
 {
     if (parent)
     {
@@ -31,7 +31,7 @@ void SceneNode::Impl::update_global_descendent()
     global_dirty = false;
 }
 
-void SceneNode::Impl::update_uniform_cache()
+void SceneNode::Guts::update_uniform_cache()
 {
     jassert( uniform_cache_dirty );
 
@@ -57,7 +57,7 @@ void SceneNode::Impl::update_uniform_cache()
     uniform_cache_dirty = false;
 }
 
-void SceneNode::Impl::recur_update_uniform_cache_from_parent()
+void SceneNode::Guts::recur_update_uniform_cache_from_parent()
 {
     jassert( uniform_cache_dirty );
 
@@ -67,7 +67,7 @@ void SceneNode::Impl::recur_update_uniform_cache_from_parent()
     update_uniform_cache();
 }
 
-void SceneNode::Impl::recur_invalidate_uniform_cache_to_child()
+void SceneNode::Guts::recur_invalidate_uniform_cache_to_child()
 {
     uniform_cache_dirty = true;
     for (RefCountHolder<SceneNode>& child : child_nodes)

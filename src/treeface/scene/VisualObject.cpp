@@ -1,8 +1,7 @@
-#include "treeface/scene/VisualObject.h"
+#include "treeface/scene/guts/VisualObject_guts.h"
 
 #include "treeface/scene/Geometry.h"
 #include "treeface/scene/SceneGraphMaterial.h"
-#include "treeface/scene/guts/Utils.h"
 
 #include "treeface/gl/VertexArray.h"
 
@@ -17,14 +16,6 @@
 using namespace treecore;
 
 namespace treeface {
-
-struct VisualObject::Impl
-{
-    RefCountHolder<SceneGraphMaterial> material     = nullptr;
-    RefCountHolder<Geometry>           geometry     = nullptr;
-    RefCountHolder<VertexArray>        vertex_array = nullptr;
-    UniformMap uniforms;
-};
 
 VisualObject::VisualObject( Geometry* geom, SceneGraphMaterial* mat ): m_impl( new Impl() )
 {
@@ -61,6 +52,20 @@ bool VisualObject::get_uniform_value( const treecore::Identifier& name, Universa
 bool VisualObject::has_uniform( const treecore::Identifier& name ) const noexcept
 {
     return m_impl->uniforms.contains( name );
+}
+
+int32 VisualObject::collect_uniforms( UniformMap& result ) const
+{
+    UniformMap::Iterator i_result( result );
+    int32 num_got = 0;
+
+    for (UniformMap::ConstIterator i( m_impl->uniforms ); i.next(); )
+    {
+        if ( result.insertOrSelect( i.key(), i.value(), i_result ) )
+            num_got++;
+    }
+
+    return num_got;
 }
 
 SceneGraphMaterial* VisualObject::get_material() noexcept

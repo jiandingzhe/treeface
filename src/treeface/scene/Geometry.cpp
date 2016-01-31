@@ -1,16 +1,14 @@
 #include "treeface/scene/Geometry.h"
 
 #include "treeface/gl/Errors.h"
-#include "treeface/gl/GLBuffer.h"
 #include "treeface/gl/VertexArray.h"
 #include "treeface/gl/VertexAttrib.h"
-#include "treeface/gl/VertexTemplate.h"
 
 #include "treeface/misc/Errors.h"
 #include "treeface/misc/PropertyValidator.h"
 #include "treeface/misc/StringCast.h"
 
-#include "treeface/scene/guts/Utils.h"
+#include "treeface/scene/guts/Geometry_guts.h"
 
 #include <treecore/Array.h>
 #include <treecore/ArrayRef.h>
@@ -29,62 +27,8 @@ using namespace treecore;
 
 namespace treeface {
 
-struct Geometry::Impl
-{
-    Impl( const VertexTemplate& vtx_temp, GLPrimitive primitive, bool is_dynamic );
-
-    void upload_data();
-
-    const bool dynamic;
-    bool       drawing = false;
-    bool       dirty   = false;
-    int32      num_idx = 0;
-    const GLPrimitive primitive;
-
-    const VertexTemplate vtx_temp;
-
-    RefCountHolder<GLBuffer> buf_vtx;
-    RefCountHolder<GLBuffer> buf_idx;
-
-    UniformMap uniforms;
-
-    HostVertexCache  host_data_vtx;
-    Array<IndexType> host_data_idx;
-};
-
-Geometry::Impl::Impl( const VertexTemplate& vtx_temp, GLPrimitive primitive, bool is_dynamic )
-    : vtx_temp( vtx_temp )
-    , primitive( primitive )
-    , dynamic( is_dynamic )
-    , buf_vtx( new GLBuffer( TFGL_BUFFER_VERTEX, is_dynamic ? TFGL_BUFFER_DYNAMIC_DRAW : TFGL_BUFFER_STATIC_DRAW ) )
-    , buf_idx( new GLBuffer( TFGL_BUFFER_INDEX,  is_dynamic ? TFGL_BUFFER_DYNAMIC_DRAW : TFGL_BUFFER_STATIC_DRAW ) )
-    , host_data_vtx( vtx_temp.vertex_size() )
-{}
-
-void Geometry::Impl::upload_data()
-{
-    jassert( !drawing );
-    jassert( buf_vtx->is_bound() );
-    jassert( buf_idx->is_bound() );
-
-    if (dirty)
-    {
-        num_idx = host_data_idx.size();
-        buf_vtx->upload_data( host_data_vtx.get_raw_data_ptr(), host_data_vtx.num_byte() );
-        buf_idx->upload_data( ArrayRef<IndexType>( host_data_idx ) );
-
-        if (!dynamic)
-        {
-            host_data_vtx.clear();
-            host_data_idx.clear();
-        }
-
-        dirty = false;
-    }
-}
-
 Geometry::Geometry( const VertexTemplate& vtx_temp, GLPrimitive primitive, bool is_dynamic )
-    : m_impl( new Impl( vtx_temp, primitive, is_dynamic ) )
+    : m_impl( new Guts( vtx_temp, primitive, is_dynamic ) )
 {}
 
 Geometry::~Geometry()
@@ -133,7 +77,7 @@ Geometry::Geometry( const treecore::var& geom_root_node )
             throw ConfigParseError( "failed to parse OpenGL primitive enum from: " + geom_root_kv[KEY_PRIM].toString() );
 
         // load vertex attribute template
-        m_impl = new Impl( VertexTemplate( geom_root_kv[KEY_ATTR] ), primitive, false );
+        m_impl = new Guts( VertexTemplate( geom_root_kv[KEY_ATTR] ), primitive, false );
     }
 
     //
@@ -197,7 +141,7 @@ void Geometry::mark_dirty() noexcept { m_impl->dirty = true; }
 
 GLPrimitive Geometry::get_primitive() const noexcept { return m_impl->primitive; }
 
-int Geometry::get_num_index() const noexcept { return m_impl->num_idx; }
+int32 Geometry::get_num_index() const noexcept { return m_impl->num_idx; }
 
 const VertexTemplate& Geometry::get_vertex_template() const noexcept
 {
@@ -236,6 +180,20 @@ void Geometry::set_uniform_value( const treecore::Identifier& name, const Univer
 bool Geometry::has_uniform( const treecore::Identifier& name ) const noexcept
 {
     return m_impl->uniforms.contains( name );
+}
+
+int32 Geometry::collect_uniforms( UniformMap& result ) const
+{
+    UniformMap::Iterator i_result( result );
+    int32 num_got = 0;
+
+    for (UniformMap::ConstIterator i( m_impl->uniforms ); i.next(); )
+    {
+        if ( result.insertOrSelect( i.key(), i.value(), i_result ) )
+            num_got++;
+    }
+
+    return num_got;
 }
 
 void Geometry::host_draw_begin()

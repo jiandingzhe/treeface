@@ -11,21 +11,21 @@
 #include <treecore/HashMap.h>
 #include <treecore/RefCountHolder.h>
 #include <treecore/SortedSet.h>
+
 namespace treeface {
 
-
 TREECORE_ALN_BEGIN( 16 )
-struct SceneNode::Impl
+struct SceneNode::Guts
 {
-    TREECORE_ALIGNED_ALLOCATOR( SceneNode::Impl );
+    TREECORE_ALIGNED_ALLOCATOR( SceneNode::Guts )
     Mat4f trans;
     Mat4f trans_inv;
 
     Mat4f trans_global;
     Mat4f trans_global_inv;
 
-    bool trans_dirty  = true;
-    bool global_dirty = true;
+    bool trans_dirty = true;
+    bool global_dirty        = true;
     bool uniform_cache_dirty = true;
 
     treecore::SortedSet<treecore::RefCountHolder<SceneNode> > child_nodes;

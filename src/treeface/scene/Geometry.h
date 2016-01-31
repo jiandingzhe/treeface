@@ -4,6 +4,7 @@
 #include "treeface/base/Common.h"
 
 #include <treecore/Array.h>
+#include <treecore/HashMap.h>
 #include <treecore/IntTypes.h>
 #include <treecore/RefCountObject.h>
 
@@ -69,16 +70,17 @@ public:
     void mark_dirty() noexcept;
 
     GLPrimitive get_primitive() const noexcept;
-    int         get_num_index() const noexcept;
+    int32       get_num_index() const noexcept;
 
     const VertexTemplate& get_vertex_template() const noexcept;
 
     GLBuffer* get_vertex_buffer() noexcept;
     GLBuffer* get_index_buffer() noexcept;
 
-    bool get_uniform_value( const treecore::Identifier& name, UniversalValue& result ) const noexcept;
-    void set_uniform_value( const treecore::Identifier& name, const UniversalValue& value );
-    bool has_uniform( const treecore::Identifier& name ) const noexcept;
+    bool  get_uniform_value( const treecore::Identifier& name, UniversalValue& result ) const noexcept;
+    void  set_uniform_value( const treecore::Identifier& name, const UniversalValue& value );
+    bool  has_uniform( const treecore::Identifier& name ) const noexcept;
+    int32 collect_uniforms( treecore::HashMap<treecore::Identifier, UniversalValue>& result ) const;
 
     void host_draw_begin();
 
@@ -106,8 +108,8 @@ public:
 
 protected:
 
-    struct Impl;
-    Impl* m_impl = nullptr;
+    struct Guts;
+    Guts* m_impl = nullptr;
 };
 
 } // namespace treeface

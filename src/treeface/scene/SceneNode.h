@@ -63,8 +63,8 @@ public:
     SceneNode* get_parent() noexcept;
 
 private:
-    struct Impl;
-    Impl* m_impl = nullptr;
+    struct Guts;
+    Guts* m_impl = nullptr;
 };
 
 } // namespace treeface

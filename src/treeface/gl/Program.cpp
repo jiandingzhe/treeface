@@ -365,7 +365,18 @@ void Program::set_uniform( GLint uni_loc, const Mat4f& value ) const noexcept
 
 void Program::set_uniform( GLint uni_loc, const UniversalValue& value ) const noexcept
 {
+    jassert( is_bound() );
     if (uni_loc == -1) return;
+
+    // skip values with conflict type
+    {
+        int i_uni = get_uniform_index( uni_loc );
+        const UniformInfo& uni_info = m_impl->uni_store[i_uni];
+        jassert( i_uni >= 0 );
+
+        if (value.get_type() != uni_info.type)
+            return;
+    }
 
     switch ( value.get_type() )
     {

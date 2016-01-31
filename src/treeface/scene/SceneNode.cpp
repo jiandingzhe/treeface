@@ -7,7 +7,7 @@ using namespace treecore;
 
 namespace treeface {
 
-SceneNode::SceneNode(): m_impl( new Impl() )
+SceneNode::SceneNode(): m_impl( new Guts() )
 {}
 
 SceneNode::~SceneNode()
