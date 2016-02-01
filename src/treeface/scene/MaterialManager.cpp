@@ -139,12 +139,12 @@ Material * MaterialManager::build_material( const treecore::Identifier & name, c
     // load properties
     // get scene additive uniforms
     //
-    if (mat_type == MATERIAL_SCENE_GRAPH)
+    SceneGraphMaterial* sgmat = dynamic_cast<SceneGraphMaterial*>(mat);
+    if ( sgmat != nullptr )
     {
         // scene material defined uniforms
         const Program* prog = mat->m_program;
 
-        SceneGraphMaterial* sgmat = dynamic_cast<SceneGraphMaterial*>( mat );
         sgmat->m_uni_model_view      = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_MODEL_VIEW );
         sgmat->m_uni_proj            = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_PROJECT );
         sgmat->m_uni_model_view_proj = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_MODEL_VIEW_PROJECT );
@@ -160,10 +160,6 @@ Material * MaterialManager::build_material( const treecore::Identifier & name, c
             sgmat->m_receive_shadow = bool(data_kv[KEY_RECV_SHADOW]);
         if ( data_kv.contains( KEY_TRANSLUSCENT ) )
             sgmat->m_translucent = bool(data_kv[KEY_TRANSLUSCENT]);
-    }
-    else if (mat_type == MATERIAL_SCREEN_SPACE)
-    {
-        die( "no implemented" );
     }
 
     //
