@@ -2,17 +2,15 @@
 
 #include "treeface/gl/VertexTemplate.h"
 
+#include "treeface/graphics/VectorGraphicsMaterial.h"
 #include "treeface/graphics/guts/ShapeGenerator_guts.h"
+
 #include "treeface/misc/UniversalValue.h"
 
 using namespace treecore;
 
 namespace treeface
 {
-
-const Identifier ShapeGenerator::UNIFORM_LINE_WIDTH( UNI_NAME_LINE_WIDTH );
-const Identifier ShapeGenerator::UNIFORM_SKELETON_MIN( UNI_NAME_SKLT_MIN );
-const Identifier ShapeGenerator::UNIFORM_SKELETON_MAX( UNI_NAME_SKLT_MAX );
 
 ShapeGenerator::ShapeGenerator(): m_guts( new Guts() )
 {}
@@ -52,8 +50,8 @@ void ShapeGenerator::fill_simple_preserve( Geometry* geom ) const
     m_guts->triangulate( geom->get_host_vertex_cache(), geom->get_host_index_cache(),
                          skeleton_min, skeleton_max );
 
-    geom->set_uniform_value( UNIFORM_SKELETON_MIN, UniversalValue( skeleton_min ) );
-    geom->set_uniform_value( UNIFORM_SKELETON_MAX, UniversalValue( skeleton_max ) );
+    geom->set_uniform_value( VectorGraphicsMaterial::UNIFORM_SKELETON_MIN, UniversalValue( skeleton_min ) );
+    geom->set_uniform_value( VectorGraphicsMaterial::UNIFORM_SKELETON_MAX, UniversalValue( skeleton_max ) );
 }
 
 void ShapeGenerator::stroke_complicated( const StrokeStyle& style, Geometry* geom )
@@ -73,9 +71,9 @@ void ShapeGenerator::stroke_complicated_preserve( const StrokeStyle& style, Geom
     }
 
     // set geometric properties to uniform slots
-    geom->set_uniform_value( UNIFORM_LINE_WIDTH,   UniversalValue( float(style.width) ) );
-    geom->set_uniform_value( UNIFORM_SKELETON_MIN, UniversalValue( skeleton_min ) );
-    geom->set_uniform_value( UNIFORM_SKELETON_MAX, UniversalValue( skeleton_max ) );
+    geom->set_uniform_value( VectorGraphicsMaterial::UNIFORM_LINE_WIDTH,   UniversalValue( float(style.width) ) );
+    geom->set_uniform_value( VectorGraphicsMaterial::UNIFORM_SKELETON_MIN, UniversalValue( skeleton_min ) );
+    geom->set_uniform_value( VectorGraphicsMaterial::UNIFORM_SKELETON_MAX, UniversalValue( skeleton_max ) );
 }
 
 void ShapeGenerator::line_to( const Vec2f& position )

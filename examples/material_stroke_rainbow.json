@@ -1,4 +1,4 @@
 {
     "program": ["vert_line_simple.glsl", "frag_line_rainbow.glsl"],
-    "type": "scene_graph"
+    "type": "vector_graphics"
 }

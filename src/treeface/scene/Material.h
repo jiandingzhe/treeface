@@ -42,6 +42,8 @@ public:
     TREECORE_DECLARE_NON_MOVABLE( Material );
 
 protected:
+    virtual treecore::String get_shader_source_addition() const noexcept;
+
     treecore::RefCountHolder<Program> m_program;
 
 private:

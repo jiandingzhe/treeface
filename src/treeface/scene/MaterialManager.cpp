@@ -1,18 +1,20 @@
 #include "treeface/scene/MaterialManager.h"
 
 #include "treeface/Config.h"
+
 #include "treeface/base/Enums.h"
-#include "treeface/scene/Material.h"
 #include "treeface/base/PackageManager.h"
 
-#include "treeface/scene/SceneGraphMaterial.h"
-
 #include "treeface/gl/Program.h"
+
+#include "treeface/graphics/VectorGraphicsMaterial.h"
 
 #include "treeface/misc/Errors.h"
 #include "treeface/misc/PropertyValidator.h"
 #include "treeface/misc/StringCast.h"
 
+#include "treeface/scene/Material.h"
+#include "treeface/scene/SceneGraphMaterial.h"
 #include "treeface/scene/guts/Material_guts.h"
 
 #include <treecore/DynamicObject.h>
@@ -22,16 +24,6 @@
 #include <treecore/RefCountHolder.h>
 #include <treecore/Singleton.h>
 #include <treecore/Variant.h>
-
-#if defined TREEFACE_GL_3_0
-#    error "TODO what should be it?"
-#elif defined TREEFACE_GL_3_3
-#    define TREEFACE_GLSL_VERSION_DEF "#version 330\n"
-#elif defined TREEFACE_GL_ES_3_0
-#    define TREEFACE_GLSL_VERSION_DEF "#version 300 es\n"
-#else
-#    error "unknown OpenGL version macro"
-#endif
 
 using namespace treecore;
 
@@ -58,34 +50,6 @@ MaterialManager::~MaterialManager()
 #define KEY_RECV_SHADOW  "receive_shadow"
 #define KEY_TRANSLUSCENT "transluscent"
 #define KEY_TEXTURE      "textures"
-
-#define NAME_MAT_MV       "matrix_model_view"
-#define NAME_MAT_PROJ     "matrix_project"
-#define NAME_MAT_MVP      "matrix_model_view_project"
-#define NAME_MAT_NORM     "matrix_normal"
-#define NAME_GLB_L_DIRECT "global_light_direction"
-#define NAME_GLB_L_COLOR  "global_light_color"
-#define NAME_GLB_L_AMB    "global_light_ambient"
-
-const char* _src_addition_raw_ =
-    TREEFACE_GLSL_VERSION_DEF
-;
-
-const char* _src_addition_screen_space_ =
-    TREEFACE_GLSL_VERSION_DEF
-;
-
-const char* _src_addition_scene_graph_ =
-    TREEFACE_GLSL_VERSION_DEF
-    "uniform highp mat4 " NAME_MAT_MV ";\n"
-    "uniform highp mat4 " NAME_MAT_PROJ ";\n"
-    "uniform highp mat4 " NAME_MAT_MVP ";\n"
-    "uniform highp mat4 " NAME_MAT_NORM ";\n"
-    "uniform mediump vec4 " NAME_GLB_L_DIRECT ";\n"
-    "uniform mediump vec4 " NAME_GLB_L_COLOR ";\n"
-    "uniform mediump vec4 " NAME_GLB_L_AMB ";\n"
-    "\n"
-;
 
 class MaterialPropertyValidator: public PropertyValidator
 {
@@ -120,19 +84,32 @@ Material * MaterialManager::build_material( const treecore::Identifier & name, c
     }
 
     //
-    // material type
-    // non-raw material type would add some predefined uniforms providing
-    // stuffs such as standard transform matrices and global light
+    // create material by type
     //
+
+    // get material type
     MaterialType mat_type;
     if ( !fromString<MaterialType>( data_kv[KEY_TYPE], mat_type ) )
         throw ConfigParseError( "Invalid material type: " + data_kv[KEY_TYPE].toString() );
+
+    // create material object by type
+    Material* mat = nullptr;
+
+    switch (mat_type)
+    {
+    case MATERIAL_RAW:             mat = new Material(); break;
+    case MATERIAL_SCENE_GRAPH:     mat = new SceneGraphMaterial(); break;
+    case MATERIAL_VECTOR_GRAPHICS: mat = new VectorGraphicsMaterial(); break;
+    case MATERIAL_SCREEN_SPACE:    die( "material for screen space not implemented" ); break;
+    default:
+        die( "unsupported material type enum: %d", mat_type );
+    }
 
     //
     // build program
     //
 
-    // get shader
+    // get shader source
     const var&  node_program  = data_kv[KEY_PROGRAM];
     Array<var>* program_names = node_program.getArray();
     if (program_names->size() != 2)
@@ -151,32 +128,9 @@ Material * MaterialManager::build_material( const treecore::Identifier & name, c
             throw ConfigParseError( "MaterialManager: no fragment shader resource named \"" + name_frag + "\"" );
     }
 
-    // create material object by type
-    // and preprocess shader source
-    Material* mat = nullptr;
-    String    src_vert;
-    String    src_frag;
-
-    switch (mat_type)
-    {
-    case MATERIAL_RAW:
-        mat      = new Material();
-        src_vert = String( _src_addition_raw_ ) + (const char*) src_vert_raw.getData();
-        src_frag = String( _src_addition_raw_ ) + (const char*) src_frag_raw.getData();
-        break;
-    case MATERIAL_SCENE_GRAPH:
-        mat      = new SceneGraphMaterial();
-        src_vert = String( _src_addition_scene_graph_ ) + (const char*) src_vert_raw.getData();
-        src_frag = String( _src_addition_scene_graph_ ) + (const char*) src_frag_raw.getData();
-        break;
-    case MATERIAL_SCREEN_SPACE:
-        die( "material for screen space not implemented" );
-        src_vert = String( _src_addition_screen_space_ ) + (const char*) src_vert_raw.getData();
-        src_frag = String( _src_addition_screen_space_ ) + (const char*) src_frag_raw.getData();
-        break;
-    default:
-        die( "unsupported material type enum: %d", mat_type );
-    }
+    // preprocess shader source
+    String src_vert = mat->get_shader_source_addition() + (const char*) src_vert_raw.getData();
+    String src_frag = mat->get_shader_source_addition() + (const char*) src_frag_raw.getData();
 
     // create and build shader program
     mat->m_program = new Program( src_vert.toRawUTF8(), src_frag.toRawUTF8() );
@@ -191,13 +145,13 @@ Material * MaterialManager::build_material( const treecore::Identifier & name, c
         const Program* prog = mat->m_program;
 
         SceneGraphMaterial* sgmat = dynamic_cast<SceneGraphMaterial*>( mat );
-        sgmat->m_uni_model_view      = prog->get_uniform_location( NAME_MAT_MV );
-        sgmat->m_uni_proj            = prog->get_uniform_location( NAME_MAT_PROJ );
-        sgmat->m_uni_model_view_proj = prog->get_uniform_location( NAME_MAT_MVP );
-        sgmat->m_uni_norm            = prog->get_uniform_location( NAME_MAT_NORM );
-        sgmat->m_uni_light_direct    = prog->get_uniform_location( NAME_GLB_L_DIRECT );
-        sgmat->m_uni_light_color     = prog->get_uniform_location( NAME_GLB_L_COLOR );
-        sgmat->m_uni_light_ambient   = prog->get_uniform_location( NAME_GLB_L_AMB );
+        sgmat->m_uni_model_view      = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_MODEL_VIEW );
+        sgmat->m_uni_proj            = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_PROJECT );
+        sgmat->m_uni_model_view_proj = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_MODEL_VIEW_PROJECT );
+        sgmat->m_uni_norm            = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_NORMAL );
+        sgmat->m_uni_light_direct    = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_GLOBAL_LIGHT_DIRECTION );
+        sgmat->m_uni_light_color     = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_GLOBAL_LIGHT_COLOR );
+        sgmat->m_uni_light_ambient   = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_GLOBAL_LIGHT_AMBIENT );
 
         // scene properties
         if ( data_kv.contains( KEY_PROJ_SHADOW ) )

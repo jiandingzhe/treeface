@@ -4,6 +4,8 @@
 #include "treeface/scene/Material.h"
 #include "treeface/math/Mat4.h"
 
+#include <treecore/Identifier.h>
+
 #define GLEW_STATIC
 #include <GL/glew.h>
 
@@ -15,6 +17,14 @@ class SceneGraphMaterial: public Material
     friend class SceneRenderer;
 
 public:
+    static const treecore::Identifier UNIFORM_MATRIX_MODEL_VIEW;
+    static const treecore::Identifier UNIFORM_MATRIX_PROJECT;
+    static const treecore::Identifier UNIFORM_MATRIX_MODEL_VIEW_PROJECT;
+    static const treecore::Identifier UNIFORM_MATRIX_NORMAL;
+    static const treecore::Identifier UNIFORM_GLOBAL_LIGHT_DIRECTION;
+    static const treecore::Identifier UNIFORM_GLOBAL_LIGHT_COLOR;
+    static const treecore::Identifier UNIFORM_GLOBAL_LIGHT_AMBIENT;
+
     SceneGraphMaterial();
     virtual ~SceneGraphMaterial();
 
@@ -43,6 +53,8 @@ public:
     TREECORE_DECLARE_NON_MOVABLE(SceneGraphMaterial);
 
 protected:
+    treecore::String get_shader_source_addition() const noexcept override;
+
     bool m_translucent = false;
     bool m_project_shadow = true;
     bool m_receive_shadow = true;

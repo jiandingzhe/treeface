@@ -11,9 +11,10 @@ template<>
 bool fromString<treeface::MaterialType>( const treecore::String& string, treeface::MaterialType& result )
 {
     String str_lc = string.toLowerCase();
-    if      (str_lc == "raw")           result = treeface::MATERIAL_RAW;
-    else if (str_lc == "scene_graph")   result = treeface::MATERIAL_SCENE_GRAPH;
-    else if (str_lc == "screen_space")  result = treeface::MATERIAL_SCREEN_SPACE;
+    if      (str_lc == "raw")             result = treeface::MATERIAL_RAW;
+    else if (str_lc == "scene_graph")     result = treeface::MATERIAL_SCENE_GRAPH;
+    else if (str_lc == "screen_space")    result = treeface::MATERIAL_SCREEN_SPACE;
+    else if (str_lc == "vector_graphics") result = treeface::MATERIAL_VECTOR_GRAPHICS;
     else return false;
 
     return true;
@@ -24,9 +25,10 @@ treecore::String toString<treeface::MaterialType>( treeface::MaterialType value 
 {
     switch (value)
     {
-    case treeface::MATERIAL_RAW:          return "raw";
-    case treeface::MATERIAL_SCENE_GRAPH:  return "scene_graph";
-    case treeface::MATERIAL_SCREEN_SPACE: return "screen_space";
+    case treeface::MATERIAL_RAW:             return "raw";
+    case treeface::MATERIAL_SCENE_GRAPH:     return "scene_graph";
+    case treeface::MATERIAL_SCREEN_SPACE:    return "screen_space";
+    case treeface::MATERIAL_VECTOR_GRAPHICS: return "vector_graphics";
     default:
         throw std::invalid_argument( ( "invalid treeface material type enum: " + String( int(value) ) ).toRawUTF8() );
     }

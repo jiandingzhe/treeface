@@ -11,6 +11,7 @@ typedef enum
     MATERIAL_RAW = 0,
     MATERIAL_SCENE_GRAPH  = 1,
     MATERIAL_SCREEN_SPACE = 2,
+    MATERIAL_VECTOR_GRAPHICS = 3,
 } MaterialType;
 
 typedef enum

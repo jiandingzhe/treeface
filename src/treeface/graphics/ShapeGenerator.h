@@ -26,10 +26,6 @@ public:
     TREECORE_DECLARE_NON_COPYABLE( ShapeGenerator );
     TREECORE_DECLARE_NON_MOVABLE( ShapeGenerator );
 
-    static const treecore::Identifier UNIFORM_LINE_WIDTH;
-    static const treecore::Identifier UNIFORM_SKELETON_MIN;
-    static const treecore::Identifier UNIFORM_SKELETON_MAX;
-
     void clear();
 
     void close_path();

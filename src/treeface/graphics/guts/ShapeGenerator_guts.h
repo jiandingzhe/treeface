@@ -17,10 +17,6 @@
 namespace treeface
 {
 
-extern const treecore::String UNI_NAME_LINE_WIDTH;
-extern const treecore::String UNI_NAME_SKLT_MIN;
-extern const treecore::String UNI_NAME_SKLT_MAX;
-
 struct ShapeGenerator::Guts
 {
     treecore::Array<SubPath> subpaths;

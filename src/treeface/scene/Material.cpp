@@ -5,6 +5,7 @@
 
 #include "treeface/gl/ImageRef.h"
 #include "treeface/gl/Program.h"
+#include "treeface/Config.h"
 
 #include "treeface/scene/guts/Material_guts.h"
 
@@ -16,6 +17,16 @@
 #include <treecore/Result.h>
 #include <treecore/String.h>
 #include <treecore/StringRef.h>
+
+#if defined TREEFACE_GL_3_0
+#    error "TODO what should be it?"
+#elif defined TREEFACE_GL_3_3
+#    define TREEFACE_GLSL_VERSION_DEF "#version 330\n"
+#elif defined TREEFACE_GL_ES_3_0
+#    define TREEFACE_GLSL_VERSION_DEF "#version 300 es\n"
+#else
+#    error "unknown OpenGL version macro"
+#endif
 
 using namespace treecore;
 
@@ -95,6 +106,11 @@ void Material::unbind() noexcept
 
     glActiveTexture( GL_TEXTURE0 );
     m_program->unbind();
+}
+
+treecore::String Material::get_shader_source_addition() const noexcept
+{
+    return TREEFACE_GLSL_VERSION_DEF "\n";
 }
 
 } // namespace treeface
