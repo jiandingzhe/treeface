@@ -29,15 +29,15 @@ void SubPath::stroke_complex( Geometry::HostVertexCache&  result_vertices,
         const PathGlyph& glyph_prev = glyphs[i_glyph - 1];
         const PathGlyph& glyph      = glyphs[i_glyph];
 
-        Array<Vec2f> curr_glyph_skeleton;
+        Geometry::HostVertexCache curr_glyph_skeleton( sizeof(Vec2f) );
         glyph.segment( glyph_prev.end, curr_glyph_skeleton );
 
-        jassert( curr_glyph_skeleton.size() );
+        jassert( curr_glyph_skeleton.size() > 0 );
 
         // first glyph, render cap
         if (i_glyph == 1)
         {
-            v_begin = curr_glyph_skeleton.getFirst() - glyphs[0].end;
+            v_begin = curr_glyph_skeleton.get_first<Vec2f>() - glyphs[0].end;
             v_begin.normalize();
             v_prev = v_begin;
 
@@ -60,13 +60,13 @@ void SubPath::stroke_complex( Geometry::HostVertexCache&  result_vertices,
             if (i == 0)
             {
                 p1 = glyph_prev.end;
-                p2 = curr_glyph_skeleton[i];
+                p2 = curr_glyph_skeleton.get<Vec2f>( i );
                 use_line_join = true;
             }
             else
             {
-                p1 = curr_glyph_skeleton[i - 1];
-                p2 = curr_glyph_skeleton[i];
+                p1 = curr_glyph_skeleton.get<Vec2f>( i - 1 );
+                p2 = curr_glyph_skeleton.get<Vec2f>( i );
                 use_line_join = false;
             }
 

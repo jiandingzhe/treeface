@@ -191,7 +191,7 @@ void update_curve()
 
         Vec2f p_prev( 0.0f, handles_sort[0]->position.y );
         gen->move_to( p_prev );
-//        printf( "  move to %f %f\n", p_prev.x, p_prev.y );
+        //        printf( "  move to %f %f\n", p_prev.x, p_prev.y );
 
         for (const MouseHandleRect* curr_handle : handles_sort)
         {
@@ -199,17 +199,18 @@ void update_curve()
             Vec2f ctrl1( x_avg, p_prev.y );
             Vec2f ctrl2( x_avg, curr_handle->position.y );
             gen->curve_to( ctrl1, ctrl2, curr_handle->position );
-//            printf( "  bessel4 %f %f %f %f %f %f\n", ctrl1.x, ctrl1.y, ctrl2.x, ctrl2.y, curr_handle->position.x, curr_handle->position.y );
+            //            printf( "  bessel4 %f %f %f %f %f %f\n", ctrl1.x, ctrl1.y, ctrl2.x, ctrl2.y, curr_handle->position.x, curr_handle->position.y );
             p_prev = curr_handle->position;
         }
 
         gen->line_to( Vec2f( float(window_w), handles_sort.getLast()->position.y ) );
-//        printf( "  line %f %f\n", float(window_w), handles_sort.getLast()->position.y );
+        //        printf( "  line %f %f\n", float(window_w), handles_sort.getLast()->position.y );
 
         gen->stroke_complicated_preserve( style_thick, curve_stroke_geom );
 
         gen->line_to( Vec2f( float(window_w), float(window_h) ) );
         gen->line_to( Vec2f( 0.0f, float(window_h) ) );
+        gen->fill_simple( curve_fill_geom );
     }
 
     curve_stroke_geom->host_draw_end();
