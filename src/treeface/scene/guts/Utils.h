@@ -8,6 +8,7 @@
 namespace treeface
 {
 
+typedef std::pair<GLint, UniversalValue>         UniformKV;
 typedef treecore::HashMap<treecore::Identifier, UniversalValue> UniformMap;
 
 } // namespace treeface

@@ -54,31 +54,33 @@ bool VisualObject::has_uniform( const treecore::Identifier& name ) const noexcep
     return m_impl->uniforms.contains( name );
 }
 
-int32 VisualObject::collect_uniforms( UniformMap& result ) const
+int32 VisualObject::collect_uniforms( UniformMap& store ) const
 {
-    UniformMap::Iterator i_result( result );
+    UniformMap::Iterator i_result( store );
     int32 num_got = 0;
 
     for (UniformMap::ConstIterator i( m_impl->uniforms ); i.next(); )
     {
-        if ( result.insertOrSelect( i.key(), i.value(), i_result ) )
+        if ( store.insertOrSelect( i.key(), i.value(), i_result ) )
             num_got++;
     }
+
+    num_got += m_impl->geometry->collect_uniforms( store );
 
     return num_got;
 }
 
-SceneGraphMaterial* VisualObject::get_material() noexcept
+SceneGraphMaterial* VisualObject::get_material() const noexcept
 {
     return m_impl->material;
 }
 
-Geometry* VisualObject::get_geometry() noexcept
+Geometry* VisualObject::get_geometry() const noexcept
 {
     return m_impl->geometry;
 }
 
-VertexArray* VisualObject::get_vertex_array() noexcept
+VertexArray* VisualObject::get_vertex_array() const noexcept
 {
     return m_impl->vertex_array;
 }

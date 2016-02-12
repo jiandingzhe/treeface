@@ -206,6 +206,10 @@ add_executable(t_widget_hierarchy t_widget_hierarchy.cpp)
 target_link_libraries(t_widget_hierarchy
     treeface
     TestFramework
+    ${SDL2_LIBRARY}
+    ${OPENGL_gl_LIBRARY}
+    ${OPENGL_glu_LIBRARY}
+    ${GLEW_LIBRARY}
 )
 target_use_treecore(t_widget_hierarchy)
 
@@ -213,5 +217,9 @@ add_executable(t_node_uniform_hier t_node_uniform_hier.cpp)
 target_link_libraries(t_node_uniform_hier
     treeface
     TestFramework
+    ${SDL2_LIBRARY}
+    ${OPENGL_gl_LIBRARY}
+    ${OPENGL_glu_LIBRARY}
+    ${GLEW_LIBRARY}
 )
 target_use_treecore(t_node_uniform_hier)

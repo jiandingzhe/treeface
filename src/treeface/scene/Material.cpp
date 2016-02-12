@@ -41,7 +41,7 @@ Material::~Material()
         delete m_impl;
 }
 
-Program* Material::get_program() noexcept
+Program* Material::get_program() const noexcept
 {
     return m_program.get();
 }
@@ -51,7 +51,7 @@ int32 Material::get_num_textures() const noexcept
     return m_impl->layers.size();
 }
 
-Texture* Material::get_texture( treecore::int32 layer_idx ) noexcept
+Texture* Material::get_texture( treecore::int32 layer_idx ) const noexcept
 {
     if ( layer_idx >= m_impl->layers.size() )
         return nullptr;
@@ -59,7 +59,7 @@ Texture* Material::get_texture( treecore::int32 layer_idx ) noexcept
         return m_impl->layers[layer_idx].gl_texture.get();
 }
 
-Texture* Material::get_texture( treecore::StringRef name ) noexcept
+Texture* Material::get_texture( treecore::StringRef name ) const noexcept
 {
     for (int i = 0; i < m_impl->layers.size(); i++)
     {

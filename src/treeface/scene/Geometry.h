@@ -80,7 +80,7 @@ public:
     bool  get_uniform_value( const treecore::Identifier& name, UniversalValue& result ) const noexcept;
     void  set_uniform_value( const treecore::Identifier& name, const UniversalValue& value );
     bool  has_uniform( const treecore::Identifier& name ) const noexcept;
-    int32 collect_uniforms( treecore::HashMap<treecore::Identifier, UniversalValue>& result ) const;
+    int32 collect_uniforms( treecore::HashMap<treecore::Identifier, UniversalValue>& store ) const;
 
     void host_draw_begin();
 

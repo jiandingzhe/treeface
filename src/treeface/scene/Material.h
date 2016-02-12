@@ -30,10 +30,10 @@ public:
 
     virtual ~Material();
 
-    Program*        get_program() noexcept;
+    Program*        get_program() const noexcept;
     treecore::int32 get_num_textures() const noexcept;
-    Texture*        get_texture( treecore::int32 layer_idx ) noexcept;
-    Texture*        get_texture( treecore::StringRef name ) noexcept;
+    Texture*        get_texture( treecore::int32 layer_idx ) const noexcept;
+    Texture*        get_texture( treecore::StringRef name ) const noexcept;
 
     void bind() noexcept;
     void unbind() noexcept;

@@ -33,11 +33,11 @@ public:
     void  set_uniform_value( const treecore::Identifier& name, const UniversalValue& value );
     bool  get_uniform_value( const treecore::Identifier& name, UniversalValue& result ) const noexcept;
     bool  has_uniform( const treecore::Identifier& name ) const noexcept;
-    int32 collect_uniforms( treecore::HashMap<treecore::Identifier, UniversalValue>& result ) const;
+    int32 collect_uniforms( treecore::HashMap<treecore::Identifier, UniversalValue>& store ) const;
 
-    SceneGraphMaterial* get_material() noexcept;
-    Geometry*           get_geometry() noexcept;
-    VertexArray*        get_vertex_array() noexcept;
+    SceneGraphMaterial* get_material() const noexcept;
+    Geometry*           get_geometry() const noexcept;
+    VertexArray*        get_vertex_array() const noexcept;
     void                render() noexcept;
 
 protected:

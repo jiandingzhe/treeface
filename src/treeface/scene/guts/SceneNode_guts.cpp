@@ -70,6 +70,10 @@ void SceneNode::Guts::recur_update_uniform_cache_from_parent()
 void SceneNode::Guts::recur_invalidate_uniform_cache_to_child()
 {
     uniform_cache_dirty = true;
+
+    for (SceneObjectSlot& slot : objects)
+        slot.uniform_cache_dirty = true;
+
     for (RefCountHolder<SceneNode>& child : child_nodes)
         child->m_impl->recur_invalidate_uniform_cache_to_child();
 }

@@ -56,7 +56,7 @@ void SceneNode::set_transform( const Mat4f& value ) noexcept
 
 bool SceneNode::add_item( SceneObject* obj )
 {
-    if ( m_impl->items.add( obj ) )
+    if ( m_impl->objects.add( obj ) )
     {
         obj->m_node = this;
         return true;
@@ -69,14 +69,13 @@ bool SceneNode::add_item( SceneObject* obj )
 
 bool SceneNode::has_item( SceneObject* obj ) const noexcept
 {
-    return m_impl->items.contains( obj );
+    return m_impl->objects.contains( obj );
 }
 
 bool SceneNode::remove_item( SceneObject* obj )
 {
-    if ( m_impl->items.contains( obj ) )
+    if ( m_impl->objects.remove( obj ) )
     {
-        m_impl->items.removeValue( obj );
         obj->m_node = nullptr;
         return true;
     }
@@ -88,12 +87,12 @@ bool SceneNode::remove_item( SceneObject* obj )
 
 int32 SceneNode::get_num_items() const noexcept
 {
-    return m_impl->items.size();
+    return m_impl->objects.size();
 }
 
 SceneObject* SceneNode::get_item_at( int idx ) noexcept
 {
-    return m_impl->items[idx].get();
+    return m_impl->objects[idx].obj;
 }
 
 bool SceneNode::get_self_uniform_value( const treecore::Identifier& name, UniversalValue& result ) const noexcept

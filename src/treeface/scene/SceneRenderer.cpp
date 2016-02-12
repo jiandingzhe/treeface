@@ -15,6 +15,7 @@
 #include "treeface/scene/guts/Material_guts.h"
 #include "treeface/scene/guts/SceneNode_guts.h"
 #include "treeface/scene/guts/Scene_guts.h"
+#include "treeface/scene/guts/SceneObjectSlot.h"
 #include "treeface/scene/guts/Utils.h"
 
 #include <treecore/HashSet.h>
@@ -30,16 +31,17 @@ namespace treeface {
 typedef HashMultiMap<VisualObject*, SceneNode*>         TransformedItems;
 typedef HashMap<SceneGraphMaterial*, TransformedItems*> SceneCollection;
 
-struct ItemCombination
+struct RenderItem
 {
     SceneGraphMaterial* mat;
-    VisualObject*       obj;
+    SceneObjectSlot*    obj_slot;
+    VisualObject*       vis_obj;
     SceneNode* node;
 };
 
 struct ItemCombinationSorter
 {
-    int compareElements( ItemCombination a, ItemCombination b ) const noexcept
+    int compareElements( RenderItem a, RenderItem b ) const noexcept
     {
         // opaque items should go front
         if ( a.mat->is_translucent() )
@@ -58,9 +60,9 @@ struct ItemCombinationSorter
         else if (a.mat > b.mat)
             return 1;
 
-        if (a.obj < b.obj)
+        if (a.vis_obj < b.vis_obj)
             return -1;
-        else if (a.obj > b.obj)
+        else if (a.vis_obj > b.vis_obj)
             return 1;
 
         if (a.node < b.node)
@@ -72,24 +74,9 @@ struct ItemCombinationSorter
     }
 };
 
-void _set_uniforms_( Program* prog, const UniformMap& uniforms )
-{
-    for (UniformMap::ConstIterator it_uni( uniforms ); it_uni.next(); )
-    {
-        int i_uni = prog->get_uniform_index( it_uni.key() );
-        if (i_uni == -1) continue;
-
-        const UniformInfo& uni_info = prog->get_uniform( i_uni );
-        if ( uni_info.type != it_uni.value().get_type() )
-            continue;
-
-        prog->set_uniform( uni_info.location, it_uni.value() );
-    }
-}
-
 struct SceneRenderer::Impl
 {
-    Array<ItemCombination> combs;
+    Array<RenderItem> combs;
 };
 
 SceneRenderer::SceneRenderer()
@@ -116,7 +103,7 @@ void SceneRenderer::render( const Mat4f& matrix_proj,
         HashSet<Geometry*> dirty_geoms;
         for (int i = 0; i < m_impl->combs.size(); i++)
         {
-            Geometry* geom = m_impl->combs[i].obj->get_geometry();
+            Geometry* geom = m_impl->combs[i].vis_obj->get_geometry();
             if ( geom->is_dirty() ) dirty_geoms.insert( geom );
         }
 
@@ -135,19 +122,18 @@ void SceneRenderer::render( const Mat4f& matrix_proj,
     Vec4f light_direct_in_view = matrix_view * scene->get_global_light_direction();
 
     // traverse scene items
-    SceneGraphMaterial* prev_mat  = nullptr;
-    VisualObject*       prev_item = nullptr;
+    SceneGraphMaterial* prev_mat     = nullptr;
+    VisualObject*       prev_vis_obj = nullptr;
 
     for (int i = 0; i < m_impl->combs.size(); i++)
     {
-        ItemCombination curr_render = m_impl->combs[i];
-        Program*        prog        = curr_render.mat->get_program();
-        Geometry*       geom        = curr_render.obj->get_geometry();
-        bool update_obj_uniform     = false;
+        RenderItem curr_render        = m_impl->combs[i];
+        Program*   prog               = curr_render.mat->get_program();
+        bool       upload_obj_uniform = false;
 
         if (curr_render.mat != prev_mat)
         {
-            update_obj_uniform = true;
+            upload_obj_uniform = true;
             prev_mat = curr_render.mat;
             curr_render.mat->bind();
 
@@ -157,18 +143,25 @@ void SceneRenderer::render( const Mat4f& matrix_proj,
             prog->set_uniform( curr_render.mat->m_uni_light_ambient, scene->get_global_light_ambient() );
         }
 
-        if (curr_render.obj != prev_item)
+        if (curr_render.vis_obj != prev_vis_obj)
         {
-            update_obj_uniform = true;
-            prev_item = curr_render.obj;
-            curr_render.obj->get_vertex_array()->bind();
+            upload_obj_uniform = true;
+            prev_vis_obj       = curr_render.vis_obj;
+            curr_render.vis_obj->get_vertex_array()->bind();
         }
 
-        // TODO update geometry and visual obj's uniforms to current program
-        if (update_obj_uniform)
+        // update geometry and visual obj's uniforms to current program
+        // TODO we probably should remove hierarchical uniforms in scene graph
+        if (upload_obj_uniform)
         {
-            _set_uniforms_( prog, geom->m_impl->uniforms );
-            _set_uniforms_( prog, curr_render.obj->m_impl->uniforms );
+            if (!curr_render.obj_slot->uniform_cache_dirty)
+                curr_render.obj_slot->update_uniform_cache( curr_render.node );
+
+            for (int i_uni = 0; i_uni < curr_render.obj_slot->cached_uniforms.size(); i_uni++)
+            {
+                const UniformKV& kv = curr_render.obj_slot->cached_uniforms[i_uni];
+                prog->set_uniform( kv.first, kv.second );
+            }
         }
 
         // set current node's transformation and uniforms
@@ -183,11 +176,8 @@ void SceneRenderer::render( const Mat4f& matrix_proj,
         if (curr_render.node->m_impl->uniform_cache_dirty)
             curr_render.node->m_impl->recur_update_uniform_cache_from_parent();
 
-        _set_uniforms_( prog, curr_render.node->m_impl->cached_inherit_uniforms );
-        _set_uniforms_( prog, curr_render.node->m_impl->self_uniforms );
-
         // do draw
-        curr_render.obj->render();
+        curr_render.vis_obj->render();
     }
 
     VertexArray::unbind();
@@ -205,16 +195,16 @@ treecore::Result SceneRenderer::traverse_one_node( SceneNode* node ) noexcept
     jassert( node != nullptr );
     for (int i = 0; i < node->get_num_items(); i++)
     {
-        VisualObject* item = dynamic_cast<VisualObject*>( node->get_item_at( i ) );
-        jassert( item != nullptr );
+        VisualObject* vis_obj = dynamic_cast<VisualObject*>( node->get_item_at( i ) );
+        jassert( vis_obj != nullptr );
 
-        if (!item)
+        if (!vis_obj)
             continue;
 
-        SceneGraphMaterial* mat = item->get_material();
+        SceneGraphMaterial* mat = vis_obj->get_material();
         jassert( mat != nullptr );
 
-        m_impl->combs.add( { mat, item, node } );
+        m_impl->combs.add( { mat, &node->m_impl->objects[i], vis_obj, node } );
     }
     return Result::ok();
 }
