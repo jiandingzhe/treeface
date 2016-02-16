@@ -224,3 +224,15 @@ target_link_libraries(t_geom_visual_obj_chain
     ${GLEW_LIBRARY}
 )
 target_use_treecore(t_geom_visual_obj_chain)
+
+add_executable(t_visual_obj_uniform_hier t_visual_obj_uniform_hier.cpp)
+target_link_libraries(t_visual_obj_uniform_hier
+    treeface
+    TestFramework
+    ${SDL2_LIBRARY}
+    ${FreeImage_LIBRARIES}
+    ${OPENGL_gl_LIBRARY}
+    ${OPENGL_glu_LIBRARY}
+    ${GLEW_LIBRARY}
+)
+target_use_treecore(t_visual_obj_uniform_hier)

@@ -29,6 +29,7 @@ VisualObject::~VisualObject()
 void VisualObject::set_uniform_value( const treecore::Identifier& name, const UniversalValue& value )
 {
     m_impl->uniforms.set( name, value );
+    m_impl->uniform_cache_dirty = true;
 }
 
 bool VisualObject::get_uniform_value( const treecore::Identifier& name, UniversalValue& result ) const noexcept

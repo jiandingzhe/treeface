@@ -60,52 +60,62 @@ void TestFramework::content()
 
     RefCountHolder<GeometryManager>    geom_mgr = new GeometryManager();
     RefCountHolder<MaterialManager>    mat_mgr  = new MaterialManager();
-    RefCountHolder<Geometry>           geom     = geom_mgr->get_geometry( "geom_sphere1.json" );
-    RefCountHolder<SceneGraphMaterial> mat      = dynamic_cast<SceneGraphMaterial*>( mat_mgr->get_material( "material_plain.json" ) );
+    RefCountHolder<Geometry>           geom1    = geom_mgr->get_geometry( "geom_sphere1.json" );
+    RefCountHolder<Geometry>           geom2    = geom_mgr->get_geometry( "geom_sphere2.json" );
+    RefCountHolder<SceneGraphMaterial> mat      = dynamic_cast<SceneGraphMaterial*>( mat_mgr->get_material( "material_uni_color.json" ) );
 
-    OK( geom->m_impl->user_head == nullptr );
-    OK( geom->m_impl->user_tail == nullptr );
+    OK( geom1->m_impl->user_head == nullptr );
+    OK( geom1->m_impl->user_tail == nullptr );
 
-    RefCountHolder<VisualObject> obj1 = new VisualObject( geom, mat );
-    IS( geom->m_impl->user_head, obj1->m_impl );
-    OK( obj1->m_impl->same_geom_prev == nullptr );
-    OK( obj1->m_impl->same_geom_next == nullptr );
-    IS( geom->m_impl->user_tail, obj1->m_impl );
+    RefCountHolder<VisualObject> obj1 = new VisualObject( geom1, mat );
+    RefCountHolder<VisualObject> obj2 = new VisualObject( geom1, mat );
+    RefCountHolder<VisualObject> obj3 = new VisualObject( geom2, mat );
 
-    RefCountHolder<VisualObject> obj2 = new VisualObject( geom, mat );
-    IS( geom->m_impl->user_head, obj1->m_impl );
-    OK( obj1->m_impl->same_geom_prev == nullptr );
-    IS( obj1->m_impl->same_geom_next, obj2->m_impl );
-    IS( obj2->m_impl->same_geom_prev, obj1->m_impl );
-    OK( obj2->m_impl->same_geom_next == nullptr );
-    IS( geom->m_impl->user_tail, obj2->m_impl );
+    // everything should be initially empty
+    obj1->m_impl->update_uniform_cache();
+    obj2->m_impl->update_uniform_cache();
+    obj3->m_impl->update_uniform_cache();
+    OK( !obj1->m_impl->uniform_cache_dirty );
+    OK( !obj2->m_impl->uniform_cache_dirty );
+    OK( !obj3->m_impl->uniform_cache_dirty );
+    IS( obj1->m_impl->cached_uniforms.size(), 0 );
+    IS( obj2->m_impl->cached_uniforms.size(), 0 );
+    IS( obj3->m_impl->cached_uniforms.size(), 0 );
 
-    RefCountHolder<VisualObject> obj3 = new VisualObject( geom, mat );
-    IS( geom->m_impl->user_head, obj1->m_impl );
-    IS( geom->m_impl->user_head, obj1->m_impl );
-    OK( obj1->m_impl->same_geom_prev == nullptr );
-    IS( obj1->m_impl->same_geom_next, obj2->m_impl );
-    IS( obj2->m_impl->same_geom_prev, obj1->m_impl );
-    IS( obj2->m_impl->same_geom_next, obj3->m_impl );
-    IS( obj3->m_impl->same_geom_prev, obj2->m_impl );
-    OK( obj3->m_impl->same_geom_next == nullptr );
-    IS( geom->m_impl->user_tail, obj3->m_impl );
+    // set uniform value on geometry
+    geom1->set_uniform_value( "color", Vec4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
+    OK( obj1->m_impl->uniform_cache_dirty );
+    OK( obj2->m_impl->uniform_cache_dirty );
+    OK( !obj3->m_impl->uniform_cache_dirty );
 
-    obj2 = nullptr;
-    IS( geom->m_impl->user_head, obj1->m_impl );
-    OK( obj1->m_impl->same_geom_prev == nullptr );
-    IS( obj1->m_impl->same_geom_next, obj3->m_impl );
-    IS( obj3->m_impl->same_geom_prev, obj1->m_impl );
-    OK( obj3->m_impl->same_geom_next == nullptr );
-    IS( geom->m_impl->user_tail, obj3->m_impl );
+    obj1->m_impl->update_uniform_cache();
+    obj2->m_impl->update_uniform_cache();
 
-    obj1 = nullptr;
-    IS( geom->m_impl->user_head, obj3->m_impl );
-    OK( obj3->m_impl->same_geom_prev == nullptr );
-    OK( obj3->m_impl->same_geom_next == nullptr );
-    IS( geom->m_impl->user_tail, obj3->m_impl );
+    IS( obj1->m_impl->cached_uniforms.size(), 1 );
+    IS( obj2->m_impl->cached_uniforms.size(), 1 );
+    IS( obj3->m_impl->cached_uniforms.size(), 0 );
 
-    obj3 = nullptr;
-    OK( geom->m_impl->user_head == nullptr );
-    OK( geom->m_impl->user_tail == nullptr );
+    OK( Vec4f( obj1->m_impl->cached_uniforms[0].second ) == Vec4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
+    OK( Vec4f( obj2->m_impl->cached_uniforms[0].second ) == Vec4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
+
+    // set uniform value on visual object
+    // this should override geometry's value
+    obj2->set_uniform_value( "color", Vec4f( 1.0f, 1.0f, 1.0f, 1.0f ) );
+    OK( !obj1->m_impl->uniform_cache_dirty );
+    OK( obj2->m_impl->uniform_cache_dirty );
+    OK( !obj3->m_impl->uniform_cache_dirty );
+
+    obj2->m_impl->update_uniform_cache();
+
+    IS( obj2->m_impl->cached_uniforms.size(), 1 );
+    OK( Vec4f( obj2->m_impl->cached_uniforms[0].second ) == Vec4f( 1.0f, 1.0f, 1.0f, 1.0f ) );
+
+    // set non-exist uniform value
+    geom2->set_uniform_value( "foobar", 1.0f );
+    OK( !obj1->m_impl->uniform_cache_dirty );
+    OK( !obj2->m_impl->uniform_cache_dirty );
+    OK( obj3->m_impl->uniform_cache_dirty );
+
+    obj3->m_impl->update_uniform_cache();
+    IS( obj3->m_impl->cached_uniforms.size(), 0 );
 }

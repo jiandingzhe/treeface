@@ -65,7 +65,8 @@ void VisualObject::Impl::update_uniform_cache()
     for (UniformMap::ConstIterator it( cache_map ); it.next(); )
     {
         GLint uni_loc = material->get_program()->get_uniform_location( it.key() );
-        cached_uniforms.add( { uni_loc, it.value() } );
+        if (uni_loc >= 0)
+            cached_uniforms.add( { uni_loc, it.value() } );
     }
     uniform_cache_dirty = false;
 }

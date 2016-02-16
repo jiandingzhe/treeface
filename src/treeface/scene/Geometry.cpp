@@ -175,6 +175,10 @@ bool Geometry::get_uniform_value( const treecore::Identifier& name, UniversalVal
 void Geometry::set_uniform_value( const treecore::Identifier& name, const UniversalValue& value )
 {
     m_impl->uniforms.set( name, value );
+    for (VisualObject::Impl* vis_obj = m_impl->user_head; vis_obj != nullptr; vis_obj = vis_obj->same_geom_next)
+    {
+        vis_obj->uniform_cache_dirty = true;
+    }
 }
 
 bool Geometry::has_uniform( const treecore::Identifier& name ) const noexcept

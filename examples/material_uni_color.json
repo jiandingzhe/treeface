@@ -1,0 +1,4 @@
+{
+    "program": ["vert_fill_simple.glsl", "frag_uni_color.glsl"],
+    "type": "vector_graphics"
+}
