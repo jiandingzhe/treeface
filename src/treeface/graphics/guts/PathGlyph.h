@@ -4,6 +4,7 @@
 #include "treeface/base/Enums.h"
 #include "treeface/graphics/guts/Enums.h"
 #include "treeface/math/Vec2.h"
+#include "treeface/scene/Geometry.h"
 
 #include <treecore/Array.h>
 
@@ -57,9 +58,8 @@ struct PathGlyph
         , bessel4( PathGlyphBessel4 { ctrl1.x, ctrl1.y, ctrl2.x, ctrl2.y } )
     {}
 
-    void segment( const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices ) const
+    void segment( const Vec2f& prev_end, Geometry::HostVertexCache& result_vertices ) const
     {
-        result_vertices.clear();
         switch (type)
         {
         case GLYPH_TYPE_ARC: segment_arc( prev_end, result_vertices ); break;
@@ -70,9 +70,9 @@ struct PathGlyph
         }
     }
 
-    void segment_arc( const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices ) const;
+    void segment_arc( const Vec2f& prev_end, Geometry::HostVertexCache& result_vertices ) const;
 
-    void segment_bessel( const Vec2f& prev_end, treecore::Array<Vec2f>& result_vertices ) const;
+    void segment_bessel( const Vec2f& prev_end, Geometry::HostVertexCache& result_vertices ) const;
 
     GlyphType type;
     Vec2f     end;

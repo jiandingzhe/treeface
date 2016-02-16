@@ -141,23 +141,8 @@ void ShapeGenerator::Guts::triangulate( Geometry::HostVertexCache& result_vertic
             }
             else
             {
-                switch (glyph.type)
-                {
-                case GLYPH_TYPE_LINE:
-                    result_vertices.add( glyph.end );
-                    break;
-                case GLYPH_TYPE_ARC:
-                    //segment_arc(result_vertices, glyph);
-                    break;
-                case GLYPH_TYPE_BESSEL3:
-                    //segment_bessel3(result_vertices, glyph);
-                    break;
-                case GLYPH_TYPE_BESSEL4:
-                    //segment_bessel4(result_vertices, glyph);
-                    break;
-                default:
-                    jassertfalse; abort();
-                }
+                const PathGlyph& prev_glyph = subpath.glyphs[i_glyph - 1];
+                glyph.segment(prev_glyph.end, result_vertices);
             }
         }
     }
