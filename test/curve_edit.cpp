@@ -3,16 +3,18 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
+#include "treeface/base/PackageManager.h"
 #include "treeface/graphics/ShapeGenerator.h"
-#include "treeface/scene/MaterialManager.h"
 #include "treeface/math/Constants.h"
+#include "treeface/misc/UniversalValue.h"
 #include "treeface/scene/Geometry.h"
+#include "treeface/scene/MaterialManager.h"
 #include "treeface/scene/Scene.h"
 #include "treeface/scene/SceneGraphMaterial.h"
 #include "treeface/scene/SceneNode.h"
 #include "treeface/scene/SceneRenderer.h"
 #include "treeface/scene/VisualObject.h"
-#include "treeface/base/PackageManager.h"
+
 #include <set>
 
 #include <treecore/File.h>
@@ -138,20 +140,28 @@ void setup_scene()
     gen->fill_simple( geom );
     geom->host_draw_end();
 
-    Material* mat = scene->get_material_manager()->get_material( "material_stroke_rainbow.json" );
-    if (mat == nullptr)
-        die( "no material" );
-    SceneGraphMaterial* mat_sg = dynamic_cast<SceneGraphMaterial*>(mat);
+    Material* mat_stroke = scene->get_material_manager()->get_material( "material_stroke_rainbow.json" );
+    if (mat_stroke == nullptr)
+        die( "no stroke material" );
 
-    handle_visual = new VisualObject( geom, mat_sg );
+    Material* mat_fill = scene->get_material_manager()->get_material( "material_uni_color.json" );
+    if (mat_fill == nullptr)
+        die( "no fill material" );
+
+    SceneGraphMaterial* mat_stroke_sg = dynamic_cast<SceneGraphMaterial*>(mat_stroke);
+    SceneGraphMaterial* mat_fill_sg   = dynamic_cast<SceneGraphMaterial*>(mat_fill);
+
+    handle_visual = new VisualObject( geom, mat_stroke_sg );
 
     // create curve
     curve_stroke_geom   = ShapeGenerator::create_complicated_stroke_geometry();
     curve_fill_geom     = ShapeGenerator::create_fill_geometry();
-    curve_stroke_visual = new VisualObject( curve_stroke_geom, mat_sg );
-    curve_fill_visual   = new VisualObject( curve_fill_geom, mat_sg );
+    curve_stroke_visual = new VisualObject( curve_stroke_geom, mat_stroke_sg );
+    curve_fill_visual   = new VisualObject( curve_fill_geom, mat_fill_sg );
     scene->get_root_node()->add_item( curve_stroke_visual );
     scene->get_root_node()->add_item( curve_fill_visual );
+
+    curve_fill_geom->set_uniform_value( "color", Vec4f( 1.0f, 0.0f, 1.0f, 0.5f ) );
 }
 
 struct MouseHandleSorter
