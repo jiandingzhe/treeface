@@ -17,12 +17,8 @@ using namespace treecore;
 
 namespace treeface {
 
-VisualObject::VisualObject( Geometry* geom, SceneGraphMaterial* mat ): m_impl( new Impl() )
-{
-    m_impl->geometry     = geom;
-    m_impl->material     = mat;
-    m_impl->vertex_array = new VertexArray( geom->get_vertex_buffer(), geom->get_index_buffer(), geom->get_vertex_template(), mat->get_program() );
-}
+VisualObject::VisualObject( Geometry* geom, SceneGraphMaterial* mat ): m_impl( new Impl( geom, mat ) )
+{}
 
 VisualObject::~VisualObject()
 {
@@ -52,22 +48,6 @@ bool VisualObject::get_uniform_value( const treecore::Identifier& name, Universa
 bool VisualObject::has_uniform( const treecore::Identifier& name ) const noexcept
 {
     return m_impl->uniforms.contains( name );
-}
-
-int32 VisualObject::collect_uniforms( UniformMap& store ) const
-{
-    UniformMap::Iterator i_result( store );
-    int32 num_got = 0;
-
-    for (UniformMap::ConstIterator i( m_impl->uniforms ); i.next(); )
-    {
-        if ( store.insertOrSelect( i.key(), i.value(), i_result ) )
-            num_got++;
-    }
-
-    num_got += m_impl->geometry->collect_uniforms( store );
-
-    return num_got;
 }
 
 SceneGraphMaterial* VisualObject::get_material() const noexcept

@@ -3,7 +3,6 @@
 
 #include "treeface/scene/SceneNode.h"
 #include "treeface/scene/SceneObject.h"
-#include "treeface/scene/guts/SceneObjectSlot.h"
 #include "treeface/scene/guts/Utils.h"
 
 #include "treeface/math/Mat4.h"
@@ -32,17 +31,11 @@ struct SceneNode::Guts
     treecore::SortedSet<treecore::RefCountHolder<SceneNode> > child_nodes;
     SceneNode* parent = nullptr;
 
-    UniformMap self_uniforms;
-    UniformMap cached_inherit_uniforms;
-
-    SceneObjectSlotArray objects;
+    treecore::SortedSet<treecore::RefCountHolder<SceneObject> > objects;
 
     void update_trans_descendent();
     void update_global_descendent();
 
-    void update_uniform_cache();
-    void recur_update_uniform_cache_from_parent();
-    void recur_invalidate_uniform_cache_to_child();
 } TREECORE_ALN_END( 16 );
 
 } // namespace treeface

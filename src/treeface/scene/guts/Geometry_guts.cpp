@@ -16,6 +16,12 @@ Geometry::Guts::Guts( const VertexTemplate& vtx_temp, GLPrimitive primitive, boo
     , host_data_vtx( vtx_temp.vertex_size() )
 {}
 
+Geometry::Guts::~Guts()
+{
+    jassert( user_head == nullptr );
+    jassert( user_tail == nullptr );
+}
+
 void Geometry::Guts::upload_data()
 {
     jassert( !drawing );
@@ -36,6 +42,13 @@ void Geometry::Guts::upload_data()
 
         dirty = false;
     }
+}
+
+void Geometry::Guts::invalidate_user_uniform_cache()
+{
+    for (VisualObject::Impl* curr = user_head; curr != nullptr; curr = curr->same_geom_next)
+        curr->uniform_cache_dirty = true;
+
 }
 
 } // namespace treeface

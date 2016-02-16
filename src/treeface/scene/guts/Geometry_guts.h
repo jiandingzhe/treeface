@@ -6,6 +6,7 @@
 
 #include "treeface/scene/Geometry.h"
 #include "treeface/scene/guts/Utils.h"
+#include "treeface/scene/guts/VisualObject_guts.h"
 
 namespace treeface
 {
@@ -13,8 +14,14 @@ namespace treeface
 struct Geometry::Guts
 {
     Guts( const VertexTemplate& vtx_temp, GLPrimitive primitive, bool is_dynamic );
+    ~Guts();
 
     void upload_data();
+
+    void invalidate_user_uniform_cache();
+
+    VisualObject::Impl* user_head = nullptr;
+    VisualObject::Impl* user_tail = nullptr;
 
     const bool dynamic;
     bool       drawing = false;

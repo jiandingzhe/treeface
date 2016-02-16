@@ -11,6 +11,12 @@ namespace treeface
 typedef std::pair<GLint, UniversalValue>         UniformKV;
 typedef treecore::HashMap<treecore::Identifier, UniversalValue> UniformMap;
 
+inline void collect_uniforms(const UniformMap& store, UniformMap result)
+{
+    for (UniformMap::ConstIterator it(store); it.next(); )
+        result.tryInsert(it.key(), it.value());
+}
+
 } // namespace treeface
 
 #endif // TREEFACE_SCENE_GUTS_UTILS_H

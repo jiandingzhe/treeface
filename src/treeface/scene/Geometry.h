@@ -19,6 +19,8 @@ class Result;
 class var;
 } // namespace treecore
 
+class TestFramework;
+
 namespace treeface {
 
 class GLBuffer;
@@ -28,6 +30,7 @@ class VertexTemplate;
 
 class Geometry: public treecore::RefCountObject
 {
+    friend class ::TestFramework;
     friend class VisualObject;
     friend class SceneRenderer;
 

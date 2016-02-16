@@ -213,13 +213,14 @@ target_link_libraries(t_widget_hierarchy
 )
 target_use_treecore(t_widget_hierarchy)
 
-add_executable(t_node_uniform_hier t_node_uniform_hier.cpp)
-target_link_libraries(t_node_uniform_hier
+add_executable(t_geom_visual_obj_chain t_geom_visual_obj_chain.cpp)
+target_link_libraries(t_geom_visual_obj_chain
     treeface
     TestFramework
     ${SDL2_LIBRARY}
+    ${FreeImage_LIBRARIES}
     ${OPENGL_gl_LIBRARY}
     ${OPENGL_glu_LIBRARY}
     ${GLEW_LIBRARY}
 )
-target_use_treecore(t_node_uniform_hier)
+target_use_treecore(t_geom_visual_obj_chain)

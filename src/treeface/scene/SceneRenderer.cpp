@@ -15,7 +15,6 @@
 #include "treeface/scene/guts/Material_guts.h"
 #include "treeface/scene/guts/SceneNode_guts.h"
 #include "treeface/scene/guts/Scene_guts.h"
-#include "treeface/scene/guts/SceneObjectSlot.h"
 #include "treeface/scene/guts/Utils.h"
 
 #include <treecore/HashSet.h>
@@ -34,7 +33,6 @@ typedef HashMap<SceneGraphMaterial*, TransformedItems*> SceneCollection;
 struct RenderItem
 {
     SceneGraphMaterial* mat;
-    SceneObjectSlot*    obj_slot;
     VisualObject*       vis_obj;
     SceneNode* node;
 };
@@ -151,15 +149,14 @@ void SceneRenderer::render( const Mat4f& matrix_proj,
         }
 
         // update geometry and visual obj's uniforms to current program
-        // TODO we probably should remove hierarchical uniforms in scene graph
         if (upload_obj_uniform)
         {
-            if (!curr_render.obj_slot->uniform_cache_dirty)
-                curr_render.obj_slot->update_uniform_cache( curr_render.node );
+            if (curr_render.vis_obj->m_impl->uniform_cache_dirty)
+                curr_render.vis_obj->m_impl->update_uniform_cache();
 
-            for (int i_uni = 0; i_uni < curr_render.obj_slot->cached_uniforms.size(); i_uni++)
+            for (int i_uni = 0; i_uni < curr_render.vis_obj->m_impl->cached_uniforms.size(); i_uni++)
             {
-                const UniformKV& kv = curr_render.obj_slot->cached_uniforms[i_uni];
+                const UniformKV& kv = curr_render.vis_obj->m_impl->cached_uniforms[i_uni];
                 prog->set_uniform( kv.first, kv.second );
             }
         }
@@ -172,9 +169,6 @@ void SceneRenderer::render( const Mat4f& matrix_proj,
         prog->set_uniform( curr_render.mat->m_uni_model_view,      mat_model_view );
         prog->set_uniform( curr_render.mat->m_uni_model_view_proj, mat_model_view_proj );
         prog->set_uniform( curr_render.mat->m_uni_norm,            mat_model_view.get_normal_matrix() );
-
-        if (curr_render.node->m_impl->uniform_cache_dirty)
-            curr_render.node->m_impl->recur_update_uniform_cache_from_parent();
 
         // do draw
         curr_render.vis_obj->render();
@@ -204,7 +198,7 @@ treecore::Result SceneRenderer::traverse_one_node( SceneNode* node ) noexcept
         SceneGraphMaterial* mat = vis_obj->get_material();
         jassert( mat != nullptr );
 
-        m_impl->combs.add( { mat, &node->m_impl->objects[i], vis_obj, node } );
+        m_impl->combs.add( { mat, vis_obj, node } );
     }
     return Result::ok();
 }

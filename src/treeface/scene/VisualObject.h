@@ -12,6 +12,8 @@ class Result;
 class var;
 } // namespace treecore
 
+class TestFramework;
+
 namespace treeface {
 
 class SceneGraphMaterial;
@@ -21,7 +23,9 @@ class VertexArray;
 
 class VisualObject: public SceneObject
 {
+    friend class ::TestFramework;
     friend class SceneRenderer;
+    friend class Geometry;
 
 public:
     VisualObject( Geometry* geom, SceneGraphMaterial* mat );
@@ -33,7 +37,6 @@ public:
     void  set_uniform_value( const treecore::Identifier& name, const UniversalValue& value );
     bool  get_uniform_value( const treecore::Identifier& name, UniversalValue& result ) const noexcept;
     bool  has_uniform( const treecore::Identifier& name ) const noexcept;
-    int32 collect_uniforms( treecore::HashMap<treecore::Identifier, UniversalValue>& store ) const;
 
     SceneGraphMaterial* get_material() const noexcept;
     Geometry*           get_geometry() const noexcept;

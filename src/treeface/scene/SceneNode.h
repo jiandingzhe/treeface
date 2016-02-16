@@ -47,14 +47,6 @@ public:
     int32        get_num_items() const noexcept;
     SceneObject* get_item_at( int idx ) noexcept;
 
-    bool get_self_uniform_value( const treecore::Identifier& name, UniversalValue& result ) const noexcept;
-    bool get_uniform_value( const treecore::Identifier& name, UniversalValue& result );
-    void set_uniform_value( const treecore::Identifier& name, const UniversalValue& value );
-    bool has_self_uniform( const treecore::Identifier& name ) const noexcept;
-    bool has_uniform( const treecore::Identifier& name );
-
-    int32 collect_uniforms( treecore::HashMap<treecore::Identifier, UniversalValue>& result );
-
     bool       add_child( SceneNode* child );
     bool       has_child( SceneNode* child ) const noexcept;
     bool       remove_child( SceneNode* child ) noexcept;
