@@ -2,7 +2,9 @@
 #define TREEFACE_VERTEX_TEMPLATE_H
 
 #include "treeface/base/Common.h"
-#include "treeface/gl/VertexAttrib.h"
+
+#include "treeface/misc/TypedTemplate.h"
+#include "treeface/misc/TypedTemplateWithOffset.h"
 
 #include <treecore/IntTypes.h>
 #include <treecore/RefCountObject.h>
@@ -49,7 +51,7 @@ public:
     ///                   to GL device side. Only affects integral types.
     /// \param align      attribute alignment
     ///
-    void add_attrib(const VertexAttrib& attr, bool normalize, treecore::uint32 align);
+    void add_attrib(const TypedTemplate& attr, bool normalize, treecore::uint32 align);
 
     /**
      * @brief get the byte size of a single vertex
@@ -147,7 +149,7 @@ public:
      *
      * @return vertex attribute metadata.
      */
-    const HostVertexAttrib& get_attrib(int i_attr) const noexcept;
+    const TypedTemplateWithOffset& get_attrib(int i_attr) const noexcept;
 
     /**
      * @brief get vertex attribute of the specified element.
@@ -156,7 +158,7 @@ public:
      *
      * @return vertex attribute metadata.
      */
-    const HostVertexAttrib& get_elem_attrib(int i_elem) const noexcept;
+    const TypedTemplateWithOffset& get_elem_attrib(int i_elem) const noexcept;
 
     /**
      * @brief set value of specified element

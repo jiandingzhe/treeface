@@ -1,6 +1,5 @@
 #include "TestFramework.h"
 
-#include "treeface/gl/VertexAttrib.h"
 #include "treeface/gl/VertexTemplate.h"
 
 #include <treecore/Array.h>
@@ -12,10 +11,10 @@ using namespace treecore;
 
 void TestFramework::content()
 {
-    VertexAttrib attr1{ "position", 3, TFGL_TYPE_FLOAT };
-    VertexAttrib attr2{ "color", 4, TFGL_TYPE_UNSIGNED_BYTE };
-    VertexAttrib attr3{ "normal", 3, TFGL_TYPE_FLOAT };
-    VertexAttrib attr4{ "tangent", 3, TFGL_TYPE_FLOAT };
+    TypedTemplate attr1{ "position", 3, TFGL_TYPE_FLOAT };
+    TypedTemplate attr2{ "color", 4, TFGL_TYPE_UNSIGNED_BYTE };
+    TypedTemplate attr3{ "normal", 3, TFGL_TYPE_FLOAT };
+    TypedTemplate attr4{ "tangent", 3, TFGL_TYPE_FLOAT };
 
     VertexTemplate vtx_temp;
     vtx_temp.add_attrib( attr1, false, 4 );

@@ -1,15 +1,16 @@
 #ifndef TREEFACE_GL_PROGRAM_H
 #define TREEFACE_GL_PROGRAM_H
 
-#include "treeface/gl/VertexAttrib.h"
-
 #include "treeface/base/Common.h"
+
 #include "treeface/math/Vec2.h"
 #include "treeface/math/Vec3.h"
 #include "treeface/math/Vec4.h"
 #include "treeface/math/Mat2.h"
 #include "treeface/math/Mat3.h"
 #include "treeface/math/Mat4.h"
+
+#include "treeface/misc/TypedTemplateWithLocation.h"
 
 #include <treecore/Array.h>
 #include <treecore/HashMap.h>
@@ -27,15 +28,6 @@ class Material;
 class UniversalValue;
 struct VertexArray;
 
-struct UniformInfo: public VertexAttrib
-{
-    UniformInfo( const treecore::Identifier& name, treecore::int32 n_elem, GLType type, GLint location )
-        : VertexAttrib( name, n_elem, type )
-        , location( location )
-    {}
-
-    const GLint location;
-};
 
 /**
  * @brief The Program class represents a GLSL program with vertex shader and
@@ -118,6 +110,8 @@ public:
     ///
     int get_attribute_index( const treecore::Identifier& name ) const noexcept;
 
+    int get_attribute_index( const GLint attr_loc ) const noexcept;
+
     ///
     /// \brief get vertex attribute info by index
     ///
@@ -126,7 +120,9 @@ public:
     ///
     /// \see get_attribute_index
     ///
-    const VertexAttrib& get_attribute( int i_attr ) const noexcept;
+    const TypedTemplateWithLocation& get_attribute( int i_attr ) const noexcept;
+
+    GLint get_attribute_location( const treecore::Identifier& name ) const noexcept;
 
     /**
      * \brief get uniform index by name
@@ -160,7 +156,7 @@ public:
     ///
     /// \see get_uniform_index
     ///
-    const UniformInfo& get_uniform( int i_uni ) const noexcept;
+    const TypedTemplateWithLocation& get_uniform( int i_uni ) const noexcept;
 
     ///
     /// \brief get uniform location by name

@@ -1,7 +1,6 @@
 #include "treeface/gl/Errors.h"
 #include "treeface/gl/Program.h"
 #include "treeface/gl/TypeUtils.h"
-#include "treeface/gl/VertexAttrib.h"
 
 #include "treeface/misc/StringCast.h"
 #include "treeface/misc/UniversalValue.h"
@@ -18,12 +17,13 @@ namespace treeface {
 
 struct Program::Impl
 {
-    treecore::Array<VertexAttrib> attr_info;
-    treecore::HashMap<Identifier, int32> attr_idx_by_name;
+    treecore::Array<TypedTemplateWithLocation> attr_infos;
+    treecore::HashMap<Identifier, int32>       attr_idx_by_name; // name => index
+    treecore::HashMap<GLint, int32> attr_idx_by_loc; // location => index
 
-    treecore::Array<UniformInfo> uni_store;
-    treecore::HashMap<Identifier, int32> uni_idx_by_name; // name => index
-    treecore::HashMap<GLint,  int32>     uni_idx_by_loc; // location => index
+    treecore::Array<TypedTemplateWithLocation> uni_infos;
+    treecore::HashMap<Identifier, int32>       uni_idx_by_name; // name => index
+    treecore::HashMap<GLint,  int32>           uni_idx_by_loc; // location => index
 };
 
 Program::Program( const char* src_vert, const char* src_frag ): m_impl( new Impl() )
@@ -99,15 +99,21 @@ Program::Program( const char* src_vert, const char* src_frag ): m_impl( new Impl
         glGetActiveAttrib( m_program, i_attr, 256,
                            &attr_name_len, &attr_size, &attr_type, attr_name );
 
-        DBG( "  attribute " + String( i_attr ) + ": name " + String( attr_name ) + ", type " + toString( GLType( attr_type ) ) + ", size " + String( attr_size ) );
-
         if (attr_name_len == -1)
             die( "failed to get info for attribute %d", i_attr );
 
         if (attr_name_len >= 255)
             die( "attribute %d name is too long", i_attr );
 
-        m_impl->attr_info.add( { Identifier( attr_name ), attr_size, GLType( attr_type ) } );
+        // get vertex attribute location by name
+        GLint attr_loc = glGetAttribLocation( m_program, attr_name );
+        if (attr_loc == -1)
+            die( "failed to get location for attribute %s", attr_name );
+
+        DBG( "  attribute " + String( i_attr ) + " " + String( attr_name ) + " at " + String( attr_loc ) + ": type " + toString( GLType( attr_type ) ) + ", size " + String( attr_size ) );
+
+        // store vertex attribute info
+        m_impl->attr_infos.add( { Identifier( attr_name ), attr_size, GLType( attr_type ), attr_loc } );
         m_impl->attr_idx_by_name.set( Identifier( attr_name ), i_attr );
     }
 
@@ -142,7 +148,7 @@ Program::Program( const char* src_vert, const char* src_frag ): m_impl( new Impl
         DBG( "  uniform " + String( i_uni ) + " " + String( uni_name ) + " at " + String( uni_loc ) + ": type " + toString( GLType( uni_type ) ) + ", size " + String( uni_size ) );
 
         // store uniform info
-        m_impl->uni_store.add( { Identifier( uni_name ), uni_size, GLType( uni_type ), uni_loc } );
+        m_impl->uni_infos.add( { Identifier( uni_name ), uni_size, GLType( uni_type ), uni_loc } );
         m_impl->uni_idx_by_name.set( Identifier( uni_name ), i_uni );
         m_impl->uni_idx_by_loc.set( uni_loc, i_uni );
     }
@@ -234,7 +240,7 @@ void Program::set_uniform( GLint uni_loc, GLint value ) const noexcept
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
     jassert( i_uni >= 0 );
-    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
+    const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
     jassert( uni_info.n_elem == 1 );
     jassert( uni_info.type == GL_INT ||
              uni_info.type == GL_BOOL ||
@@ -256,7 +262,7 @@ void Program::set_uniform( GLint uni_loc, GLuint value ) const noexcept
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
     jassert( i_uni >= 0 );
-    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
+    const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
     jassert( uni_info.n_elem == 1 );
     jassert( uni_info.type == GL_UNSIGNED_INT ||
              uni_info.type == GL_BOOL );
@@ -271,7 +277,7 @@ void Program::set_uniform( GLint uni_loc, GLfloat value ) const noexcept
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
     jassert( i_uni >= 0 );
-    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
+    const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
     jassert( uni_info.n_elem == 1 );
     jassert( uni_info.type == GL_FLOAT ||
              uni_info.type == GL_BOOL );
@@ -286,7 +292,7 @@ void Program::set_uniform( GLint uni_loc, const Vec2f& value ) const noexcept
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
     jassert( i_uni >= 0 );
-    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
+    const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
     jassert( uni_info.n_elem == 1 );
     jassert( uni_info.type == TFGL_TYPE_VEC2F );
 #endif
@@ -300,7 +306,7 @@ void Program::set_uniform( GLint uni_loc, const Vec3f& value ) const noexcept
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
     jassert( i_uni >= 0 );
-    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
+    const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
     jassert( uni_info.n_elem == 1 );
     jassert( uni_info.type == TFGL_TYPE_VEC3F );
 #endif
@@ -314,7 +320,7 @@ void Program::set_uniform( GLint uni_loc, const Vec4f& value ) const noexcept
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
     jassert( i_uni >= 0 );
-    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
+    const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
     jassert( uni_info.n_elem == 1 );
     jassert( uni_info.type == TFGL_TYPE_VEC4F );
 #endif
@@ -328,7 +334,7 @@ void Program::set_uniform( GLint uni_loc, const Mat2f& value ) const noexcept
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
     jassert( i_uni >= 0 );
-    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
+    const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
     jassert( uni_info.n_elem == 1 );
     jassert( uni_info.type == TFGL_TYPE_MAT2F );
 #endif
@@ -342,7 +348,7 @@ void Program::set_uniform( GLint uni_loc, const Mat3f& value ) const noexcept
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
     jassert( i_uni >= 0 );
-    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
+    const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
     jassert( uni_info.n_elem == 1 );
     jassert( uni_info.type == TFGL_TYPE_MAT3F );
 #endif
@@ -356,7 +362,7 @@ void Program::set_uniform( GLint uni_loc, const Mat4f& value ) const noexcept
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
     jassert( i_uni >= 0 );
-    const UniformInfo& uni_info = m_impl->uni_store[i_uni];
+    const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
     jassert( uni_info.n_elem == 1 );
     jassert( uni_info.type == TFGL_TYPE_MAT4F );
 #endif
@@ -371,7 +377,7 @@ void Program::set_uniform( GLint uni_loc, const UniversalValue& value ) const no
     // skip values with conflict type
     {
         int i_uni = get_uniform_index( uni_loc );
-        const UniformInfo& uni_info = m_impl->uni_store[i_uni];
+        const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
         jassert( i_uni >= 0 );
 
         if (value.get_type() != uni_info.type)
@@ -406,49 +412,66 @@ void Program::set_uniform( GLint uni_loc, const UniversalValue& value ) const no
 
 int Program::get_attribute_index( const treecore::Identifier& name ) const noexcept
 {
-    if ( m_impl->attr_idx_by_name.contains( name ) )
-        return m_impl->attr_idx_by_name[name];
+    treecore::HashMap<Identifier, int32>::ConstIterator it( m_impl->attr_idx_by_name );
+    if ( m_impl->attr_idx_by_name.select( name, it ) )
+        return it.value();
     else
         return -1;
 }
 
-const VertexAttrib& Program::get_attribute( int i_attr ) const noexcept
+int Program::get_attribute_index( const GLint attr_loc ) const noexcept
 {
-    return m_impl->attr_info[i_attr];
+    treecore::HashMap<GLint, int32>::ConstIterator it( m_impl->attr_idx_by_loc );
+    if ( m_impl->uni_idx_by_loc.select( attr_loc, it ) )
+        return it.value();
+    else
+        return -1;
+}
+
+const TypedTemplateWithLocation& Program::get_attribute( int i_attr ) const noexcept
+{
+    return m_impl->attr_infos[i_attr];
+}
+
+GLint Program::get_attribute_location( const treecore::Identifier& name ) const noexcept
+{
+    treecore::HashMap<Identifier, int32>::ConstIterator it( m_impl->attr_idx_by_name );
+    if ( m_impl->attr_idx_by_name.select( name, it ) )
+        return m_impl->attr_infos[it.value()].location;
+    else
+        return -1;
 }
 
 int Program::get_uniform_index( const treecore::Identifier& name ) const noexcept
 {
-    if ( m_impl->uni_idx_by_name.contains( name ) )
-        return m_impl->uni_idx_by_name[name];
+    treecore::HashMap<Identifier, int32>::ConstIterator it( m_impl->uni_idx_by_name );
+    if ( m_impl->uni_idx_by_name.select( name, it ) )
+        return it.value();
     else
         return -1;
 }
 
 int Program::get_uniform_index( const GLint uni_loc ) const noexcept
 {
-    if ( m_impl->uni_idx_by_loc.contains( uni_loc ) )
-        return m_impl->uni_idx_by_loc[uni_loc];
+    treecore::HashMap<GLint, int32>::ConstIterator it( m_impl->uni_idx_by_loc );
+    if ( m_impl->uni_idx_by_loc.select( uni_loc, it ) )
+        return it.value();
     else
         return -1;
 }
 
-const UniformInfo& Program::get_uniform( int i_uni ) const noexcept
+const TypedTemplateWithLocation& Program::get_uniform( int i_uni ) const noexcept
 {
-    return m_impl->uni_store[i_uni];
+    return m_impl->uni_infos[i_uni];
 }
 
 GLint Program::get_uniform_location( const treecore::Identifier& name ) const noexcept
 {
-    if ( m_impl->uni_idx_by_name.contains( name ) )
-    {
-        int index = m_impl->uni_idx_by_name[name];
-        return m_impl->uni_store[index].location;
-    }
+    treecore::HashMap<Identifier, int32>::ConstIterator it( m_impl->uni_idx_by_name );
+    if ( m_impl->uni_idx_by_name.select( name, it ) )
+        return m_impl->uni_infos[it.value()].location;
     else
-    {
         return -1;
-    }
 }
 
 } // namespace treeface

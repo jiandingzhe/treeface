@@ -13,7 +13,6 @@
 #include "treeface/gl/GLBuffer.h"
 #include "treeface/gl/Program.h"
 #include "treeface/gl/VertexArray.h"
-#include "treeface/gl/VertexAttrib.h"
 #include "treeface/gl/VertexTemplate.h"
 
 #include <treecore/AlignedMalloc.h>
@@ -51,8 +50,8 @@ struct ColoredPoint
     float a;
 };
 
-VertexAttrib attr_desc_position{"in_position", 4, treeface::TFGL_TYPE_FLOAT};
-VertexAttrib attr_desc_color{"in_color", 4, treeface::TFGL_TYPE_FLOAT};
+TypedTemplate attr_desc_position{"in_position", 4, treeface::TFGL_TYPE_FLOAT};
+TypedTemplate attr_desc_color{"in_color", 4, treeface::TFGL_TYPE_FLOAT};
 
 const char* src_vertex =
     "#version 130\n"

@@ -2,7 +2,6 @@
 
 #include "treeface/gl/Errors.h"
 #include "treeface/gl/VertexArray.h"
-#include "treeface/gl/VertexAttrib.h"
 
 #include "treeface/misc/Errors.h"
 #include "treeface/misc/PropertyValidator.h"

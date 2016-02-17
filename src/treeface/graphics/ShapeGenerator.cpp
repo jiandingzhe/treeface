@@ -177,10 +177,10 @@ struct StrokeTemplateHelper: public treecore::RefCountObject, public treecore::R
 {
     StrokeTemplateHelper()
     {
-        value.add_attrib( VertexAttrib( "position", 2, TFGL_TYPE_FLOAT ),      false, 8 );
-        value.add_attrib( VertexAttrib( "tangent_unorm", 2, TFGL_TYPE_FLOAT ), false, 8 );
-        value.add_attrib( VertexAttrib( "trip", 1, TFGL_TYPE_FLOAT ),          false, 4 );
-        value.add_attrib( VertexAttrib( "side", 1, TFGL_TYPE_FLOAT ),          false, 4 );
+        value.add_attrib( TypedTemplate( "position", 2, TFGL_TYPE_FLOAT ),      false, 8 );
+        value.add_attrib( TypedTemplate( "tangent_unorm", 2, TFGL_TYPE_FLOAT ), false, 8 );
+        value.add_attrib( TypedTemplate( "trip", 1, TFGL_TYPE_FLOAT ),          false, 4 );
+        value.add_attrib( TypedTemplate( "side", 1, TFGL_TYPE_FLOAT ),          false, 4 );
         jassert( sizeof(StrokeVertex) == value.vertex_size() );
     }
 
@@ -193,7 +193,7 @@ struct FillTemplateHelper: public treecore::RefCountObject, public treecore::Ref
 {
     FillTemplateHelper()
     {
-        value.add_attrib( VertexAttrib( "position", 2, TFGL_TYPE_FLOAT ), false, 8 );
+        value.add_attrib( TypedTemplate( "position", 2, TFGL_TYPE_FLOAT ), false, 8 );
         jassert( sizeof(Vec2f) == value.vertex_size() );
     }
 

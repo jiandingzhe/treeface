@@ -30,7 +30,7 @@ inline GLsizei _expand_to_align_( GLsizei value, GLsizei align )
 
 struct VertexTemplate::Impl
 {
-    treecore::Array<HostVertexAttrib> attrs;
+    treecore::Array<TypedTemplateWithOffset> attrs;
     treecore::Array<size_t> elem_offsets;
     treecore::Array<int>    elem_attr_index;
     uint32 size = 0;
@@ -93,7 +93,7 @@ VertexTemplate::VertexTemplate( const treecore::var& list_node ): m_impl( new Im
         if ( !fromString( attr_kv[KEY_N_ELEM], n_elem ) )
             throw ConfigParseError( "failed to parse number of elements from: " + attr_kv[KEY_N_ELEM].toString() );
 
-        VertexAttrib attr_kern( attr_kv[KEY_NAME].toString(), n_elem, type );
+        TypedTemplate attr_kern( attr_kv[KEY_NAME].toString(), n_elem, type );
 
         uint32 align = size_of_gl_type( type );
         if ( attr_kv.contains( KEY_ALN ) && !fromString( attr_kv[KEY_ALN], align ) )
@@ -121,13 +121,13 @@ VertexTemplate::~VertexTemplate()
         delete m_impl;
 }
 
-void VertexTemplate::add_attrib( const VertexAttrib& attr, bool normalize, uint32 align )
+void VertexTemplate::add_attrib( const TypedTemplate& attr, bool normalize, uint32 align )
 {
     jassert( align <= attr.size() );
 
     size_t attr_offset = _expand_to_align_( m_impl->size, align );
     int    prev_n_attr = m_impl->attrs.size();
-    m_impl->attrs.add( HostVertexAttrib( attr, attr_offset, normalize ) );
+    m_impl->attrs.add( TypedTemplateWithOffset( attr, attr_offset, normalize ) );
 
     size_t elem_offset = attr_offset;
     int    elem_size   = size_of_gl_type( attr.type );
@@ -165,7 +165,7 @@ size_t VertexTemplate::get_elem_offset( int i_elem ) const noexcept
 
 size_t VertexTemplate::get_elem_offset( int i_attr, int i_elem_in_attr ) const noexcept
 {
-    const HostVertexAttrib attr = m_impl->attrs[i_attr];
+    const TypedTemplateWithOffset& attr = m_impl->attrs[i_attr];
     return attr.offset + attr.get_elem_offset( i_elem_in_attr );
 }
 
@@ -180,12 +180,12 @@ int32 VertexTemplate::get_elem_size( int i_elem ) const noexcept
     return size_of_gl_type( get_elem_type( i_elem ) );
 }
 
-const HostVertexAttrib& VertexTemplate::get_attrib( int i_attr ) const noexcept
+const TypedTemplateWithOffset& VertexTemplate::get_attrib( int i_attr ) const noexcept
 {
     return m_impl->attrs[i_attr];
 }
 
-const HostVertexAttrib& VertexTemplate::get_elem_attrib( int i_elem ) const noexcept
+const TypedTemplateWithOffset& VertexTemplate::get_elem_attrib( int i_elem ) const noexcept
 {
     int i_attr = m_impl->elem_attr_index[i_elem];
     return m_impl->attrs[i_attr];
@@ -201,22 +201,22 @@ void VertexTemplate::set_value_at( void* vertex, int i_elem, const treecore::var
     switch (type)
     {
     case GL_BYTE:
-        *( (GLbyte*) value_p ) = int(value); break;
+        *( (GLbyte*) value_p ) = GLbyte( int(value) ); break;
     case GL_UNSIGNED_BYTE:
-        *( (GLubyte*) value_p ) = int(value); break;
+        *( (GLubyte*) value_p ) = GLubyte( int(value) ); break;
     case GL_SHORT:
-        *( (GLshort*) value_p ) = int(value); break;
+        *( (GLshort*) value_p ) = GLshort( int(value) ); break;
     case GL_UNSIGNED_SHORT:
     case GL_UNSIGNED_SHORT_5_5_5_1: // TODO should we support composite type?
     case GL_UNSIGNED_SHORT_5_6_5:
     case GL_UNSIGNED_SHORT_4_4_4_4:
-        *( (GLushort*) value_p ) = int(value); break;
+        *( (GLushort*) value_p ) = GLushort( int(value) ); break;
     case GL_INT:
-        *( (GLint*) value_p ) = int(value); break;
+        *( (GLint*) value_p ) = GLint( int(value) ); break;
     case GL_UNSIGNED_INT:
     case GL_UNSIGNED_INT_8_8_8_8: // TODO should we support composite type?
     case GL_UNSIGNED_INT_10_10_10_2:
-        *( (GLuint*) value_p ) = int(value); break;
+        *( (GLuint*) value_p ) = GLuint( int(value) ); break;
     case GL_FLOAT:
         *( (GLfloat*) value_p ) = float(value); break;
     case GL_DOUBLE:

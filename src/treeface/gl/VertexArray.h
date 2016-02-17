@@ -4,7 +4,6 @@
 #include "treeface/base/Common.h"
 
 #include "treeface/gl/GLBuffer.h"
-#include "treeface/gl/VertexAttrib.h"
 #include "treeface/gl/VertexTemplate.h"
 
 #include <treecore/ArrayRef.h>

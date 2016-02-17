@@ -14,17 +14,16 @@
 #include "treeface/gl/Program.h"
 #include "treeface/gl/Texture.h"
 #include "treeface/gl/VertexArray.h"
-#include "treeface/gl/VertexAttrib.h"
 #include "treeface/gl/VertexTemplate.h"
 
 using namespace treecore;
 using namespace treeface;
 
 const float data_vertices[] = {
-    -0.5,  -0.5, 0, 1, 0, 0,
-    0.5,   -0.5, 0, 1, 1, 0,
-    -0.5,   0.5, 0, 1, 0, 1,
-    0.5,    0.5, 0, 1, 1, 1
+    -0.5,   -0.5, 0, 1, 0, 0,
+    0.5,    -0.5, 0, 1, 1, 0,
+    -0.5,    0.5, 0, 1, 0, 1,
+    0.5,     0.5, 0, 1, 1, 1
 };
 
 const uint16 data_indices[6] = { 0, 1, 2, 2, 1, 3 };
@@ -42,9 +41,9 @@ int window_w = 400;
 int window_h = 400;
 
 uint8 data_texture1[] = {
-    0xff,       0,    0,    0xff,       0,    0xff,    0,    0xff,       0,       0,    0xff, 0xff,
-    0xff,       0, 0xff,    0xff,    0xff,    0xff,    0,    0xff,       0,    0xff,    0xff, 0xff,
-    0,          0,    0,    0xff,    0x7f,    0x7f, 0x7f,    0xff,    0xff,    0xff,    0xff, 0xff,
+    0xff,          0,    0,    0xff,       0,    0xff,    0,    0xff,       0,       0,    0xff, 0xff,
+    0xff,          0, 0xff,    0xff,    0xff,    0xff,    0,    0xff,       0,    0xff,    0xff, 0xff,
+    0,             0,    0,    0xff,    0x7f,    0x7f, 0x7f,    0xff,    0xff,    0xff,    0xff, 0xff,
 };
 
 TextureCompatibleImageRef img_texture1{ TFGL_IMAGE_FORMAT_RGBA, TFGL_INTERNAL_IMAGE_FORMAT_RGBA8, TFGL_IMAGE_DATA_UNSIGNED_BYTE, 3, 3, data_texture1 };
@@ -161,8 +160,8 @@ void build_up_gl()
     texture->set_mag_filter( TFGL_TEXTURE_NEAREST );
     texture->unbind();
 
-    VertexAttrib   attr1{ "position",     4, TFGL_TYPE_FLOAT };
-    VertexAttrib   attr2{ "tex_position", 2, TFGL_TYPE_FLOAT };
+    TypedTemplate  attr1{ "position",     4, TFGL_TYPE_FLOAT };
+    TypedTemplate  attr2{ "tex_position", 2, TFGL_TYPE_FLOAT };
     VertexTemplate vtx_temp;
     vtx_temp.add_attrib( attr1, false, 0 );
     vtx_temp.add_attrib( attr2, false, 0 );
