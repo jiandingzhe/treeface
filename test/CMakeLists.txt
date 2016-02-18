@@ -118,6 +118,17 @@ target_link_libraries(curve_edit
 )
 target_use_treecore(curve_edit)
 
+add_executable(fbodemo fbodemo.cpp)
+target_link_libraries(fbodemo
+    treeface
+    ${GLEW_LIBRARY}
+    ${FreeImage_LIBRARIES}
+    ${OPENGL_gl_LIBRARY}
+    ${OPENGL_glu_LIBRARY}
+    ${SDL2_LIBRARY}
+)
+target_use_treecore(fbodemo)
+
 if(TREEFACE_OS STREQUAL "WINDOWS")
     set_target_properties(
         interact

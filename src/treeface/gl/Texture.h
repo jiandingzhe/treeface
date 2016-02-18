@@ -19,6 +19,8 @@ class var;
 
 namespace treeface {
 
+class Framebuffer;
+
 extern const GLenum TEXTURE_UNITS[32];
 
 /**
@@ -26,6 +28,8 @@ extern const GLenum TEXTURE_UNITS[32];
  */
 class Texture: public treecore::RefCountObject
 {
+    friend class Framebuffer;
+
 public:
     class BindScope
     {
