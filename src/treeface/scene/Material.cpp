@@ -32,13 +32,22 @@ using namespace treecore;
 
 namespace treeface {
 
-Material::Material(): m_impl( new Impl() )
+Material::Material()
+    : m_impl( new Impl() )
 {}
 
 Material::~Material()
 {
     if (m_impl)
         delete m_impl;
+}
+
+void Material::init( Program* program ) noexcept
+{
+    if (m_program.get() != nullptr)
+        return;
+
+    m_program = program;
 }
 
 Program* Material::get_program() const noexcept
@@ -51,6 +60,19 @@ int32 Material::get_num_textures() const noexcept
     return m_impl->layers.size();
 }
 
+bool Material::add_texture( const treecore::Identifier& name, Texture* tex )
+{
+    GLint tex_uni_loc = m_program->get_uniform_location( name );
+    if (tex_uni_loc < 0)
+        return false;
+
+    if (get_texture( name ) != nullptr)
+        return false;
+
+    m_impl->layers.add( TextureLayer{ name, tex, tex_uni_loc } );
+    return true;
+}
+
 Texture* Material::get_texture( treecore::int32 layer_idx ) const noexcept
 {
     if ( layer_idx >= m_impl->layers.size() )
@@ -59,7 +81,7 @@ Texture* Material::get_texture( treecore::int32 layer_idx ) const noexcept
         return m_impl->layers[layer_idx].gl_texture.get();
 }
 
-Texture* Material::get_texture( treecore::StringRef name ) const noexcept
+Texture* Material::get_texture( const treecore::Identifier& name ) const noexcept
 {
     for (int i = 0; i < m_impl->layers.size(); i++)
     {
@@ -68,6 +90,19 @@ Texture* Material::get_texture( treecore::StringRef name ) const noexcept
     }
 
     return nullptr;
+}
+
+bool Material::remove_texture( const treecore::Identifier& name )
+{
+    for (int i = 0; i < m_impl->layers.size(); i++)
+    {
+        if (m_impl->layers[i].name == name)
+        {
+            m_impl->layers.remove( i );
+            return true;
+        }
+    }
+    return false;
 }
 
 void Material::bind() noexcept
@@ -82,7 +117,7 @@ void Material::bind() noexcept
     }
 
     // use program
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture( GL_TEXTURE0 );
     m_program->bind();
 
     // set samplers to program

@@ -4,7 +4,7 @@
 #include "treeface/base/Common.h"
 
 #include <treecore/RefCountHolder.h>
-#include <treecore/IntTypes.h>
+#include <treecore/Identifier.h>
 #include <treecore/RefCountObject.h>
 
 namespace treecore {
@@ -30,10 +30,13 @@ public:
 
     virtual ~Material();
 
+    void            init( Program* program ) noexcept;
     Program*        get_program() const noexcept;
     treecore::int32 get_num_textures() const noexcept;
+    bool            add_texture( const treecore::Identifier& name, Texture* tex );
     Texture*        get_texture( treecore::int32 layer_idx ) const noexcept;
-    Texture*        get_texture( treecore::StringRef name ) const noexcept;
+    Texture*        get_texture( const treecore::Identifier& name ) const noexcept;
+    bool            remove_texture( const treecore::Identifier& name );
 
     void bind() noexcept;
     void unbind() noexcept;

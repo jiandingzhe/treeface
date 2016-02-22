@@ -133,14 +133,14 @@ Material * MaterialManager::build_material( const treecore::Identifier & name, c
     String src_frag = mat->get_shader_source_addition() + (const char*) src_frag_raw.getData();
 
     // create and build shader program
-    mat->m_program = new Program( src_vert.toRawUTF8(), src_frag.toRawUTF8() );
+    mat->init( new Program( src_vert.toRawUTF8(), src_frag.toRawUTF8() ) );
 
     //
     // load properties
     // get scene additive uniforms
     //
     SceneGraphMaterial* sgmat = dynamic_cast<SceneGraphMaterial*>(mat);
-    if ( sgmat != nullptr )
+    if (sgmat != nullptr)
     {
         // scene material defined uniforms
         const Program* prog = mat->m_program;
@@ -175,16 +175,8 @@ Material * MaterialManager::build_material( const treecore::Identifier & name, c
             const var& tex_node = (*tex_list)[i_tex];
 
             Texture* tex_obj = new Texture( tex_node );
-
-            // create texture layer
-            // the "name" property should has been checked inside build method of Texture object
             String tex_name = tex_node.getProperty( Identifier( "name" ), var::null ).toString();
-            int    uni_idx  = mat->m_program->get_uniform_location( tex_name );
-
-            if (uni_idx >= 0)
-                mat->m_impl->layers.add( { tex_name, tex_obj, uni_idx } );
-            else
-                warn( "program don't have texture unit named %s", tex_name.toRawUTF8() );
+            mat->add_texture( Identifier( tex_name ), tex_obj );
         }
     }
 

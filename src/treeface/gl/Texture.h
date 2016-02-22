@@ -119,6 +119,8 @@ public:
 
     virtual ~Texture();
 
+    GLTextureType get_type() const noexcept { return m_type; }
+
     float get_min_lod() const noexcept
     {
         jassert( is_bound() );

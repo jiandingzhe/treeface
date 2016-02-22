@@ -24,9 +24,6 @@ const treecore::Identifier SceneGraphMaterial::UNIFORM_GLOBAL_LIGHT_DIRECTION( N
 const treecore::Identifier SceneGraphMaterial::UNIFORM_GLOBAL_LIGHT_COLOR( NAME_GLB_L_COLOR );
 const treecore::Identifier SceneGraphMaterial::UNIFORM_GLOBAL_LIGHT_AMBIENT( NAME_GLB_L_AMB );
 
-SceneGraphMaterial::SceneGraphMaterial()
-{}
-
 SceneGraphMaterial::~SceneGraphMaterial()
 {}
 
