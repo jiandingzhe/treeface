@@ -29,9 +29,37 @@ using namespace treecore;
 
 namespace treeface {
 
+struct ProgramKey
+{
+    Identifier   name_vert;
+    Identifier   name_frag;
+    MaterialType type;
+};
+
+bool operator ==( const ProgramKey& a, const ProgramKey& b )
+{
+    return a.name_vert == b.name_vert && a.name_frag == b.name_frag && a.type == b.type;
+}
+
+struct ProgramKeyHasher
+{
+    int generateHash( const ProgramKey& key, int limit ) const noexcept
+    {
+        pointer_sized_uint result = pointer_sized_uint( key.name_vert.getPtr() ) +
+                                    pointer_sized_uint( key.name_frag.getPtr() ) +
+                                    pointer_sized_uint( key.type );
+        return int(result) % limit;
+    }
+};
+
+typedef HashMap<ProgramKey, RefCountHolder<Program>, ProgramKeyHasher> ProgramMap;
+
 struct MaterialManager::Impl
 {
     HashMap<Identifier, RefCountHolder<Material> > materials;
+    ProgramMap programs;
+
+    Program* get_or_build_program( Identifier name_vert, Identifier name_frag, MaterialType type );
 };
 
 MaterialManager::MaterialManager()
@@ -115,32 +143,41 @@ Material * MaterialManager::build_material( const treecore::Identifier & name, c
     if (program_names->size() != 2)
         throw ConfigParseError( "Invalid program specification: " + node_program.toString() + ".\nExpect an array of two strings specifying vertex and fragment shader name." );
 
-    String name_vertex = (*program_names)[0].toString();
-    String name_frag   = (*program_names)[1].toString();
+    ProgramKey prog_key{ Identifier( (*program_names)[0].toString() ),
+                         Identifier( (*program_names)[1].toString() ),
+                         mat_type };
 
-    MemoryBlock src_vert_raw;
-    MemoryBlock src_frag_raw;
+    Program* prog = m_impl->programs.getOrDefault( prog_key, nullptr );
+
+    if (prog == nullptr)
     {
-        if ( !PackageManager::getInstance()->get_item_data( name_vertex, src_vert_raw, true ) )
-            throw ConfigParseError( "MaterialManager: no vertex shader resource named \"" + name_vertex + "\"" );
+        MemoryBlock src_vert_raw;
+        MemoryBlock src_frag_raw;
+        {
+            if ( !PackageManager::getInstance()->get_item_data( prog_key.name_vert, src_vert_raw, true ) )
+                throw ConfigParseError( "MaterialManager: no vertex shader resource named \"" + prog_key.name_vert.toString() + "\"" );
 
-        if ( !PackageManager::getInstance()->get_item_data( name_frag, src_frag_raw, true ) )
-            throw ConfigParseError( "MaterialManager: no fragment shader resource named \"" + name_frag + "\"" );
+            if ( !PackageManager::getInstance()->get_item_data( prog_key.name_frag, src_frag_raw, true ) )
+                throw ConfigParseError( "MaterialManager: no fragment shader resource named \"" + prog_key.name_frag.toString() + "\"" );
+        }
+
+        // preprocess shader source
+        String src_vert = mat->get_shader_source_addition() + (const char*) src_vert_raw.getData();
+        String src_frag = mat->get_shader_source_addition() + (const char*) src_frag_raw.getData();
+
+        // create and store program
+        prog = new Program( src_vert.toRawUTF8(), src_frag.toRawUTF8() );
+        m_impl->programs.set( prog_key, prog );
     }
 
-    // preprocess shader source
-    String src_vert = mat->get_shader_source_addition() + (const char*) src_vert_raw.getData();
-    String src_frag = mat->get_shader_source_addition() + (const char*) src_frag_raw.getData();
-
-    // create and build shader program
-    mat->m_program = new Program( src_vert.toRawUTF8(), src_frag.toRawUTF8() );
+    mat->m_program = prog;
 
     //
     // load properties
     // get scene additive uniforms
     //
     SceneGraphMaterial* sgmat = dynamic_cast<SceneGraphMaterial*>(mat);
-    if ( sgmat != nullptr )
+    if (sgmat != nullptr)
     {
         // scene material defined uniforms
         const Program* prog = mat->m_program;

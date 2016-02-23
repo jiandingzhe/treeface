@@ -81,6 +81,7 @@ if(COMPRESSOR_FOUND)
 endif()
 
 if(SDL2_FOUND AND COMPRESSOR_FOUND)
+    enable_testing()
     add_subdirectory(test)
     add_subdirectory(t)
 endif()
