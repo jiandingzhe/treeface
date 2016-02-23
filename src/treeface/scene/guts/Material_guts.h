@@ -13,7 +13,7 @@ namespace treeface {
 
 struct TextureLayer
 {
-    treecore::Identifier name;
+    treecore::Identifier uniform_name;
     treecore::RefCountHolder<Texture> gl_texture;
     GLint program_uniform_loc;
 };

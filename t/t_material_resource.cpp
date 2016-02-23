@@ -1,10 +1,11 @@
 #include "TestFramework.h"
 
+#include "treeface/base/PackageManager.h"
+#include "treeface/gl/TextureManager.h"
 #include "treeface/graphics/ImageManager.h"
 #include "treeface/scene/Material.h"
-#include "treeface/scene/SceneGraphMaterial.h"
 #include "treeface/scene/MaterialManager.h"
-#include "treeface/base/PackageManager.h"
+#include "treeface/scene/SceneGraphMaterial.h"
 
 #include <treecore/File.h>
 #include <treecore/JSON.h>
@@ -61,6 +62,7 @@ void TestFramework::content()
 
     PackageManager* pkg_mgr = PackageManager::getInstance();
     ImageManager*   img_mgr = ImageManager::getInstance();
+    TextureManager* tex_mgr = TextureManager::getInstance();
 
     RefCountHolder<MaterialManager> mat_mgr = new MaterialManager();
 
@@ -74,9 +76,22 @@ void TestFramework::content()
     OK( img_mgr->image_is_cached( "moon.jpg" ) );
     OK( img_mgr->image_is_cached( "earth.png" ) );
 
+    OK( tex_mgr->has_texture( "texture_earth.json" ) );
+    OK( tex_mgr->has_texture( "texture_moon.json" ) );
+    IS( mat1->get_num_textures(),     1 );
+    IS( mat1->get_texture( 0 ),       tex_mgr->get_texture( "texture_moon.json" ) );
+    IS( mat1_dup->get_num_textures(), 1 );
+    IS( mat1_dup->get_texture( 0 ),   tex_mgr->get_texture( "texture_earth.json" ) );
+
+    treecore::RefCountHolder<Material> mat2 = mat_mgr->get_material( "material2.json" );
+    IS( mat2->get_num_textures(),     2 );
+    IS( mat2->get_texture( "tex1" ),  tex_mgr->get_texture( "texture_moon.json" ) );
+    IS( mat2->get_texture( "tex2" ),  tex_mgr->get_texture( "texture_earth.json" ) );
+
     // suppress valgrind warnings
     PackageManager::releaseInstance();
     ImageManager::releaseInstance();
+    TextureManager::releaseInstance();
 
     SDL_GL_DeleteContext( context );
     SDL_Quit();

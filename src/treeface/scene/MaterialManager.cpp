@@ -6,6 +6,7 @@
 #include "treeface/base/PackageManager.h"
 
 #include "treeface/gl/Program.h"
+#include "treeface/gl/TextureManager.h"
 
 #include "treeface/graphics/VectorGraphicsMaterial.h"
 
@@ -89,7 +90,7 @@ public:
         add_item( KEY_PROJ_SHADOW,  PropertyValidator::ITEM_SCALAR, false );
         add_item( KEY_RECV_SHADOW,  PropertyValidator::ITEM_SCALAR, false );
         add_item( KEY_TRANSLUSCENT, PropertyValidator::ITEM_SCALAR, false );
-        add_item( KEY_TEXTURE,      PropertyValidator::ITEM_ARRAY,  false );
+        add_item( KEY_TEXTURE,      PropertyValidator::ITEM_HASH,   false );
     }
 
     virtual ~MaterialPropertyValidator() {}
@@ -204,24 +205,24 @@ Material * MaterialManager::build_material( const treecore::Identifier & name, c
     //
     if ( data_kv.contains( KEY_TEXTURE ) )
     {
-        const var& tex_list_node   = data_kv[KEY_TEXTURE];
-        const Array<var>* tex_list = tex_list_node.getArray();
+        const NamedValueSet::MapType& textures = data_kv[KEY_TEXTURE].getDynamicObject()->getProperties().getValues();
 
-        for (int i_tex = 0; i_tex < tex_list->size(); i_tex++)
+        Program* prog = mat->m_program;
+
+        for (NamedValueSet::MapType::ConstIterator it( textures ); it.next(); )
         {
-            const var& tex_node = (*tex_list)[i_tex];
+            const Identifier& uni_name = it.key();
+            int uni_loc = prog->get_uniform_location( uni_name );
 
-            Texture* tex_obj = new Texture( tex_node );
-
-            // create texture layer
-            // the "name" property should has been checked inside build method of Texture object
-            String tex_name = tex_node.getProperty( Identifier( "name" ), var::null ).toString();
-            int    uni_idx  = mat->m_program->get_uniform_location( tex_name );
-
-            if (uni_idx >= 0)
-                mat->m_impl->layers.add( { tex_name, tex_obj, uni_idx } );
+            if (uni_loc >= 0)
+            {
+                Texture* tex_obj = TextureManager::getInstance()->get_texture( it.value().toString() );
+                mat->m_impl->layers.add( { uni_name, tex_obj, uni_loc } );
+            }
             else
-                warn( "program don't have texture unit named %s", tex_name.toRawUTF8() );
+            {
+                warn( "program don't have texture uniform named %s", it.key().toString().toRawUTF8() );
+            }
         }
     }
 

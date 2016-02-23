@@ -2,16 +2,8 @@
     "program": ["common_vertex.glsl", "frag_two_tex.glsl"],
     "type": "scene_graph",
     "textures":
-    [
-        {
-            "name": "tex1",
-            "type": "2d",
-            "image": "moon.jpg",
-        },
-        {
-            "name": "tex2",
-            "type": "2d",
-            "image": "earth.png",
-        }
-    ]
+    {
+        "tex1": "texture_moon.json",
+        "tex2": "texture_earth.json",
+    }
 }

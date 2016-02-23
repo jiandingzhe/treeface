@@ -1,12 +1,5 @@
 {
     "program": ["common_vertex.glsl", "frag_one_tex.glsl"],
     "type": "scene_graph",
-    "textures":
-    [
-        {
-            "name": "tex",
-            "type": "2d",
-            "image": "moon.jpg",
-        }
-    ]
+    "textures": { "tex": "texture_moon.json" }
 }
