@@ -8,8 +8,8 @@
 #include <treecore/RefCountObject.h>
 
 namespace treecore {
+class Identifier;
 class Result;
-class StringRef;
 class var;
 } // namespace treecore
 
@@ -35,8 +35,8 @@ public:
     treecore::int32 get_num_textures() const noexcept;
     bool            add_texture( const treecore::Identifier& name, Texture* tex );
     Texture*        get_texture( treecore::int32 layer_idx ) const noexcept;
-    Texture*        get_texture( const treecore::Identifier& name ) const noexcept;
-    bool            remove_texture( const treecore::Identifier& name );
+    Texture*        get_texture( const treecore::Identifier& uniform_name ) const noexcept;
+    bool            remove_texture( const treecore::Identifier& uniform_sname );
 
     void bind() noexcept;
     void unbind() noexcept;

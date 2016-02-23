@@ -6,6 +6,7 @@
 #include "treeface/base/PackageManager.h"
 
 #include "treeface/gl/Program.h"
+#include "treeface/gl/TextureManager.h"
 
 #include "treeface/graphics/VectorGraphicsMaterial.h"
 
@@ -29,9 +30,37 @@ using namespace treecore;
 
 namespace treeface {
 
+struct ProgramKey
+{
+    Identifier   name_vert;
+    Identifier   name_frag;
+    MaterialType type;
+};
+
+bool operator ==( const ProgramKey& a, const ProgramKey& b )
+{
+    return a.name_vert == b.name_vert && a.name_frag == b.name_frag && a.type == b.type;
+}
+
+struct ProgramKeyHasher
+{
+    int generateHash( const ProgramKey& key, int limit ) const noexcept
+    {
+        pointer_sized_uint result = pointer_sized_uint( key.name_vert.getPtr() ) +
+                                    pointer_sized_uint( key.name_frag.getPtr() ) +
+                                    pointer_sized_uint( key.type );
+        return int(result) % limit;
+    }
+};
+
+typedef HashMap<ProgramKey, RefCountHolder<Program>, ProgramKeyHasher> ProgramMap;
+
 struct MaterialManager::Impl
 {
     HashMap<Identifier, RefCountHolder<Material> > materials;
+    ProgramMap programs;
+
+    Program* get_or_build_program( Identifier name_vert, Identifier name_frag, MaterialType type );
 };
 
 MaterialManager::MaterialManager()
@@ -61,7 +90,7 @@ public:
         add_item( KEY_PROJ_SHADOW,  PropertyValidator::ITEM_SCALAR, false );
         add_item( KEY_RECV_SHADOW,  PropertyValidator::ITEM_SCALAR, false );
         add_item( KEY_TRANSLUSCENT, PropertyValidator::ITEM_SCALAR, false );
-        add_item( KEY_TEXTURE,      PropertyValidator::ITEM_ARRAY,  false );
+        add_item( KEY_TEXTURE,      PropertyValidator::ITEM_HASH,   false );
     }
 
     virtual ~MaterialPropertyValidator() {}
@@ -115,25 +144,34 @@ Material * MaterialManager::build_material( const treecore::Identifier & name, c
     if (program_names->size() != 2)
         throw ConfigParseError( "Invalid program specification: " + node_program.toString() + ".\nExpect an array of two strings specifying vertex and fragment shader name." );
 
-    String name_vertex = (*program_names)[0].toString();
-    String name_frag   = (*program_names)[1].toString();
+    ProgramKey prog_key{ Identifier( (*program_names)[0].toString() ),
+                         Identifier( (*program_names)[1].toString() ),
+                         mat_type };
 
-    MemoryBlock src_vert_raw;
-    MemoryBlock src_frag_raw;
+    Program* prog = m_impl->programs.getOrDefault( prog_key, nullptr );
+
+    if (prog == nullptr)
     {
-        if ( !PackageManager::getInstance()->get_item_data( name_vertex, src_vert_raw, true ) )
-            throw ConfigParseError( "MaterialManager: no vertex shader resource named \"" + name_vertex + "\"" );
+        MemoryBlock src_vert_raw;
+        MemoryBlock src_frag_raw;
+        {
+            if ( !PackageManager::getInstance()->get_item_data( prog_key.name_vert, src_vert_raw, true ) )
+                throw ConfigParseError( "MaterialManager: no vertex shader resource named \"" + prog_key.name_vert.toString() + "\"" );
 
-        if ( !PackageManager::getInstance()->get_item_data( name_frag, src_frag_raw, true ) )
-            throw ConfigParseError( "MaterialManager: no fragment shader resource named \"" + name_frag + "\"" );
+            if ( !PackageManager::getInstance()->get_item_data( prog_key.name_frag, src_frag_raw, true ) )
+                throw ConfigParseError( "MaterialManager: no fragment shader resource named \"" + prog_key.name_frag.toString() + "\"" );
+        }
+
+        // preprocess shader source
+        String src_vert = mat->get_shader_source_addition() + (const char*) src_vert_raw.getData();
+        String src_frag = mat->get_shader_source_addition() + (const char*) src_frag_raw.getData();
+
+        // create and store program
+        prog = new Program( src_vert.toRawUTF8(), src_frag.toRawUTF8() );
+        m_impl->programs.set( prog_key, prog );
     }
 
-    // preprocess shader source
-    String src_vert = mat->get_shader_source_addition() + (const char*) src_vert_raw.getData();
-    String src_frag = mat->get_shader_source_addition() + (const char*) src_frag_raw.getData();
-
-    // create and build shader program
-    mat->init( new Program( src_vert.toRawUTF8(), src_frag.toRawUTF8() ) );
+    mat->m_program = prog;
 
     //
     // load properties
@@ -167,16 +205,23 @@ Material * MaterialManager::build_material( const treecore::Identifier & name, c
     //
     if ( data_kv.contains( KEY_TEXTURE ) )
     {
-        const var& tex_list_node   = data_kv[KEY_TEXTURE];
-        const Array<var>* tex_list = tex_list_node.getArray();
+        const NamedValueSet::MapType& textures = data_kv[KEY_TEXTURE].getDynamicObject()->getProperties().getValues();
+        Program* prog = mat->m_program;
 
-        for (int i_tex = 0; i_tex < tex_list->size(); i_tex++)
+        for (NamedValueSet::MapType::ConstIterator it( textures ); it.next(); )
         {
-            const var& tex_node = (*tex_list)[i_tex];
+            const Identifier& uni_name = it.key();
+            int uni_loc = prog->get_uniform_location( uni_name );
 
-            Texture* tex_obj = new Texture( tex_node );
-            String tex_name = tex_node.getProperty( Identifier( "name" ), var::null ).toString();
-            mat->add_texture( Identifier( tex_name ), tex_obj );
+            if (uni_loc >= 0)
+            {
+                Texture* tex_obj = TextureManager::getInstance()->get_texture( it.value().toString() );
+                mat->m_impl->layers.add( { uni_name, tex_obj, uni_loc } );
+            }
+            else
+            {
+                warn( "program don't have texture uniform named %s", it.key().toString().toRawUTF8() );
+            }
         }
     }
 

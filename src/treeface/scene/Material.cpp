@@ -81,22 +81,22 @@ Texture* Material::get_texture( treecore::int32 layer_idx ) const noexcept
         return m_impl->layers[layer_idx].gl_texture.get();
 }
 
-Texture* Material::get_texture( const treecore::Identifier& name ) const noexcept
+Texture* Material::get_texture( const Identifier& uniform_name ) const noexcept
 {
     for (int i = 0; i < m_impl->layers.size(); i++)
     {
-        if (m_impl->layers[i].name == name)
+        if (m_impl->layers[i].uniform_name == uniform_name)
             return m_impl->layers[i].gl_texture.get();
     }
 
     return nullptr;
 }
 
-bool Material::remove_texture( const treecore::Identifier& name )
+bool Material::remove_texture( const treecore::Identifier& uniform_name )
 {
     for (int i = 0; i < m_impl->layers.size(); i++)
     {
-        if (m_impl->layers[i].name == name)
+        if (m_impl->layers[i].uniform_name == uniform_name)
         {
             m_impl->layers.remove( i );
             return true;

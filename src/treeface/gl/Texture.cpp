@@ -247,7 +247,6 @@ Result _validate_keys_( NamedValueSet& kv )
     if (!validator)
     {
         validator = new PropertyValidator();
-        validator->add_item( KEY_NAME,          PropertyValidator::ITEM_SCALAR,                                 true );
         validator->add_item( KEY_IMG,           PropertyValidator::ITEM_SCALAR | PropertyValidator::ITEM_ARRAY, true );
         validator->add_item( KEY_MAG_LINEAR,    PropertyValidator::ITEM_SCALAR,                                 false );
         validator->add_item( KEY_MIN_LINEAR,    PropertyValidator::ITEM_SCALAR,                                 false );

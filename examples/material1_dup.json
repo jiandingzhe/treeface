@@ -1,5 +1,5 @@
 {
     "program": ["common_vertex.glsl", "frag_one_tex.glsl"],
     "type": "scene_graph",
-    "textures": { "tex": "texture_moon.json" }
+    "textures": { "tex": "texture_earth.json" }
 }
