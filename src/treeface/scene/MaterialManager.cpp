@@ -75,18 +75,24 @@ MaterialManager::~MaterialManager()
 
 #define KEY_PROGRAM      "program"
 #define KEY_TYPE         "type"
+#define KEY_OUTPUT       "output"
 #define KEY_PROJ_SHADOW  "project_shadow"
 #define KEY_RECV_SHADOW  "receive_shadow"
 #define KEY_TRANSLUSCENT "transluscent"
 #define KEY_TEXTURE      "textures"
 
-class MaterialPropertyValidator: public PropertyValidator
+#define KEY_OUTPUT_COLORS  "colors"
+#define KEY_OUTPUT_DEPTH   "depth"
+#define KEY_OUTPUT_STENCIL "stencil"
+
+class MaterialPropertyValidator: public PropertyValidator, public treecore::RefCountSingleton<MaterialPropertyValidator>
 {
 public:
     MaterialPropertyValidator()
     {
         add_item( KEY_PROGRAM,      PropertyValidator::ITEM_ARRAY,  true );
         add_item( KEY_TYPE,         PropertyValidator::ITEM_SCALAR, true );
+        add_item( KEY_OUTPUT,       PropertyValidator::ITEM_HASH,   false );
         add_item( KEY_PROJ_SHADOW,  PropertyValidator::ITEM_SCALAR, false );
         add_item( KEY_RECV_SHADOW,  PropertyValidator::ITEM_SCALAR, false );
         add_item( KEY_TRANSLUSCENT, PropertyValidator::ITEM_SCALAR, false );
@@ -94,12 +100,22 @@ public:
     }
 
     virtual ~MaterialPropertyValidator() {}
-
-    juce_DeclareSingleton( MaterialPropertyValidator, false )
 };
-juce_ImplementSingleton( MaterialPropertyValidator )
 
-Material * MaterialManager::build_material( const treecore::Identifier & name, const treecore::var & data )
+class MaterialOutputPropertyValidator: public PropertyValidator, public treecore::RefCountSingleton<MaterialOutputPropertyValidator>
+{
+public:
+    MaterialOutputPropertyValidator()
+    {
+        add_item( KEY_OUTPUT_COLORS,  PropertyValidator::ITEM_ARRAY,  false );
+        add_item( KEY_OUTPUT_DEPTH,   PropertyValidator::ITEM_SCALAR, false );
+        add_item( KEY_OUTPUT_STENCIL, PropertyValidator::ITEM_SCALAR, false );
+    }
+
+    virtual ~MaterialOutputPropertyValidator() {}
+};
+
+Material* MaterialManager::build_material( const treecore::Identifier& name, const treecore::var& data )
 {
     // validate data
     if ( !data.isObject() )
@@ -171,26 +187,15 @@ Material * MaterialManager::build_material( const treecore::Identifier & name, c
         m_impl->programs.set( prog_key, prog );
     }
 
-    mat->m_program = prog;
+    mat->init( prog );
 
     //
-    // load properties
+    // load scene properties
     // get scene additive uniforms
     //
     SceneGraphMaterial* sgmat = dynamic_cast<SceneGraphMaterial*>(mat);
     if (sgmat != nullptr)
     {
-        // scene material defined uniforms
-        const Program* prog = mat->m_program;
-
-        sgmat->m_uni_model_view      = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_MODEL_VIEW );
-        sgmat->m_uni_proj            = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_PROJECT );
-        sgmat->m_uni_model_view_proj = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_MODEL_VIEW_PROJECT );
-        sgmat->m_uni_norm            = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_NORMAL );
-        sgmat->m_uni_light_direct    = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_GLOBAL_LIGHT_DIRECTION );
-        sgmat->m_uni_light_color     = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_GLOBAL_LIGHT_COLOR );
-        sgmat->m_uni_light_ambient   = prog->get_uniform_location( SceneGraphMaterial::UNIFORM_GLOBAL_LIGHT_AMBIENT );
-
         // scene properties
         if ( data_kv.contains( KEY_PROJ_SHADOW ) )
             sgmat->m_project_shadow = bool(data_kv[KEY_PROJ_SHADOW]);
@@ -198,6 +203,35 @@ Material * MaterialManager::build_material( const treecore::Identifier & name, c
             sgmat->m_receive_shadow = bool(data_kv[KEY_RECV_SHADOW]);
         if ( data_kv.contains( KEY_TRANSLUSCENT ) )
             sgmat->m_translucent = bool(data_kv[KEY_TRANSLUSCENT]);
+    }
+
+    //
+    // load output configuration
+    //
+    if ( data_kv.contains( KEY_OUTPUT ) )
+    {
+        mat->m_impl->output_managed = true;
+        const var& node_output = data_kv[KEY_OUTPUT];
+        const NamedValueSet& kv_output = node_output.getDynamicObject()->getProperties();
+
+        if ( kv_output.contains( KEY_OUTPUT_DEPTH ) )
+            mat->m_impl->output_depth = bool(kv_output[KEY_OUTPUT_DEPTH]);
+        if ( kv_output.contains( KEY_OUTPUT_STENCIL ) )
+            mat->m_impl->output_stencil = bool(kv_output[KEY_OUTPUT_STENCIL]);
+
+        if ( kv_output.contains( KEY_OUTPUT_COLORS ) )
+        {
+            Array<var>* color_out_names = kv_output[KEY_OUTPUT_COLORS].getArray();
+            for (const var& color_out_name : * color_out_names)
+            {
+                GLint color_out_loc = glGetFragDataLocation( prog->get_gl_handle(), color_out_name.toString().toRawUTF8() );
+                mat->m_impl->output_colors.add( { Identifier( color_out_name ), color_out_loc } );
+            }
+        }
+    }
+    else
+    {
+        mat->m_impl->output_managed = false;
     }
 
     //

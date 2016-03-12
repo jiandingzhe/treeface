@@ -28,6 +28,8 @@ public:
     SceneGraphMaterial() = default;
     virtual ~SceneGraphMaterial();
 
+    void init( Program* program ) override;
+
     void set_matrix_model_view( const Mat4f& mat ) const noexcept;
     void set_matrix_proj( const Mat4f& mat ) const noexcept;
     void set_matrix_model_view_proj( const Mat4f& mat ) const noexcept;

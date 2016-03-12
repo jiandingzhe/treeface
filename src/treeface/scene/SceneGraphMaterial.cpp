@@ -27,6 +27,19 @@ const treecore::Identifier SceneGraphMaterial::UNIFORM_GLOBAL_LIGHT_AMBIENT( NAM
 SceneGraphMaterial::~SceneGraphMaterial()
 {}
 
+void SceneGraphMaterial::init( Program* program )
+{
+    Material::init( program );
+
+    m_uni_model_view      = program->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_MODEL_VIEW );
+    m_uni_proj            = program->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_PROJECT );
+    m_uni_model_view_proj = program->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_MODEL_VIEW_PROJECT );
+    m_uni_norm            = program->get_uniform_location( SceneGraphMaterial::UNIFORM_MATRIX_NORMAL );
+    m_uni_light_direct    = program->get_uniform_location( SceneGraphMaterial::UNIFORM_GLOBAL_LIGHT_DIRECTION );
+    m_uni_light_color     = program->get_uniform_location( SceneGraphMaterial::UNIFORM_GLOBAL_LIGHT_COLOR );
+    m_uni_light_ambient   = program->get_uniform_location( SceneGraphMaterial::UNIFORM_GLOBAL_LIGHT_AMBIENT );
+}
+
 void SceneGraphMaterial::set_matrix_model_view( const Mat4f& mat ) const noexcept
 {
     m_program->set_uniform( m_uni_model_view, mat );

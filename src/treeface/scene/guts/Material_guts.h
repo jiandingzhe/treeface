@@ -18,9 +18,20 @@ struct TextureLayer
     GLint program_uniform_loc;
 };
 
+struct FragDataLoc
+{
+    treecore::Identifier name;
+    GLint location;
+};
+
 struct Material::Impl
 {
     treecore::Array<TextureLayer> layers;
+
+    treecore::Array<FragDataLoc> output_colors;
+    bool output_managed = false;
+    bool output_depth = false;
+    bool output_stencil = false;
 };
 
 } // namespace treeface

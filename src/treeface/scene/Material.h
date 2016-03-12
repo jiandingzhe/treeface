@@ -26,11 +26,19 @@ class Material: public treecore::RefCountObject
     friend class SceneRenderer;
 
 public:
+
+    ///
+    /// \brief create an empty material object
+    ///
     Material();
 
     virtual ~Material();
 
-    void            init( Program* program ) noexcept;
+    ///
+    /// \brief init
+    /// \param program
+    ///
+    virtual void    init( Program* program );
     Program*        get_program() const noexcept;
     treecore::int32 get_num_textures() const noexcept;
     bool            add_texture( const treecore::Identifier& name, Texture* tex );
@@ -41,8 +49,8 @@ public:
     void bind() noexcept;
     void unbind() noexcept;
 
-    TREECORE_DECLARE_NON_COPYABLE( Material );
-    TREECORE_DECLARE_NON_MOVABLE( Material );
+    TREECORE_DECLARE_NON_COPYABLE( Material )
+    TREECORE_DECLARE_NON_MOVABLE( Material )
 
 protected:
     virtual treecore::String get_shader_source_addition() const noexcept;

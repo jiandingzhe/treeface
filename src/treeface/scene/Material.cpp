@@ -42,10 +42,13 @@ Material::~Material()
         delete m_impl;
 }
 
-void Material::init( Program* program ) noexcept
+void Material::init( Program* program )
 {
     if (m_program.get() != nullptr)
+    {
+        warn("attempt to init non-empty material %p", this);
         return;
+    }
 
     m_program = program;
 }
