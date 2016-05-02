@@ -42,7 +42,7 @@ public:
     {
         _LOCK_THIS_OBJ_;
         _LOCK_PEER_OBJ_;
-        jassert( m_blk_size == peer.m_blk_size );
+        treecore_assert( m_blk_size == peer.m_blk_size );
         m_used_byte = peer.m_used_byte;
         m_data.ensureAllocatedSize( m_used_byte );
         memcpy( m_data, peer.m_data, m_used_byte );
@@ -52,7 +52,7 @@ public:
     {
         _LOCK_THIS_OBJ_;
         _LOCK_PEER_OBJ_;
-        jassert( m_blk_size == peer.m_blk_size );
+        treecore_assert( m_blk_size == peer.m_blk_size );
         m_used_byte = peer.m_used_byte;
         m_data      = std::move( peer.m_data );
     }
@@ -70,7 +70,7 @@ public:
     template<typename T>
     void add( const T& data )
     {
-        jassert( sizeof(T) == m_blk_size );
+        treecore_assert( sizeof(T) == m_blk_size );
         add_by_ptr( &data );
     }
 
@@ -78,7 +78,7 @@ public:
     {
         _LOCK_THIS_OBJ_;
         int32 byte_idx = block_index * m_blk_size;
-        jassert( byte_idx + m_blk_size <= m_used_byte );
+        treecore_assert( byte_idx + m_blk_size <= m_used_byte );
         return m_data.elements + byte_idx;
     }
 
@@ -86,77 +86,77 @@ public:
     {
         _LOCK_THIS_OBJ_;
         int32 byte_idx = block_index * m_blk_size;
-        jassert( byte_idx + m_blk_size <= m_used_byte );
+        treecore_assert( byte_idx + m_blk_size <= m_used_byte );
         return m_data.elements + byte_idx;
     }
 
     template<typename T>
     T& get( int32 block_index ) noexcept
     {
-        jassert( sizeof(T) == m_blk_size );
+        treecore_assert( sizeof(T) == m_blk_size );
         return *static_cast<T*>( get_by_ptr( block_index ) );
     }
 
     template<typename T>
     const T& get( int32 block_index ) const noexcept
     {
-        jassert( sizeof(T) == m_blk_size );
+        treecore_assert( sizeof(T) == m_blk_size );
         return *static_cast<const T*>( get_by_ptr( block_index ) );
     }
 
     void* get_first_by_ptr() noexcept
     {
         _LOCK_THIS_OBJ_;
-        jassert( m_used_byte >= m_blk_size );
+        treecore_assert( m_used_byte >= m_blk_size );
         return m_data.elements;
     }
 
     const void* get_first_by_ptr() const noexcept
     {
         _LOCK_THIS_OBJ_;
-        jassert( m_used_byte >= m_blk_size );
+        treecore_assert( m_used_byte >= m_blk_size );
         return m_data.elements;
     }
 
     template<typename T>
     T& get_first() noexcept
     {
-        jassert( sizeof(T) == m_blk_size );
+        treecore_assert( sizeof(T) == m_blk_size );
         return *static_cast<T*>( get_first_by_ptr() );
     }
 
     template<typename T>
     const T& get_first() const noexcept
     {
-        jassert( sizeof(T) == m_blk_size );
+        treecore_assert( sizeof(T) == m_blk_size );
         return *static_cast<const T*>( get_first_by_ptr() );
     }
 
     void* get_last_by_ptr() noexcept
     {
         _LOCK_THIS_OBJ_;
-        jassert( m_used_byte >= m_blk_size );
+        treecore_assert( m_used_byte >= m_blk_size );
         return m_data.elements + (m_used_byte - m_blk_size);
     }
 
     const void* get_last_by_ptr() const noexcept
     {
         _LOCK_THIS_OBJ_;
-        jassert( m_used_byte >= m_blk_size );
+        treecore_assert( m_used_byte >= m_blk_size );
         return m_data.elements + (m_used_byte - m_blk_size);
     }
 
     template<typename T>
     T& get_last() noexcept
     {
-        jassert( sizeof(T) == m_blk_size );
+        treecore_assert( sizeof(T) == m_blk_size );
         return *static_cast<T*>( get_last_by_ptr() );
     }
 
     template<typename T>
     const T& get_last() const noexcept
     {
-        jassert( sizeof(T) == m_blk_size );
+        treecore_assert( sizeof(T) == m_blk_size );
         return *static_cast<T*>( get_last_by_ptr() );
     }
 
@@ -164,14 +164,14 @@ public:
     {
         _LOCK_THIS_OBJ_;
         int32 byte_idx = block_index * m_blk_size;
-        jassert( byte_idx + m_blk_size <= m_used_byte );
+        treecore_assert( byte_idx + m_blk_size <= m_used_byte );
         memcpy( m_data.elements + byte_idx, data, m_blk_size );
     }
 
     template<typename T>
     void set( int32 block_index, const T& data )
     {
-        jassert( sizeof(T) == m_blk_size );
+        treecore_assert( sizeof(T) == m_blk_size );
         set_by_ptr( block_index, &data );
     }
 
@@ -205,7 +205,7 @@ public:
 
     int32 size() const noexcept
     {
-        jassert( m_used_byte % m_blk_size == 0 );
+        treecore_assert( m_used_byte % m_blk_size == 0 );
         return m_used_byte / m_blk_size;
     }
 

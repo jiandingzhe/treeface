@@ -156,183 +156,183 @@ public:
 
     UniversalValue& operator =( GLbyte value ) noexcept
     {
-        jassert( m_type == TFGL_TYPE_BYTE );
+        treecore_assert( m_type == TFGL_TYPE_BYTE );
         m_data.i8 = value;
         return *this;
     }
 
     UniversalValue& operator =( GLubyte value ) noexcept
     {
-        jassert( m_type == TFGL_TYPE_UNSIGNED_BYTE );
+        treecore_assert( m_type == TFGL_TYPE_UNSIGNED_BYTE );
         m_data.ui8 = value;
         return *this;
     }
 
     UniversalValue& operator =( GLshort value ) noexcept
     {
-        jassert( m_type == TFGL_TYPE_SHORT );
+        treecore_assert( m_type == TFGL_TYPE_SHORT );
         m_data.i16 = value;
         return *this;
     }
 
     UniversalValue& operator =( GLushort value ) noexcept
     {
-        jassert( m_type == TFGL_TYPE_UNSIGNED_SHORT );
+        treecore_assert( m_type == TFGL_TYPE_UNSIGNED_SHORT );
         m_data.ui16 = value;
         return *this;
     }
 
     UniversalValue& operator =( GLint value ) noexcept
     {
-        jassert( m_type == TFGL_TYPE_INT );
+        treecore_assert( m_type == TFGL_TYPE_INT );
         m_data.i32 = value;
         return *this;
     }
 
     UniversalValue& operator =( GLuint value ) noexcept
     {
-        jassert( m_type == TFGL_TYPE_UNSIGNED_INT );
+        treecore_assert( m_type == TFGL_TYPE_UNSIGNED_INT );
         m_data.ui32 = value;
         return *this;
     }
 
     UniversalValue& operator =( GLfloat value ) noexcept
     {
-        jassert( m_type == TFGL_TYPE_FLOAT );
+        treecore_assert( m_type == TFGL_TYPE_FLOAT );
         m_data.f32 = value;
         return *this;
     }
 
     UniversalValue& operator =( GLdouble value ) noexcept
     {
-        jassert( m_type == TFGL_TYPE_DOUBLE );
+        treecore_assert( m_type == TFGL_TYPE_DOUBLE );
         m_data.f64 = value;
         return *this;
     }
 
     UniversalValue& operator =( const Vec2f& value ) noexcept
     {
-        jassert( m_type == TFGL_TYPE_FLOAT_VEC2 );
+        treecore_assert( m_type == TFGL_TYPE_FLOAT_VEC2 );
         m_data.vec2 = value;
         return *this;
     }
 
     UniversalValue& operator =( const Vec3f& value ) noexcept
     {
-        jassert( m_type == TFGL_TYPE_FLOAT_VEC3 );
+        treecore_assert( m_type == TFGL_TYPE_FLOAT_VEC3 );
         m_data.vec3 = value;
         return *this;
     }
 
     UniversalValue& operator =( const Vec4f& value ) noexcept
     {
-        jassert( m_type == TFGL_TYPE_FLOAT_VEC4 );
+        treecore_assert( m_type == TFGL_TYPE_FLOAT_VEC4 );
         m_data.vec4 = value;
         return *this;
     }
 
     UniversalValue& operator =( const Mat2f& value ) noexcept
     {
-        jassert( m_type == TFGL_TYPE_FLOAT_MAT2 );
+        treecore_assert( m_type == TFGL_TYPE_FLOAT_MAT2 );
         m_data.mat2 = value;
         return *this;
     }
 
     UniversalValue& operator =( const Mat3f& value ) noexcept
     {
-        jassert( m_type == TFGL_TYPE_FLOAT_MAT3 );
+        treecore_assert( m_type == TFGL_TYPE_FLOAT_MAT3 );
         m_data.mat3 = value;
         return *this;
     }
 
     UniversalValue& operator =( const Mat4f& value ) noexcept
     {
-        jassert( m_type == TFGL_TYPE_FLOAT_MAT4 );
+        treecore_assert( m_type == TFGL_TYPE_FLOAT_MAT4 );
         m_data.mat4 = value;
         return *this;
     }
 
     operator GLbyte() const noexcept
     {
-        jassert( m_type == TFGL_TYPE_BYTE );
+        treecore_assert( m_type == TFGL_TYPE_BYTE );
         return m_data.i8;
     }
 
     operator GLubyte() const noexcept
     {
-        jassert( m_type == TFGL_TYPE_UNSIGNED_BYTE );
+        treecore_assert( m_type == TFGL_TYPE_UNSIGNED_BYTE );
         return m_data.ui8;
     }
 
     operator GLshort() const noexcept
     {
-        jassert( m_type == TFGL_TYPE_SHORT );
+        treecore_assert( m_type == TFGL_TYPE_SHORT );
         return m_data.i16;
     }
 
     operator GLushort() const noexcept
     {
-        jassert( m_type == TFGL_TYPE_UNSIGNED_SHORT );
+        treecore_assert( m_type == TFGL_TYPE_UNSIGNED_SHORT );
         return m_data.ui16;
     }
 
     operator GLint() const noexcept
     {
-        jassert( m_type == TFGL_TYPE_INT );
+        treecore_assert( m_type == TFGL_TYPE_INT );
         return m_data.i32;
     }
 
     operator GLuint() const noexcept
     {
-        jassert( m_type == TFGL_TYPE_UNSIGNED_INT );
+        treecore_assert( m_type == TFGL_TYPE_UNSIGNED_INT );
         return m_data.ui32;
     }
 
     operator GLfloat() const noexcept
     {
-        jassert( m_type == TFGL_TYPE_FLOAT );
+        treecore_assert( m_type == TFGL_TYPE_FLOAT );
         return m_data.f32;
     }
 
     operator GLdouble() const noexcept
     {
-        jassert( m_type == TFGL_TYPE_DOUBLE );
+        treecore_assert( m_type == TFGL_TYPE_DOUBLE );
         return m_data.f64;
     }
 
     operator Vec2f() const noexcept
     {
-        jassert( m_type == TFGL_TYPE_VEC2F );
+        treecore_assert( m_type == TFGL_TYPE_VEC2F );
         return m_data.vec2;
     }
 
     operator Vec3f() const noexcept
     {
-        jassert( m_type == TFGL_TYPE_VEC3F );
+        treecore_assert( m_type == TFGL_TYPE_VEC3F );
         return m_data.vec3;
     }
 
     operator Vec4f() const noexcept
     {
-        jassert( m_type == TFGL_TYPE_VEC4F );
+        treecore_assert( m_type == TFGL_TYPE_VEC4F );
         return m_data.vec4;
     }
 
     operator Mat2f() const noexcept
     {
-        jassert( m_type == TFGL_TYPE_MAT2F );
+        treecore_assert( m_type == TFGL_TYPE_MAT2F );
         return m_data.mat2;
     }
 
     operator Mat3f() const noexcept
     {
-        jassert( m_type == TFGL_TYPE_MAT2F );
+        treecore_assert( m_type == TFGL_TYPE_MAT2F );
         return m_data.mat3;
     }
 
     operator Mat4f() const noexcept
     {
-        jassert( m_type == TFGL_TYPE_MAT2F );
+        treecore_assert( m_type == TFGL_TYPE_MAT2F );
         return m_data.mat4;
     }
 

@@ -68,7 +68,7 @@ VertexArray* VisualObject::get_vertex_array() const noexcept
 
 void VisualObject::render() noexcept
 {
-    jassert( !m_impl->geometry->is_dirty() );
+    treecore_assert( !m_impl->geometry->is_dirty() );
     m_impl->vertex_array->draw( m_impl->geometry->get_primitive(), m_impl->geometry->get_num_index() );
 }
 

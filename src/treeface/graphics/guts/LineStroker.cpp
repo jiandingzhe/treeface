@@ -12,9 +12,9 @@ namespace treeface
 
 void LineStroker::cap_begin( const Vec2f& skeleton, const Vec2f& direction )
 {
-    jassert( !stroke_done );
-    jassert( !part_left.sunken && !part_right.sunken );
-    jassert( std::abs( direction.length2() - 1.0f ) < 0.0001f );
+    treecore_assert( !stroke_done );
+    treecore_assert( !part_left.sunken && !part_right.sunken );
+    treecore_assert( std::abs( direction.length2() - 1.0f ) < 0.0001f );
 
     SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "begin cap" );
                    sucker.draw_outline( part_right );
@@ -92,9 +92,9 @@ void LineStroker::close_stroke_begin( const Vec2f& skeleton, const Vec2f& direct
 
 void LineStroker::cap_end( const Vec2f& skeleton, const Vec2f& direction )
 {
-    jassert( !stroke_done );
-    jassert( !(part_left.sunken && part_right.sunken) ); // beishuiyanmo, buzhisuocuo, tiqianshejing
-    jassert( std::abs( direction.length2() - 1.0f ) < 0.0001f );
+    treecore_assert( !stroke_done );
+    treecore_assert( !(part_left.sunken && part_right.sunken) ); // beishuiyanmo, buzhisuocuo, tiqianshejing
+    treecore_assert( std::abs( direction.length2() - 1.0f ) < 0.0001f );
 
     SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "end cap" );
                    sucker.draw_outline( part_right );
@@ -154,10 +154,10 @@ void LineStroker::cap_end( const Vec2f& skeleton, const Vec2f& direction )
 
 Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Vec2f& p2, bool use_line_join )
 {
-    jassert( !stroke_done );
-    jassert( !(part_left.sunken && part_right.sunken) ); // beishuiyanmo, buzhisuocuo, tiqianshejing
-    jassert( std::abs( v_prev.length2() - 1.0f ) < 0.0001f );
-    jassert( p2 != p1 );
+    treecore_assert( !stroke_done );
+    treecore_assert( !(part_left.sunken && part_right.sunken) ); // beishuiyanmo, buzhisuocuo, tiqianshejing
+    treecore_assert( std::abs( v_prev.length2() - 1.0f ) < 0.0001f );
+    treecore_assert( p2 != p1 );
 
     SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "extend stroke" );
                    sucker.draw_outline( part_right );
@@ -274,10 +274,10 @@ Vec2f LineStroker::extend_stroke( const Vec2f& v_prev, const Vec2f& p1, const Ve
 
 void LineStroker::close_stroke_end( const Vec2f& skeleton_last, const Vec2f& skeleton_first, const Vec2f& v_begin )
 {
-    jassert( !stroke_done );
-    jassert( !(part_left.sunken && part_right.sunken) ); // beishuiyanmo, buzhisuocuo, tiqianshejing
-    jassert( skeleton_last != skeleton_first );
-    jassert( std::abs( v_begin.length2() - 1.0f ) < 0.0001f );
+    treecore_assert( !stroke_done );
+    treecore_assert( !(part_left.sunken && part_right.sunken) ); // beishuiyanmo, buzhisuocuo, tiqianshejing
+    treecore_assert( skeleton_last != skeleton_first );
+    treecore_assert( std::abs( v_begin.length2() - 1.0f ) < 0.0001f );
 
     SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "close stroke" );
                    sucker.draw_outline( part_right );
@@ -413,12 +413,12 @@ void LineStroker::close_stroke_end( const Vec2f& skeleton_last, const Vec2f& ske
         // the last two vertices is duplicate with the first two vertices
         if (!part_left.sunken)
         {
-            jassert( part_left.outline.getFirst() == part_left.outline.getLast() );
+            treecore_assert( part_left.outline.getFirst() == part_left.outline.getLast() );
         }
 
         if (!part_right.sunken)
         {
-            jassert( part_right.outline.getFirst() == part_right.outline.getLast() );
+            treecore_assert( part_right.outline.getFirst() == part_right.outline.getLast() );
         }
 
         SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "no turn, don't need operation" );
@@ -457,7 +457,7 @@ inline bool _should_advance_( const Array<JointID>& ids_self, const Array<JointI
 
 void LineStroker::triangulate( Geometry::HostVertexCache& result_vertices, treecore::Array<IndexType>& result_indices, bool path_is_closed ) const
 {
-    jassert( stroke_done );
+    treecore_assert( stroke_done );
 
     SUCK_GEOM_BLK( OutlineSucker sucker( part_left, "begin triangulate" );
                    sucker.draw_outline( part_right );
@@ -468,8 +468,8 @@ void LineStroker::triangulate( Geometry::HostVertexCache& result_vertices, treec
     part_left.accum_trip( trip_left );
     part_right.accum_trip( trip_right );
 
-    jassert( trip_left.size() == part_left.size() );
-    jassert( trip_right.size() == part_right.size() );
+    treecore_assert( trip_left.size() == part_left.size() );
+    treecore_assert( trip_right.size() == part_right.size() );
 
     // initial state
     int i_left_prev  = 0;
@@ -501,7 +501,7 @@ void LineStroker::triangulate( Geometry::HostVertexCache& result_vertices, treec
         bool left_move_on  = _should_advance_( part_left.joint_ids, part_right.joint_ids, i_left_prev, i_right_prev );
         bool right_move_on = _should_advance_( part_right.joint_ids, part_left.joint_ids, i_right_prev, i_left_prev );
 
-        jassert( left_move_on || right_move_on );
+        treecore_assert( left_move_on || right_move_on );
 
         // perform vertex move on
         if (left_move_on)
@@ -541,7 +541,7 @@ void LineStroker::triangulate( Geometry::HostVertexCache& result_vertices, treec
         // generate triangle
         if (left_move_on)
         {
-            jassert( idx_left_prev < idx_left );
+            treecore_assert( idx_left_prev < idx_left );
             result_indices.add( idx_left_prev );
             result_indices.add( idx_right_prev );
             result_indices.add( idx_left );
@@ -556,7 +556,7 @@ void LineStroker::triangulate( Geometry::HostVertexCache& result_vertices, treec
 
             if (right_move_on)
             {
-                jassert( idx_right_prev < idx_right );
+                treecore_assert( idx_right_prev < idx_right );
                 result_indices.add( idx_right_prev );
                 result_indices.add( idx_right );
                 result_indices.add( idx_left );
@@ -574,7 +574,7 @@ void LineStroker::triangulate( Geometry::HostVertexCache& result_vertices, treec
         {
             if (right_move_on)
             {
-                jassert( idx_right_prev < idx_right );
+                treecore_assert( idx_right_prev < idx_right );
                 result_indices.add( idx_left_prev );
                 result_indices.add( idx_right_prev );
                 result_indices.add( idx_right );

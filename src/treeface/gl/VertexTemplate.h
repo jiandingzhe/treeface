@@ -6,6 +6,7 @@
 #include "treeface/misc/TypedTemplate.h"
 #include "treeface/misc/TypedTemplateWithOffset.h"
 
+#include <treecore/ClassUtils.h>
 #include <treecore/IntTypes.h>
 #include <treecore/RefCountObject.h>
 

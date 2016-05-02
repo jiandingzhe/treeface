@@ -7,8 +7,8 @@ namespace treeface
 
 double clockwise_accum( const Geometry::HostVertexCache& vertices, IndexType i_begin, IndexType i_end ) noexcept
 {
-    jassert( i_end - i_begin > 2 );
-    jassert( i_end <= vertices.size() );
+    treecore_assert( i_end - i_begin > 2 );
+    treecore_assert( i_end <= vertices.size() );
 
     double sum = 0.0;
 

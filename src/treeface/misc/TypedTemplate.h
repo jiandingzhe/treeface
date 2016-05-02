@@ -26,7 +26,7 @@ struct TypedTemplate
 
     inline size_t get_elem_offset( treecore::int32 index ) const noexcept
     {
-        jassert( 0 <= index && index < n_elem );
+        treecore_assert( 0 <= index && index < n_elem );
         return index * size_of_gl_type( type );
     }
 

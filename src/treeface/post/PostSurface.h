@@ -3,7 +3,7 @@
 
 #include <treecore/RefCountObject.h>
 
-#include "treeface/Config.h"
+#include "treecore/ClassUtils.h"
 #include "treeface/gl/Enums.h"
 
 namespace treeface

@@ -11,7 +11,7 @@ PostSurface::PostSurface(): m_guts( new Guts() ) {}
 
 PostSurface::~PostSurface()
 {
-    jassert( m_guts != nullptr );
+    treecore_assert( m_guts != nullptr );
     delete m_guts;
 }
 

@@ -24,9 +24,9 @@ struct SubPath
     {
         if (closed)
         {
-            jassert( glyphs.size() > 1 );
+            treecore_assert( glyphs.size() > 1 );
             const PathGlyph& first_glyph = glyphs.getFirst();
-            jassert( first_glyph.type == GLYPH_TYPE_LINE );
+            treecore_assert( first_glyph.type == GLYPH_TYPE_LINE );
             glyphs.add( first_glyph );
             closed = false;
         }

@@ -3,6 +3,7 @@
 
 #include "treeface/base/Common.h"
 
+#include <treecore/ClassUtils.h>
 #include <treecore/RefCountHolder.h>
 #include <treecore/Identifier.h>
 #include <treecore/RefCountObject.h>

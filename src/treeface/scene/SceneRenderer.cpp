@@ -186,17 +186,17 @@ treecore::Result SceneRenderer::traverse_begin() noexcept
 
 treecore::Result SceneRenderer::traverse_one_node( SceneNode* node ) noexcept
 {
-    jassert( node != nullptr );
+    treecore_assert( node != nullptr );
     for (int i = 0; i < node->get_num_items(); i++)
     {
         VisualObject* vis_obj = dynamic_cast<VisualObject*>( node->get_item_at( i ) );
-        jassert( vis_obj != nullptr );
+        treecore_assert( vis_obj != nullptr );
 
         if (!vis_obj)
             continue;
 
         SceneGraphMaterial* mat = vis_obj->get_material();
-        jassert( mat != nullptr );
+        treecore_assert( mat != nullptr );
 
         m_impl->combs.add( { mat, vis_obj, node } );
     }

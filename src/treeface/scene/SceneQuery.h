@@ -3,6 +3,7 @@
 
 #include "treeface/base/Common.h"
 
+#include <treecore/ClassUtils.h>
 #include <treecore/RefCountObject.h>
 
 namespace treecore {
@@ -17,7 +18,7 @@ class SceneQuery: public treecore::RefCountObject
 public:
     SceneQuery();
 
-    TREECORE_DECLARE_NON_COPYABLE(SceneQuery);
+    TREECORE_DECLARE_NON_COPYABLE(SceneQuery)
 
     virtual ~SceneQuery();
 

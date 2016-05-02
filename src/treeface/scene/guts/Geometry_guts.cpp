@@ -18,15 +18,15 @@ Geometry::Guts::Guts( const VertexTemplate& vtx_temp, GLPrimitive primitive, boo
 
 Geometry::Guts::~Guts()
 {
-    jassert( user_head == nullptr );
-    jassert( user_tail == nullptr );
+    treecore_assert( user_head == nullptr );
+    treecore_assert( user_tail == nullptr );
 }
 
 void Geometry::Guts::upload_data()
 {
-    jassert( !drawing );
-    jassert( buf_vtx->is_bound() );
-    jassert( buf_idx->is_bound() );
+    treecore_assert( !drawing );
+    treecore_assert( buf_vtx->is_bound() );
+    treecore_assert( buf_idx->is_bound() );
 
     if (dirty)
     {

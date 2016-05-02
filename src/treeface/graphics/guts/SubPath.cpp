@@ -13,7 +13,7 @@ void SubPath::stroke_complex( Geometry::HostVertexCache&  result_vertices,
                               Vec2f& result_skeleton_max,
                               const StrokeStyle& style ) const
 {
-    jassert( glyphs[0].type == GLYPH_TYPE_LINE );
+    treecore_assert( glyphs[0].type == GLYPH_TYPE_LINE );
 
     LineStroker stroker( style );
 
@@ -32,7 +32,7 @@ void SubPath::stroke_complex( Geometry::HostVertexCache&  result_vertices,
         Geometry::HostVertexCache curr_glyph_skeleton( sizeof(Vec2f) );
         glyph.segment( glyph_prev.end, curr_glyph_skeleton );
 
-        jassert( curr_glyph_skeleton.size() > 0 );
+        treecore_assert( curr_glyph_skeleton.size() > 0 );
 
         // first glyph, render cap
         if (i_glyph == 1)

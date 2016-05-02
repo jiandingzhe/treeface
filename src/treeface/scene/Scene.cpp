@@ -22,7 +22,7 @@
 #include <treecore/MemoryBlock.h>
 #include <treecore/NamedValueSet.h>
 #include <treecore/Result.h>
-#include <treecore/Singleton.h>
+#include <treecore/RefCountSingleton.h>
 #include <treecore/Variant.h>
 
 using namespace treecore;
@@ -138,7 +138,7 @@ void Scene::set_global_light_ambient( const Vec4f& value ) noexcept
 #define KEY_GLOBAL_LIGHT_AMB       "global_light_ambient"
 #define KEY_NODES                  "nodes"
 
-class ScenePropertyValidator: public PropertyValidator
+struct ScenePropertyValidator: public PropertyValidator, public RefCountSingleton<ScenePropertyValidator>
 {
 public:
     ScenePropertyValidator()
@@ -150,11 +150,7 @@ public:
     }
 
     virtual ~ScenePropertyValidator() {}
-
-    juce_DeclareSingleton( ScenePropertyValidator, false )
 };
-
-juce_ImplementSingleton( ScenePropertyValidator )
 
 void Scene::build( const treecore::var& root )
 {

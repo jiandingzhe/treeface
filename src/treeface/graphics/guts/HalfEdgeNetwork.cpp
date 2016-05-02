@@ -56,7 +56,7 @@ struct HelpEdgeStore
     HelpEdgeStore( const HalfEdgeNetwork& network )
         : network( network )
     {
-        jassert( network.vertices.size() == network.edges.size() );
+        treecore_assert( network.vertices.size() == network.edges.size() );
         edge_helper_edge_map.resize( network.edges.size() );
         for (int i = 0; i < edge_helper_edge_map.size(); i++)
             edge_helper_edge_map[i] = -1;
@@ -92,7 +92,7 @@ struct HelpEdgeStore
     IndexType get_edge_helper_edge( IndexType edge_idx )
     {
         IndexType helper_idx = edge_helper_edge_map[edge_idx];
-        jassert( 0 <= helper_idx && helper_idx < network.edges.size() );
+        treecore_assert( 0 <= helper_idx && helper_idx < network.edges.size() );
         return helper_idx;
     }
 
@@ -118,7 +118,7 @@ struct HelpEdgeStore
             const Vec2f&    p1   = edge.get_vertex( network.vertices );
             const Vec2f&    p2   = edge.get_next( network.edges ).get_vertex( network.vertices );
 
-            jassert( p2.y <= p1.y );
+            treecore_assert( p2.y <= p1.y );
 
             if (p1.y < position.y || p2.y > position.y) continue;
 
@@ -154,13 +154,13 @@ struct HelpEdgeStore
 
         if ( result != std::numeric_limits<IndexType>::max() )
         {
-            jassert( min_x_dist != std::numeric_limits<float>::max() );
+            treecore_assert( min_x_dist != std::numeric_limits<float>::max() );
             return result;
         }
         else
         {
-            jassert( result_rev != std::numeric_limits<IndexType>::max() );
-            jassert( min_x_dist_rev != std::numeric_limits<float>::max() );
+            treecore_assert( result_rev != std::numeric_limits<IndexType>::max() );
+            treecore_assert( min_x_dist_rev != std::numeric_limits<float>::max() );
             return result_rev;
         }
     }
@@ -184,7 +184,7 @@ void HalfEdgeNetwork::build_half_edges( const treecore::Array<IndexType>& subpat
 
         for (IndexType i_vtx = i_vtx_begin; i_vtx != i_vtx_end; i_vtx++)
         {
-            jassert( i_vtx == edges.size() );
+            treecore_assert( i_vtx == edges.size() );
             IndexType i_edge_prev;
             IndexType i_edge_next;
 
@@ -236,8 +236,8 @@ void HalfEdgeNetwork::connect( IndexType i_edge1, IndexType i_edge2 )
     )
 
     // modify existing edges' connection
-    jassert( edge1_prev.idx_next_edge == i_edge1 );
-    jassert( edge2_prev.idx_next_edge == i_edge2 );
+    treecore_assert( edge1_prev.idx_next_edge == i_edge1 );
+    treecore_assert( edge2_prev.idx_next_edge == i_edge2 );
     edge1.idx_prev_edge      = i_edge_2_1;
     edge2.idx_prev_edge      = i_edge_1_2;
     edge1_prev.idx_next_edge = i_edge_1_2;
@@ -286,7 +286,7 @@ IndexType HalfEdgeNetwork::get_next_edge_diff_vtx( const IndexType i_edge_search
         i_edge = edge.idx_next_edge;
     }
 
-    jassertfalse;
+    treecore_assert_false;
     return std::numeric_limits<IndexType>::max();
 }
 
@@ -307,7 +307,7 @@ IndexType HalfEdgeNetwork::get_prev_edge_diff_vtx( const IndexType i_edge_search
         i_edge = edge.idx_prev_edge;
     }
 
-    jassertfalse;
+    treecore_assert_false;
     return std::numeric_limits<IndexType>::max();
 }
 
@@ -325,7 +325,7 @@ bool HalfEdgeNetwork::fan_is_facing( const Vec2f& vec_ref, IndexType i_edge ) co
 
 void HalfEdgeNetwork::get_edge_vertical_order( const treecore::Array<VertexRole>& roles, treecore::Array<IndexType>& result ) const
 {
-    jassert( roles.size() == edges.size() );
+    treecore_assert( roles.size() == edges.size() );
 
     int num_edge = edges.size();
     result.resize( num_edge );
@@ -401,7 +401,7 @@ void HalfEdgeNetwork::iter_edge_to_facing_fan( const IndexType i_edge_ref, Index
         }
 
         v_ref = vtx_ref_use - vtx_fan_base;
-        jassert( v_ref.length2() > 0.0f );
+        treecore_assert( v_ref.length2() > 0.0f );
         v_ref.normalize();
     }
 
@@ -468,7 +468,7 @@ void HalfEdgeNetwork::iter_edge_to_facing_fan( const IndexType i_edge_ref, Index
         )
     }
 
-    jassertfalse;
+    treecore_assert_false;
 }
 
 ///
@@ -501,7 +501,7 @@ int16 HalfEdgeNetwork::mark_polygons( Array<int16>& edge_polygon_map ) const
         for (IndexType i_edge = i_edge_first;; )
         {
             // mark polygon index
-            jassert( edge_polygon_map[i_edge] == -1 );
+            treecore_assert( edge_polygon_map[i_edge] == -1 );
             edge_polygon_map[i_edge] = num_polygon;
 
             // move to next
@@ -546,7 +546,7 @@ void HalfEdgeNetwork::triangulate_monotone_polygons( const Array<IndexType>&  ed
             const HalfEdge&  edge = edges[i_edge];
             const Vec2f&     vtx  = edge.get_vertex( vertices );
 
-            DBGCODE( if (count == 0) jassert( role == VTX_ROLE_START ); );
+            TREECORE_DBGCODE( if (count == 0) treecore_assert( role == VTX_ROLE_START ); );
 
             // update bound
             update_bound( vtx, result_skeleton_min, result_skeleton_max );
@@ -566,7 +566,7 @@ void HalfEdgeNetwork::triangulate_monotone_polygons( const Array<IndexType>&  ed
 
                 if (count == 0)
                 {
-                    jassert( role == VTX_ROLE_START );
+                    treecore_assert( role == VTX_ROLE_START );
                     edge_stack.clear();
                     i_edge_first = i_edge;
                 }
@@ -628,7 +628,7 @@ void HalfEdgeNetwork::triangulate_monotone_polygons( const Array<IndexType>&  ed
                             sucker.text( "curr on same chain", vtx );
                         )
 
-                        jassert( edge_stack.size() > 1 );
+                        treecore_assert( edge_stack.size() > 1 );
                         Array<IndexType> popped_edges;
 
                         //PSEUDOCODE Pop one vertex from S.
@@ -658,7 +658,7 @@ void HalfEdgeNetwork::triangulate_monotone_polygons( const Array<IndexType>&  ed
                             else if (edge_roles[i_edge] == VTX_ROLE_RIGHT)
                                 diag_is_inside = is_convex( vtx, vtx_popped, vtx_stack_top );
                             else
-                                jassertfalse;
+                                treecore_assert_false;
 
                             SUCK_GEOM( GeomSucker sucker( *this );
                                        sucker.draw_edge_stack( edge_stack ); )
@@ -773,7 +773,7 @@ void HalfEdgeNetwork::triangulate_monotone_polygons( const Array<IndexType>&  ed
 
 void HalfEdgeNetwork::partition_polygon_monotone( HalfEdgeNetwork& result_network ) const
 {
-    jassert( &vertices == &result_network.vertices );
+    treecore_assert( &vertices == &result_network.vertices );
     result_network.edges = edges;
 
     int num_edge_orig = edges.size();

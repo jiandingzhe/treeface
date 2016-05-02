@@ -45,7 +45,7 @@ public:
 
     void upload_data( const void* data, GLsizei num_byte )
     {
-        jassert( get_current_bound_buffer( m_type ) == m_buffer );
+        treecore_assert( get_current_bound_buffer( m_type ) == m_buffer );
         glBufferData( m_type, num_byte, data, m_usage );
     }
 

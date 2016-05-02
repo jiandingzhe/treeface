@@ -123,7 +123,7 @@ public:
 
     float get_min_lod() const noexcept
     {
-        jassert( is_bound() );
+        treecore_assert( is_bound() );
         float re = std::numeric_limits<float>::signaling_NaN();
         glGetTexParameterfv( m_type, GL_TEXTURE_MIN_LOD, &re );
         return re;
@@ -131,13 +131,13 @@ public:
 
     void set_min_lod( float value ) noexcept
     {
-        jassert( is_bound() );
+        treecore_assert( is_bound() );
         glTexParameterf( m_type, GL_TEXTURE_MIN_LOD, value );
     }
 
     float get_max_lod() const noexcept
     {
-        jassert( is_bound() );
+        treecore_assert( is_bound() );
         float re = std::numeric_limits<float>::signaling_NaN();
         glGetTexParameterfv( m_type, GL_TEXTURE_MAX_LOD, &re );
         return re;
@@ -145,13 +145,13 @@ public:
 
     void set_max_lod( float value ) noexcept
     {
-        jassert( is_bound() );
+        treecore_assert( is_bound() );
         glTexParameterf( m_type, GL_TEXTURE_MAX_LOD, value );
     }
 
     GLTextureWrap get_wrap_s() const noexcept
     {
-        jassert( is_bound() );
+        treecore_assert( is_bound() );
         GLint re = -1;
         glGetTexParameteriv( m_type, GL_TEXTURE_WRAP_S, &re );
         return GLTextureWrap( re );
@@ -159,13 +159,13 @@ public:
 
     void set_wrap_s( GLTextureWrap value ) noexcept
     {
-        jassert( is_bound() );
+        treecore_assert( is_bound() );
         glTexParameteri( m_type, GL_TEXTURE_WRAP_S, value );
     }
 
     GLTextureWrap get_wrap_t() const noexcept
     {
-        jassert( is_bound() );
+        treecore_assert( is_bound() );
         GLint re = -1;
         glGetTexParameteriv( m_type, GL_TEXTURE_WRAP_T, &re );
         return GLTextureWrap( re );
@@ -173,13 +173,13 @@ public:
 
     void set_wrap_t( GLTextureWrap value ) noexcept
     {
-        jassert( is_bound() );
+        treecore_assert( is_bound() );
         glTexParameteri( m_type, GL_TEXTURE_WRAP_T, value );
     }
 
     GLTextureFilter get_min_filter() const noexcept
     {
-        jassert( is_bound() );
+        treecore_assert( is_bound() );
         GLint re = -1;
         glGetTexParameteriv( m_type, GL_TEXTURE_MIN_FILTER, &re );
         return GLTextureFilter( re );
@@ -187,13 +187,13 @@ public:
 
     void set_min_filter( GLTextureFilter value ) noexcept
     {
-        jassert( is_bound() );
+        treecore_assert( is_bound() );
         glTexParameteri( m_type, GL_TEXTURE_MIN_FILTER, value );
     }
 
     GLTextureFilter get_mag_filter() const noexcept
     {
-        jassert( is_bound() );
+        treecore_assert( is_bound() );
         GLint re = -1;
         glGetTexParameteriv( m_type, GL_TEXTURE_MAG_FILTER, &re );
         return GLTextureFilter( re );
@@ -201,7 +201,7 @@ public:
 
     void set_mag_filter( GLTextureFilter value ) noexcept
     {
-        jassert( is_bound() );
+        treecore_assert( is_bound() );
         glTexParameteri( m_type, GL_TEXTURE_MAG_FILTER, value );
     }
 

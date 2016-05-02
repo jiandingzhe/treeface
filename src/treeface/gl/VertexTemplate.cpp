@@ -123,7 +123,7 @@ VertexTemplate::~VertexTemplate()
 
 void VertexTemplate::add_attrib( const TypedTemplate& attr, bool normalize, uint32 align )
 {
-    jassert( align <= attr.size() );
+    treecore_assert( align <= attr.size() );
 
     size_t attr_offset = _expand_to_align_( m_impl->size, align );
     int    prev_n_attr = m_impl->attrs.size();

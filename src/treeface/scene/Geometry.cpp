@@ -16,10 +16,8 @@
 #include <treecore/HashSet.h>
 #include <treecore/NamedValueSet.h>
 #include <treecore/RefCountHolder.h>
-#include <treecore/RefCountSingleton.h>
 #include <treecore/Result.h>
 #include <treecore/ScopedLock.h>
-#include <treecore/Singleton.h>
 #include <treecore/Variant.h>
 
 using namespace treecore;
@@ -41,7 +39,7 @@ Geometry::~Geometry()
 #define KEY_IDX  "indices"
 #define KEY_PRIM "primitive"
 
-class GeometryPropertyValidator: public PropertyValidator, public treecore::RefCountSingleton<GeometryPropertyValidator>
+class GeometryPropertyValidator: public PropertyValidator
 {
 public:
     GeometryPropertyValidator()
@@ -53,6 +51,12 @@ public:
     }
 };
 
+const GeometryPropertyValidator& geometry_property_validator()
+{
+    static GeometryPropertyValidator obj;
+    return obj;
+}
+
 Geometry::Geometry( const treecore::var& geom_root_node )
 {
     if ( !geom_root_node.isObject() )
@@ -60,7 +64,7 @@ Geometry::Geometry( const treecore::var& geom_root_node )
 
     const NamedValueSet& geom_root_kv = geom_root_node.getDynamicObject()->getProperties();
     {
-        Result re = GeometryPropertyValidator::getInstance()->validate( geom_root_kv );
+        Result re = geometry_property_validator().validate( geom_root_kv );
         if (!re)
             throw ConfigParseError( "geometry JSON node is invalid: " + re.getErrorMessage() );
     }
@@ -86,7 +90,7 @@ Geometry::Geometry( const treecore::var& geom_root_node )
     {
         size_t vtx_size   = m_impl->vtx_temp.vertex_size();
         int    n_vtx_elem = m_impl->vtx_temp.n_elems();
-        //        DBG( "geometry vertex size: " + String( vtx_size ) + ", elems: " + String( n_vtx_elem ) );
+        //        TREECORE_DBG( "geometry vertex size: " + String( vtx_size ) + ", elems: " + String( n_vtx_elem ) );
 
         m_impl->host_data_vtx.resize( vtx_nodes->size() );
         int8* vtx_data = (int8*) m_impl->host_data_vtx.get_raw_data_ptr();
@@ -94,7 +98,7 @@ Geometry::Geometry( const treecore::var& geom_root_node )
         for (int i_vtx = 0; i_vtx < vtx_nodes->size(); i_vtx++)
         {
             // get and validate vertex node
-            //            DBG( "vertex " + String( i_vtx ) );
+            //            TREECORE_DBG( "vertex " + String( i_vtx ) );
             const var& vtx_node = (*vtx_nodes)[i_vtx];
 
             if ( !vtx_node.isArray() )
@@ -108,7 +112,7 @@ Geometry::Geometry( const treecore::var& geom_root_node )
             // fill data
             for (int i_elem = 0; i_elem < n_vtx_elem; i_elem++)
             {
-                //                DBG( "  vertex element " +  String( i_elem ) + ": " + (*vtx_elems)[i_elem].toString() );
+                //                TREECORE_DBG( "  vertex element " +  String( i_elem ) + ": " + (*vtx_elems)[i_elem].toString() );
                 m_impl->vtx_temp.set_value_at( vtx_data, i_elem, (*vtx_elems)[i_elem] );
             }
 
@@ -218,13 +222,13 @@ void Geometry::add_index( IndexType idx )
 
 Geometry::HostVertexCache& Geometry::get_host_vertex_cache() noexcept
 {
-    jassert( m_impl->drawing );
+    treecore_assert( m_impl->drawing );
     return m_impl->host_data_vtx;
 }
 
 treecore::Array<IndexType>& Geometry::get_host_index_cache() noexcept
 {
-    jassert( m_impl->drawing );
+    treecore_assert( m_impl->drawing );
     return m_impl->host_data_idx;
 }
 

@@ -18,8 +18,8 @@ struct HalfOutline
 
     void add( const Vec2f& vtx, JointID id )
     {
-        jassert( outline.size() == joint_ids.size() );
-        jassert( ( outline.size() == 0 ) || ( outline.size() == outline_bounds.size() + 1 ) );
+        treecore_assert( outline.size() == joint_ids.size() );
+        treecore_assert( ( outline.size() == 0 ) || ( outline.size() == outline_bounds.size() + 1 ) );
 
         SUCK_GEOM_BLK(
             OutlineSucker sucker( *this, "add vertex" );
@@ -35,7 +35,7 @@ struct HalfOutline
 
     void resize( int size )
     {
-        jassert( size > 0 );
+        treecore_assert( size > 0 );
         outline.resize( size );
         outline_bounds.resize( size - 1 );
         joint_ids.resize( size );
@@ -80,14 +80,14 @@ struct HalfOutline
 
     int size() const noexcept
     {
-        jassert( outline.size() == joint_ids.size() );
-        jassert( outline.size() == outline_bounds.size() + 1 );
+        treecore_assert( outline.size() == joint_ids.size() );
+        treecore_assert( outline.size() == outline_bounds.size() + 1 );
         return outline.size();
     }
 
     Vec2f get_tangent_unorm( int i, bool path_is_closed ) const
     {
-        jassert( outline.size() > 1 );
+        treecore_assert( outline.size() > 1 );
         Vec2f result;
         if (i == 0)
         {

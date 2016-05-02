@@ -2,6 +2,7 @@
 #define TREEFACE_SCENE_ITEM_H
 #include "treeface/base/Common.h"
 
+#include <treecore/ClassUtils.h>
 #include <treecore/RefCountObject.h>
 
 namespace treeface {

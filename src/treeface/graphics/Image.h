@@ -5,9 +5,10 @@
 #include "treeface/base/Enums.h"
 #include "treeface/gl/ImageRef.h"
 
+#include <treecore/ClassUtils.h>
 #include <treecore/RefCountObject.h>
 
-#ifdef TREECORE_OS_WINDOWS
+#if TREECORE_OS_WINDOWS
 #  include <Windows.h>
 #endif
 

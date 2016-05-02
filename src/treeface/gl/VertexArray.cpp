@@ -22,12 +22,12 @@ void _build_one_( const TypedTemplateWithOffset& host_attr, GLsizei stride, Prog
     int prog_attr_idx = program->get_attribute_index( host_attr.name );
     if (prog_attr_idx < 0)
     {
-        DBG( "  skipped attibute \"" + host_attr.name.toString() + "\" which do not exist in program" );
+        TREECORE_DBG( "  skipped attibute \"" + host_attr.name.toString() + "\" which do not exist in program" );
         return;
     }
     const TypedTemplateWithLocation& prog_attr = program->get_attribute( prog_attr_idx );
 
-    DBG( "  connect with attr " + host_attr.name.toString() + " at " + String( prog_attr.location ) + ", size " + String( host_attr.n_elem ) + " offset " + String( uint64( host_attr.offset ) ) );
+    TREECORE_DBG( "  connect with attr " + host_attr.name.toString() + " at " + String( prog_attr.location ) + ", size " + String( host_attr.n_elem ) + " offset " + String( uint64( host_attr.offset ) ) );
     glEnableVertexAttribArray( prog_attr.location );
     glVertexAttribPointer( prog_attr.location,
                            host_attr.n_elem,
@@ -48,14 +48,14 @@ VertexArray::VertexArray( GLBuffer* buffer_vtx,
     , m_buf_idx( buffer_idx )
 {
     glGenVertexArrays( 1, &m_array );
-    jassert( m_array != 0 );
+    treecore_assert( m_array != 0 );
 
     bind();
     buffer_vtx->bind();
     buffer_idx->bind();
 
     // set attribute binding for vertex array
-    DBG( "connect buffer with program" );
+    TREECORE_DBG( "connect buffer with program" );
     GLsizei stride = (GLsizei) vertex_info.vertex_size();
     for (int i = 0; i < vertex_info.n_attribs(); i++)
     {

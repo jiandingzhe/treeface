@@ -22,8 +22,8 @@
 #include <treecore/JSON.h>
 #include <treecore/MemoryBlock.h>
 #include <treecore/NamedValueSet.h>
+#include <treecore/RefCountSingleton.h>
 #include <treecore/Result.h>
-#include <treecore/Singleton.h>
 #include <treecore/Variant.h>
 
 using namespace treecore;
@@ -73,7 +73,7 @@ SceneNode* SceneNodeManager::get_node( const treecore::Identifier& name )
 #define KEY_VISUAL_MAT "material"
 #define KEY_VISUAL_GEO "geometry"
 
-class VisualItemPropertyValidator: public PropertyValidator
+class VisualItemPropertyValidator: public PropertyValidator, public treecore::RefCountSingleton<VisualItemPropertyValidator>
 {
 public:
     VisualItemPropertyValidator()
@@ -83,10 +83,7 @@ public:
     }
 
     virtual ~VisualItemPropertyValidator() {}
-
-    juce_DeclareSingleton( VisualItemPropertyValidator, false )
 };
-juce_ImplementSingleton( VisualItemPropertyValidator )
 
 VisualObject * SceneNodeManager::create_visual_object( const var &data )
 {
@@ -122,7 +119,7 @@ VisualObject * SceneNodeManager::create_visual_object( const var &data )
 #define KEY_CHILD  "children"
 #define KEY_VISUAL "visual"
 
-class SceneNodePropertyValidator: public PropertyValidator
+class SceneNodePropertyValidator: public PropertyValidator, public RefCountSingleton<SceneNodePropertyValidator>
 {
 public:
     SceneNodePropertyValidator()
@@ -135,9 +132,7 @@ public:
 
     virtual ~SceneNodePropertyValidator() {}
 
-    juce_DeclareSingleton( SceneNodePropertyValidator, false )
 };
-juce_ImplementSingleton( SceneNodePropertyValidator )
 
 void SceneNodeManager::build_node( const treecore::var& data, SceneNode* node )
 {

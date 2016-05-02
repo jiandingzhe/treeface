@@ -3,6 +3,7 @@
 
 #include "treeface/gl/Enums.h"
 
+#include <treecore/ClassUtils.h>
 #include <treecore/RefCountObject.h>
 
 namespace treeface
@@ -32,7 +33,7 @@ public:
 
     void clear() noexcept
     {
-        jassert( is_bound_to_draw() );
+        treecore_assert( is_bound_to_draw() );
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
     }
 

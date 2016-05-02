@@ -98,7 +98,7 @@ int main()
 
     // do render
     RefCountHolder<SceneRenderer> render = new SceneRenderer();
-    jassert( fbo->is_bound_to_draw() );
+    treecore_assert( fbo->is_bound_to_draw() );
     render->render( Mat4f(), Mat4f(), scene );
 
     // fetch texture image

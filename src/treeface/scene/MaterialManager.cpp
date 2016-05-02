@@ -23,7 +23,7 @@
 #include <treecore/MemoryBlock.h>
 #include <treecore/JSON.h>
 #include <treecore/RefCountHolder.h>
-#include <treecore/Singleton.h>
+#include <treecore/RefCountSingleton.h>
 #include <treecore/Variant.h>
 
 using namespace treecore;

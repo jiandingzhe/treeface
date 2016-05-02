@@ -120,7 +120,7 @@ void ShapeGenerator::move_to_rel( const Vec2f& offset )
     if (m_guts->subpaths.size() > 0)
     {
         SubPath& prev_path = m_guts->subpaths.getLast();
-        jassert( prev_path.glyphs.size() > 0 );
+        treecore_assert( prev_path.glyphs.size() > 0 );
         if (prev_path.closed)
             pos += prev_path.glyphs.getFirst().end;
         else
@@ -181,7 +181,7 @@ struct StrokeTemplateHelper: public treecore::RefCountObject, public treecore::R
         value.add_attrib( TypedTemplate( "tangent_unorm", 2, TFGL_TYPE_FLOAT ), false, 8 );
         value.add_attrib( TypedTemplate( "trip", 1, TFGL_TYPE_FLOAT ),          false, 4 );
         value.add_attrib( TypedTemplate( "side", 1, TFGL_TYPE_FLOAT ),          false, 4 );
-        jassert( sizeof(StrokeVertex) == value.vertex_size() );
+        treecore_assert( sizeof(StrokeVertex) == value.vertex_size() );
     }
 
     virtual ~StrokeTemplateHelper() = default;
@@ -194,7 +194,7 @@ struct FillTemplateHelper: public treecore::RefCountObject, public treecore::Ref
     FillTemplateHelper()
     {
         value.add_attrib( TypedTemplate( "position", 2, TFGL_TYPE_FLOAT ), false, 8 );
-        jassert( sizeof(Vec2f) == value.vertex_size() );
+        treecore_assert( sizeof(Vec2f) == value.vertex_size() );
     }
 
     virtual ~FillTemplateHelper() = default;

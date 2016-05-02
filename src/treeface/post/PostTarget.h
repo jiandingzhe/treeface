@@ -1,6 +1,7 @@
 #ifndef TREEFACE_POST_TARGET_H
 #define TREEFACE_POST_TARGET_H
 
+#include <treecore/ClassUtils.h>
 #include <treecore/RefCountObject.h>
 
 namespace treeface

@@ -3,6 +3,7 @@
 
 #include "treeface/base/Common.h"
 
+#include <treecore/ClassUtils.h>
 #include <treecore/RefCountHolder.h>
 #include <treecore/RefCountObject.h>
 #include <treecore/Result.h>
@@ -20,8 +21,8 @@ class MaterialManager: public treecore::RefCountObject
 public:
     MaterialManager();
 
-    TREECORE_DECLARE_NON_COPYABLE(MaterialManager);
-    TREECORE_DECLARE_NON_MOVABLE(MaterialManager);
+    TREECORE_DECLARE_NON_COPYABLE(MaterialManager)
+    TREECORE_DECLARE_NON_MOVABLE(MaterialManager)
 
     virtual ~MaterialManager();
 

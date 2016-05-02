@@ -15,13 +15,13 @@ VisualObject::Impl::Impl( Geometry* geom, SceneGraphMaterial* mat )
 {
     if (geom->m_impl->user_tail == nullptr)
     {
-        jassert( geom->m_impl->user_head == nullptr );
+        treecore_assert( geom->m_impl->user_head == nullptr );
         geom->m_impl->user_head = this;
         geom->m_impl->user_tail = this;
     }
     else
     {
-        jassert( geom->m_impl->user_head != nullptr );
+        treecore_assert( geom->m_impl->user_head != nullptr );
         Impl* prev_tail = geom->m_impl->user_tail;
         prev_tail->same_geom_next = this;
         geom->m_impl->user_tail   = this;
@@ -33,7 +33,7 @@ VisualObject::Impl::~Impl()
 {
     if (same_geom_next == nullptr)
     {
-        jassert( geometry->m_impl->user_tail == this );
+        treecore_assert( geometry->m_impl->user_tail == this );
         geometry->m_impl->user_tail = same_geom_prev;
     }
     else
@@ -43,7 +43,7 @@ VisualObject::Impl::~Impl()
 
     if (same_geom_prev == nullptr)
     {
-        jassert( geometry->m_impl->user_head == this );
+        treecore_assert( geometry->m_impl->user_head == this );
         geometry->m_impl->user_head = same_geom_next;
     }
     else
@@ -54,7 +54,7 @@ VisualObject::Impl::~Impl()
 
 void VisualObject::Impl::update_uniform_cache()
 {
-    jassert( uniform_cache_dirty );
+    treecore_assert( uniform_cache_dirty );
 
     // collect uniforms
     UniformMap cache_map = uniforms;

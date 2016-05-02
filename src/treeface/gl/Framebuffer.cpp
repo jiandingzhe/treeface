@@ -35,26 +35,26 @@ void _check_error_( const String& msg )
 
 void Framebuffer::attach_2d_texture( GLFramebufferAttachment attach, Texture* texture ) const
 {
-    jassert( is_bound_to_draw() );
-    jassert( texture->m_type == TFGL_TEXTURE_2D );
+    treecore_assert( is_bound_to_draw() );
+    treecore_assert( texture->m_type == TFGL_TEXTURE_2D );
     glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, attach, TFGL_TEXTURE_2D, texture->m_texture, 0 );
-    DBGCODE( _check_error_( "failed to attach 2D texture" ) );
+    TREECORE_DBGCODE( _check_error_( "failed to attach 2D texture" ) );
 }
 
 void Framebuffer::attach_cube_texture( GLFramebufferAttachment attach, Texture* texture, GLTextureCubeSide side ) const
 {
-    jassert( is_bound_to_draw() );
-    jassert( texture->m_type == TFGL_TEXTURE_CUBE );
+    treecore_assert( is_bound_to_draw() );
+    treecore_assert( texture->m_type == TFGL_TEXTURE_CUBE );
     glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, attach, side, texture->m_texture, 0 );
-    DBGCODE( _check_error_( "failed to attach cube texture" ) );
+    TREECORE_DBGCODE( _check_error_( "failed to attach cube texture" ) );
 }
 
 void Framebuffer::attach_texture_layer( GLFramebufferAttachment attach, Texture* texture, GLint layer ) const
 {
-    jassert( is_bound_to_draw() );
-    jassert( texture->m_type == TFGL_TEXTURE_2D_ARRAY || texture->m_type == TFGL_TEXTURE_3D );
+    treecore_assert( is_bound_to_draw() );
+    treecore_assert( texture->m_type == TFGL_TEXTURE_2D_ARRAY || texture->m_type == TFGL_TEXTURE_3D );
     glFramebufferTextureLayer( GL_DRAW_FRAMEBUFFER, attach, texture->m_texture, 0, layer );
-    DBGCODE( _check_error_( "failed to attach one layer of 3D or array texture" ) );
+    TREECORE_DBGCODE( _check_error_( "failed to attach one layer of 3D or array texture" ) );
 }
 
 } // namespace treeface

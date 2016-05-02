@@ -119,7 +119,7 @@ void ShapeGenerator::Guts::triangulate( Geometry::HostVertexCache& result_vertic
                                         Vec2f& result_skeleton_min,
                                         Vec2f& result_skeleton_max )
 {
-    jassert( result_vertices.block_size() == sizeof(Vec2f) );
+    treecore_assert( result_vertices.block_size() == sizeof(Vec2f) );
 
     // do segment on all subpath
     Array<IndexType> subpath_begin_indices;
@@ -128,7 +128,7 @@ void ShapeGenerator::Guts::triangulate( Geometry::HostVertexCache& result_vertic
         IndexType idx_begin = IndexType( result_vertices.size() );
         subpath_begin_indices.add( idx_begin );
 
-        jassert( subpath.glyphs.size() > 1 );
+        treecore_assert( subpath.glyphs.size() > 1 );
 
         for (int i_glyph = 0; i_glyph < subpath.glyphs.size(); i_glyph++)
         {
@@ -136,7 +136,7 @@ void ShapeGenerator::Guts::triangulate( Geometry::HostVertexCache& result_vertic
 
             if (i_glyph == 0)
             {
-                jassert( glyph.type == GLYPH_TYPE_LINE );
+                treecore_assert( glyph.type == GLYPH_TYPE_LINE );
                 result_vertices.add( glyph.end );
             }
             else
@@ -147,7 +147,7 @@ void ShapeGenerator::Guts::triangulate( Geometry::HostVertexCache& result_vertic
         }
     }
 
-    jassert( subpath_begin_indices.size() == subpaths.size() );
+    treecore_assert( subpath_begin_indices.size() == subpaths.size() );
 
     // determine global clockwise
     double clw_accum_global = 0.0;

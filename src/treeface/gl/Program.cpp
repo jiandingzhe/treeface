@@ -40,7 +40,7 @@ Program::Program( const char* src_vert, const char* src_frag ): m_impl( new Impl
     if (!m_shader_frag)
         throw std::runtime_error( "failed to allocate shader ID for fragment shader" );
 
-    DBG( "build program" );
+    TREECORE_DBG( "build program" );
 
     // compile shaders
     {
@@ -88,7 +88,7 @@ Program::Program( const char* src_vert, const char* src_frag ): m_impl( new Impl
     glGetProgramiv( m_program, GL_ACTIVE_ATTRIBUTES, &n_attr );
     if (n_attr == -1)
         die( "failed to get attribute number in program %u", m_program );
-    DBG( "vertex attribute amount: " + String( n_attr ) );
+    TREECORE_DBG( "vertex attribute amount: " + String( n_attr ) );
 
     for (int i_attr = 0; i_attr < n_attr; i_attr++)
     {
@@ -110,7 +110,7 @@ Program::Program( const char* src_vert, const char* src_frag ): m_impl( new Impl
         if (attr_loc == -1)
             die( "failed to get location for attribute %s", attr_name );
 
-        DBG( "  attribute " + String( i_attr ) + " " + String( attr_name ) + " at " + String( attr_loc ) + ": type " + toString( GLType( attr_type ) ) + ", size " + String( attr_size ) );
+        TREECORE_DBG( "  attribute " + String( i_attr ) + " " + String( attr_name ) + " at " + String( attr_loc ) + ": type " + toString( GLType( attr_type ) ) + ", size " + String( attr_size ) );
 
         // store vertex attribute info
         m_impl->attr_infos.add( { Identifier( attr_name ), attr_size, GLType( attr_type ), attr_loc } );
@@ -122,7 +122,7 @@ Program::Program( const char* src_vert, const char* src_frag ): m_impl( new Impl
     glGetProgramiv( m_program, GL_ACTIVE_UNIFORMS, &n_uni );
     if (n_uni == -1)
         die( "failed to get uniform number from program %u", m_program );
-    DBG( "uniform amount: " + String( n_uni ) );
+    TREECORE_DBG( "uniform amount: " + String( n_uni ) );
 
     for (int i_uni = 0; i_uni < n_uni; i_uni++)
     {
@@ -145,7 +145,7 @@ Program::Program( const char* src_vert, const char* src_frag ): m_impl( new Impl
         if (uni_loc == -1)
             die( "failed to get location for uniform %s", uni_name );
 
-        DBG( "  uniform " + String( i_uni ) + " " + String( uni_name ) + " at " + String( uni_loc ) + ": type " + toString( GLType( uni_type ) ) + ", size " + String( uni_size ) );
+        TREECORE_DBG( "  uniform " + String( i_uni ) + " " + String( uni_name ) + " at " + String( uni_loc ) + ": type " + toString( GLType( uni_type ) ) + ", size " + String( uni_size ) );
 
         // store uniform info
         m_impl->uni_infos.add( { Identifier( uni_name ), uni_size, GLType( uni_type ), uni_loc } );
@@ -235,14 +235,14 @@ treecore::Result Program::fetch_program_error_log()
 
 void Program::set_uniform( GLint uni_loc, GLint value ) const noexcept
 {
-    jassert( is_bound() );
+    treecore_assert( is_bound() );
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
-    jassert( i_uni >= 0 );
+    treecore_assert( i_uni >= 0 );
     const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
-    jassert( uni_info.n_elem == 1 );
-    jassert( uni_info.type == GL_INT ||
+    treecore_assert( uni_info.n_elem == 1 );
+    treecore_assert( uni_info.type == GL_INT ||
              uni_info.type == GL_BOOL ||
              uni_info.type == GL_SAMPLER_2D ||
              uni_info.type == GL_SAMPLER_3D ||
@@ -257,14 +257,14 @@ void Program::set_uniform( GLint uni_loc, GLint value ) const noexcept
 
 void Program::set_uniform( GLint uni_loc, GLuint value ) const noexcept
 {
-    jassert( is_bound() );
+    treecore_assert( is_bound() );
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
-    jassert( i_uni >= 0 );
+    treecore_assert( i_uni >= 0 );
     const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
-    jassert( uni_info.n_elem == 1 );
-    jassert( uni_info.type == GL_UNSIGNED_INT ||
+    treecore_assert( uni_info.n_elem == 1 );
+    treecore_assert( uni_info.type == GL_UNSIGNED_INT ||
              uni_info.type == GL_BOOL );
 #endif
     glUniform1ui( uni_loc, value );
@@ -272,14 +272,14 @@ void Program::set_uniform( GLint uni_loc, GLuint value ) const noexcept
 
 void Program::set_uniform( GLint uni_loc, GLfloat value ) const noexcept
 {
-    jassert( is_bound() );
+    treecore_assert( is_bound() );
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
-    jassert( i_uni >= 0 );
+    treecore_assert( i_uni >= 0 );
     const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
-    jassert( uni_info.n_elem == 1 );
-    jassert( uni_info.type == GL_FLOAT ||
+    treecore_assert( uni_info.n_elem == 1 );
+    treecore_assert( uni_info.type == GL_FLOAT ||
              uni_info.type == GL_BOOL );
 #endif
     glUniform1f( uni_loc, value );
@@ -287,98 +287,98 @@ void Program::set_uniform( GLint uni_loc, GLfloat value ) const noexcept
 
 void Program::set_uniform( GLint uni_loc, const Vec2f& value ) const noexcept
 {
-    jassert( is_bound() );
+    treecore_assert( is_bound() );
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
-    jassert( i_uni >= 0 );
+    treecore_assert( i_uni >= 0 );
     const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
-    jassert( uni_info.n_elem == 1 );
-    jassert( uni_info.type == TFGL_TYPE_VEC2F );
+    treecore_assert( uni_info.n_elem == 1 );
+    treecore_assert( uni_info.type == TFGL_TYPE_VEC2F );
 #endif
     glUniform2fv( uni_loc, 1, (const float*) &value );
 }
 
 void Program::set_uniform( GLint uni_loc, const Vec3f& value ) const noexcept
 {
-    jassert( is_bound() );
+    treecore_assert( is_bound() );
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
-    jassert( i_uni >= 0 );
+    treecore_assert( i_uni >= 0 );
     const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
-    jassert( uni_info.n_elem == 1 );
-    jassert( uni_info.type == TFGL_TYPE_VEC3F );
+    treecore_assert( uni_info.n_elem == 1 );
+    treecore_assert( uni_info.type == TFGL_TYPE_VEC3F );
 #endif
     glUniform3fv( uni_loc, 1, (const float*) &value );
 }
 
 void Program::set_uniform( GLint uni_loc, const Vec4f& value ) const noexcept
 {
-    jassert( is_bound() );
+    treecore_assert( is_bound() );
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
-    jassert( i_uni >= 0 );
+    treecore_assert( i_uni >= 0 );
     const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
-    jassert( uni_info.n_elem == 1 );
-    jassert( uni_info.type == TFGL_TYPE_VEC4F );
+    treecore_assert( uni_info.n_elem == 1 );
+    treecore_assert( uni_info.type == TFGL_TYPE_VEC4F );
 #endif
     glUniform4fv( uni_loc, 1, (const float*) &value );
 }
 
 void Program::set_uniform( GLint uni_loc, const Mat2f& value ) const noexcept
 {
-    jassert( is_bound() );
+    treecore_assert( is_bound() );
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
-    jassert( i_uni >= 0 );
+    treecore_assert( i_uni >= 0 );
     const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
-    jassert( uni_info.n_elem == 1 );
-    jassert( uni_info.type == TFGL_TYPE_MAT2F );
+    treecore_assert( uni_info.n_elem == 1 );
+    treecore_assert( uni_info.type == TFGL_TYPE_MAT2F );
 #endif
     glUniformMatrix2fv( uni_loc, 1, false, (const float*) &value );
 }
 
 void Program::set_uniform( GLint uni_loc, const Mat3f& value ) const noexcept
 {
-    jassert( is_bound() );
+    treecore_assert( is_bound() );
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
-    jassert( i_uni >= 0 );
+    treecore_assert( i_uni >= 0 );
     const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
-    jassert( uni_info.n_elem == 1 );
-    jassert( uni_info.type == TFGL_TYPE_MAT3F );
+    treecore_assert( uni_info.n_elem == 1 );
+    treecore_assert( uni_info.type == TFGL_TYPE_MAT3F );
 #endif
     glUniformMatrix3fv( uni_loc, 1, false, (const float*) &value );
 }
 
 void Program::set_uniform( GLint uni_loc, const Mat4f& value ) const noexcept
 {
-    jassert( is_bound() );
+    treecore_assert( is_bound() );
     if (uni_loc == -1) return;
 #ifdef JUCE_DEBUG
     int i_uni = get_uniform_index( uni_loc );
-    jassert( i_uni >= 0 );
+    treecore_assert( i_uni >= 0 );
     const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
-    jassert( uni_info.n_elem == 1 );
-    jassert( uni_info.type == TFGL_TYPE_MAT4F );
+    treecore_assert( uni_info.n_elem == 1 );
+    treecore_assert( uni_info.type == TFGL_TYPE_MAT4F );
 #endif
     glUniformMatrix4fv( uni_loc, 1, false, (const float*) &value );
 }
 
 void Program::set_uniform( GLint uni_loc, const UniversalValue& value ) const noexcept
 {
-    jassert( is_bound() );
+    treecore_assert( is_bound() );
     if (uni_loc == -1) return;
 
     // skip values with conflict type
     {
         int i_uni = get_uniform_index( uni_loc );
         const TypedTemplateWithLocation& uni_info = m_impl->uni_infos[i_uni];
-        jassert( i_uni >= 0 );
+        treecore_assert( i_uni >= 0 );
 
         if (value.get_type() != uni_info.type)
             return;

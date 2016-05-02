@@ -4,6 +4,8 @@
 #include <treecore/FloatUtils.h>
 #include <treecore/SimdObject.h>
 
+#include <cmath>
+
 namespace treeface
 {
 

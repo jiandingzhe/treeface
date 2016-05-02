@@ -10,8 +10,8 @@ namespace treeface
 
 int HalfOutline::find_cross_from_head( const Vec2f& p1, const Vec2f& p2, Vec2f& p_cross, int step_limit ) const
 {
-    jassert( outline.size() > 1 );
-    jassert( outline.size() == outline_bounds.size() + 1 );
+    treecore_assert( outline.size() > 1 );
+    treecore_assert( outline.size() == outline_bounds.size() + 1 );
 
     SUCK_GEOM_BLK( OutlineSucker sucker( *this, "find cross from tail" );
                    sucker.draw_vtx( p1 );
@@ -74,8 +74,8 @@ int HalfOutline::find_cross_from_head( const Vec2f& p1, const Vec2f& p2, Vec2f& 
 
 int HalfOutline::find_cross_from_tail( const Vec2f& p1, const Vec2f& p2, Vec2f& p_cross, int step_limit ) const
 {
-    jassert( outline.size() > 1 );
-    jassert( outline.size() == outline_bounds.size() + 1 );
+    treecore_assert( outline.size() > 1 );
+    treecore_assert( outline.size() == outline_bounds.size() + 1 );
 
     SUCK_GEOM_BLK( OutlineSucker sucker( *this, "find cross from tail" );
                    sucker.draw_vtx( p1 );
@@ -139,8 +139,8 @@ int HalfOutline::find_cross_from_tail( const Vec2f& p1, const Vec2f& p2, Vec2f& 
 
 void HalfOutline::add_miter_point( const Vec2f& skeleton1, JointID id, const Vec2f& ortho_prev, const Vec2f& ortho_curr, const InternalStrokeStyle& style )
 {
-    jassert( std::abs( ortho_prev.length2() - 1.0f ) < 0.0001f );
-    jassert( std::abs( ortho_curr.length2() - 1.0f ) < 0.0001f );
+    treecore_assert( std::abs( ortho_prev.length2() - 1.0f ) < 0.0001f );
+    treecore_assert( std::abs( ortho_curr.length2() - 1.0f ) < 0.0001f );
 
     SUCK_GEOM_BLK( OutlineSucker sucker( *this, "add miter point" );
                    sucker.draw_vtx( skeleton1 );
@@ -156,7 +156,7 @@ void HalfOutline::add_miter_point( const Vec2f& skeleton1, JointID id, const Vec
         ortho_mid.normalize();
 
         float half_cosine = ortho_mid * ortho_prev;
-        jassert( 0.0f < half_cosine && half_cosine < 1.0f );
+        treecore_assert( 0.0f < half_cosine && half_cosine < 1.0f );
         Vec2f r_mid = ortho_mid * (style.half_width * side / half_cosine);
 
         add( skeleton1 + r_mid, id );
@@ -171,8 +171,8 @@ void HalfOutline::add_miter_point( const Vec2f& skeleton1, JointID id, const Vec
 
 void HalfOutline::add_round_points( const Vec2f& skeleton1, JointID id, const Vec2f& ortho_prev, const Vec2f& ortho_curr, const InternalStrokeStyle& style )
 {
-    jassert( std::abs( ortho_prev.length2() - 1.0f ) < 0.0001f );
-    jassert( std::abs( ortho_curr.length2() - 1.0f ) < 0.0001f );
+    treecore_assert( std::abs( ortho_prev.length2() - 1.0f ) < 0.0001f );
+    treecore_assert( std::abs( ortho_curr.length2() - 1.0f ) < 0.0001f );
 
     SUCK_GEOM_BLK( OutlineSucker sucker( *this, "add round points" );
                    sucker.draw_vtx( skeleton1 );
@@ -265,8 +265,8 @@ void HalfOutline::process_inner( const HalfOutline&         outer_peer,
     }
 
     {
-        jassert( outline.size() > 0 );
-        jassert( outer_peer.size() > 0 );
+        treecore_assert( outline.size() > 0 );
+        treecore_assert( outer_peer.size() > 0 );
 
         if ( cross_test_inc( outline.getFirst(), outer_peer.outline.getFirst(), p1, p2, p_cross ) )
         {

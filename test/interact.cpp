@@ -10,9 +10,9 @@
 #include <map>
 
 #include "treecore/Config.h"
-#include "treecore/BasicNativeHeaders.h"
+#include "treecore/PlatformDefs.h"
 
-#if defined TREECORE_COMPILER_MSVC && defined TREECORE_OS_WINDOWS
+#if TREECORE_COMPILER_MSVC && TREECORE_OS_WINDOWS
 #  include <wincon.h>
 #endif
 

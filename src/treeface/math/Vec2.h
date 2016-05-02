@@ -2,8 +2,12 @@
 #define TREECORE_VEC2_H
 
 #include <treecore/AlignedMalloc.h>
+#include <treecore/ClassUtils.h>
+#include <treecore/DebugUtils.h>
 #include <treecore/IntTypes.h>
 #include <treecore/FloatUtils.h>
+
+#include <cmath>
 
 namespace treeface
 {

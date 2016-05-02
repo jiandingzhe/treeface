@@ -6,7 +6,7 @@ namespace treeface {
 
 void Widget::Guts::fetch_this_and_parent_ability( RespWidgetMap& result ) noexcept
 {
-    jassert( result.size() == 0 );
+    treecore_assert( result.size() == 0 );
 
     // copy resp-parent cache
     RespWidgetMap::Iterator it_parent_cache( resp_parents );
@@ -42,7 +42,7 @@ void Widget::Guts::fetch_this_and_parent_ability( RespWidgetMap& result ) noexce
 
 void Widget::Guts::recur_clear_resp_parent_cache() noexcept
 {
-    DBG( name.toString() + ": clear resp-parent cache\n" );
+    TREECORE_DBG( name.toString() + ": clear resp-parent cache\n" );
     resp_parents.clear();
     resp_parents_ok = false;
     for (int i = 0; i < children.size(); i++)
@@ -53,7 +53,7 @@ void Widget::Guts::recur_clear_resp_parent_cache() noexcept
 
 void Widget::Guts::recur_clear_resp_child_cache() noexcept
 {
-    DBG( name.toString() + ": clear resp-child cache\n" );
+    TREECORE_DBG( name.toString() + ": clear resp-child cache\n" );
     resp_children.clear();
     resp_children_ok = false;
     if (parent)
@@ -80,9 +80,9 @@ void Widget::Guts::recur_remove_resp_parent( const treecore::Identifier& ev_name
 {
     if (resp_parents_ok)
     {
-        jassert( resp_parents.contains( ev_name ) );
+        treecore_assert( resp_parents.contains( ev_name ) );
         WidgetRawArray* resp_list = resp_parents[ev_name];
-        jassert( resp_list->contains( to_be_removed ) );
+        treecore_assert( resp_list->contains( to_be_removed ) );
         resp_list->removeAllInstancesOf( to_be_removed );
     }
 
@@ -96,9 +96,9 @@ void Widget::Guts::recur_remove_resp_child( const treecore::Identifier& ev_name,
 {
     if (resp_children_ok)
     {
-        jassert( resp_children.contains( ev_name ) );
+        treecore_assert( resp_children.contains( ev_name ) );
         WidgetRawArray* resp_list = resp_children[ev_name];
-        jassert( resp_list->contains( to_be_removed ) );
+        treecore_assert( resp_list->contains( to_be_removed ) );
         resp_list->removeAllInstancesOf( to_be_removed );
 
         // remove resp child event name if it's the last one
@@ -131,9 +131,9 @@ void Widget::Guts::recur_build_or_prepend_update_resp_parent_cache( const RespWi
 
 void Widget::Guts::build_resp_parent_cache() noexcept
 {
-    DBG( name.toString() + ": update resp-parent cache\n" );
-    jassert( !resp_parents_ok );
-    jassert( resp_parents.size() == 0 );
+    TREECORE_DBG( name.toString() + ": update resp-parent cache\n" );
+    treecore_assert( !resp_parents_ok );
+    treecore_assert( resp_parents.size() == 0 );
 
     resp_parents_ok = true;
 
@@ -148,9 +148,9 @@ void Widget::Guts::build_resp_parent_cache() noexcept
 
 void Widget::Guts::build_resp_child_cache() noexcept
 {
-    DBG( name.toString() + ": update resp-child cache\n" );
-    jassert( !resp_children_ok );
-    jassert( resp_children.size() == 0 );
+    TREECORE_DBG( name.toString() + ": update resp-child cache\n" );
+    treecore_assert( !resp_children_ok );
+    treecore_assert( resp_children.size() == 0 );
 
     resp_children_ok = true;
 
@@ -207,8 +207,8 @@ void Widget::Guts::build_resp_child_cache() noexcept
 
 void Widget::Guts::prepend_update_resp_parent_cache( const RespWidgetMap& prefix_data ) noexcept
 {
-    DBG( name.toString() + ": prepend update resp-parent cache\n" );
-    jassert( resp_parents_ok );
+    TREECORE_DBG( name.toString() + ": prepend update resp-parent cache\n" );
+    treecore_assert( resp_parents_ok );
 
     RespWidgetMap::ConstIterator it( prefix_data );
     while ( it.next() )

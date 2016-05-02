@@ -3,6 +3,8 @@
 
 #include "treeface/math/Vec2.h"
 
+#include <limits>
+
 namespace treeface
 {
 

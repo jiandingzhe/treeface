@@ -21,7 +21,7 @@
 #include <set>
 
 #include <treecore/ArrayRef.h>
-#include <treecore/BasicNativeHeaders.h>
+#include <treecore/PlatformDefs.h>
 #include <treecore/RefCountHolder.h>
 #include <treecore/Logger.h>
 #include <treecore/HashMultiMap.h>

@@ -93,8 +93,8 @@ public:
 
     void draw( GLPrimitive primitive, GLsizei num_idx ) noexcept
     {
-        jassert( is_bound() );
-        jassert( num_idx >= 0 );
+        treecore_assert( is_bound() );
+        treecore_assert( num_idx >= 0 );
         glDrawElements( primitive, num_idx, GLTypeEnumHelper<IndexType>::value, nullptr );
     }
 

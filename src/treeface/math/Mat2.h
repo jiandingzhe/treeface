@@ -5,6 +5,8 @@
 
 #include <treecore/SimdObject.h>
 
+#include <cmath>
+
 namespace treeface
 {
 
